@@ -1,0 +1,135 @@
+{
+  "_comentario": [
+    "Una entrada por cada app que se compila. Lo leen scripts/preparar.mjs, scripts/compilar.mjs, src-tauri/build.rs y el workflow.",
+    "inicio: página que se abre al arrancar · incluir: archivos además de los comunes ('*.ext' = de la raíz, 'carpeta/' = carpeta entera)",
+    "Además se incluyen solas las páginas y documentos que enlaza cada herramienta (p. ej. el Calcador lleva dentro el Generador y el Simulador).",
+    "icono: índice del icono de la portada (0 = logo, 1 = primera ficha…) · publicar: false = no se adjunta a las Releases públicas (sigue en Artifacts)",
+    "Para añadir una herramienta nueva: copia una entrada, cambia los datos y añade su nombre a «ediciones» en .github/workflows/suite-escritorio.yml.",
+    "excluir: archivos que NO deben entrar aunque alguna página los enlace (p. ej. el Tutor, que es para el alumnado, no lleva el Calcador)."
+  ],
+  "comunes": [
+    "licencias.html",
+    "LICENSE",
+    "LICENCIA-MANUAL.txt"
+  ],
+  "porDefecto": "simulador",
+  "ediciones": {
+    "profesorado": {
+      "nombre": "Suite CNC",
+      "titulo": "Suite CNC — Profesorado",
+      "exe": "SuiteCNC",
+      "id": "es.eloiaa.suitecnc.profesorado",
+      "inicio": "index.html",
+      "incluir": [
+        "*.html",
+        "*.pdf",
+        "biblioteca_inicio/"
+      ],
+      "excluir": [
+        "simulador3d_profesor.html"
+      ],
+      "descripcion": "Portada y todas las herramientas: Calcador, Corrector, Anidador, Simulador 3D, Tutor G-Code, Calculadora, biblioteca de inicio, apuntes y manuales.",
+      "icono": 0,
+      "devtools": true,
+      "publicar": true
+    },
+    "calcador": {
+      "nombre": "Calcador de contornos",
+      "titulo": "Calcador de contornos",
+      "exe": "Calcador",
+      "id": "es.eloiaa.suitecnc.calcador",
+      "inicio": "calcador.html",
+      "incluir": [
+        "manual_calcador.html",
+        "manual_calcador.pdf",
+        "biblioteca_inicio/"
+      ],
+      "descripcion": "Dibuja o calca la pieza, acótala, prepara hojas y soluciones, ⚙️ Mecanizar, corrige y guarda tus ejercicios. Lleva dentro el Generador y el Simulador 3D.",
+      "icono": 1,
+      "devtools": false,
+      "publicar": true
+    },
+    "corrector": {
+      "nombre": "Corrector",
+      "titulo": "Corrector",
+      "exe": "Corrector",
+      "id": "es.eloiaa.suitecnc.corrector",
+      "inicio": "corrector.html",
+      "incluir": [
+        "manual_corrector.html",
+        "manual_corrector.pdf"
+      ],
+      "descripcion": "El Calcador sin dibujo: abre un ejercicio, corrige y simula los programas de los alumnos, imprime hojas y soluciones.",
+      "icono": 2,
+      "devtools": false,
+      "publicar": true
+    },
+    "anidador": {
+      "nombre": "Anidador de tableros",
+      "titulo": "Anidador de tableros",
+      "exe": "Anidador",
+      "id": "es.eloiaa.suitecnc.anidador",
+      "inicio": "anidador.html",
+      "incluir": [
+        "manual_anidador.html",
+        "manual_anidador.pdf"
+      ],
+      "descripcion": "Coloca varias piezas en el tablero para cortarlas de una vez y devuelve el tablero al Calcador (que lleva dentro).",
+      "icono": 3,
+      "devtools": false,
+      "publicar": true
+    },
+    "simulador": {
+      "nombre": "Simulador 3D",
+      "titulo": "Simulador G-Code 3D — Suite CNC",
+      "exe": "Simulador3D",
+      "id": "es.eloiaa.suitecnc.simulador3d",
+      "inicio": "simulador3d.html",
+      "incluir": [
+        "guia_simulador.html",
+        "guia_simulador.pdf"
+      ],
+      "descripcion": "Abre un programa ISO (G-code) y mira cómo se mecaniza la pieza en 3D o en 2D, con su revisión, el plano del ejercicio y el informe de entrega.",
+      "icono": 4,
+      "devtools": false,
+      "publicar": true
+    },
+    "tutor": {
+      "nombre": "Tutor G-Code",
+      "titulo": "Tutor G-Code",
+      "exe": "TutorGCode",
+      "id": "es.eloiaa.suitecnc.tutor",
+      "inicio": "tutor.html",
+      "incluir": [
+        "guia_tutor.html",
+        "guia_tutor.pdf"
+      ],
+      "descripcion": "Dibuja una pieza y mira cómo se escribe su programa línea a línea (Aprender), o escríbelo tú y el Tutor te corrige cada línea (Practicar).",
+      "icono": 5,
+      "devtools": false,
+      "publicar": true,
+      "excluir": [
+        "calcador.html",
+        "corrector.html",
+        "manual_calcador.html",
+        "manual_calcador.pdf",
+        "manual_corrector.html"
+      ]
+    },
+    "calculadora": {
+      "nombre": "Calculadora de taller",
+      "titulo": "Calculadora de taller",
+      "exe": "Calculadora",
+      "id": "es.eloiaa.suitecnc.calculadora",
+      "inicio": "calculadora.html",
+      "incluir": [
+        "manual_calculadora.html",
+        "manual_calculadora.pdf"
+      ],
+      "descripcion": "Proyecciones, polares, centro e I J R de un arco, G90 ↔ G91, revoluciones y avance.",
+      "icono": 6,
+      "devtools": false,
+      "publicar": true
+    }
+  }
+}

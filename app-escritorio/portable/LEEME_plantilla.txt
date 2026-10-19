@@ -1,0 +1,74 @@
+{NOMBRE_MAYUS} — Suite CNC (Eloi A.A.)
+Versión de escritorio PORTABLE
+==============================
+
+{DESCRIPCION}
+
+CÓMO SE USA
+- Abre {EXE}.exe (en Linux, el archivo .AppImage). No hace falta instalar nada.
+[[SUITE]]
+- Se abre la portada con todas las herramientas. Cada herramienta se abre
+  en su ventana; con ⌂ se vuelve a la portada.
+[[/SUITE]]
+- Si la herramienta abre otra (por ejemplo «Abrir en el Simulador» o
+  «Abrir en el Generador» desde el Calcador), se abre en otra ventana y
+  se pasan el trabajo igual que entre pestañas del navegador.
+- Las hojas para imprimir se abren en su ventana con el diálogo de
+  imprimir (también se puede «Guardar como PDF»).
+- Lo que el navegador «descargaba» ahora pregunta dónde guardarlo.
+[[F12]]
+- F12 abre las herramientas de desarrollador (para diagnosticar).
+[[/F12]]
+- Puedes copiar esta carpeta entera a un USB o a otro ordenador:
+  todo viaja con ella.
+
+LA CARPETA «datos»
+- Se crea sola la primera vez que abres la app.
+- Guarda la memoria de la app: ajustes, base de herramientas,
+  biblioteca de ejercicios, copias de recuperación… No la borres si
+  quieres conservarlos. Para hacer copia de seguridad, copia «datos».
+- Cada programa tiene su propia carpeta «datos»: lo que guardas en uno
+  no aparece en otro (exporta e importa si lo necesitas).
+- OJO: lo que tengas guardado en el NAVEGADOR (por ejemplo, la
+  biblioteca del Calcador) no pasa solo a la app: expórtalo desde el
+  navegador (📚 Biblioteca → «Exportar biblioteca», 🧰 base de
+  herramientas → exportar…) e impórtalo en la app la primera vez.
+- Si la carpeta está en un sitio donde no se puede escribir
+  (por ejemplo, un USB protegido), la app usa la carpeta de tu usuario.
+
+[[SIMULADOR]]
+ARCHIVOS .sim3d (PROYECTOS DEL SIMULADOR)
+- Un proyecto .sim3d guarda en un solo archivo el programa G-code, el
+  plano del ejercicio, la herramienta y el material.
+- En el Simulador: menú 🗂️ Archivo → «Guardar como…» y elige el tipo.
+- Ctrl+S guarda en el mismo archivo que tienes abierto (.sim3d o .nc).
+- Para la máquina sigue haciendo falta el .nc:
+  Archivo → «Exportar solo el G-code (.nc)…».
+
+ABRIR CON DOBLE CLIC
+- En el Simulador: menú 🗂️ Archivo → «Asociar archivos con esta app…».
+- Solo afecta a tu usuario y no pide permisos de administrador.
+- Si mueves o borras la carpeta, quita antes la asociación desde el
+  mismo menú (o vuelve a asociar desde la nueva ubicación).
+[[/SIMULADOR]]
+
+SI LA VENTANA SALE EN BLANCO O NO ARRANCA
+- Descomprime el ZIP antes de abrir la app (clic derecho → «Extraer todo…»).
+- Ponla en una ruta corta, por ejemplo C:\{EXE} o D:\{EXE}.
+  (La app ya se adapta sola a las rutas largas, pero cuanto más corta, mejor.)
+- En la carpeta «datos» hay un archivo «registro.txt» con lo que ha pasado
+  al arrancar: envíalo a quien te ayude a solucionarlo.
+
+ORDENADORES SIN WEBVIEW2 (Windows antiguos)
+- Windows 10 y 11 ya lo traen. Si la app no arranca en un equipo,
+  descarga el «WebView2 Fixed Version Runtime» de Microsoft,
+  descomprímelo y renombra su carpeta a «webview2», junto a
+  {EXE}.exe. La app lo usará automáticamente.
+
+AVISO DE WINDOWS «Windows protegió su PC» (pantalla azul)
+- Para que NO aparezca: ANTES de descomprimir, clic derecho en el ZIP
+  → Propiedades → marca «Desbloquear» (abajo) → Aceptar → «Extraer todo…».
+- Si ya ha aparecido: «Más información» → «Ejecutar de todas formas».
+  Solo pasa la primera vez.
+
+Licencia: EUPL-1.2

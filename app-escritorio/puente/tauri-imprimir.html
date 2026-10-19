@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Imprimir</title>
+<style>body{font-family:'Segoe UI',Arial,sans-serif;color:#1c2733;margin:40px}</style>
+</head>
+<body>
+<p>Preparando la hoja…</p>
+<script>
+/* Muestra una hoja que una herramienta ha escrito con window.open('') + document.write(…),
+   como hacía la pestaña nueva del navegador, y deja que su propio script lance la impresión. */
+(async function () {
+    const T = window.__TAURI__;
+    const id = new URLSearchParams(location.search).get('id');
+    let html = null;
+    try { html = await T.core.invoke('obtener_impresion', { id }); } catch (e) {}
+    if (!html) { document.body.innerHTML = '<p>Esta hoja ya no está disponible. Vuelve a generarla desde la herramienta.</p>'; return; }
+    document.open();
+    document.write(html);
+    document.close();
+    // Si el «load» de la hoja no llega a dispararse (depende del motor web),
+    // se ejecuta a mano su window.onload, que es el que lanza la impresión.
+    // Una sola impresión aunque el load llegue por los dos caminos
+    const imprimir = window.print.bind(window);
+    let impresa = false;
+    window.print = () => { if (impresa) return; impresa = true; imprimir(); setTimeout(() => { impresa = false; }, 3000); };
+    let cargada = false;
+    window.addEventListener('load', () => { cargada = true; });
+    setTimeout(() => { if (!cargada && typeof window.onload === 'function') window.onload(new Event('load')); }, 900);
+    try { if (document.title) T.window.getCurrentWindow().setTitle(document.title); } catch (e) {}
+})();
+</script>
+</body>
+</html>
