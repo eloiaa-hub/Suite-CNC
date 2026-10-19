@@ -1,0 +1,114 @@
+# Compila la Suite CNC como apps de escritorio portables:
+#
+#   · SuiteCNC     — la portada y todas las herramientas (profesorado)
+#   · Calcador, Corrector, Anidador, Simulador3D, TutorGCode, Calculadora — cada programa por separado
+#
+# para Windows (ZIP: se descomprime y funciona) y Linux (un archivo .AppImage).
+# Las ediciones (nombre, ejecutable, archivos, icono…) están en app-escritorio/ediciones/ediciones.json.
+#
+# Cuándo se ejecuta:
+#   · Al publicar una etiqueta «suite-v…» (p. ej. suite-v0.3.0): compila todo y crea
+#     una Release con los archivos (las ediciones con "publicar": false no se adjuntan).
+#   · A mano: pestaña Actions → «Suite CNC (escritorio)» → Run workflow (rama main):
+#     compila y deja los archivos en «Artifacts» de esa ejecución.
+#
+# Este archivo debe estar en .github/workflows/ en la RAÍZ del repositorio.
+
+name: Suite CNC (escritorio)
+
+on:
+  push:
+    tags: ['suite-v*', 'simulador-v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+defaults:
+  run:
+    working-directory: app-escritorio
+
+jobs:
+  compilar:
+    name: ${{ matrix.edicion }} · ${{ matrix.so }}
+    runs-on: ${{ matrix.so == 'Windows' && 'windows-latest' || 'ubuntu-22.04' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # Para añadir un programa: créalo en ediciones.json y añade aquí su clave
+        edicion: [profesorado, calcador, corrector, anidador, simulador, tutor, calculadora]
+        so: [Windows, Linux]
+    env:
+      SUITE_EDICION: ${{ matrix.edicion }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Dependencias del sistema (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libgtk-3-dev librsvg2-dev libayatana-appindicator3-dev patchelf
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: app-escritorio/src-tauri
+          key: ${{ matrix.edicion }}
+
+      - run: npm ci
+
+      - name: Pruebas de la parte Rust
+        if: runner.os == 'Linux' && matrix.edicion == 'simulador'
+        run: node scripts/preparar.mjs && cargo test --release --manifest-path src-tauri/Cargo.toml
+
+      - name: Compilar
+        run: node scripts/compilar.mjs ${{ matrix.edicion }} ${{ runner.os == 'Windows' && 'portable' || 'appimage' }}
+
+      - name: Empaquetar
+        id: paquete
+        run: node scripts/empaquetar.mjs ${{ matrix.edicion }}
+
+      - name: Comprimir la carpeta portable (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: Compress-Archive -Path "dist/${{ steps.paquete.outputs.exe }}" -DestinationPath "dist/${{ steps.paquete.outputs.exe }}_windows_x64.zip" -Force
+
+      - uses: actions/upload-artifact@v6
+        with:
+          # «publicar-…» se adjunta a las Releases; «privado-…» solo queda aquí, en Artifacts
+          name: ${{ steps.paquete.outputs.publicar }}-${{ steps.paquete.outputs.exe }}-${{ matrix.so }}
+          path: |
+            app-escritorio/dist/*.zip
+            app-escritorio/dist/*.AppImage
+
+  publicar:
+    name: Publicar en Releases
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: compilar
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - uses: actions/download-artifact@v7
+        with:
+          pattern: publicar-*
+          path: publicar
+          merge-multiple: true
+      - run: ls -la publicar
+      - uses: softprops/action-gh-release@v3
+        with:
+          name: Suite CNC — escritorio ${{ github.ref_name }}
+          body: |
+            **Herramientas CNC (Eloi A.A.) — versión de escritorio portable**
+
+            Cada programa por separado (`Calcador`, `Corrector`, `Anidador`, `Simulador3D`, `TutorGCode`, `Calculadora`) o todos juntos con la portada (`SuiteCNC`).
+
+            · **Windows:** descarga el `.zip`. Antes de descomprimirlo: clic derecho → **Propiedades** → marca **Desbloquear** → Aceptar (así Windows no muestra la pantalla azul). Después «Extraer todo…» donde quieras (también en un USB) y abre el `.exe`.
+            · **Linux:** descarga el `.AppImage`, dale permiso de ejecución (clic derecho → Propiedades → Permitir ejecutar) y ábrelo.
+
+            Cada app guarda sus datos en la carpeta `datos/` que tiene al lado.
+          files: publicar/*
