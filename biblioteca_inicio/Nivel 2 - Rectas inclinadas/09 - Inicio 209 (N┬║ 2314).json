@@ -1,0 +1,443 @@
+{
+ "version": 7,
+ "nombre": "Inicio 209 - Rectas inclinadas",
+ "vertices": [
+  {
+   "x": 0,
+   "y": 600,
+   "seg": "recta",
+   "arcAng": 180
+  },
+  {
+   "x": 940,
+   "y": 600,
+   "seg": "recta",
+   "arcAng": 180
+  },
+  {
+   "x": 940,
+   "y": -140,
+   "seg": "recta",
+   "arcAng": 180
+  },
+  {
+   "x": 0,
+   "y": -140,
+   "seg": "recta",
+   "arcAng": 180
+  }
+ ],
+ "poligonoListo": true,
+ "segModoCierre": "recta",
+ "trazadoTipoActual": "exterior",
+ "entryIdx": 0,
+ "mec": null,
+ "uid": "kmv9gofl5rqam",
+ "estrategia": "plano",
+ "wcs": {
+  "x": 0,
+  "y": 0,
+  "activo": true
+ },
+ "trazados": [
+  {
+   "vertices": [
+    {
+     "x": 160,
+     "y": 400,
+     "seg": "recta",
+     "arcAng": 180
+    },
+    {
+     "x": 220,
+     "y": 460,
+     "seg": "recta",
+     "arcAng": 180
+    },
+    {
+     "x": 320,
+     "y": 460,
+     "seg": "recta",
+     "arcAng": 180
+    },
+    {
+     "x": 380,
+     "y": 400,
+     "seg": "recta",
+     "arcAng": 180
+    },
+    {
+     "x": 380,
+     "y": 140,
+     "seg": "recta",
+     "arcAng": 180
+    },
+    {
+     "x": 220,
+     "y": 140,
+     "seg": "recta",
+     "arcAng": 180
+    },
+    {
+     "x": 160,
+     "y": 200,
+     "seg": "recta",
+     "arcAng": 180
+    }
+   ],
+   "segModoCierre": "recta",
+   "tipo": "interior",
+   "entryIdx": 0,
+   "mec": null,
+   "uid": "kmv9gofl5sh35"
+  },
+  {
+   "vertices": [
+    {
+     "x": 500,
+     "y": 440,
+     "seg": "recta",
+     "arcAng": 180
+    },
+    {
+     "x": 540,
+     "y": 480,
+     "seg": "recta",
+     "arcAng": 180
+    },
+    {
+     "x": 620,
+     "y": 480,
+     "seg": "recta",
+     "arcAng": 180
+    },
+    {
+     "x": 660,
+     "y": 440,
+     "seg": "recta",
+     "arcAng": 180
+    },
+    {
+     "x": 660,
+     "y": 340,
+     "seg": "recta",
+     "arcAng": 180
+    },
+    {
+     "x": 520,
+     "y": 340,
+     "seg": "recta",
+     "arcAng": 180
+    },
+    {
+     "x": 500,
+     "y": 360,
+     "seg": "recta",
+     "arcAng": 180
+    }
+   ],
+   "segModoCierre": "recta",
+   "tipo": "interior",
+   "entryIdx": 0,
+   "mec": null,
+   "uid": "kmv9gofl5t0fx"
+  }
+ ],
+ "calcador": {
+  "version": 4,
+  "escala": 10,
+  "origen": {
+   "x": 0,
+   "y": 0
+  },
+  "contornos": [
+   {
+    "pts": [
+     {
+      "x": 0,
+      "y": 0
+     },
+     {
+      "x": 235,
+      "y": 0
+     },
+     {
+      "x": 235,
+      "y": 185
+     },
+     {
+      "x": 0,
+      "y": 185
+     }
+    ],
+    "b": [
+     0,
+     0,
+     0,
+     0
+    ],
+    "cerrado": true,
+    "tipo": "auto",
+    "forma": {
+     "tipo": "rectangulo",
+     "c": {
+      "x": 117.5,
+      "y": 92.5
+     },
+     "w": 235,
+     "h": 185,
+     "rot": 0,
+     "esq": [
+      {
+       "t": "v",
+       "r": 0
+      },
+      {
+       "t": "v",
+       "r": 0
+      },
+      {
+       "t": "v",
+       "r": 0
+      },
+      {
+       "t": "v",
+       "r": 0
+      }
+     ]
+    },
+    "grupo": "gmv9gofl57cp1",
+    "uid": "kmv9gofl5rqam"
+   },
+   {
+    "pts": [
+     {
+      "x": 40,
+      "y": 50
+     },
+     {
+      "x": 55,
+      "y": 35
+     },
+     {
+      "x": 80,
+      "y": 35
+     },
+     {
+      "x": 95,
+      "y": 50
+     },
+     {
+      "x": 95,
+      "y": 115
+     },
+     {
+      "x": 55,
+      "y": 115
+     },
+     {
+      "x": 40,
+      "y": 100
+     }
+    ],
+    "b": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "cerrado": true,
+    "tipo": "auto",
+    "forma": {
+     "tipo": "rectangulo",
+     "c": {
+      "x": 67.5,
+      "y": 75
+     },
+     "w": 55,
+     "h": 80,
+     "rot": 0,
+     "esq": [
+      {
+       "t": "ch",
+       "r": 15
+      },
+      {
+       "t": "ch",
+       "r": 15
+      },
+      {
+       "t": "v",
+       "r": 0
+      },
+      {
+       "t": "ch",
+       "r": 15
+      }
+     ]
+    },
+    "grupo": "gmv9gofl57cp1",
+    "uid": "kmv9gofl5sh35"
+   },
+   {
+    "pts": [
+     {
+      "x": 125,
+      "y": 40
+     },
+     {
+      "x": 135,
+      "y": 30
+     },
+     {
+      "x": 155,
+      "y": 30
+     },
+     {
+      "x": 165,
+      "y": 40
+     },
+     {
+      "x": 165,
+      "y": 65
+     },
+     {
+      "x": 130,
+      "y": 65
+     },
+     {
+      "x": 125,
+      "y": 60
+     }
+    ],
+    "b": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "cerrado": true,
+    "tipo": "auto",
+    "forma": {
+     "tipo": "rectangulo",
+     "c": {
+      "x": 145,
+      "y": 47.5
+     },
+     "w": 40,
+     "h": 35,
+     "rot": 0,
+     "esq": [
+      {
+       "t": "ch",
+       "r": 10
+      },
+      {
+       "t": "ch",
+       "r": 10
+      },
+      {
+       "t": "v",
+       "r": 0
+      },
+      {
+       "t": "ch",
+       "r": 5
+      }
+     ]
+    },
+    "grupo": "gmv9gofl57cp1",
+    "uid": "kmv9gofl5t0fx"
+   }
+  ],
+  "cotasAjuste": {},
+  "cotasManuales": [],
+  "cfgCotas": {
+   "ver": true,
+   "nivel": "todo",
+   "incl": "proy",
+   "cero": true,
+   "entrada": true,
+   "sentido": true,
+   "centros": true,
+   "cadena": true,
+   "verOcultas": false
+  },
+  "aux": [],
+  "cfgHoja": {
+   "titulo": "Nivel 2 · Rectas inclinadas · Ejercicio 9",
+   "num": "209",
+   "grupo": "",
+   "fecha": "",
+   "material": "Madera",
+   "espesor": "",
+   "herramienta": "Fresa Ø6",
+   "centro": "",
+   "orient": "h",
+   "prog": "mix",
+   "reqEntrada": false,
+   "reqSentido": false,
+   "enunciado": "Programa en código ISO el contorno de la pieza tomando como origen el cero pieza indicado en el plano.",
+   "tabla": true,
+   "rayado": false
+  },
+  "cfgMec": {
+   "T": 101,
+   "F": 1000,
+   "Fz": 300,
+   "F0": 5000,
+   "S": 12000,
+   "zSeg": 20,
+   "prof": 3,
+   "paso": 3,
+   "acab": 0,
+   "coord": "G90",
+   "comp": "G40",
+   "estr": "plano",
+   "unid": "G71",
+   "ancho": true,
+   "orden": "int"
+  },
+  "generado": {
+   "semilla": 2314,
+   "cfg": {
+    "nivel": "inclinadas",
+    "serieN": 25,
+    "ancho": 250,
+    "alto": 200,
+    "ocupar": 60,
+    "pMin": 1,
+    "pMax": 1,
+    "ext": [
+     "rectangulo",
+     "escalonada"
+    ],
+    "iMin": 1,
+    "iMax": 2,
+    "int": [
+     "rectangulo"
+    ],
+    "paso": 5,
+    "girar": false,
+    "fresa": 6,
+    "pared": 6,
+    "pEsq": 45,
+    "esq": [
+     "ch"
+    ],
+    "pLado": 0,
+    "lado": [
+     "fuera",
+     "dentro"
+    ],
+    "modInt": true
+   }
+  }
+ }
+}

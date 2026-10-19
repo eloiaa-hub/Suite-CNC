@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculadora de taller — Por Eloi A.A.</title>
+<meta name="description" content="Calculadora de taller para programar CNC en código ISO: rectas inclinadas, coordenadas polares, arcos (centro, I J y R), conversión G90 ↔ G91 y velocidades de corte.">
+<style>
+  :root {
+    --acento: #005A9C; --acento-suave: rgba(0,90,156,.10); --fondo: #eef2f6; --panel: #ffffff; --texto: #1d2733; --texto-sec: #5b6878;
+    --borde: #d7dee7; --sombra: 0 6px 22px rgba(20,40,70,.10); --verde: #00897b; --naranja: #c8741a; --rojo: #c0392b;
+    --campo: #f7f9fb; --rejilla: #e3e8ee; --pieza: #1e6fd9; --aux: #9aa7b5;
+  }
+  :root[data-tema="oscuro"] {
+    --acento: #5aa9e6; --acento-suave: rgba(90,169,230,.14); --fondo: #14181d; --panel: #1d232a; --texto: #e6ebf0; --texto-sec: #9aa7b5;
+    --borde: #2e3843; --sombra: 0 6px 22px rgba(0,0,0,.35); --verde: #4dd0c4; --naranja: #f0a35e; --rojo: #ef7b6e;
+    --campo: #161b21; --rejilla: #262e37; --pieza: #6cb4ff; --aux: #6b7a89;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Segoe UI', system-ui, -apple-system, Roboto, Arial, sans-serif; background: var(--fondo); color: var(--texto); line-height: 1.45; }
+  /* barra superior, como en los demás programas */
+  .barra { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 10px; padding: 9px 16px; background: var(--panel); border-bottom: 1px solid var(--borde); }
+  .barra h1 { margin: 0; font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .barra a.casa { text-decoration: none; color: inherit; opacity: .75; font-size: 16px; }
+  .ver { font-size: 11px; font-weight: 600; padding: 1px 7px; border-radius: 9px; background: var(--acento-suave); color: var(--acento); }
+  .barra button { border: 1px solid var(--borde); background: var(--panel); color: var(--texto); border-radius: 8px; padding: 5px 10px; font-size: 14px; cursor: pointer; }
+  .barra button:hover { border-color: var(--acento); }
+  .envoltura { max-width: 1100px; margin: 0 auto; padding: 18px 16px 40px; }
+  /* pestañas */
+  .pestanas { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 14px; scrollbar-width: thin; }
+  .pestanas button { flex: 0 0 auto; border: 1px solid var(--borde); background: var(--panel); color: var(--texto-sec); border-radius: 10px; padding: 8px 14px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 7px; }
+  .pestanas button svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .pestanas button.activa { background: var(--acento); border-color: var(--acento); color: #fff; }
+  .hoja { display: none; } .hoja.activa { display: block; }
+  .rejillaHoja { display: grid; grid-template-columns: minmax(280px, 380px) 1fr; gap: 16px; align-items: start; }
+  @media (max-width: 760px) { .rejillaHoja { grid-template-columns: minmax(0, 1fr); } }
+  /* en pantallas estrechas, los pares X Y (y X Y Z) pasan debajo de su nombre y se reparten el ancho */
+  @media (max-width: 480px) { .fila:has(> .par) { flex-wrap: wrap; } .fila > .par { flex: 1 1 100%; min-width: 0; } .fila > .par input.num { flex: 1 1 0; width: auto; min-width: 0; } }
+  .caja { background: var(--panel); border: 1px solid var(--borde); border-radius: 14px; padding: 16px; box-shadow: var(--sombra); }
+  .caja + .caja { margin-top: 14px; }
+  .caja h2 { margin: 0 0 10px; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--texto-sec); }
+  .intro { margin: 0 0 12px; font-size: 13.5px; color: var(--texto-sec); }
+  .fila { display: flex; align-items: center; gap: 8px; margin: 7px 0; }
+  .fila > label { flex: 1; font-size: 14px; }
+  .fila > label small { color: var(--texto-sec); }
+  .par { display: flex; gap: 6px; }
+  input.num, input[type=text], input[type=number], select, textarea { font: inherit; color: var(--texto); background: var(--campo); border: 1px solid var(--borde); border-radius: 8px; padding: 6px 8px; }
+  input.num { width: 92px; text-align: right; font-family: Consolas, 'Courier New', monospace; }
+  input.num:focus, select:focus, textarea:focus { outline: 2px solid var(--acento-suave); border-color: var(--acento); }
+  input.num.mal { border-color: var(--rojo); }
+  select { padding: 6px 6px; }
+  .segmento { display: flex; flex-wrap: wrap; gap: 4px; margin: 4px 0 10px; }
+  .segmento label { cursor: pointer; }
+  .segmento input { display: none; }
+  .segmento span { display: inline-block; padding: 5px 10px; border-radius: 8px; border: 1px solid var(--borde); font-size: 13px; color: var(--texto-sec); }
+  .segmento input:checked + span { background: var(--acento-suave); border-color: var(--acento); color: var(--acento); font-weight: 600; }
+  /* resultados */
+  .resultados { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin-bottom: 12px; }
+  .res { background: var(--campo); border: 1px solid var(--borde); border-radius: 10px; padding: 8px 10px; }
+  .res .et { font-size: 11.5px; color: var(--texto-sec); text-transform: uppercase; letter-spacing: .05em; }
+  .res .va { font-family: Consolas, 'Courier New', monospace; font-size: 18px; font-weight: 700; }
+  .res .va small { font-size: 12px; font-weight: 400; color: var(--texto-sec); }
+  .res.destaca { border-color: var(--acento); }
+  .res.destaca .va { color: var(--acento); }
+  .iso { display: flex; flex-direction: column; gap: 6px; }
+  .lineaIso { display: flex; align-items: center; gap: 8px; background: var(--campo); border: 1px solid var(--borde); border-radius: 8px; padding: 6px 8px 6px 10px; }
+  .lineaIso code { flex: 1; font-family: Consolas, 'Courier New', monospace; font-size: 14.5px; overflow-x: auto; white-space: nowrap; }
+  .lineaIso .et { font-size: 11.5px; color: var(--texto-sec); min-width: 64px; }
+  .copiar { border: 1px solid var(--borde); background: var(--panel); color: var(--acento); border-radius: 7px; padding: 3px 9px; font-size: 12.5px; cursor: pointer; flex: 0 0 auto; }
+  .copiar:hover { border-color: var(--acento); }
+  .aviso { margin: 10px 0 0; padding: 8px 10px; border-radius: 8px; font-size: 13.5px; border: 1px solid; }
+  .aviso.mal { color: var(--rojo); border-color: var(--rojo); background: color-mix(in srgb, var(--rojo) 8%, transparent); }
+  .aviso.ojo { color: var(--naranja); border-color: var(--naranja); background: color-mix(in srgb, var(--naranja) 8%, transparent); }
+  .aviso.bien { color: var(--verde); border-color: var(--verde); background: color-mix(in srgb, var(--verde) 8%, transparent); }
+  .nota { font-size: 12.5px; color: var(--texto-sec); margin: 10px 0 0; }
+  /* dibujo */
+  .dibujo { width: 100%; aspect-ratio: 4 / 3; max-height: 420px; display: block; background: var(--campo); border: 1px solid var(--borde); border-radius: 10px; }
+  .dibujo text { font-family: 'Segoe UI', system-ui, sans-serif; font-size: 12px; fill: var(--texto); paint-order: stroke; stroke: var(--campo); stroke-width: 3px; }
+  .dibujo text.sec { fill: var(--texto-sec); }
+  /* conversor de programas */
+  .dosCols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 760px) { .dosCols { grid-template-columns: 1fr; } }
+  textarea.prog { width: 100%; min-height: 300px; font-family: Consolas, 'Courier New', monospace; font-size: 13.5px; line-height: 1.45; resize: vertical; white-space: pre; }
+  .tabla { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  .tabla td { padding: 4px 6px; border-bottom: 1px solid var(--borde); }
+  .tabla td:last-child { text-align: right; font-family: Consolas, 'Courier New', monospace; }
+  /* ventana de créditos y ayuda */
+  .velo { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: none; align-items: center; justify-content: center; z-index: 20; padding: 16px; }
+  .velo.visible { display: flex; }
+  .ventana { background: var(--panel); color: var(--texto); border-radius: 14px; max-width: 560px; width: 100%; max-height: 85vh; overflow: auto; padding: 20px 22px; box-shadow: var(--sombra); }
+  .ventana h3 { margin: 0 0 10px; }
+  .ventana p, .ventana li { font-size: 14px; }
+  .snack { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); background: #263238; color: #fff; padding: 8px 16px; border-radius: 8px; font-size: 14px; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 30; }
+  .snack.visible { opacity: 1; }
+  @media print { .barra, .pestanas, .copiar { display: none; } .hoja { display: none !important; } .hoja.activa { display: block !important; } body { background: #fff; } .caja { box-shadow: none; } }
+</style>
+</head>
+<body>
+<div class="barra">
+  <h1><a class="casa" href="index.html" title="Portada de las herramientas">⌂</a> 🧮 Calculadora de taller — Por Eloi A.A. <span class="ver" title="Versión del programa">v5</span></h1>
+  <button id="btnAyuda" title="Ayuda de la pestaña abierta: qué calcula y cómo se usa (F1)">❓ Ayuda</button>
+  <button id="btnTema" title="Modo claro / oscuro">🌓</button>
+  <button id="btnInfo" title="Créditos y licencias">ℹ</button>
+</div>
+
+<div class="envoltura">
+  <nav class="pestanas" role="tablist">
+    <button data-hoja="recta" class="activa"><svg viewBox="0 0 24 24"><path d="M4 19 L20 7"/><path d="M4 19 h16 v-12" stroke-dasharray="2 2"/></svg>Recta inclinada</button>
+    <button data-hoja="polar"><svg viewBox="0 0 24 24"><circle cx="5" cy="19" r="1.5"/><path d="M5 19 L18 6"/><path d="M12 19 A7 7 0 0 0 10 14"/></svg>Polares</button>
+    <button data-hoja="arco"><svg viewBox="0 0 24 24"><path d="M5 18 A9 9 0 0 1 19 18"/><circle cx="12" cy="18" r="1.3"/></svg>Arco: centro, I J y R</button>
+    <button data-hoja="conv"><svg viewBox="0 0 24 24"><path d="M4 8 h13 l-3 -3 M20 16 H7 l3 3"/></svg>G90 ↔ G91</button>
+    <button data-hoja="corte"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><path d="M12 5 v3 M19 12 h-3 M12 19 v-3 M5 12 h3"/></svg>Velocidades de corte</button>
+  </nav>
+
+  <!-- ═══════════ RECTA INCLINADA ═══════════ -->
+  <section class="hoja activa" id="hoja-recta">
+    <div class="rejillaHoja">
+      <div>
+        <div class="caja">
+          <h2>Datos</h2>
+          <p class="intro">Una recta inclinada se programa con su punto final. Si el plano da su longitud y su ángulo, aquí sacas sus proyecciones (ΔX, ΔY), y al revés.</p>
+          <div class="segmento" id="rModo">
+            <label><input type="radio" name="rModo" value="la" checked><span>Longitud y ángulo</span></label>
+            <label><input type="radio" name="rModo" value="xy"><span>ΔX y ΔY</span></label>
+            <label><input type="radio" name="rModo" value="xa"><span>ΔX y ángulo</span></label>
+            <label><input type="radio" name="rModo" value="ya"><span>ΔY y ángulo</span></label>
+          </div>
+          <div class="fila" data-m="la"><label>Longitud L <small>(mm)</small></label><input class="num" inputmode="decimal" id="rL" value="50"></div>
+          <div class="fila" data-m="xy xa"><label>ΔX <small>(mm, con signo)</small></label><input class="num" inputmode="decimal" id="rDX" value="40"></div>
+          <div class="fila" data-m="xy ya"><label>ΔY <small>(mm, con signo)</small></label><input class="num" inputmode="decimal" id="rDY" value="30"></div>
+          <div class="fila" data-m="la xa ya"><label>Ángulo <small>(°, desde +X, antihorario)</small></label><input class="num" inputmode="decimal" id="rA" value="36.87"></div>
+          <div class="fila"><label>Punto de partida <small>X Y</small></label><span class="par"><input class="num" inputmode="decimal" id="rX0" value="0"><input class="num" inputmode="decimal" id="rY0" value="0"></span></div>
+          <p class="nota">El ángulo se mide desde el eje +X, en sentido antihorario: 0° a la derecha, 90° hacia arriba, 180° a la izquierda, −90° (o 270°) hacia abajo.</p>
+        </div>
+      </div>
+      <div>
+        <div class="caja">
+          <h2>Resultado</h2>
+          <div class="resultados" id="rRes"></div>
+          <div class="iso" id="rIso"></div>
+          <div id="rAviso"></div>
+        </div>
+        <div class="caja"><svg class="dibujo" id="rSvg" viewBox="0 0 400 300"></svg></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ POLARES ═══════════ -->
+  <section class="hoja" id="hoja-polar">
+    <div class="rejillaHoja">
+      <div>
+        <div class="caja">
+          <h2>Datos</h2>
+          <p class="intro">Un punto en polares se da con su distancia al polo (radio) y su ángulo. Pásalo a X Y para programarlo en cartesianas, o al revés.</p>
+          <div class="segmento" id="pModo">
+            <label><input type="radio" name="pModo" value="pc" checked><span>Polares → X Y</span></label>
+            <label><input type="radio" name="pModo" value="cp"><span>X Y → polares</span></label>
+          </div>
+          <div class="fila" data-m="pc"><label>Radio <small>(mm)</small></label><input class="num" inputmode="decimal" id="pR" value="60"></div>
+          <div class="fila" data-m="pc"><label>Ángulo <small>(°)</small></label><input class="num" inputmode="decimal" id="pA" value="30"></div>
+          <div class="fila" data-m="cp"><label>X</label><input class="num" inputmode="decimal" id="pX" value="51.962"></div>
+          <div class="fila" data-m="cp"><label>Y</label><input class="num" inputmode="decimal" id="pY" value="30"></div>
+          <div class="fila"><label>Polo <small>X Y (cero pieza = 0 0)</small></label><span class="par"><input class="num" inputmode="decimal" id="pPX" value="0"><input class="num" inputmode="decimal" id="pPY" value="0"></span></div>
+          <p class="nota">Ángulo desde el eje +X del polo, en sentido antihorario. En ISO con G16 (polo en el cero pieza), X es el radio e Y el ángulo.</p>
+        </div>
+      </div>
+      <div>
+        <div class="caja">
+          <h2>Resultado</h2>
+          <div class="resultados" id="pRes"></div>
+          <div class="iso" id="pIso"></div>
+          <div id="pAviso"></div>
+        </div>
+        <div class="caja"><svg class="dibujo" id="pSvg" viewBox="0 0 400 300"></svg></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ ARCO ═══════════ -->
+  <section class="hoja" id="hoja-arco">
+    <div class="rejillaHoja">
+      <div>
+        <div class="caja">
+          <h2>Datos</h2>
+          <p class="intro">Con el punto inicial, el final y el sentido, saca el centro del arco y lo que pide el bloque: I J (desde el inicio hasta el centro) o R.</p>
+          <div class="fila"><label>Inicio <small>X Y</small></label><span class="par"><input class="num" inputmode="decimal" id="aX1" value="20"><input class="num" inputmode="decimal" id="aY1" value="0"></span></div>
+          <div class="fila"><label>Final <small>X Y</small></label><span class="par"><input class="num" inputmode="decimal" id="aX2" value="0"><input class="num" inputmode="decimal" id="aY2" value="20"></span></div>
+          <div class="segmento" id="aSent">
+            <label><input type="radio" name="aSent" value="G2"><span>G2 · horario</span></label>
+            <label><input type="radio" name="aSent" value="G3" checked><span>G3 · antihorario</span></label>
+          </div>
+          <div class="segmento" id="aModo">
+            <label><input type="radio" name="aModo" value="r" checked><span>Conozco el radio</span></label>
+            <label><input type="radio" name="aModo" value="c"><span>Conozco el centro</span></label>
+          </div>
+          <div class="fila" data-m="r"><label>Radio R <small>(mm)</small></label><input class="num" inputmode="decimal" id="aR" value="20"></div>
+          <div class="segmento" data-m="r" id="aLargo">
+            <label><input type="radio" name="aLargo" value="corto" checked><span>Arco corto (≤ 180°)</span></label>
+            <label><input type="radio" name="aLargo" value="largo"><span>Arco largo (&gt; 180°)</span></label>
+          </div>
+          <div class="fila" data-m="c"><label>Centro <small>X Y</small></label><span class="par"><input class="num" inputmode="decimal" id="aXC" value="0"><input class="num" inputmode="decimal" id="aYC" value="0"></span></div>
+          <p class="nota">Sentido visto desde arriba, con X a la derecha e Y hacia arriba. Una circunferencia completa (inicio = final) solo se puede programar con I J.</p>
+        </div>
+      </div>
+      <div>
+        <div class="caja">
+          <h2>Resultado</h2>
+          <div class="resultados" id="aRes"></div>
+          <div class="iso" id="aIso"></div>
+          <div id="aAviso"></div>
+        </div>
+        <div class="caja"><svg class="dibujo" id="aSvg" viewBox="0 0 400 300"></svg></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ G90 ↔ G91 ═══════════ -->
+  <section class="hoja" id="hoja-conv">
+    <div class="caja">
+      <h2>Convertir un programa</h2>
+      <p class="intro">Pega un programa ISO (en G90, G91 o mezclado) y elige cómo lo quieres. Las coordenadas X Y Z se recalculan; I J de los arcos no cambian (son siempre incrementales desde el inicio del arco) ni R.</p>
+      <div class="segmento" id="cModo">
+        <label><input type="radio" name="cModo" value="G90"><span>Todo en G90 (absolutas)</span></label>
+        <label><input type="radio" name="cModo" value="G91" checked><span>Todo en G91 (incrementales)</span></label>
+        <label><input type="radio" name="cModo" value="mix"><span>Mixta: G0 y Z en G90, cortes en G91</span></label>
+      </div>
+      <div class="fila" style="max-width:520px"><label>Posición al empezar <small>X Y Z (para el primer movimiento en G91)</small></label><span class="par"><input class="num" inputmode="decimal" id="cX0" value="0"><input class="num" inputmode="decimal" id="cY0" value="0"><input class="num" inputmode="decimal" id="cZ0" value="0"></span></div>
+      <div class="dosCols">
+        <div><div class="fila"><label><b>Programa de entrada</b></label><button class="copiar" id="cEjemplo">Ejemplo</button><button class="copiar" id="cBorrar">Borrar</button></div><textarea class="prog" id="cEnt" spellcheck="false"></textarea></div>
+        <div><div class="fila"><label><b>Programa convertido</b></label><button class="copiar" id="cCopiar">Copiar</button><button class="copiar" id="cGuardar">Guardar .nc</button></div><textarea class="prog" id="cSal" spellcheck="false" readonly></textarea></div>
+      </div>
+      <div id="cAviso"></div>
+      <p class="nota">G90/G91 se escriben solo cuando cambia el modo, al principio del bloque. En «Mixta», los rápidos (G0) y las subidas y bajadas en Z van en absolutas y los cortes en el plano (G1, G2, G3) en incrementales, como en la tabla de soluciones. Las coordenadas polares (G16) no se convierten.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════ VELOCIDADES DE CORTE ═══════════ -->
+  <section class="hoja" id="hoja-corte">
+    <div class="rejillaHoja">
+      <div>
+        <div class="caja">
+          <h2>Herramienta y giro</h2>
+          <div class="fila"><label>Diámetro Ø <small>(mm)</small></label><input class="num" inputmode="decimal" id="vD" value="6"></div>
+          <div class="fila"><label>Nº de dientes (filos) Z</label><input class="num" inputmode="decimal" id="vZ" value="2"></div>
+          <div class="segmento" id="vModoS">
+            <label><input type="radio" name="vModoS" value="S" checked><span>Conozco las revoluciones S</span></label>
+            <label><input type="radio" name="vModoS" value="Vc"><span>Conozco la velocidad de corte Vc</span></label>
+          </div>
+          <div class="fila" data-m="S"><label>Revoluciones S <small>(rpm)</small></label><input class="num" inputmode="decimal" id="vS" value="18000"></div>
+          <div class="fila" data-m="Vc"><label>Velocidad de corte Vc <small>(m/min)</small></label><input class="num" inputmode="decimal" id="vVc" value="340"></div>
+        </div>
+        <div class="caja">
+          <h2>Avance</h2>
+          <div class="segmento" id="vModoF">
+            <label><input type="radio" name="vModoF" value="fz" checked><span>Conozco el avance por diente fz</span></label>
+            <label><input type="radio" name="vModoF" value="F"><span>Conozco el avance F</span></label>
+          </div>
+          <div class="fila" data-m="fz"><label>Avance por diente fz <small>(mm/diente)</small></label><input class="num" inputmode="decimal" id="vFz" value="0.1"></div>
+          <div class="fila" data-m="F"><label>Avance F <small>(mm/min)</small></label><input class="num" inputmode="decimal" id="vF" value="3600"></div>
+        </div>
+        <div class="caja">
+          <h2>Tiempo de mecanizado</h2>
+          <div class="fila"><label>Recorrido cortando <small>(mm)</small></label><input class="num" inputmode="decimal" id="vL" value="600"></div>
+          <div class="fila"><label>Recorrido en rápido <small>(mm)</small></label><input class="num" inputmode="decimal" id="vL0" value="250"></div>
+          <div class="fila"><label>Avance del rápido G0 <small>(mm/min)</small></label><input class="num" inputmode="decimal" id="vF0" value="5000"></div>
+          <p class="nota">⚙️ Mecanizar del Calcador da los dos recorridos en el resumen del programa.</p>
+        </div>
+      </div>
+      <div>
+        <div class="caja">
+          <h2>Resultado</h2>
+          <div class="resultados" id="vRes"></div>
+          <div class="iso" id="vIso"></div>
+          <div id="vAviso"></div>
+        </div>
+        <div class="caja">
+          <h2>Fórmulas</h2>
+          <table class="tabla">
+            <tr><td>Velocidad de corte</td><td>Vc = π · Ø · S / 1000 <small>(m/min)</small></td></tr>
+            <tr><td>Revoluciones</td><td>S = 1000 · Vc / (π · Ø)</td></tr>
+            <tr><td>Avance</td><td>F = fz · Z · S <small>(mm/min)</small></td></tr>
+            <tr><td>Avance por diente</td><td>fz = F / (Z · S)</td></tr>
+            <tr><td>Tiempo</td><td>t = recorrido / F <small>(min)</small></td></tr>
+          </table>
+          <p class="nota">Orientación para madera y tableros con fresas de metal duro: un avance por diente demasiado pequeño hace que la fresa roce en vez de cortar y quema la madera; uno demasiado grande astilla o rompe la fresa. Los valores buenos dependen de la fresa, el material y la máquina: consulta el catálogo del fabricante de la herramienta y no pases de las revoluciones máximas que indica.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Créditos y licencias -->
+<div class="velo" id="velo"><div class="ventana" role="dialog" aria-modal="true">
+  <h3>🧮 Calculadora de taller <span class="ver">v5</span></h3>
+  <p>Parte de las <b>Herramientas CNC</b> (Suite CNC 2026.10) · © 2026 Eloi A.A.</p>
+  <p>Programa: <b>European Union Public Licence v. 1.2 (EUPL-1.2)</b>, archivo <code>LICENSE</code>. No usa bibliotecas de terceros: funciona en el navegador, sin instalar nada y sin conexión.</p>
+  <p>Lo que escribes se guarda solo en este navegador, para encontrarlo la próxima vez. No se envía a ningún sitio.</p>
+  <p style="text-align:right"><button class="copiar" id="cerrarVelo">Cerrar</button></p>
+</div></div>
+<div class="velo" id="veloAyuda"><div class="ventana" role="dialog" aria-modal="true">
+  <div id="ayudaTexto"></div>
+  <p style="text-align:right"><button class="copiar" id="cerrarAyuda">Cerrar</button></p>
+</div></div>
+<div class="snack" id="snack"></div>
+
+<script>
+'use strict';
+// ════════════════════════════════════════════════════════════════════
+//  Calculadora de taller — utilidades
+// ════════════════════════════════════════════════════════════════════
+const $ = id => document.getElementById(id);
+// ── Ayudas emergentes ──
+const AYUDA_CAMPOS = {
+  // recta
+  rL: 'Longitud de la recta, de su punto inicial a su punto final. Siempre positiva: hacia dónde va lo dice el ángulo.',
+  rDX: 'Proyección horizontal de la recta: cuánto avanza en X. Positiva hacia la derecha, negativa hacia la izquierda.',
+  rDY: 'Proyección vertical de la recta: cuánto avanza en Y. Positiva hacia arriba, negativa hacia abajo.',
+  rA: 'Ángulo de la recta medido desde el eje +X, en sentido antihorario: 0° derecha, 90° arriba, 180° izquierda, −90° (270°) abajo. Admite decimales y negativos.',
+  rX0: 'X del punto donde empieza la recta, medida desde el cero pieza. Se usa para dar el punto final en absolutas (G90).',
+  rY0: 'Y del punto donde empieza la recta, medida desde el cero pieza.',
+  // polares
+  pR: 'Radio: distancia del polo al punto. Siempre positivo.',
+  pA: 'Ángulo del punto visto desde el polo, desde el eje +X y en sentido antihorario.',
+  pX: 'X del punto, medida desde el cero pieza.',
+  pY: 'Y del punto, medida desde el cero pieza.',
+  pPX: 'X del polo (el centro de las polares), desde el cero pieza. Con G16, el polo es el cero pieza: deja 0.',
+  pPY: 'Y del polo, desde el cero pieza. Con G16, el polo es el cero pieza: deja 0.',
+  // arco
+  aX1: 'X del punto donde empieza el arco (donde está la fresa antes del G2/G3), desde el cero pieza.',
+  aY1: 'Y del punto donde empieza el arco, desde el cero pieza.',
+  aX2: 'X del punto donde termina el arco: es la X del bloque G2/G3 (en G90).',
+  aY2: 'Y del punto donde termina el arco: es la Y del bloque G2/G3 (en G90).',
+  aR: 'Radio del arco. Con el radio hay dos arcos posibles entre dos puntos: elige el corto o el largo.',
+  aXC: 'X del centro del arco, desde el cero pieza (la del plano).',
+  aYC: 'Y del centro del arco, desde el cero pieza (la del plano).',
+  // conversión
+  cX0: 'X donde está la fresa antes de la primera línea, desde el cero pieza. Solo cuenta si el primer movimiento se convierte a G91.',
+  cY0: 'Y donde está la fresa antes de la primera línea, desde el cero pieza.',
+  cZ0: 'Z donde está la fresa antes de la primera línea (0 = superficie de la pieza).',
+  cEnt: 'Pega aquí el programa ISO: en G90, en G91 o mezclado. Se convierte mientras escribes.',
+  cSal: 'El programa convertido. No se edita aquí: cópialo o guárdalo como .nc.',
+  // corte
+  vD: 'Diámetro de la fresa, en mm.',
+  vZ: 'Número de dientes (filos) de la fresa: las fresas de madera suelen tener 1, 2 o 3.',
+  vS: 'Revoluciones del cabezal, en vueltas por minuto (rpm): la S del programa (S… M03).',
+  vVc: 'Velocidad de corte: lo rápido que pasa el filo por la madera, en metros por minuto. Depende de S y del diámetro.',
+  vFz: 'Avance por diente: el grueso de la viruta que corta cada filo en cada vuelta, en mm.',
+  vF: 'Avance de corte F, en mm por minuto: el F de los bloques G1, G2 y G3.',
+  vL: 'Longitud que recorre la fresa cortando (G1, G2, G3), en mm.',
+  vL0: 'Longitud que recorre la fresa en rápido (G0), en mm.',
+  vF0: 'Velocidad de los rápidos G0 en tu máquina, en mm/min.'
+};
+const AYUDA_RADIOS = {
+  'rModo:la': 'Datos del plano: la longitud de la recta y su ángulo. Calcula ΔX y ΔY.',
+  'rModo:xy': 'Datos del plano: las dos proyecciones. Calcula la longitud y el ángulo.',
+  'rModo:xa': 'Datos del plano: la proyección horizontal y el ángulo. Calcula ΔY y la longitud.',
+  'rModo:ya': 'Datos del plano: la proyección vertical y el ángulo. Calcula ΔX y la longitud.',
+  'pModo:pc': 'Tienes el radio y el ángulo: calcula la X y la Y del punto.',
+  'pModo:cp': 'Tienes la X y la Y: calcula el radio y el ángulo desde el polo.',
+  'aSent:G2': 'G2: arco en sentido horario (como las agujas del reloj), visto desde arriba.',
+  'aSent:G3': 'G3: arco en sentido antihorario, visto desde arriba.',
+  'aModo:r': 'El plano da el radio del arco: se calcula el centro.',
+  'aModo:c': 'El plano da el centro del arco: se calculan I, J y R, y se comprueba que el centro esté bien.',
+  'aLargo:corto': 'El arco que da menos de media vuelta (180° o menos). En ISO con R, R positivo.',
+  'aLargo:largo': 'El arco que da más de media vuelta. En ISO con R, R negativo.',
+  'cModo:G90': 'Todas las coordenadas absolutas, desde el cero pieza.',
+  'cModo:G91': 'Todas las coordenadas incrementales, desde el punto anterior.',
+  'cModo:mix': 'Rápidos (G0) y movimientos en Z en absolutas; cortes en el plano (G1, G2, G3) en incrementales.',
+  'vModoS:S': 'Sabes las revoluciones S: calcula la velocidad de corte.',
+  'vModoS:Vc': 'Sabes la velocidad de corte recomendada: calcula las revoluciones S.',
+  'vModoF:fz': 'Sabes el avance por diente recomendado: calcula el avance F.',
+  'vModoF:F': 'Sabes el avance F del programa: calcula el avance por diente para comprobar que es razonable.'
+};
+const AYUDA_RES = {
+  'ΔX': 'Cuánto avanza la recta en X: es la X del bloque en incrementales (G91).',
+  'ΔY': 'Cuánto avanza la recta en Y: es la Y del bloque en incrementales (G91).',
+  'Longitud': 'Longitud de la recta.',
+  'Ángulo': 'Ángulo desde el eje +X, antihorario. Entre paréntesis, el mismo ángulo de 0° a 360°.',
+  'Punto final X': 'X del punto final, desde el cero pieza: la X del bloque en absolutas (G90).',
+  'Punto final Y': 'Y del punto final, desde el cero pieza: la Y del bloque en absolutas (G90).',
+  'X': 'X del punto, desde el cero pieza.', 'Y': 'Y del punto, desde el cero pieza.',
+  'Radio': 'Distancia del polo al punto.',
+  'Respecto al polo ΔX': 'Distancia en X del polo al punto.', 'Respecto al polo ΔY': 'Distancia en Y del polo al punto.',
+  'Centro X': 'X del centro del arco, desde el cero pieza.', 'Centro Y': 'Y del centro del arco, desde el cero pieza.',
+  'I': 'I: distancia en X del inicio del arco a su centro (centro − inicio). Es siempre incremental, también en G90.',
+  'J': 'J: distancia en Y del inicio del arco a su centro (centro − inicio). Es siempre incremental, también en G90.',
+  'R': 'Radio del arco. En el bloque con R se escribe negativo si el arco pasa de 180°.',
+  'Ángulo del arco': 'Cuántos grados recorre el arco.', 'Longitud del arco': 'Longitud del recorrido de la fresa por el arco.',
+  'Revoluciones S': 'Vueltas por minuto del cabezal: la S del programa.', 'Velocidad de corte': 'Lo rápido que pasa el filo por la madera: π · Ø · S / 1000.',
+  '… en m/s': 'La misma velocidad de corte en metros por segundo (los catálogos de herramientas de madera suelen darla así).',
+  'Avance F': 'Avance de corte: el F de los bloques de corte.', 'Avance por diente': 'Grueso de la viruta que corta cada filo: F / (Z · S).',
+  'Avance por vuelta': 'Lo que avanza la fresa en cada vuelta: fz · Z.', 'Tiempo estimado': 'Recorrido cortando / F + recorrido en rápido / avance del rápido. Es un mínimo.'
+};
+const AYUDA_ISO = {
+  'Absolutas': 'El bloque en G90: el punto final medido desde el cero pieza.',
+  'Incrementales': 'El bloque en G91: el punto final medido desde el punto anterior.',
+  'Cartesianas': 'El punto en X Y, en absolutas.',
+  'Polares': 'El punto en polares con G16 (polo en el cero pieza): X es el radio e Y el ángulo. Recuerda volver a cartesianas con G15.',
+  'Con I J': 'El arco con su centro dado por I J (incrementales desde el inicio). Sirve para cualquier arco, también para la circunferencia completa.',
+  'Con R': 'El arco con su radio. Más corto de escribir, pero no vale para una circunferencia completa; si pasa de 180°, R negativo.',
+  'En el programa': 'Arranca el cabezal en sentido horario a esas revoluciones.',
+  'Avance de corte': 'Escribe este F en el primer bloque de corte (es modal: vale hasta que pongas otro).'
+};
+const AYUDA_HOJAS = {
+  recta: `<h3>📐 Recta inclinada</h3><p>En el programa, una recta se escribe con su <b>punto final</b>. Si el plano da su <b>longitud</b> y su <b>ángulo</b>, aquí sacas sus <b>proyecciones</b> ΔX y ΔY (lo que avanza en X y en Y), que son las coordenadas en incrementales (G91). Sumándolas al punto de partida tienes el punto final en absolutas (G90).</p><ul><li>ΔX = L · cos(ángulo) &nbsp;·&nbsp; ΔY = L · sen(ángulo)</li><li>L = √(ΔX² + ΔY²) &nbsp;·&nbsp; ángulo = atan2(ΔY, ΔX)</li></ul><p>El ángulo se mide desde el eje +X en sentido antihorario. Elige arriba qué datos te da el plano.</p>`,
+  polar: `<h3>📍 Polares</h3><p>Un punto en polares se da con su distancia al <b>polo</b> (radio) y su <b>ángulo</b>. Para programarlo en cartesianas necesitas su X y su Y:</p><ul><li>X = polo X + r · cos(ángulo) &nbsp;·&nbsp; Y = polo Y + r · sen(ángulo)</li></ul><p>Con <code>G16</code> se puede programar directamente en polares (polo en el cero pieza): X es el radio e Y el ángulo. <code>G15</code> vuelve a cartesianas.</p>`,
+  arco: `<h3>◠ Arco: centro, I J y R</h3><p>Un arco (<code>G2</code> horario, <code>G3</code> antihorario) se escribe con su punto final y, además, con su centro o con su radio:</p><ul><li><b>I J</b>: del inicio del arco a su centro (I = centro X − inicio X, J = centro Y − inicio Y). Son siempre incrementales, aunque el programa esté en G90.</li><li><b>R</b>: el radio. Entre dos puntos hay dos arcos del mismo radio: el corto con R positivo y el largo (más de 180°) con R negativo. Una circunferencia completa solo se puede hacer con I J.</li></ul><p>Si conoces el centro, la calculadora comprueba que esté a la misma distancia del inicio y del final: si no, el arco no existe.</p>`,
+  conv: `<h3>⇄ G90 ↔ G91</h3><p>Pega un programa y elige cómo lo quieres. En <b>G90</b> cada punto se mide desde el cero pieza; en <b>G91</b>, desde el punto anterior. La calculadora sigue el programa línea a línea y reescribe X, Y y Z; I, J y R no cambian.</p><ul><li><b>Mixta</b>: rápidos (G0) y Z en G90, cortes en G91, como en la tabla de soluciones.</li><li>«Posición al empezar»: dónde está la fresa antes de la primera línea, para el primer movimiento en G91.</li></ul><p>Es una buena forma de comprobar un programa: conviértelo y vuelve a convertirlo; si sale lo mismo, las cuentas cuadran.</p>`,
+  corte: `<h3>⚙ Velocidades de corte</h3><ul><li><b>S</b> (rpm): vueltas por minuto. <b>Vc</b> = π · Ø · S / 1000 (m/min): lo rápido que pasa el filo por la madera.</li><li><b>F</b> (mm/min) = fz · Z · S: avance de la fresa. <b>fz</b>: grueso de la viruta de cada filo.</li></ul><p>Con un fz muy pequeño la fresa roza, se calienta y quema la madera; con uno muy grande astilla o se rompe. Usa los valores del catálogo del fabricante de la fresa y no pases de sus revoluciones máximas.</p>`
+};
+function ponerAyudas() {
+  Object.entries(AYUDA_CAMPOS).forEach(([id, t]) => { const e = document.getElementById(id); if (!e) return; e.title = t; const f = e.closest('.fila'); if (f && !f.title) f.title = t; });
+  // filas con dos campos (X e Y): la ayuda de la fila habla de los dos
+  [['rX0', 'Punto de partida de la recta: X e Y desde el cero pieza.'], ['pPX', 'Polo: X e Y desde el cero pieza. Con G16, 0 0.'], ['aX1', 'Inicio del arco: X e Y desde el cero pieza.'],
+   ['aX2', 'Final del arco: X e Y desde el cero pieza (las del bloque G2/G3 en G90).'], ['aXC', 'Centro del arco: X e Y desde el cero pieza.'], ['cX0', 'Dónde está la fresa antes de la primera línea: X, Y y Z.']]
+    .forEach(([id, t]) => { const f = document.getElementById(id).closest('.fila'); if (f) f.title = t; });
+  Object.entries(AYUDA_RADIOS).forEach(([k, t]) => { const [n, v] = k.split(':'), e = document.querySelector(`input[name="${n}"][value="${v}"]`); if (e) e.closest('label').title = t; });
+  const tit = { recta: 'Proyecciones, longitud y ángulo de una recta inclinada', polar: 'Pasar de polares a X Y y al revés', arco: 'Centro, I J y R de un arco G2/G3', conv: 'Convertir un programa entre absolutas (G90), incrementales (G91) y mixta', corte: 'Revoluciones, velocidad de corte, avance y tiempo' };
+  document.querySelectorAll('.pestanas button').forEach(b => b.title = tit[b.dataset.hoja]);
+  [['cEjemplo', 'Pone un programa de ejemplo en G90'], ['cBorrar', 'Vacía el programa de entrada'], ['cCopiar', 'Copia el programa convertido al portapapeles'], ['cGuardar', 'Guarda el programa convertido como archivo .nc']].forEach(([id, t]) => { $(id).title = t; });
+  document.querySelectorAll('.dibujo').forEach(d => d.setAttribute('aria-label', 'Dibujo del cálculo'));
+}
+const RAD = Math.PI / 180;
+// número escrito por el alumno: admite coma decimal y espacios
+const leer = id => { const t = String($(id).value).trim().replace(',', '.'); const v = t === '' ? NaN : Number(t); $(id).classList.toggle('mal', !isFinite(v)); return v; };
+// número para el programa ISO: 3 decimales, sin ceros sobrantes, nunca «-0»
+const f3 = n => { if (!isFinite(n)) return '—'; const t = (+n.toFixed(3)).toString(); return t === '-0' ? '0' : t; };
+const f2 = n => { if (!isFinite(n)) return '—'; const t = (+n.toFixed(2)).toString(); return t === '-0' ? '0' : t; };
+const fEnt = n => isFinite(n) ? String(Math.round(n)) : '—';   // como en el programa: S18000
+const radio = nombre => (document.querySelector(`input[name="${nombre}"]:checked`) || {}).value;
+const normal360 = a => ((a % 360) + 360) % 360;
+function snack(t) { const s = $('snack'); s.textContent = t; s.classList.add('visible'); clearTimeout(snack.t); snack.t = setTimeout(() => s.classList.remove('visible'), 1800); }
+function copiar(t) {
+  const viejo = () => { const ta = document.createElement('textarea'); ta.value = t; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); let ok = false; try { ok = document.execCommand('copy'); } catch (e) {} ta.remove(); return ok; };
+  const fin = ok => snack(ok ? 'Copiado' : 'No se pudo copiar');
+  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(t).then(() => fin(true), () => fin(viejo())); else fin(viejo());
+}
+const res = (et, va, ud, destaca) => `<div class="res${destaca ? ' destaca' : ''}" title="${(AYUDA_RES[et] || '') + (destaca ? (AYUDA_RES[et] ? ' · ' : '') + 'Resultado calculado con tus datos' : '')}"><div class="et">${et}</div><div class="va">${va}${ud ? ` <small>${ud}</small>` : ''}</div></div>`;
+const isoLinea = (et, t) => `<div class="lineaIso" title="${AYUDA_ISO[et] || 'Bloque ISO listo para el programa'}"><span class="et">${et}</span><code>${t}</code><button class="copiar" title="Copia este bloque al portapapeles para pegarlo en el programa" data-copiar="${t.replace(/"/g, '&quot;')}">Copiar</button></div>`;
+const aviso = (tipo, t) => `<div class="aviso ${tipo}">${t}</div>`;
+document.addEventListener('click', e => { const b = e.target.closest('[data-copiar]'); if (b) copiar(b.dataset.copiar); });
+// muestra solo las filas del modo elegido (data-m="modo1 modo2")
+function mostrarModo(hoja, modo) { document.querySelectorAll(`#hoja-${hoja} [data-m]`).forEach(el => { el.style.display = el.dataset.m.split(' ').includes(modo) ? '' : 'none'; }); }
+function colores() { const cs = getComputedStyle(document.documentElement), v = n => cs.getPropertyValue(n).trim(); return { fondo: v('--campo'), ac: v('--acento'), tx: v('--texto'), sec: v('--texto-sec'), rej: v('--rejilla'), pz: v('--pieza'), aux: v('--aux'), ve: v('--verde'), na: v('--naranja'), ro: v('--rojo') }; }
+
+// ── Dibujo: encaja los puntos en el SVG (Y hacia arriba, misma escala en X e Y) ──
+function vista(svg, pts, margen) {
+  // el sistema de coordenadas del SVG es el de sus píxeles en pantalla: el texto no crece con el dibujo
+  const W = Math.max(240, Math.round(svg.clientWidth || 400)), H = Math.max(180, Math.round(svg.clientHeight || 300)), m = margen || 34;
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  let x0 = Math.min(...pts.map(p => p.x)), x1 = Math.max(...pts.map(p => p.x)), y0 = Math.min(...pts.map(p => p.y)), y1 = Math.max(...pts.map(p => p.y));
+  if (x1 - x0 < 1e-9) { x0 -= 1; x1 += 1; } if (y1 - y0 < 1e-9) { y0 -= 1; y1 += 1; }
+  const k = Math.min((W - 2 * m) / (x1 - x0), (H - 2 * m) / (y1 - y0));
+  const ox = (W - k * (x1 - x0)) / 2 - k * x0, oy = (H + k * (y1 - y0)) / 2 + k * y0;
+  const P = p => ({ x: ox + k * p.x, y: oy - k * p.y });
+  return { P, k, W, H };
+}
+const svgL = (a, b, color, ancho, extra) => `<line x1="${a.x.toFixed(1)}" y1="${a.y.toFixed(1)}" x2="${b.x.toFixed(1)}" y2="${b.y.toFixed(1)}" stroke="${color}" stroke-width="${ancho || 1.5}" ${extra || ''}/>`;
+const svgT = (p, t, ancla, clase, dx, dy) => `<text x="${(p.x + (dx || 0)).toFixed(1)}" y="${(p.y + (dy || 0)).toFixed(1)}" text-anchor="${ancla || 'middle'}" ${clase ? `class="${clase}"` : ''}>${t}</text>`;
+const svgP = (p, color, r) => `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${r || 3.5}" fill="${color}"/>`;
+const flecha = (a, b, color) => { const dx = b.x - a.x, dy = b.y - a.y, L = Math.hypot(dx, dy) || 1, ux = dx / L, uy = dy / L, s = 7; return `<path d="M${b.x.toFixed(1)} ${b.y.toFixed(1)} L${(b.x - ux * s - uy * s * .55).toFixed(1)} ${(b.y - uy * s + ux * s * .55).toFixed(1)} L${(b.x - ux * s + uy * s * .55).toFixed(1)} ${(b.y - uy * s - ux * s * .55).toFixed(1)} Z" fill="${color}"/>`; };
+// ejes que pasan por el cero pieza (si cae dentro del dibujo), tenues
+function ejes(V, c) { const o = V.P({ x: 0, y: 0 }); let s = ''; if (o.x > 0 && o.x < V.W) s += svgL({ x: o.x, y: 0 }, { x: o.x, y: V.H }, c.rej, 1); if (o.y > 0 && o.y < V.H) s += svgL({ x: 0, y: o.y }, { x: V.W, y: o.y }, c.rej, 1); return s; }
+// Símbolo del cero pieza, el mismo de los planos del Calcador: círculo con el 1.er y el 3.er cuadrante
+// rellenos y una cruz que lo atraviesa por los ejes X e Y. Se dibuja encima de todo.
+function leyendaCero(V, c) {
+  const x = V.W - 92, y = V.H - 14, r = 5.5, cuarto = a0 => { let d = `M${x} ${y}`; for (let j = 0; j <= 6; j++) { const a = a0 + Math.PI / 2 * j / 6; d += ` L${(x + r * Math.cos(a)).toFixed(1)} ${(y - r * Math.sin(a)).toFixed(1)}`; } return `<path d="${d} Z" fill="${c.sec}"/>`; };
+  return `<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="${c.sec}" stroke-width="1"/>` + cuarto(0) + cuarto(Math.PI) + svgT({ x: x + 11, y: y + 4 }, 'cero pieza', 'start', 'sec');
+}
+function simboloCero(V, c) {
+  const o = V.P({ x: 0, y: 0 }), r = 8, L = 1.7 * r;
+  if (o.x < -L || o.x > V.W + L || o.y < -L || o.y > V.H + L) return '';
+  const cuarto = a0 => { let d = `M${o.x.toFixed(1)} ${o.y.toFixed(1)}`; for (let j = 0; j <= 6; j++) { const a = a0 + Math.PI / 2 * j / 6; d += ` L${(o.x + r * Math.cos(a)).toFixed(1)} ${(o.y - r * Math.sin(a)).toFixed(1)}`; } return `<path d="${d} Z" fill="${c.tx}"/>`; };
+  return `<g class="cero"><title>Cero pieza (X0 Y0)</title><circle cx="${o.x.toFixed(1)}" cy="${o.y.toFixed(1)}" r="${r}" fill="${c.fondo}" stroke="${c.tx}" stroke-width="1.2"/>`
+    + cuarto(0) + cuarto(Math.PI)
+    + svgL({ x: o.x - L, y: o.y }, { x: o.x + L, y: o.y }, c.tx, 1.2) + svgL({ x: o.x, y: o.y - L }, { x: o.x, y: o.y + L }, c.tx, 1.2) + '</g>';
+}
+// arco del ángulo (en grados, desde +X) alrededor de un punto, en píxeles
+function arcoAngulo(c0, rpx, a0, a1, color) {
+  const n = Math.max(2, Math.ceil(Math.abs(a1 - a0) / 6)); let d = '';
+  for (let i = 0; i <= n; i++) { const a = (a0 + (a1 - a0) * i / n) * RAD; d += (i ? 'L' : 'M') + (c0.x + rpx * Math.cos(a)).toFixed(1) + ' ' + (c0.y - rpx * Math.sin(a)).toFixed(1) + ' '; }
+  return `<path d="${d}" fill="none" stroke="${color}" stroke-width="1.3"/>`;
+}
+
+// ════════════════════════════════════════════════════════════════════
+//  1 · Recta inclinada
+// ════════════════════════════════════════════════════════════════════
+function calcRecta() {
+  const modo = radio('rModo'); mostrarModo('recta', modo);
+  const x0 = leer('rX0'), y0 = leer('rY0');
+  let dx, dy, L, a, err = '';
+  if (modo === 'la') { L = leer('rL'); a = leer('rA'); dx = L * Math.cos(a * RAD); dy = L * Math.sin(a * RAD); if (L < 0) err = 'La longitud tiene que ser positiva: el sentido lo da el ángulo.'; }
+  else if (modo === 'xy') { dx = leer('rDX'); dy = leer('rDY'); L = Math.hypot(dx, dy); a = Math.atan2(dy, dx) / RAD; }
+  else if (modo === 'xa') { dx = leer('rDX'); a = leer('rA'); const c = Math.cos(a * RAD); if (Math.abs(c) < 1e-9) err = 'Con 90° o 270° la recta es vertical: ΔX es 0 y no basta para saber su longitud. Usa ΔY.'; else { L = dx / c; dy = dx * Math.tan(a * RAD); if (L < 0) err = 'El signo de ΔX no corresponde a ese ángulo (con ese ángulo la recta va hacia el otro lado).'; } }
+  else { dy = leer('rDY'); a = leer('rA'); const s = Math.sin(a * RAD); if (Math.abs(s) < 1e-9) err = 'Con 0° o 180° la recta es horizontal: ΔY es 0 y no basta para saber su longitud. Usa ΔX.'; else { L = dy / s; dx = dy / Math.tan(a * RAD); if (L < 0) err = 'El signo de ΔY no corresponde a ese ángulo (con ese ángulo la recta va hacia el otro lado).'; } }
+  const ok = !err && [dx, dy, L, a, x0, y0].every(isFinite);
+  const x1 = x0 + dx, y1 = y0 + dy;
+  $('rRes').innerHTML = ok ? res('ΔX', f3(dx), 'mm', modo !== 'xy' && modo !== 'xa') + res('ΔY', f3(dy), 'mm', modo !== 'xy' && modo !== 'ya') + res('Longitud', f3(L), 'mm', modo !== 'la')
+    + res('Ángulo', f2(a), `° (${f2(normal360(a))}°)`, modo === 'xy') + res('Punto final X', f3(x1), '', true) + res('Punto final Y', f3(y1), '', true) : '';
+  $('rIso').innerHTML = ok ? isoLinea('Absolutas', `G90 G1 X${f3(x1)} Y${f3(y1)}`) + isoLinea('Incrementales', `G91 G1 X${f3(dx)} Y${f3(dy)}`) : '';
+  $('rAviso').innerHTML = err ? aviso('mal', err) : !ok ? aviso('mal', 'Revisa los datos marcados en rojo.') : '';
+  // dibujo: triángulo de proyecciones
+  const svg = $('rSvg'); if (!ok || L < 1e-9) { svg.innerHTML = ''; return; }
+  const c = colores(), A = { x: x0, y: y0 }, B = { x: x1, y: y1 }, E = { x: x1, y: y0 };
+  const V = vista(svg, [A, B, E, { x: 0, y: 0 }], 44), a1 = V.P(A), b1 = V.P(B), e1 = V.P(E);
+  let s = ejes(V, c);
+  s += svgL(a1, e1, c.na, 1.4, 'stroke-dasharray="5 4"') + svgL(e1, b1, c.ve, 1.4, 'stroke-dasharray="5 4"');
+  s += svgL(a1, b1, c.pz, 2.6) + flecha(a1, b1, c.pz);
+  const ang0 = 0, ang1 = Math.atan2(dy, dx) / RAD;
+  s += arcoAngulo(a1, 30, ang0, ang1, c.ac) + svgT({ x: a1.x + 48 * Math.cos(ang1 / 2 * RAD), y: a1.y - 48 * Math.sin(ang1 / 2 * RAD) }, f2(a) + '°', 'middle', '', 0, 4);
+  s += svgT({ x: (a1.x + e1.x) / 2, y: e1.y }, 'ΔX = ' + f3(dx), 'middle', '', 0, dy >= 0 ? 16 : -8);
+  // ΔY junto a su cateto, por fuera; si ahí no cabe (punto final en el borde del dibujo), por dentro
+  const tY = 'ΔY = ' + f3(dy), anchoY = tY.length * 7.6, Wsvg = svg.viewBox.baseVal.width || 400;
+  const fuera = dx >= 0 ? e1.x + 8 + anchoY > Wsvg - 4 : e1.x - 8 - anchoY < 4, aDcha = (dx >= 0) !== fuera;
+  s += svgT({ x: e1.x, y: (e1.y + b1.y) / 2 }, tY, aDcha ? 'start' : 'end', '', aDcha ? 8 : -8, 4);
+  s += svgT({ x: (a1.x + b1.x) / 2, y: (a1.y + b1.y) / 2 }, 'L = ' + f3(L), dx * dy >= 0 ? 'end' : 'start', '', dx * dy >= 0 ? -8 : 8, -6);
+  const enCero = Math.hypot(x0, y0) < 1e-9;
+  s += (enCero ? '' : svgP(a1, c.tx)) + svgP(b1, c.pz) + svgT(a1, `(${f3(x0)}, ${f3(y0)})`, 'middle', 'sec', 0, dy >= 0 ? 26 : -18) + svgT(b1, `(${f3(x1)}, ${f3(y1)})`, 'middle', '', 0, dy >= 0 ? -10 : 18);
+  svg.innerHTML = s + simboloCero(V, c) + leyendaCero(V, c);
+}
+
+// ════════════════════════════════════════════════════════════════════
+//  2 · Polares
+// ════════════════════════════════════════════════════════════════════
+function calcPolar() {
+  const modo = radio('pModo'); mostrarModo('polar', modo);
+  const px = leer('pPX'), py = leer('pPY');
+  let r, a, x, y, err = '';
+  if (modo === 'pc') { r = leer('pR'); a = leer('pA'); x = px + r * Math.cos(a * RAD); y = py + r * Math.sin(a * RAD); if (r < 0) err = 'El radio tiene que ser positivo: la dirección la da el ángulo.'; }
+  else { x = leer('pX'); y = leer('pY'); r = Math.hypot(x - px, y - py); a = normal360(Math.atan2(y - py, x - px) / RAD); if (r < 1e-9) err = 'El punto está en el polo: su ángulo no está definido.'; }
+  const ok = !err && [r, a, x, y, px, py].every(isFinite);
+  const polo0 = Math.abs(px) < 1e-9 && Math.abs(py) < 1e-9;
+  $('pRes').innerHTML = ok ? (modo === 'pc' ? res('X', f3(x), '', true) + res('Y', f3(y), '', true) : res('Radio', f3(r), 'mm', true) + res('Ángulo', f2(a), `° (${f2(a > 180 ? a - 360 : a)}°)`, true))
+    + (modo === 'pc' ? res('Respecto al polo ΔX', f3(x - px)) + res('Respecto al polo ΔY', f3(y - py)) : res('Respecto al polo ΔX', f3(x - px)) + res('Respecto al polo ΔY', f3(y - py))) : '';
+  $('pIso').innerHTML = ok ? isoLinea('Cartesianas', `G90 G1 X${f3(x)} Y${f3(y)}`) + (polo0 ? isoLinea('Polares', `G90 G16 G1 X${f3(r)} Y${f2(a)}`) : '') : '';
+  $('pAviso').innerHTML = err ? aviso('mal', err) : !ok ? aviso('mal', 'Revisa los datos marcados en rojo.') : !polo0 ? aviso('ojo', 'El polo no está en el cero pieza: la línea con G16 no sirve tal cual (en la suite, G16 usa el cero pieza como polo).') : '';
+  const svg = $('pSvg'); if (!ok) { svg.innerHTML = ''; return; }
+  const c = colores(), O = { x: px, y: py }, Pt = { x, y };
+  const V = vista(svg, [O, Pt, { x: px + r * 0.25, y: py }, { x: 0, y: 0 }], 44), o1 = V.P(O), p1 = V.P(Pt);
+  let s = ejes(V, c);
+  s += svgL(o1, { x: o1.x + Math.max(60, r * V.k * 0.6), y: o1.y }, c.aux, 1.2, 'stroke-dasharray="4 4"');
+  s += svgL(o1, p1, c.pz, 2.4) + flecha(o1, p1, c.pz);
+  const aa = Math.atan2(y - py, x - px) / RAD, aDib = aa < 0 ? aa + 360 : aa;
+  s += arcoAngulo(o1, 30, 0, aDib, c.ac) + svgT({ x: o1.x + 42 * Math.cos(aDib / 2 * RAD), y: o1.y - 42 * Math.sin(aDib / 2 * RAD) }, f2(a) + '°', 'middle', '', 0, 4);
+  s += svgT({ x: (o1.x + p1.x) / 2, y: (o1.y + p1.y) / 2 }, 'r = ' + f3(r), 'end', '', -8, -6);
+  s += (polo0 ? '' : svgP(o1, c.tx)) + svgT(o1, polo0 ? 'polo = cero pieza' : 'polo', o1.x < 70 ? 'start' : 'middle', 'sec', o1.x < 70 ? 14 : 0, y >= py ? 26 : -18) + svgP(p1, c.pz) + svgT(p1, `(${f3(x)}, ${f3(y)})`, 'middle', '', 0, y >= py ? -10 : 18);
+  svg.innerHTML = s + simboloCero(V, c) + leyendaCero(V, c);
+}
+
+// ════════════════════════════════════════════════════════════════════
+//  3 · Arco
+// ════════════════════════════════════════════════════════════════════
+function calcArco() {
+  const modo = radio('aModo'), g = radio('aSent'); mostrarModo('arco', modo);
+  const x1 = leer('aX1'), y1 = leer('aY1'), x2 = leer('aX2'), y2 = leer('aY2');
+  const dx = x2 - x1, dy = y2 - y1, d = Math.hypot(dx, dy), completo = d < 1e-9;
+  let cx, cy, R, err = '', ojo = '';
+  if (modo === 'r') {
+    R = leer('aR'); const largo = radio('aLargo') === 'largo';
+    if (completo) err = 'El inicio y el final son el mismo punto: es una circunferencia completa y solo se programa con I J. Elige «Conozco el centro».';
+    else if (!(R > 0)) err = 'El radio tiene que ser mayor que 0.';
+    else if (R < d / 2 - 1e-9) err = `El radio es demasiado pequeño para unir los dos puntos: como mínimo tiene que ser la mitad de la distancia entre ellos (${f3(d / 2)} mm).`;
+    else {
+      const h = Math.sqrt(Math.max(0, R * R - d * d / 4)), mx = (x1 + x2) / 2, my = (y1 + y2) / 2, nx = -dy / d, ny = dx / d;
+      // G3 corto (o G2 largo): el centro queda a la izquierda de la cuerda (de inicio a final)
+      const izq = (g === 'G3') !== largo ? 1 : -1;
+      cx = mx + nx * h * izq; cy = my + ny * h * izq;
+    }
+  } else {
+    cx = leer('aXC'); cy = leer('aYC');
+    const R1 = Math.hypot(x1 - cx, y1 - cy), R2 = Math.hypot(x2 - cx, y2 - cy); R = R1;
+    if (R1 < 1e-9) err = 'El centro coincide con el punto inicial.';
+    else if (Math.abs(R1 - R2) > 0.01) ojo = `El centro no está a la misma distancia de los dos puntos: ${f3(R1)} mm del inicio y ${f3(R2)} mm del final. Revisa el centro o los puntos: así el arco no existe (la máquina daría error o haría otra cosa).`;
+  }
+  const ok = !err && [x1, y1, x2, y2, cx, cy, R].every(isFinite);
+  let barrido = NaN;
+  if (ok) {
+    const a1 = Math.atan2(y1 - cy, x1 - cx), a2 = Math.atan2(y2 - cy, x2 - cx);
+    let sw = a2 - a1;
+    if (g === 'G3') { while (sw <= 1e-12) sw += 2 * Math.PI; } else { while (sw >= -1e-12) sw -= 2 * Math.PI; }
+    if (completo) sw = g === 'G3' ? 2 * Math.PI : -2 * Math.PI;
+    barrido = sw / RAD;
+  }
+  const I = cx - x1, J = cy - y1, ab = Math.abs(barrido), Rsig = ab > 180 + 1e-9 ? -R : R;
+  $('aRes').innerHTML = ok ? res('Centro X', f3(cx), '', true) + res('Centro Y', f3(cy), '', true) + res('I', f3(I), '', true) + res('J', f3(J), '', true)
+    + res('R', f3(R), 'mm') + res('Ángulo del arco', f2(ab), '°') + res('Longitud del arco', f3(R * ab * RAD), 'mm') : '';
+  $('aIso').innerHTML = ok ? isoLinea('Con I J', `G90 ${g} X${f3(x2)} Y${f3(y2)} I${f3(I)} J${f3(J)}`)
+    + (completo ? '' : isoLinea('Con R', `G90 ${g} X${f3(x2)} Y${f3(y2)} R${f3(Rsig)}`))
+    + isoLinea('Incrementales', `G91 ${g} X${f3(dx)} Y${f3(dy)} I${f3(I)} J${f3(J)}`) : '';
+  $('aAviso').innerHTML = err ? aviso('mal', err) : !ok ? aviso('mal', 'Revisa los datos marcados en rojo.')
+    : (ojo ? aviso('ojo', ojo) : '') + (ab > 180 + 1e-9 && !completo ? aviso('ojo', `El arco pasa de 180° (${f2(ab)}°): con R se escribe en negativo (R${f3(Rsig)}). Con I J no hay que hacer nada especial.`) : '')
+      + (Math.abs(ab - 180) < 1e-6 ? aviso('ojo', 'Es una semicircunferencia: con R hay dos centros posibles a la misma distancia; mejor programarla con I J.') : '');
+  // dibujo
+  const svg = $('aSvg'); if (!ok) { svg.innerHTML = ''; return; }
+  const c = colores(), C0 = { x: cx, y: cy }, P1 = { x: x1, y: y1 }, P2 = { x: x2, y: y2 };
+  const pts = [C0, P1, P2], n = Math.max(12, Math.ceil(ab / 4)), a1 = Math.atan2(y1 - cy, x1 - cx), arc = [];
+  for (let i = 0; i <= n; i++) { const a = a1 + barrido * RAD * i / n; arc.push({ x: cx + R * Math.cos(a), y: cy + R * Math.sin(a) }); }
+  const todos = pts.concat(arc), xs = todos.map(p => p.x), ys = todos.map(p => p.y);
+  const tam = Math.max(Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys), 1);
+  const lejos = Math.max(Math.min(...xs) - 0, 0 - Math.max(...xs), Math.min(...ys) - 0, 0 - Math.max(...ys));
+  const conCero = lejos < 4 * tam;      // si el cero está muy lejos, el arco se vería diminuto
+  const V = vista(svg, conCero ? todos.concat([{ x: 0, y: 0 }]) : todos, 40);
+  let s = ejes(V, c);
+  // circunferencia completa, tenue
+  s += `<circle cx="${V.P(C0).x.toFixed(1)}" cy="${V.P(C0).y.toFixed(1)}" r="${(R * V.k).toFixed(1)}" fill="none" stroke="${c.rej}" stroke-width="1.2"/>`;
+  s += `<path d="${arc.map((p, i) => (i ? 'L' : 'M') + V.P(p).x.toFixed(1) + ' ' + V.P(p).y.toFixed(1)).join(' ')}" fill="none" stroke="${c.pz}" stroke-width="2.6"/>`;
+  s += flecha(V.P(arc[n - 1]), V.P(arc[n]), c.pz);
+  const c1 = V.P(C0), p1 = V.P(P1), p2 = V.P(P2), q = V.P({ x: x1 + I, y: y1 });
+  // I y J: catetos desde el inicio hasta el centro (no se dibuja el que vale 0)
+  if (Math.abs(I) > 1e-9) s += svgL(p1, q, c.na, 1.4, 'stroke-dasharray="5 4"') + svgT({ x: (p1.x + q.x) / 2, y: p1.y }, 'I = ' + f3(I), 'middle', '', 0, J >= 0 ? 16 : -8);
+  if (Math.abs(J) > 1e-9) s += svgL(q, c1, c.ve, 1.4, 'stroke-dasharray="5 4"') + svgT({ x: q.x, y: (q.y + c1.y) / 2 }, 'J = ' + f3(J), I >= 0 ? 'start' : 'end', '', I >= 0 ? 8 : -8, 4);
+  s += svgP(c1, c.tx, 3) + svgT(c1, 'centro', 'middle', 'sec', 0, -9);
+  s += svgP(p1, c.ve) + svgT(p1, 'inicio', 'middle', '', 0, 18) + svgP(p2, c.ro) + svgT(p2, 'final', 'middle', '', 0, -10);
+  s += svgT({ x: 10, y: V.H - 10 }, g === 'G3' ? 'G3 · antihorario ↺' : 'G2 · horario ↻', 'start', 'sec');
+  svg.innerHTML = s + (conCero ? simboloCero(V, c) + leyendaCero(V, c) : svgT({ x: V.W - 10, y: V.H - 10 }, 'Cero pieza fuera del dibujo', 'end', 'sec'));
+}
+
+// ════════════════════════════════════════════════════════════════════
+//  4 · Conversión G90 ↔ G91 de un programa
+// ════════════════════════════════════════════════════════════════════
+const EJEMPLO_PROG = `(PIEZA DE EJEMPLO - ABSOLUTAS)
+G90 G0 Z20
+G0 X10 Y10
+G1 Z-3 F300
+G1 X80 Y10
+G3 X100 Y30 I0 J20
+G1 X100 Y60
+G1 X10 Y60
+G1 X10 Y10
+G0 Z20
+M30`;
+function convertirPrograma(texto, modo, ini) {
+  const lin = texto.replace(/\r/g, '').split('\n'), out = [], avisos = [];
+  let abs = true, pos = { X: ini.x, Y: ini.y, Z: ini.z }, salModal = null, mov = null, polar = false;
+  lin.forEach((l, k) => {
+    // separa el código y el comentario («;…» o «(…)»)
+    let cod = l, com = '';
+    const ip = l.search(/[;(]/); if (ip >= 0) { cod = l.slice(0, ip); com = l.slice(ip); }
+    const pal = []; const re = /([A-Za-z])\s*([-+]?(?:\d+[.,]?\d*|[.,]\d+))/g; let m;
+    while ((m = re.exec(cod))) pal.push({ l: m[1].toUpperCase(), v: m[2].replace(',', '.') });
+    const resto = cod.replace(re, '').trim();
+    if (!pal.length) { out.push(l); return; }
+    if (resto) avisos.push(`Línea ${k + 1}: no se entiende «${resto}»; se ha dejado como estaba.`);
+    let gs = pal.filter(p => p.l === 'G').map(p => Math.round(+p.v));
+    if (gs.includes(16)) polar = true; if (gs.includes(15)) polar = false;
+    if (gs.includes(90)) abs = true; if (gs.includes(91)) abs = false;
+    const gm = gs.find(n => n >= 0 && n <= 3); if (gm !== undefined) mov = gm;
+    // posición nueva (en absolutas)
+    const nueva = { ...pos }, tiene = {};
+    ['X', 'Y', 'Z'].forEach(e => { const p = pal.find(q => q.l === e); if (p) { tiene[e] = true; nueva[e] = abs ? +p.v : pos[e] + +p.v; } });
+    const hayEje = tiene.X || tiene.Y || tiene.Z;
+    if (polar && (tiene.X || tiene.Y)) avisos.push(`Línea ${k + 1}: está en polares (G16); no se convierte.`);
+    // modo de salida de esta línea
+    let quiere = modo === 'G90' ? 'G90' : modo === 'G91' ? 'G91' : (mov === 0 || !(tiene.X || tiene.Y)) ? 'G90' : 'G91';
+    if (polar) quiere = abs ? 'G90' : 'G91';
+    const otrasG = gs.filter(n => n !== 90 && n !== 91).map(n => 'G' + n);
+    const partes = [];
+    const N = pal.find(p => p.l === 'N'); if (N) partes.push('N' + N.v);
+    if (hayEje && quiere !== salModal) { partes.push(quiere); salModal = quiere; }
+    else if (!hayEje && (gs.includes(90) || gs.includes(91)) && !salModal) { partes.push(abs ? 'G90' : 'G91'); salModal = abs ? 'G90' : 'G91'; }
+    partes.push(...otrasG);
+    ['X', 'Y', 'Z'].forEach(e => { if (!tiene[e]) return; partes.push(e + (polar ? f3(+pal.find(q => q.l === e).v) : f3(quiere === 'G90' ? nueva[e] : nueva[e] - pos[e]))); });
+    pal.filter(p => !'NGXYZ'.includes(p.l)).forEach(p => partes.push(p.l + p.v));
+    pos = nueva;
+    out.push(partes.join(' ') + (com ? (partes.length ? ' ' : '') + com.trim() : ''));
+  });
+  return { texto: out.join('\n'), avisos };
+}
+function calcConv() {
+  const modo = radio('cModo'), ini = { x: leer('cX0'), y: leer('cY0'), z: leer('cZ0') };
+  const ent = $('cEnt').value;
+  if (!ent.trim()) { $('cSal').value = ''; $('cAviso').innerHTML = aviso('ojo', 'Pega un programa a la izquierda (o pulsa «Ejemplo»).'); return; }
+  if (![ini.x, ini.y, ini.z].every(isFinite)) { $('cAviso').innerHTML = aviso('mal', 'Revisa la posición inicial.'); return; }
+  const r = convertirPrograma(ent, modo, ini);
+  $('cSal').value = r.texto;
+  $('cAviso').innerHTML = r.avisos.length ? aviso('ojo', r.avisos.slice(0, 6).join('<br>') + (r.avisos.length > 6 ? `<br>… y ${r.avisos.length - 6} más` : '')) : '';
+}
+
+// ════════════════════════════════════════════════════════════════════
+//  5 · Velocidades de corte
+// ════════════════════════════════════════════════════════════════════
+function calcCorte() {
+  const mS = radio('vModoS'), mF = radio('vModoF');
+  mostrarModoVarios('corte', [mS, mF]);
+  const D = leer('vD'), Z = leer('vZ');
+  let S, Vc, F, fz;
+  if (mS === 'S') { S = leer('vS'); Vc = Math.PI * D * S / 1000; } else { Vc = leer('vVc'); S = 1000 * Vc / (Math.PI * D); }
+  if (mF === 'fz') { fz = leer('vFz'); F = fz * Z * S; } else { F = leer('vF'); fz = F / (Z * S); }
+  const L = leer('vL'), L0 = leer('vL0'), F0 = leer('vF0');
+  const ok = [D, Z, S, Vc, F, fz].every(v => isFinite(v) && v > 0);
+  const t = (L / F) + (L0 > 0 && F0 > 0 ? L0 / F0 : 0);
+  const mmss = m => { if (!isFinite(m)) return '—'; const s = Math.round(m * 60); return `${Math.floor(s / 60)} min ${String(s % 60).padStart(2, '0')} s`; };
+  $('vRes').innerHTML = ok ? res('Revoluciones S', fEnt(S), 'rpm', mS === 'Vc') + res('Velocidad de corte', f2(Vc), 'm/min', mS === 'S') + res('… en m/s', f2(Vc / 60), 'm/s')
+    + res('Avance F', fEnt(F), 'mm/min', mF === 'fz') + res('Avance por diente', f3(fz), 'mm/diente', mF === 'F') + res('Avance por vuelta', f3(fz * Z), 'mm/vuelta')
+    + (isFinite(t) && L > 0 ? res('Tiempo estimado', mmss(t), '', true) : '') : '';
+  $('vIso').innerHTML = ok ? isoLinea('En el programa', `S${Math.round(S)} M03`) + isoLinea('Avance de corte', `G1 … F${Math.round(F)}`) : '';
+  let av = '';
+  if (!ok) av = aviso('mal', 'Revisa los datos marcados en rojo (todos tienen que ser mayores que 0).');
+  else {
+    if (fz < 0.05) av += aviso('ojo', `Avance por diente muy pequeño (${f3(fz)} mm): la fresa roza más que corta, se calienta y puede quemar la madera. Sube F o baja S.`);
+    if (fz > 0.6) av += aviso('ojo', `Avance por diente muy grande (${f3(fz)} mm) para una fresa de Ø${f2(D)}: riesgo de astillar o de romperla. Baja F o sube S.`);
+    if (S > 30000) av += aviso('ojo', 'Más de 30.000 rpm: comprueba las revoluciones máximas de la fresa y del cabezal.');
+    if (t > 0 && L > 0) av += `<p class="nota">El tiempo no cuenta aceleraciones, cambios de herramienta ni las bajadas: es un mínimo.</p>`;
+  }
+  $('vAviso').innerHTML = av;
+}
+function mostrarModoVarios(hoja, modos) { document.querySelectorAll(`#hoja-${hoja} [data-m]`).forEach(el => { el.style.display = el.dataset.m.split(' ').some(m => modos.includes(m)) ? '' : 'none'; }); }
+
+// ════════════════════════════════════════════════════════════════════
+//  Pestañas, guardado y tema
+// ════════════════════════════════════════════════════════════════════
+const CALC = { recta: calcRecta, polar: calcPolar, arco: calcArco, conv: calcConv, corte: calcCorte };
+const CLAVE = 'calculadora_estado';
+function guardar() {
+  try {
+    const d = { hoja: document.querySelector('.pestanas .activa').dataset.hoja, v: {}, r: {} };
+    document.querySelectorAll('input.num, textarea#cEnt').forEach(e => d.v[e.id] = e.value);
+    document.querySelectorAll('.segmento input:checked').forEach(e => d.r[e.name] = e.value);
+    localStorage.setItem(CLAVE, JSON.stringify(d));
+  } catch (e) {}
+}
+function cargar() {
+  let d = null; try { d = JSON.parse(localStorage.getItem(CLAVE) || 'null'); } catch (e) {}
+  if (!d) { $('cEnt').value = EJEMPLO_PROG; return; }
+  Object.entries(d.v || {}).forEach(([id, v]) => { if ($(id)) $(id).value = v; });
+  Object.entries(d.r || {}).forEach(([n, v]) => { const e = document.querySelector(`input[name="${n}"][value="${v}"]`); if (e) e.checked = true; });
+  if (d.hoja && CALC[d.hoja]) abrirHoja(d.hoja);
+}
+function abrirHoja(h) {
+  document.querySelectorAll('.pestanas button').forEach(b => b.classList.toggle('activa', b.dataset.hoja === h));
+  document.querySelectorAll('.hoja').forEach(s => s.classList.toggle('activa', s.id === 'hoja-' + h));
+  CALC[h]();
+}
+document.querySelectorAll('.pestanas button').forEach(b => b.addEventListener('click', () => { abrirHoja(b.dataset.hoja); guardar(); }));
+document.querySelectorAll('.hoja').forEach(s => {
+  const h = s.id.replace('hoja-', '');
+  s.addEventListener('input', () => { CALC[h](); guardar(); });
+  s.addEventListener('change', () => { CALC[h](); guardar(); });
+});
+$('cEjemplo').onclick = () => { $('cEnt').value = EJEMPLO_PROG; calcConv(); guardar(); };
+$('cBorrar').onclick = () => { $('cEnt').value = ''; calcConv(); guardar(); };
+$('cCopiar').onclick = () => { if ($('cSal').value) copiar($('cSal').value); };
+$('cGuardar').onclick = () => {
+  const t = $('cSal').value; if (!t) return;
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([t], { type: 'text/plain' }));
+  a.download = 'programa_' + ({ G90: 'G90', G91: 'G91', mix: 'mixta' }[radio('cModo')]) + '.nc'; document.body.appendChild(a); a.click(); a.remove();
+};
+// tema: el del sistema, o el que elija el usuario (se recuerda)
+function ponerTema(t) { document.documentElement.dataset.tema = t; const h = document.querySelector('.hoja.activa'); if (h) CALC[h.id.replace('hoja-', '')](); }
+(() => { let t = null; try { t = localStorage.getItem('calculadora_tema'); } catch (e) {}
+  ponerTema(t || (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'oscuro' : 'claro')); })();
+$('btnTema').onclick = () => { const t = document.documentElement.dataset.tema === 'oscuro' ? 'claro' : 'oscuro'; ponerTema(t); try { localStorage.setItem('calculadora_tema', t); } catch (e) {} };
+$('btnInfo').onclick = () => $('velo').classList.add('visible');
+function abrirAyuda() { const h = document.querySelector('.pestanas .activa').dataset.hoja; $('ayudaTexto').innerHTML = AYUDA_HOJAS[h] + '<p class="nota">Pasa el ratón por encima de cualquier campo, opción o resultado para ver qué es. Todo, con ejemplos, en el <a href="manual_calculadora.pdf" target="_blank" rel="noopener"><b>📖 manual de la Calculadora</b></a> (PDF, en la misma carpeta).</p>'; $('veloAyuda').classList.add('visible'); }
+$('btnAyuda').onclick = abrirAyuda;
+$('cerrarAyuda').onclick = () => $('veloAyuda').classList.remove('visible');
+$('veloAyuda').addEventListener('click', e => { if (e.target.id === 'veloAyuda') $('veloAyuda').classList.remove('visible'); });
+$('cerrarVelo').onclick = () => $('velo').classList.remove('visible');
+$('velo').addEventListener('click', e => { if (e.target.id === 'velo') $('velo').classList.remove('visible'); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { $('velo').classList.remove('visible'); $('veloAyuda').classList.remove('visible'); } if (e.key === 'F1') { e.preventDefault(); abrirAyuda(); } });
+
+ponerAyudas();
+cargar();
+Object.values(CALC).forEach(f => f());
+window.addEventListener('resize', () => { clearTimeout(window._rs); window._rs = setTimeout(() => { const h = document.querySelector('.hoja.activa'); if (h) CALC[h.id.replace('hoja-', '')](); }, 120); });
+</script>
+</body>
+</html>

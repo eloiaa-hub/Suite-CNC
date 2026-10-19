@@ -1,0 +1,210 @@
+{
+ "version": 7,
+ "nombre": "Inicio 102 - Rectas",
+ "vertices": [
+  {
+   "x": 0,
+   "y": 600,
+   "seg": "recta",
+   "arcAng": 180
+  },
+  {
+   "x": 520,
+   "y": 600,
+   "seg": "recta",
+   "arcAng": 180
+  },
+  {
+   "x": 520,
+   "y": 520,
+   "seg": "recta",
+   "arcAng": 180
+  },
+  {
+   "x": 800,
+   "y": 520,
+   "seg": "recta",
+   "arcAng": 180
+  },
+  {
+   "x": 800,
+   "y": 240,
+   "seg": "recta",
+   "arcAng": 180
+  },
+  {
+   "x": 500,
+   "y": 240,
+   "seg": "recta",
+   "arcAng": 180
+  },
+  {
+   "x": 500,
+   "y": 60,
+   "seg": "recta",
+   "arcAng": 180
+  },
+  {
+   "x": 0,
+   "y": 60,
+   "seg": "recta",
+   "arcAng": 180
+  }
+ ],
+ "poligonoListo": true,
+ "segModoCierre": "recta",
+ "trazadoTipoActual": "exterior",
+ "entryIdx": 0,
+ "mec": null,
+ "uid": "kmv9gofiy14cs",
+ "estrategia": "plano",
+ "wcs": {
+  "x": 0,
+  "y": 0,
+  "activo": true
+ },
+ "trazados": [],
+ "calcador": {
+  "version": 4,
+  "escala": 10,
+  "origen": {
+   "x": 0,
+   "y": 0
+  },
+  "contornos": [
+   {
+    "pts": [
+     {
+      "x": 0,
+      "y": 0
+     },
+     {
+      "x": 130,
+      "y": 0
+     },
+     {
+      "x": 130,
+      "y": 20
+     },
+     {
+      "x": 200,
+      "y": 20
+     },
+     {
+      "x": 200,
+      "y": 90
+     },
+     {
+      "x": 125,
+      "y": 90
+     },
+     {
+      "x": 125,
+      "y": 135
+     },
+     {
+      "x": 0,
+      "y": 135
+     }
+    ],
+    "b": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "cerrado": true,
+    "tipo": "auto",
+    "uid": "kmv9gofiy14cs"
+   }
+  ],
+  "cotasAjuste": {},
+  "cotasManuales": [],
+  "cfgCotas": {
+   "ver": true,
+   "nivel": "todo",
+   "incl": "proy",
+   "cero": true,
+   "entrada": true,
+   "sentido": true,
+   "centros": true,
+   "cadena": true,
+   "verOcultas": false
+  },
+  "aux": [],
+  "cfgHoja": {
+   "titulo": "Nivel 1 · Rectas · Ejercicio 2",
+   "num": "102",
+   "grupo": "",
+   "fecha": "",
+   "material": "Madera",
+   "espesor": "",
+   "herramienta": "Fresa Ø6",
+   "centro": "",
+   "orient": "h",
+   "prog": "g90",
+   "reqEntrada": false,
+   "reqSentido": false,
+   "enunciado": "Programa en código ISO el contorno de la pieza tomando como origen el cero pieza indicado en el plano.",
+   "tabla": true,
+   "rayado": false
+  },
+  "cfgMec": {
+   "T": 101,
+   "F": 1000,
+   "Fz": 300,
+   "F0": 5000,
+   "S": 12000,
+   "zSeg": 20,
+   "prof": 3,
+   "paso": 3,
+   "acab": 0,
+   "coord": "G90",
+   "comp": "G40",
+   "estr": "plano",
+   "unid": "G71",
+   "ancho": true,
+   "orden": "int"
+  },
+  "generado": {
+   "semilla": 1201,
+   "cfg": {
+    "nivel": "rectas",
+    "serieN": 25,
+    "ancho": 250,
+    "alto": 200,
+    "ocupar": 60,
+    "pMin": 1,
+    "pMax": 1,
+    "ext": [
+     "escalonada"
+    ],
+    "iMin": 0,
+    "iMax": 0,
+    "int": [
+     "rectangulo"
+    ],
+    "paso": 5,
+    "girar": false,
+    "fresa": 6,
+    "pared": 6,
+    "pEsq": 0,
+    "esq": [
+     "r",
+     "c",
+     "ch"
+    ],
+    "pLado": 0,
+    "lado": [
+     "fuera",
+     "dentro"
+    ],
+    "modInt": true
+   }
+  }
+ }
+}

@@ -1,0 +1,230 @@
+{
+ "version": 7,
+ "nombre": "Inicio 303 - Arcos sencillos",
+ "vertices": [
+  {
+   "x": 0,
+   "y": 560,
+   "seg": "recta",
+   "arcAng": 180
+  },
+  {
+   "x": 40,
+   "y": 600,
+   "seg": "arco-e",
+   "arcAng": 90
+  },
+  {
+   "x": 740,
+   "y": 600,
+   "seg": "recta",
+   "arcAng": 180
+  },
+  {
+   "x": 840,
+   "y": 500,
+   "seg": "arco-e",
+   "arcAng": 90
+  },
+  {
+   "x": 840,
+   "y": 80,
+   "seg": "recta",
+   "arcAng": 180
+  },
+  {
+   "x": 40,
+   "y": 80,
+   "seg": "recta",
+   "arcAng": 180
+  },
+  {
+   "x": 0,
+   "y": 120,
+   "seg": "arco-e",
+   "arcAng": 90
+  }
+ ],
+ "poligonoListo": true,
+ "segModoCierre": "recta",
+ "trazadoTipoActual": "exterior",
+ "entryIdx": 0,
+ "mec": null,
+ "uid": "kmv9gofmhzw9d",
+ "estrategia": "plano",
+ "wcs": {
+  "x": 0,
+  "y": 0,
+  "activo": true
+ },
+ "trazados": [],
+ "calcador": {
+  "version": 4,
+  "escala": 10,
+  "origen": {
+   "x": 0,
+   "y": 0
+  },
+  "contornos": [
+   {
+    "pts": [
+     {
+      "x": 0,
+      "y": 10
+     },
+     {
+      "x": 10,
+      "y": 0
+     },
+     {
+      "x": 185,
+      "y": 0
+     },
+     {
+      "x": 210,
+      "y": 25
+     },
+     {
+      "x": 210,
+      "y": 130
+     },
+     {
+      "x": 10,
+      "y": 130
+     },
+     {
+      "x": 0,
+      "y": 120
+     }
+    ],
+    "b": [
+     -0.41421356237309503,
+     0,
+     -0.41421356237309503,
+     0,
+     0,
+     -0.41421356237309503,
+     0
+    ],
+    "cerrado": true,
+    "tipo": "auto",
+    "forma": {
+     "tipo": "rectangulo",
+     "c": {
+      "x": 105,
+      "y": 65
+     },
+     "w": 210,
+     "h": 130,
+     "rot": 0,
+     "esq": [
+      {
+       "t": "c",
+       "r": 10
+      },
+      {
+       "t": "c",
+       "r": 25
+      },
+      {
+       "t": "v",
+       "r": 0
+      },
+      {
+       "t": "c",
+       "r": 10
+      }
+     ]
+    },
+    "uid": "kmv9gofmhzw9d"
+   }
+  ],
+  "cotasAjuste": {},
+  "cotasManuales": [],
+  "cfgCotas": {
+   "ver": true,
+   "nivel": "todo",
+   "incl": "proy",
+   "cero": true,
+   "entrada": true,
+   "sentido": true,
+   "centros": true,
+   "cadena": true,
+   "verOcultas": false
+  },
+  "aux": [],
+  "cfgHoja": {
+   "titulo": "Nivel 3 · Arcos sencillos · Ejercicio 3",
+   "num": "303",
+   "grupo": "",
+   "fecha": "",
+   "material": "Madera",
+   "espesor": "",
+   "herramienta": "Fresa Ø6",
+   "centro": "",
+   "orient": "h",
+   "prog": "g90",
+   "reqEntrada": false,
+   "reqSentido": false,
+   "enunciado": "Programa en código ISO el contorno de la pieza tomando como origen el cero pieza indicado en el plano.",
+   "tabla": true,
+   "rayado": false
+  },
+  "cfgMec": {
+   "T": 101,
+   "F": 1000,
+   "Fz": 300,
+   "F0": 5000,
+   "S": 12000,
+   "zSeg": 20,
+   "prof": 3,
+   "paso": 3,
+   "acab": 0,
+   "coord": "G90",
+   "comp": "G40",
+   "estr": "plano",
+   "unid": "G71",
+   "ancho": true,
+   "orden": "int"
+  },
+  "generado": {
+   "semilla": 3134,
+   "cfg": {
+    "nivel": "tangentes",
+    "serieN": 25,
+    "ancho": 250,
+    "alto": 200,
+    "ocupar": 60,
+    "pMin": 1,
+    "pMax": 1,
+    "ext": [
+     "rectangulo",
+     "ranura"
+    ],
+    "iMin": 0,
+    "iMax": 0,
+    "int": [
+     "rectangulo",
+     "circulo",
+     "ranura"
+    ],
+    "paso": 5,
+    "girar": false,
+    "fresa": 6,
+    "pared": 6,
+    "pEsq": 45,
+    "esq": [
+     "r",
+     "c",
+     "ch"
+    ],
+    "pLado": 0,
+    "lado": [
+     "fuera",
+     "dentro"
+    ],
+    "modInt": true
+   }
+  }
+ }
+}

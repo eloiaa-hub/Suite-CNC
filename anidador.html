@@ -1,0 +1,1555 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anidador de tableros — Por Eloi A.A.</title>
+<meta name="description" content="Coloca varias piezas en un tablero (piezas del Calcador o una lista de despiece) y prepara el proyecto para mecanizarlo con el Calcador.">
+<style>
+  :root {
+    --acento: #005A9C; --acento-suave: rgba(0,90,156,.10); --fondo: #eef2f6; --panel: #ffffff; --texto: #1d2733; --texto-sec: #5b6878;
+    --borde: #d7dee7; --sombra: 0 6px 22px rgba(20,40,70,.10); --verde: #00897b; --naranja: #c8741a; --rojo: #c0392b;
+    --campo: #f7f9fb; --madera: #ead7b3; --madera-borde: #b8956a; --pieza: #1e6fd9; --pieza-relleno: rgba(30,111,217,.10); --interior: #d64545; --canto: #e09a00;
+  }
+  :root[data-tema="oscuro"] {
+    --acento: #5aa9e6; --acento-suave: rgba(90,169,230,.14); --fondo: #14181d; --panel: #1d232a; --texto: #e6ebf0; --texto-sec: #9aa7b5;
+    --borde: #2e3843; --sombra: 0 6px 22px rgba(0,0,0,.35); --verde: #4dd0c4; --naranja: #f0a35e; --rojo: #ef7b6e;
+    --campo: #161b21; --madera: #5a4a33; --madera-borde: #8a6f4a; --pieza: #6cb4ff; --pieza-relleno: rgba(108,180,255,.14); --interior: #ff8a8a; --canto: #ffc24d;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Segoe UI', system-ui, -apple-system, Roboto, Arial, sans-serif; background: var(--fondo); color: var(--texto); line-height: 1.45; }
+  .barra { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 10px; padding: 9px 16px; background: var(--panel); border-bottom: 1px solid var(--borde); }
+  .barra h1 { margin: 0; font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .barra a.casa { text-decoration: none; color: inherit; opacity: .75; font-size: 16px; }
+  .ver { font-size: 11px; font-weight: 600; padding: 1px 7px; border-radius: 9px; background: var(--acento-suave); color: var(--acento); }
+  .barra button { border: 1px solid var(--borde); background: var(--panel); color: var(--texto); border-radius: 8px; padding: 5px 10px; font-size: 14px; cursor: pointer; }
+  .barra button:hover { border-color: var(--acento); }
+  .envoltura { max-width: 1400px; margin: 0 auto; padding: 16px; display: grid; grid-template-columns: 548px 1fr; gap: 16px; align-items: start; }
+  @media (max-width: 980px) { .envoltura { grid-template-columns: minmax(0, 1fr); } }
+  .caja { background: var(--panel); border: 1px solid var(--borde); border-radius: 14px; padding: 14px 16px; box-shadow: var(--sombra); }
+  .caja + .caja { margin-top: 14px; }
+  .caja h2 { margin: 0 0 10px; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--texto-sec); display: flex; align-items: center; gap: 8px; }
+  .caja h2 .mas { margin-left: auto; text-transform: none; letter-spacing: 0; }
+  .fila { display: flex; align-items: center; gap: 8px; margin: 6px 0; }
+  .fila > label { flex: 1; font-size: 14px; }
+  .fila > label small { color: var(--texto-sec); }
+  .par { display: flex; gap: 6px; }
+  input.num, input.txt, select { font: inherit; color: var(--texto); background: var(--campo); border: 1px solid var(--borde); border-radius: 8px; padding: 5px 8px; }
+  input.num { width: 84px; text-align: right; font-family: Consolas, 'Courier New', monospace; }
+  input.num.mal { border-color: var(--rojo); }
+  input.num:focus, input.txt:focus, select:focus { outline: 2px solid var(--acento-suave); border-color: var(--acento); }
+  .nota { font-size: 12.5px; color: var(--texto-sec); margin: 8px 0 0; }
+  .boton { border: 1px solid var(--acento); background: var(--acento); color: #fff; border-radius: 8px; padding: 7px 12px; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .boton.sec { background: transparent; color: var(--acento); }
+  .boton:hover { filter: brightness(1.08); }
+  .boton:disabled { opacity: .45; cursor: default; filter: none; }
+  .chico { border: 1px solid var(--borde); background: var(--panel); color: var(--acento); border-radius: 7px; padding: 3px 9px; font-size: 12.5px; cursor: pointer; }
+  .chico:hover { border-color: var(--acento); }
+  .botones { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  /* lista de piezas */
+  .piezas { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  .piezas th { font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--texto-sec); text-align: left; padding: 4px 4px; border-bottom: 1px solid var(--borde); font-weight: 600; }
+  .piezas td { padding: 3px 4px; border-bottom: 1px solid var(--borde); vertical-align: middle; }
+  .piezas input.num { width: 58px; padding: 3px 5px; }
+  .piezas input.cant { width: 40px; }
+  .piezas input.txt { width: 100%; min-width: 64px; padding: 3px 6px; }
+  .piezas .origen { font-size: 11px; color: var(--texto-sec); }
+  .piezas .medida { font-family: Consolas, monospace; font-size: 12.5px; white-space: nowrap; }
+  .piezas tr.sinColocar td:first-child { box-shadow: inset 3px 0 var(--rojo); }
+  .tablaPiezas { overflow-x: auto; margin: 0 -4px; padding: 0 4px; }
+  @media (max-width: 520px) { .piezas input.num { width: 54px; } .piezas input.cant { width: 38px; } .piezas input.txt { min-width: 64px; } .caja h2 { flex-wrap: wrap; } .envoltura { padding: 12px; } }
+  .quitar { border: none; background: none; color: var(--texto-sec); cursor: pointer; font-size: 15px; padding: 2px 4px; }
+  .quitar:hover { color: var(--rojo); }
+  .vacia { color: var(--texto-sec); font-size: 13.5px; padding: 10px 2px; }
+  /* vista del tablero */
+  .tableros { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+  .tableros button { border: 1px solid var(--borde); background: var(--panel); color: var(--texto-sec); border-radius: 9px; padding: 6px 12px; font-size: 13.5px; font-weight: 600; cursor: pointer; }
+  .tableros button.activo { background: var(--acento); border-color: var(--acento); color: #fff; }
+  .tableros .nuevoTab { display: none; border-style: dashed; }
+  .tableros.arrastrando .nuevoTab { display: inline-block; }
+  .tableros.arrastrando button:not(.activo) { border-color: var(--acento); color: var(--acento); }
+  .tableros button.destino { outline: 3px solid var(--acento); outline-offset: 1px; background: var(--acento-suave); }
+  #vista { width: 100%; height: min(62vh, 640px); display: block; background: var(--campo); border: 1px solid var(--borde); border-radius: 10px; }
+  #vista text { font-family: 'Segoe UI', system-ui, sans-serif; fill: var(--texto); paint-order: stroke; stroke: var(--campo); stroke-width: 3px; }
+  #vista .pz:hover path.contorno { stroke-width: 2.6; }
+  .datos { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin-top: 10px; }
+  .dato { background: var(--campo); border: 1px solid var(--borde); border-radius: 10px; padding: 7px 10px; }
+  .dato .et { font-size: 11px; color: var(--texto-sec); text-transform: uppercase; letter-spacing: .05em; }
+  .dato .va { font-family: Consolas, monospace; font-size: 17px; font-weight: 700; }
+  .aviso { margin: 10px 0 0; padding: 8px 10px; border-radius: 8px; font-size: 13.5px; border: 1px solid; }
+  .aviso.mal { color: var(--rojo); border-color: var(--rojo); }
+  .aviso.ojo { color: var(--naranja); border-color: var(--naranja); }
+  .aviso.bien { color: var(--verde); border-color: var(--verde); }
+  .velo { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: none; align-items: center; justify-content: center; z-index: 20; padding: 16px; }
+  .velo.visible { display: flex; }
+  .ventana { background: var(--panel); color: var(--texto); border-radius: 14px; max-width: 640px; width: 100%; max-height: 86vh; overflow: auto; padding: 20px 22px; box-shadow: var(--sombra); }
+  .ventana h3 { margin: 0 0 10px; } .ventana h4 { margin: 14px 0 4px; }
+  .ventana p, .ventana li { font-size: 14px; }
+  .ventana code { background: var(--campo); padding: 1px 5px; border-radius: 5px; }
+  .ventana pre { background: var(--campo); border: 1px solid var(--borde); border-radius: 8px; padding: 8px 10px; font-size: 13px; overflow-x: auto; }
+  .snack { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); background: #263238; color: #fff; padding: 8px 16px; border-radius: 8px; font-size: 14px; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 30; max-width: 90vw; }
+  .snack.visible { opacity: 1; }
+  .soltar { outline: 3px dashed var(--acento); outline-offset: -6px; }
+  #vista { touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+  #vista .pz { cursor: grab; touch-action: none; } #vista .asa { touch-action: none; }
+  #vista .pz.arrastrando { cursor: grabbing; opacity: .85; }
+  #vista .pz.mal .caja { stroke: var(--rojo); stroke-opacity: 1; stroke-dasharray: none; stroke-width: 2; fill: var(--rojo); fill-opacity: .22; }
+  #vista .pz.mal path.contorno { stroke: var(--rojo); }
+  #vista .pz.sel .caja { stroke-opacity: .95; stroke-width: 1.6; }
+  #vista .pz .caja.marco { fill: none !important; pointer-events: none; stroke-width: 1 !important; }
+  #vista .asa { fill: var(--panel); stroke: var(--acento); stroke-width: 1.5; }
+  #vista .asa-nw, #vista .asa-se { cursor: nwse-resize; } #vista .asa-ne, #vista .asa-sw { cursor: nesw-resize; }
+  #vista .asa-e, #vista .asa-w { cursor: ew-resize; } #vista .asa-n, #vista .asa-s { cursor: ns-resize; }
+  #vista .pin { cursor: pointer; }
+  .piezas .transf { color: var(--acento); font-weight: 600; }
+  .piezas select { font: inherit; font-size: 12.5px; color: var(--texto); background: var(--campo); border: 1px solid var(--borde); border-radius: 7px; padding: 3px 2px; }
+  .piezas select.color { color: #fff; font-weight: 600; width: 78px; border-color: transparent; }
+  .piezas td:nth-child(n+2) { padding-left: 2px; padding-right: 2px; }
+  /* cantos */
+  .piezas .cantos { padding: 0 2px; text-align: center; white-space: nowrap; }
+  .mini { width: 38px; height: 26px; display: inline-block; vertical-align: middle; cursor: pointer; }
+  .mini .lado { stroke: var(--borde); stroke-width: 2; stroke-dasharray: 2 2; }
+  .mini .lado.on { stroke: var(--canto); stroke-width: 4; stroke-dasharray: none; }
+  .mini .toque { stroke: transparent; stroke-width: 9; }
+  .mini .toque:hover + .lado, .mini .lado:hover { stroke: var(--acento); }
+  .mini .fondo { fill: var(--campo); stroke: none; }
+  .piezas select.tcanto { width: 64px; font-size: 11px; padding: 2px 1px; }
+  .coste .fila > label { font-size: 13.5px; }
+  .tcantos { width: 100%; border-collapse: collapse; font-size: 13px; margin: 2px 0 6px; }
+  .tcantos td { padding: 2px 3px; } .tcantos input.txt { width: 100%; padding: 3px 6px; } .tcantos input.num { width: 70px; padding: 3px 6px; }
+  .resumen { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-top: 10px; }
+  .resumen th { text-align: left; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--texto-sec); padding: 4px 4px; border-bottom: 1px solid var(--borde); }
+  .resumen td { padding: 4px 4px; border-bottom: 1px solid var(--borde); vertical-align: top; }
+  .resumen td.n { text-align: right; font-family: Consolas, monospace; white-space: nowrap; }
+  .resumen td small { color: var(--texto-sec); }
+  .resumen tr.total td { font-weight: 700; border-bottom: none; border-top: 2px solid var(--borde); }
+  .exportar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; font-size: 13px; color: var(--texto-sec); }
+</style>
+</head>
+<body>
+<div class="barra">
+  <h1><a class="casa" href="index.html" title="Portada de las herramientas">⌂</a> 🪵 Anidador de tableros — Por Eloi A.A. <span class="ver" title="Versión del programa">v8</span></h1>
+  <button id="btnAyuda" title="Cómo se usa el Anidador (F1)">❓ Ayuda</button>
+  <button id="btnTema" title="Modo claro / oscuro">🌓</button>
+  <button id="btnInfo" title="Créditos y licencias">ℹ</button>
+</div>
+
+<div class="envoltura" id="zona">
+  <div>
+    <div class="caja">
+      <h2>Tablero</h2>
+      <div class="fila" title="Medida del tablero en X (a lo largo de la veta, si la tiene)"><label>Largo <small>(X, mm)</small></label><input class="num" inputmode="decimal" id="tL" value="1000"></div>
+      <div class="fila" title="Medida del tablero en Y"><label>Ancho <small>(Y, mm)</small></label><input class="num" inputmode="decimal" id="tA" value="600"></div>
+      <div class="fila" title="Grueso del tablero. La profundidad de corte del proyecto será el grosor más lo que pase al martiriño"><label>Grosor <small>(mm)</small></label><input class="num" inputmode="decimal" id="tG" value="16"></div>
+      <div class="fila" title="Cuánto baja la fresa por debajo del tablero para cortar del todo (en el martiriño)"><label>Corte pasante <small>(mm más)</small></label><input class="num" inputmode="decimal" id="tP" value="0.5"></div>
+      <div class="fila" title="Franja libre en el borde del tablero, donde no se colocan piezas (para sujetarlo y por si el borde no está sano)"><label>Margen del borde <small>(mm)</small></label><input class="num" inputmode="decimal" id="tM" value="10"></div>
+      <div class="fila" title="Dónde está el cero pieza (X0 Y0) del proyecto: en qué esquina del tablero"><label>Cero pieza</label>
+        <select id="tCero"><option value="ii">Esquina inferior izquierda</option><option value="si">Esquina superior izquierda</option><option value="id">Esquina inferior derecha</option><option value="sd">Esquina superior derecha</option><option value="c">Centro del tablero</option></select></div>
+      <div class="fila" title="Con veta, las piezas marcadas «veta» no se giran: su largo va siempre a lo largo del tablero (en X)"><label>El tablero tiene veta <small>(a lo largo, en X)</small></label><input type="checkbox" id="tVeta" checked></div>
+      <div class="fila" title="Cómo se colocan las piezas. Por su rectángulo: rápido, y lo mejor para piezas rectangulares. Por su forma real: las piezas curvas se encajan unas junto a otras y las pequeñas aprovechan los huecos de las grandes (también al colocarlas a mano). Siempre con la separación de la fresa entre piezas"><label>Colocar las piezas</label>
+        <select id="tModo"><option value="rect">Por su rectángulo</option><option value="forma">Por su forma real</option></select></div>
+    </div>
+
+    <div class="caja">
+      <h2>Fresa y separación</h2>
+      <div class="fila" title="Fresa de la base de herramientas compartida (la misma del Calcador y los Simuladores). Su diámetro decide la separación entre piezas"><label>Fresa</label><select id="hSel"></select></div>
+      <div class="fila" title="Diámetro de la fresa que corta las piezas"><label>Diámetro <small>(mm)</small></label><input class="num" inputmode="decimal" id="hD" value="6"></div>
+      <div class="fila" title="Madera que queda entre el corte de una pieza y el de la siguiente (además del ancho de la fresa)"><label>Holgura entre cortes <small>(mm)</small></label><input class="num" inputmode="decimal" id="hH" value="4"></div>
+      <p class="nota" id="notaSep"></p>
+    </div>
+
+    <div class="caja">
+      <h2>Piezas <span class="mas"><button class="chico" id="btnAbrir" title="Abre piezas del Calcador (.json), un tablero guardado por el Anidador (.json, para seguir editándolo) o una lista de despiece (.csv). Puedes elegir varios archivos a la vez o arrastrarlos aquí">📂 Abrir…</button> <button class="chico" id="btnRect" title="Añade una pieza rectangular (escribe su nombre y sus medidas en la lista)">＋ Rectángulo</button></span></h2>
+      <input type="file" id="archivo" accept=".json,.csv,.txt" multiple hidden>
+      <div class="tablaPiezas"><table class="piezas"><thead><tr>
+        <th title="Nombre de la pieza">Pieza</th><th title="Medida a lo largo de la veta (en X si no se gira)">Largo</th><th title="Medida a lo ancho">Ancho</th><th title="Cuántas piezas iguales">Ud.</th><th title="Giro de la pieza, de 90 en 90° (antihorario). Auto: el anidador la gira si cabe mejor">Giro</th><th title="Color con el que se dibuja la pieza">Color</th><th title="Veta: la pieza no se gira (su largo va en X). Sin veta, el anidador la puede girar 90° si cabe mejor">Veta</th><th title="Cantos: clic en cada lado del dibujo para ponerle o quitarle canto (los dos largos abajo y arriba, los dos anchos a los lados). En las piezas del Calcador, clic para poner canto en todo su contorno exterior">Cantos</th><th></th>
+      </tr></thead><tbody id="lista"></tbody></table></div>
+      <div class="vacia" id="listaVacia">No hay piezas. Abre piezas del Calcador (.json), una lista de despiece (.csv) o añade rectángulos. También puedes arrastrar los archivos aquí.</div>
+      <div class="botones">
+        <button class="chico" id="btnPlantilla" title="Descarga una lista de despiece de ejemplo (.csv) para rellenarla en Excel o LibreOffice">⬇ Plantilla CSV</button>
+        <button class="chico" id="btnCSV" title="Guarda las piezas rectangulares de la lista como despiece (.csv)">⬇ Lista (CSV)</button>
+        <button class="chico" id="btnVaciar" title="Quita todas las piezas de la lista">🗑 Vaciar</button>
+      </div>
+    </div>
+
+    <div class="caja coste">
+      <h2>Cantos y coste <span class="mas"><button class="chico" id="btnCoste" title="Descarga el despiece con los cantos y el resumen de material, tiempo y coste (.csv, para Excel o LibreOffice)">⬇ Despiece y coste (CSV)</button></span></h2>
+      <div class="fila" title="Precio de un tablero entero como el de arriba (€). Vacío: no se cuenta"><label>Precio del tablero <small>(€/ud.)</small></label><input class="num" inputmode="decimal" id="cTablero" placeholder="€"></div>
+      <div style="font-size:13.5px;margin-top:8px" title="Los tipos de canto que usas, con su precio por metro. Si hay más de uno, cada pieza elige el suyo en la lista">Cantos <small style="color:var(--texto-sec)">(tipo y €/m)</small> <button class="chico" id="btnTipoCanto" title="Añade otro tipo de canto (por ejemplo, de otro grueso o color)">＋ Tipo</button></div>
+      <table class="tcantos"><tbody id="tiposCanto"></tbody></table>
+      <div class="fila" title="Lo que se añade a cada tramo de canto para poder recortarlo (en la canteadora se corta un poco más largo que la pieza)"><label>Exceso por tramo de canto <small>(mm)</small></label><input class="num" inputmode="decimal" id="cExceso" value="20"></div>
+      <div class="fila" title="Precio de la hora de máquina (€/h). Vacío: no se cuenta"><label>Hora de máquina <small>(€/h)</small></label><input class="num" inputmode="decimal" id="cMaquina" placeholder="€/h"></div>
+      <div class="fila" title="Avance de corte para estimar el tiempo. Vacío: el de la fresa elegida (o 1000 mm/min)"><label>Avance de corte F <small>(mm/min)</small></label><input class="num" inputmode="decimal" id="cF"></div>
+      <div class="fila" title="Profundidad que baja la fresa en cada pasada: con un tablero de 16 mm y 6 mm por pasada, son 3 pasadas. Vacío: la de la fresa elegida (o 6 mm)"><label>Bajada por pasada <small>(mm)</small></label><input class="num" inputmode="decimal" id="cPaso"></div>
+      <div class="fila" title="Tiempo de poner, fijar y quitar cada tablero en la máquina (min). Se suma al tiempo de máquina. Vacío: no se cuenta"><label>Carga y descarga <small>(min/tablero)</small></label><input class="num" inputmode="decimal" id="cCarga" placeholder="min"></div>
+      <div id="resumen"></div>
+      <p class="nota">Cantos: en la lista, clic en cada lado del dibujo de la pieza. El tiempo es una estimación para comparar: la máquina real tarda algo más.</p>
+    </div>
+  </div>
+
+  <div>
+    <div class="caja">
+      <h2>Tableros</h2>
+      <div class="tableros" id="tableros"></div>
+      <svg id="vista" viewBox="0 0 800 500"></svg>
+      <div class="datos" id="datos"></div>
+      <div id="avisos"></div>
+      <div class="botones">
+        <button class="boton" id="btnCalcador" title="Abre este tablero en el Calcador, con todas sus piezas colocadas. Allí puedes revisarlo y sacar el programa con ⚙️ Mecanizar">➜ Abrir en el Calcador</button>
+        <button class="boton sec" id="btnJSON" title="Guarda este tablero como proyecto del Calcador (.json)">💾 Guardar tablero (.json)</button>
+        <button class="boton sec" id="btnTodos" title="Guarda todos los tableros, cada uno en su .json">💾 Todos los tableros</button>
+        <button class="boton sec" id="btnSoltar" title="Suelta todas las piezas colocadas a mano (📌): el anidador las vuelve a colocar todas">📌 Soltar todas</button>
+      </div>
+      <div class="exportar"><span title="Exporta el tablero que estás viendo (elígelo arriba con sus pestañas)">Exportar este tablero:</span>
+        <button class="chico" id="btnPNG" title="Imagen del tablero que estás viendo (.png), con las piezas, sus nombres y el cero pieza. Para la memoria o para imprimir">⬇ PNG</button>
+        <button class="chico" id="btnSVG" title="Dibujo vectorial del tablero que estás viendo (.svg), a escala real en mm. Se abre en Inkscape, LibreOffice Draw o el navegador">⬇ SVG</button>
+        <button class="chico" id="btnDXF" title="Plano del tablero que estás viendo (.dxf, R12) en mm, con el cero pieza del proyecto como origen y una capa por tipo (tablero, exterior, interior, grabado, cajera, nombres). Se abre en CAD (LibreCAD, AutoCAD…) o en el Calcador">⬇ DXF</button>
+      </div>
+      <p class="nota">Las piezas se colocan por su rectángulo envolvente o, con «Colocar las piezas: por su forma real», encajadas por su contorno (las pequeñas, también en los huecos de las grandes), siempre con la separación de la fresa entre ellas. Con el ratón, sobre cada pieza: <b>arrástrala</b> para colocarla a mano (📌), <b>doble clic</b> para girarla 90° y las <b>asas</b> de la pieza seleccionada para cambiar su escala. El programa de la máquina se saca en el Calcador con ⚙️ Mecanizar.</p>
+    </div>
+  </div>
+</div>
+
+<div class="velo" id="veloInfo"><div class="ventana" role="dialog" aria-modal="true">
+  <h3>🪵 Anidador de tableros <span class="ver">v8</span></h3>
+  <p>Parte de las <b>Herramientas CNC</b> (Suite CNC 2026.10) · © 2026 Eloi A.A.</p>
+  <p>Programa: <b>European Union Public Licence v. 1.2 (EUPL-1.2)</b>, archivo <code>LICENSE</code>. No usa bibliotecas de terceros: funciona en el navegador, sin instalar nada y sin conexión.</p>
+  <p>Las piezas y el tablero se guardan solo en este navegador. Nada se envía a ningún sitio.</p>
+  <p style="text-align:right"><button class="chico" data-cerrar>Cerrar</button></p>
+</div></div>
+<div class="velo" id="veloAyuda"><div class="ventana" role="dialog" aria-modal="true">
+  <h3>🪵 Cómo se usa el Anidador</h3>
+  <p>Coloca varias piezas en un tablero para cortarlas de una vez. El resultado es un <b>proyecto del Calcador</b> con todas las piezas en su sitio: ábrelo en el Calcador, revísalo y saca el programa con <b>⚙️ Mecanizar</b>.</p>
+  <h4>1. El tablero</h4>
+  <p>Sus medidas, el grosor (la profundidad de corte será el grosor más el corte pasante), el margen libre en el borde y dónde quieres el cero pieza.</p>
+  <h4>2. La fresa</h4>
+  <p>Elige la fresa de la base de herramientas (o escribe su diámetro). Entre pieza y pieza se deja el diámetro de la fresa más la holgura, para que los dos cortes no se toquen.</p>
+  <h4>3. Las piezas</h4>
+  <ul>
+    <li><b>Piezas del Calcador (.json)</b>: cualquier proyecto guardado con 💾 Guardar (.json). Lleva todo: arcos, agujeros, cajeras, grabados, puentes y entradas. Si un archivo tiene varias piezas, se colocan juntas, como un bloque.</li>
+    <li><b>Lista de despiece (.csv)</b>: piezas rectangulares, una por línea, como en Excel o LibreOffice:
+      <pre>nombre;largo;ancho;cantidad;veta;canto largo;canto ancho;tipo de canto
+Costado;720;400;2;sí;1;0;PVC 2 mm
+Balda;560;380;3;sí;1;0;PVC 2 mm
+Trasera;720;560;1;no;0;0;</pre>
+      Separa con punto y coma (o comas, o tabuladores). Con punto y coma, los decimales pueden llevar coma. La primera línea de títulos es opcional (sin ella, las columnas van en este orden); las de cantos, también.</li>
+    <li><b>Un tablero guardado por el Anidador</b> (💾 Guardar tablero .json): se abre con sus piezas <b>por separado</b>, cada una colocada donde estaba (📌) y con su giro, y con las medidas del tablero. Así puedes seguir editándolo: mover, girar, escalar o soltar piezas.</li>
+    <li><b>＋ Rectángulo</b>: añade una pieza rectangular a mano.</li>
+  </ul>
+  <p>En la lista cambias el nombre, las medidas (solo de los rectángulos), la cantidad, el giro, el color y la <b>veta</b>: con veta el anidador no gira la pieza y su largo va a lo largo del tablero; sin veta la puede girar 90° si así cabe mejor. Los DXF se abren antes en el Calcador (de fondo, para calcarlos) y se guardan como .json.</p>
+  <h4>Giro y color en la lista</h4>
+  <p><b>Giro</b>: <i>Auto</i> deja la pieza sin girar y el anidador la gira 90° si así cabe mejor (salvo con veta); 0°, 90°, 180° o 270° (antihorario) la fijan así. <b>Color</b>: el color con el que se dibuja la pieza, para distinguirla de las demás (también en el PNG y el SVG). Cada pieza nueva sale de un color distinto.</p>
+  <h4>Por su rectángulo o por su forma real</h4>
+  <p>En <b>Colocar las piezas</b> (caja del tablero) eliges cómo se colocan. <b>Por su rectángulo</b>: cada pieza ocupa su rectángulo envolvente; es lo más rápido y lo mejor para piezas rectangulares. <b>Por su forma real</b>: las piezas se encajan por su contorno, unas junto a otras, y las pequeñas aprovechan los <b>huecos</b> de las grandes; aprovecha mucho mejor el tablero con piezas curvas del Calcador. Siempre queda la separación de la fresa entre dos piezas. Si con la forma real no sale mejor (por ejemplo, con todo rectángulos), se usa el anidado por rectángulos. Con la forma real también puedes <b>colocar a mano</b> una pieza dentro del hueco de otra.</p>
+  <p>Una pieza dentro del hueco de otra se corta <b>antes</b> que ese hueco: en el Calcador, ⚙️ Mecanizar corta de dentro afuera (la pieza del hueco, después el hueco y al final el exterior).</p>
+  <h4>Colocar a mano con el ratón</h4>
+  <p>Todo se hace sobre el <b>rectángulo envolvente</b> de cada pieza (el recuadro de color), aunque la pieza sea curva:</p>
+  <ul>
+    <li><b>Arrastrar</b>: la colocas donde quieras. Se pega a los márgenes y a las demás piezas, a la distancia de separación (con <b>Alt</b>, sin imán). Queda <b>fijada 📌</b> y el anidador coloca las demás alrededor. Si se pone roja, ahí no cabe.</li>
+    <li><b>Doble clic</b>: la gira 90° antihorario sobre su centro (con <b>Mayús</b>, horario; también la tecla <b>R</b> con la pieza seleccionada). Gira solo esa unidad, que queda fijada.</li>
+    <li><b>Clic</b>: la selecciona y aparecen sus <b>asas</b>. Las de las esquinas cambian la escala en proporción, desde la esquina contraria (con <b>Alt</b>, desde el centro), en % enteros (con <b>Mayús</b>, en décimas). En los rectángulos, las de los lados cambian el largo o el ancho en mm. La escala vale para todas las unidades de esa pieza.</li>
+    <li><b>Pasar a otro tablero</b>: arrástrala hasta la pestaña de ese tablero (o hasta <b>＋ Tablero nuevo</b>, que aparece mientras arrastras). Queda colocada en el primer hueco libre y se ve ese tablero; ahí la mueves a su sitio. Un tablero que se queda sin piezas desaparece.</li>
+    <li><b>📌 Chincheta</b>: clic en ella para soltar la pieza; <b>📌 Soltar todas</b>, para soltarlas todas. <b>Esc</b> quita la selección.</li>
+  </ul>
+  <h4>Cantos</h4>
+  <p>En la columna <b>Cantos</b> de la lista, clic en cada lado del dibujo de la pieza para ponerle o quitarle canto: abajo y arriba, los dos <b>largos</b> (L1 y L2); a los lados, los dos <b>anchos</b> (A1 y A2). En las piezas del Calcador, un clic pone canto en todo su <b>contorno exterior</b>. En el tablero, los lados con canto se ven en amarillo, también con la pieza girada: así sabes qué canto va en cada lado al sacarla.</p>
+  <p>En el CSV, las columnas <code>canto largo</code> y <code>canto ancho</code> dicen cuántos lados llevan canto (0, 1 o 2), y <code>tipo de canto</code>, cuál (por ejemplo, <i>PVC 2 mm</i>). También vale escribir los lados: <code>L1 L2 A1</code>, <code>2L 1A</code> o <code>todos</code>. Las columnas se reconocen por su título, en cualquier orden.</p>
+  <h4>Cantos y coste</h4>
+  <p>El panel <b>Cantos y coste</b> suma lo que lleva todo el anidado: tableros, superficie de las piezas y desperdicio; metros de cada tipo de canto (con el exceso de cada tramo para recortarlo) y un tiempo de máquina aproximado (el recorrido de los cortes, en todas sus pasadas, al avance de la fresa, más unos segundos por pasada y, si lo escribes, el tiempo de cargar y descargar cada tablero). Escribe los precios (tablero, cada canto, hora de máquina) para ver el coste; lo que se deja vacío no se cuenta. <b>⬇ Despiece y coste (CSV)</b> lo descarga todo para la hoja de cálculo.</p>
+  <h4>4. El resultado</h4>
+  <p>Si las piezas no caben en un tablero, se usan más. Las que no caben ni en un tablero vacío se marcan en rojo. Para cada tablero: <b>➜ Abrir en el Calcador</b> o <b>💾 Guardar tablero</b>. El proyecto lleva la fresa, la profundidad y el grosor ya puestos en ⚙️ Mecanizar.</p>
+  <h4>5. Exportar el tablero</h4>
+  <p>El tablero que estás viendo (elígelo con sus pestañas) se guarda también como:</p>
+  <ul>
+    <li><b>⬇ PNG</b>: imagen para la memoria o para imprimir.</li>
+    <li><b>⬇ SVG</b>: dibujo vectorial a escala real (mm), con los arcos de verdad. Se abre en Inkscape, LibreOffice Draw o el navegador.</li>
+    <li><b>⬇ DXF</b>: plano para CAD (R12, en mm). El origen es el <b>cero pieza</b> del proyecto, igual que en el .json, y cada cosa va en su capa: TABLERO, EXTERIOR, INTERIOR, GRABADO, CAJERA y NOMBRES. El corte exterior y el nombre de cada pieza van con su color (el de AutoCAD más parecido); lo demás, con el color de su capa.</li>
+  </ul>
+  <p>Colores: azul, corte exterior; rojo, interior (agujeros); verde, grabado; naranja, cajera.</p>
+  <p class="nota">Pasa el ratón por cualquier campo o botón para ver qué hace. Todo, paso a paso y con imágenes, en el <a href="manual_anidador.pdf" target="_blank" rel="noopener"><b>📖 manual del Anidador</b></a> (PDF, en la misma carpeta).</p>
+  <p style="text-align:right"><button class="chico" data-cerrar>Cerrar</button></p>
+</div></div>
+<div class="snack" id="snack"></div>
+
+<script>
+'use strict';
+// ════════════════════════════════════════════════════════════════════
+//  Anidador de tableros: coloca piezas (JSON del Calcador o rectángulos)
+//  en tableros por su rectángulo envolvente (MaxRects) y devuelve un
+//  proyecto del Calcador por tablero.
+// ════════════════════════════════════════════════════════════════════
+const $ = id => document.getElementById(id);
+const leer = id => { const t = String($(id).value).trim().replace(',', '.'); const v = t === '' ? NaN : Number(t); $(id).classList.toggle('mal', !isFinite(v)); return v; };
+const num = v => { const n = Number(String(v).trim().replace(',', '.')); return isFinite(n) ? n : NaN; };
+const f1 = n => isFinite(n) ? String(+n.toFixed(1)) : '—';
+const f3 = n => { const t = (+(+n).toFixed(3)).toString(); return t === '-0' ? '0' : t; };
+const esc = t => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+function snack(t) { const s = $('snack'); s.textContent = t; s.classList.add('visible'); clearTimeout(snack.t); snack.t = setTimeout(() => s.classList.remove('visible'), 2600); }
+function descargar(texto, nombre, tipo) { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([texto], { type: tipo || 'application/json' })); a.download = nombre; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); }
+const nombreArchivo = t => String(t || 'tablero').replace(/[\\/:*?"<>|]+/g, '_').trim() || 'tablero';
+let piezas = [];        // { id, nombre, tipo:'rect'|'json', L, A, cant, veta, contornos?, bb? }
+let resultado = null;   // { tableros:[{ col:[{ p, x, y, w, h, rot }] }], sinColocar:[pieza] }
+let tableroVisto = 0;
+
+// ── Geometría de los contornos del Calcador (pts + b = bulge por tramo) ──
+function tramoPuntos(p1, p2, b) {        // puntos del tramo sin el inicial
+  if (!b || Math.abs(b) < 1e-12) return [p2];
+  const d = Math.hypot(p2.x - p1.x, p2.y - p1.y); if (d < 1e-12) return [p2];
+  const th = 4 * Math.atan(b), u = { x: (p2.x - p1.x) / d, y: (p2.y - p1.y) / d }, n = { x: -u.y, y: u.x };
+  const h = (d / 2) * (1 - b * b) / (2 * b), c = { x: (p1.x + p2.x) / 2 + n.x * h, y: (p1.y + p2.y) / 2 + n.y * h };
+  const r = Math.hypot(p1.x - c.x, p1.y - c.y), a1 = Math.atan2(p1.y - c.y, p1.x - c.x), k = Math.max(6, Math.ceil(Math.abs(th) / (Math.PI / 36)));
+  const out = []; for (let i = 1; i <= k; i++) { const a = a1 + th * i / k; out.push({ x: c.x + r * Math.cos(a), y: c.y + r * Math.sin(a) }); }
+  return out;
+}
+function poliContorno(c) {
+  const n = c.pts.length, out = [{ ...c.pts[0] }], segs = c.cerrado ? n : n - 1;
+  for (let i = 0; i < segs; i++) out.push(...tramoPuntos(c.pts[i], c.pts[(i + 1) % n], (c.b && c.b[i]) || 0));
+  return out;
+}
+function cajaDe(contornos) {
+  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  contornos.forEach(c => poliContorno(c).forEach(p => { x0 = Math.min(x0, p.x); y0 = Math.min(y0, p.y); x1 = Math.max(x1, p.x); y1 = Math.max(y1, p.y); }));
+  return { x0, y0, x1, y1, w: x1 - x0, h: y1 - y0 };
+}
+// Escala (solo piezas del Calcador; en los rectángulos cambia su largo y su ancho) y giro de 90 en 90° (antihorario).
+// giro null = «auto»: sin girar, y el anidador la gira 90° si cabe mejor (salvo con veta)
+const escalaDe = p => +p.escala > 0 ? +p.escala : 1;
+const norm90 = g => ((Math.round((+g || 0) / 90) * 90) % 360 + 360) % 360;
+const giroAuto = p => p.giro === null || p.giro === undefined || p.giro === 'auto';
+const giroBase = p => giroAuto(p) ? 0 : norm90(p.giro);
+const cacheGeom = new Map();
+// Medidas (w × h) de la pieza con su escala y girada g grados y, en las del Calcador, sus contornos y su caja
+function geomPieza(p, g) {
+  g = g === undefined ? giroBase(p) : norm90(g);
+  if (p.tipo !== 'json') return g % 180 ? { w: p.A, h: p.L } : { w: p.L, h: p.A };
+  const e = escalaDe(p), clave = p.id + '|' + e + '|' + g, guardada = cacheGeom.get(clave);
+  if (guardada && guardada.src === p.contornos) return guardada;
+  if (cacheGeom.size > 400) cacheGeom.clear();
+  const contornos = transformarContornos(p.contornos, e, g);
+  const bb = cajaDe(contornos), r = { contornos, bb, w: bb.w, h: bb.h, src: p.contornos };
+  cacheGeom.set(clave, r);
+  return r;
+}
+// Contornos escalados (e) y girados g grados antihorario desde el origen (con sus puentes y la receta de sus textos)
+function transformarContornos(lista, e, g) {
+  const n = norm90(g) / 90, tr = q => { let x = q.x * e, y = q.y * e; for (let i = 0; i < n; i++) [x, y] = [-y, x]; return { x: +x.toFixed(6), y: +y.toFixed(6) }; };
+  return lista.map(k0 => {
+    const k = JSON.parse(JSON.stringify(k0));
+    k.pts = k0.pts.map(tr);                           // escala uniforme y giro: los bulges no cambian
+    if (k.mec && k.mec.puentes && Array.isArray(k.mec.puentes.pts)) k.mec.puentes.pts = k.mec.puentes.pts.map(tr);
+    if (k.texto && k.texto.receta) { const r = k.texto.receta; if (r.pos) r.pos = tr(r.pos); if (isFinite(+r.altura)) r.altura = +(+r.altura * e).toFixed(4); r.ang = (+r.ang || 0) + norm90(g); }
+    return k;
+  });
+}
+// Colores para distinguir las piezas (claro / oscuro)
+const COLORES = [
+  // aci: el color de AutoCAD más parecido (el DXF R12 solo tiene esos 255), para el corte exterior de la pieza en el DXF
+  { id: 'azul', nombre: 'Azul', c: '#1e6fd9', o: '#6cb4ff', aci: 150 }, { id: 'morado', nombre: 'Morado', c: '#7c4dcc', o: '#b79cf0', aci: 181 },
+  { id: 'turquesa', nombre: 'Cian', c: '#00838f', o: '#4dd0e1', aci: 134 }, { id: 'rosa', nombre: 'Rosa', c: '#c2185b', o: '#f48fb1', aci: 232 },
+  { id: 'marron', nombre: 'Marrón', c: '#8d5524', o: '#d9a679', aci: 34 }, { id: 'oliva', nombre: 'Oliva', c: '#5f7f1a', o: '#b5d16a', aci: 64 },
+  { id: 'gris', nombre: 'Gris', c: '#4f5f6e', o: '#b0bec5', aci: 8 } ];
+const colorDe = p => COLORES.find(c => c.id === p.color) || COLORES[0];
+const tonoDe = p => document.documentElement.dataset.tema === 'oscuro' ? colorDe(p).o : colorDe(p).c;
+// Color para una pieza nueva: el menos usado (así cada pieza sale de un color distinto)
+function colorNuevo(mas) {
+  const usados = new Map(COLORES.map(c => [c.id, 0]));
+  piezas.concat(mas || []).forEach(p => { if (usados.has(p.color)) usados.set(p.color, usados.get(p.color) + 1); });
+  return COLORES.reduce((a, c) => usados.get(c.id) < usados.get(a.id) ? c : a, COLORES[0]).id;
+}
+
+// ── Lectura de archivos ──
+function piezaDeJSON(d, nombreArch) {
+  const C = d && d.calcador;
+  if (!C || !Array.isArray(C.contornos)) throw new Error(`«${nombreArch}» no es un proyecto del Calcador (ábrelo en el Calcador y guárdalo con 💾 Guardar .json)`);
+  const contornos = C.contornos.filter(c => c && Array.isArray(c.pts) && c.pts.length >= 2 && c.pts.every(p => p && isFinite(+p.x) && isFinite(+p.y)))
+    .map(c => JSON.parse(JSON.stringify(c)));
+  contornos.forEach(c => { c.pts = c.pts.map(p => ({ x: +p.x, y: +p.y })); c.b = c.pts.map((_, i) => isFinite(+(c.b || [])[i]) ? +c.b[i] : 0); });
+  if (!contornos.length) throw new Error(`«${nombreArch}» no tiene contornos`);
+  const bb = cajaDe(contornos);
+  const nombre = String(d.nombre || nombreArch.replace(/\.json$/i, '')).slice(0, 60);
+  return { id: nuevoId(), nombre, tipo: 'json', L: bb.w, A: bb.h, cant: 1, veta: false, giro: null, color: colorNuevo(), contornos, bb, archivo: nombreArch };
+}
+// Tablero guardado por el Anidador (💾 o ➜ Calcador): vuelve a ser una lista de piezas, cada unidad colocada a mano (📌)
+// donde estaba y con su giro. Desde la v4 el archivo dice qué contornos son de cada pieza; en los anteriores se deduce
+// (cada contorno exterior con lo que tiene dentro, y cada grupo con la pieza cuya esquina coincide).
+function piezasDeAnidado(d, nombreArch, t) {
+  const A = d.anidador, C = d.calcador, tb = A.tablero || {};
+  const T0 = { L: +tb.largo, A: +tb.ancho, cero: tb.cero || 'ii' }, o = origen(T0);
+  const lista = (C.contornos || []).filter(c => c && Array.isArray(c.pts) && c.pts.length >= 2).map(c0 => {
+    const c = JSON.parse(JSON.stringify(c0));
+    c.pts = c.pts.map(q => ({ x: +q.x + o.x, y: +q.y + o.y })); c.b = c.pts.map((_, i) => isFinite(+(c0.b || [])[i]) ? +c0.b[i] : 0);
+    if (c.mec && c.mec.puentes && Array.isArray(c.mec.puentes.pts)) c.mec.puentes.pts = c.mec.puentes.pts.map(q => ({ x: +q.x + o.x, y: +q.y + o.y }));
+    if (c.texto && c.texto.receta && c.texto.receta.pos) c.texto.receta.pos = { x: +c.texto.receta.pos.x + o.x, y: +c.texto.receta.pos.y + o.y };
+    const sinSufijo = id => String(id).replace(/(_t\d+p\d+)+$/, '');
+    if (c.texto && c.texto.id) c.texto.id = sinSufijo(c.texto.id);
+    if (c.deTexto && c.deTexto.id) c.deTexto.id = sinSufijo(c.deTexto.id);
+    if (c.grupo) c.grupo = sinSufijo(c.grupo);
+    delete c.uid; return c;
+  });
+  const ents = (A.piezas || []).filter(q => q && isFinite(+q.x) && isFinite(+q.y));
+  const grupos = ents.map(() => []);
+  if (ents.every(q => Array.isArray(q.contornos))) ents.forEach((q, i) => q.contornos.forEach(j => { if (lista[j]) grupos[i].push(lista[j]); }));
+  else {
+    // cada contorno con el exterior que lo contiene (los que no están dentro de otro empiezan un grupo)
+    const polis = lista.map(poliContorno), cajas = lista.map(c => cajaDe([c]));
+    const dentro = (q, pol) => { let r = false; for (let i = 0, j = pol.length - 1; i < pol.length; j = i++) { const a = pol[i], b = pol[j]; if ((a.y > q.y) !== (b.y > q.y) && q.x < (b.x - a.x) * (q.y - a.y) / (b.y - a.y) + a.x) r = !r; } return r; };
+    const area = i => cajas[i].w * cajas[i].h, padre = lista.map((c, i) => {
+      let m = -1; lista.forEach((o2, j) => { if (j !== i && o2.cerrado && area(j) > area(i) && dentro(polis[i][0], polis[j]) && (m < 0 || area(j) < area(m))) m = j; });
+      return m; });
+    const raiz = i => { let r = i, n = 0; while (padre[r] >= 0 && n++ < 50) r = padre[r]; return r; };
+    const porRaiz = new Map(); lista.forEach((c, i) => { const r = raiz(i); if (!porRaiz.has(r)) porRaiz.set(r, []); porRaiz.get(r).push(c); });
+    const sueltos = [...porRaiz.values()].map(cs => ({ cs, bb: cajaDe(cs) }));
+    // primero, la pieza cuya esquina inferior izquierda coincide; los que queden, con la que menos crece al añadirlos
+    const cajaG = grupos.map(() => null), une = (a, b) => a ? { x0: Math.min(a.x0, b.x0), y0: Math.min(a.y0, b.y0), x1: Math.max(a.x1, b.x1), y1: Math.max(a.y1, b.y1) } : b;
+    const resto = [];
+    sueltos.forEach(g => { const i = ents.findIndex((q, k) => !grupos[k].length && Math.abs(q.x - g.bb.x0) < 0.05 && Math.abs(q.y - g.bb.y0) < 0.05);
+      if (i >= 0) { grupos[i].push(...g.cs); cajaG[i] = une(cajaG[i], g.bb); } else resto.push(g); });
+    resto.forEach(g => { let m = -1, mejor = Infinity;
+      ents.forEach((q, k) => { if (q.x > g.bb.x0 + 0.05 || q.y > g.bb.y0 + 0.05) return; const a = cajaG[k] || { x0: q.x, y0: q.y, x1: q.x, y1: q.y }, u = une(a, g.bb), crece = (u.x1 - u.x0) * (u.y1 - u.y0) - (a.x1 - a.x0) * (a.y1 - a.y0); if (crece < mejor) { mejor = crece; m = k; } });
+      if (m >= 0) { grupos[m].push(...g.cs); cajaG[m] = une(cajaG[m], g.bb); } });
+  }
+  // un rectángulo de corte sin nada más: pieza rectangular (se edita su largo y su ancho)
+  const esRect = cs => cs.length === 1 && cs[0].cerrado && cs[0].pts.length === 4 && cs[0].b.every(v => !v) && cs[0].pts.every((q, i, a) => { const r = a[(i + 1) % 4]; return Math.abs(q.x - r.x) < 1e-6 || Math.abs(q.y - r.y) < 1e-6; })
+    && (!cs[0].mec || ((cs[0].mec.op || 'corte') === 'corte' && !(cs[0].mec.puentes && (+cs[0].mec.puentes.n > 0 || (cs[0].mec.puentes.pts || []).length)) && !(+cs[0].mec.prof > 0)));
+  const nuevas = [], porClave = new Map();
+  ents.forEach((q, i) => {
+    const cs = grupos[i]; if (!cs.length) return;
+    const bb = cajaDe(cs), g = norm90(q.giro), e = +q.escala > 0 ? +q.escala : 1, tipo = q.tipo || (esRect(cs) ? 'rect' : 'json');
+    let p, clave;
+    if (tipo === 'rect') {
+      const L = +(g % 180 ? bb.h : bb.w).toFixed(4), A2 = +(g % 180 ? bb.w : bb.h).toFixed(4);
+      clave = q.ref ? 'r|' + q.ref : `r|${q.nombre}|${L}|${A2}`;
+      p = porClave.get(clave) || { id: nuevoId(), nombre: String(q.nombre || 'Pieza').slice(0, 60), tipo: 'rect', L, A: A2, cant: 0, veta: q.veta !== undefined ? !!q.veta : true, giro: null };
+    } else {
+      // la pieza sin girar y a escala 1 (como era antes de colocarla), con su escala aparte
+      const mov = transformarContornos(cs.map(k => ({ ...k, pts: k.pts.map(v => ({ x: v.x - bb.x0, y: v.y - bb.y0 })), mec: k.mec && k.mec.puentes && Array.isArray(k.mec.puentes.pts) ? { ...k.mec, puentes: { ...k.mec.puentes, pts: k.mec.puentes.pts.map(v => ({ x: v.x - bb.x0, y: v.y - bb.y0 })) } } : k.mec,
+        texto: k.texto && k.texto.receta && k.texto.receta.pos ? { ...k.texto, receta: { ...k.texto.receta, pos: { x: k.texto.receta.pos.x - bb.x0, y: k.texto.receta.pos.y - bb.y0 } } } : k.texto })), 1 / e, 360 - g);
+      const firma = JSON.stringify(cajaDe(mov) && mov.map(k => k.pts.map(v => [Math.round((v.x - cajaDe(mov).x0) * 100), Math.round((v.y - cajaDe(mov).y0) * 100)])));
+      clave = q.ref ? 'j|' + q.ref : `j|${q.nombre}|${e}|${firma}`;
+      p = porClave.get(clave) || { id: nuevoId(), nombre: String(q.nombre || 'Pieza').slice(0, 60), tipo: 'json', cant: 0, veta: !!q.veta, giro: null, contornos: mov, bb: cajaDe(mov), L: 0, A: 0, archivo: nombreArch, escala: e };
+      if (p.tipo === 'json') { p.L = p.bb.w; p.A = p.bb.h; }
+    }
+    if (!porClave.has(clave)) { porClave.set(clave, p); p.color = COLORES.some(c => c.id === q.color) ? q.color : colorNuevo(nuevas); if (q.giroLista !== undefined && q.giroLista !== null) p.giro = norm90(q.giroLista);
+      if (q.cantos === 'contorno') p.cantoPerim = true; else if (q.cantos && typeof q.cantos === 'object') { p.cantos = {}; LADOS.forEach(l => { if (q.cantos[l]) p.cantos[l] = true; }); if (p.tipo !== 'rect') p.cantoPerim = true; }
+      if (q.tipoCanto) p.tipoCanto = tipoCantoPorNombre(q.tipoCanto);
+      nuevas.push(p); }
+    p.fijas = p.fijas || {}; p.fijas[p.cant] = { t, x: +bb.x0.toFixed(3), y: +bb.y0.toFixed(3), g };
+    p.cant++;
+  });
+  if (!nuevas.length) throw new Error(`«${nombreArch}» no tiene piezas reconocibles`);
+  return { piezas: nuevas, tablero: tb };
+}
+function piezasDeCSV(texto, nombreArch) {
+  const lineas = texto.replace(/^﻿/, '').split(/\r?\n/).map(l => l.trim()).filter(l => l && !l.startsWith('#'));
+  if (!lineas.length) throw new Error(`«${nombreArch}» está vacío`);
+  const sep = lineas[0].includes(';') ? ';' : lineas[0].includes('\t') ? '\t' : ',';
+  const out = [], malas = [], celdas = l => l.split(sep).map(x => x.trim().replace(/^"|"$/g, ''));
+  // columnas: por su título si la primera línea los tiene; si no, en este orden
+  let col = { nombre: 0, largo: 1, ancho: 2, cant: 3, veta: 4, cl: 5, ca: 6, tc: 7 };
+  const cab = celdas(lineas[0]);
+  if (!isFinite(num(cab[1]))) {
+    const m = {}, nrm = t => t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+    cab.forEach((h, i) => { const n = nrm(h);
+      if (/^(nombre|pieza|piezas|descripcion|denominacion|concepto)$/.test(n)) m.nombre = i;
+      else if (/^(largo|longitud|largo_mm|l)$/.test(n)) m.largo = i;
+      else if (/^(ancho|anchura|ancho_mm|a)$/.test(n)) m.ancho = i;
+      else if (/^(cantidad|cant|ud|uds|unidades|n)$/.test(n)) m.cant = i;
+      else if (/^veta$/.test(n)) m.veta = i;
+      else if (/^(canto_largo|cantos_largo|canto_l|cl|cantos_l)$/.test(n)) m.cl = i;
+      else if (/^(canto_ancho|cantos_ancho|canto_a|ca|cantos_a)$/.test(n)) m.ca = i;
+      else if (/^(tipo_canto|tipo_de_canto|canto|cantos|material_canto)$/.test(n)) m.tc = i; });
+    if (m.largo !== undefined && m.ancho !== undefined) col = m;
+  }
+  const v01 = x => { const n = Math.round(num(x)); return n >= 2 ? 2 : n >= 1 ? 1 : 0; };
+  lineas.forEach((l, k) => {
+    const c = celdas(l), en = j => j === undefined ? '' : (c[j] || '');
+    const L = num(en(col.largo)), A = num(en(col.ancho));
+    if (k === 0 && !isFinite(L)) return;                      // línea de títulos
+    if (!(L > 0 && A > 0)) { malas.push(k + 1); return; }
+    const cant = Math.max(1, Math.round(num(en(col.cant)) || 1));
+    const v = String(en(col.veta)).toLowerCase();
+    const p = { id: nuevoId(), nombre: (en(col.nombre) || `Pieza ${out.length + 1}`).slice(0, 60), tipo: 'rect', L, A, cant: Math.min(cant, 500), veta: /^(s|sí|si|x|1|true|veta|yes|y)$/.test(v), giro: null, color: colorNuevo(out) };
+    // cantos: «canto largo» y «canto ancho» (0, 1 o 2 lados), o «L1 L2 A1» / «2L 1A» / «todos» en cualquiera de las columnas de cantos
+    let cn = {}; const cl = en(col.cl), ca = en(col.ca), tc = en(col.tc);
+    [cl, ca, tc].forEach(x => { if (x && esCantos(x) && !isFinite(num(x))) Object.assign(cn, leerCantos(x)); });
+    if (isFinite(num(cl)) && cl !== '') { const n = v01(cl); if (n >= 1) cn.L1 = true; if (n >= 2) cn.L2 = true; }
+    if (isFinite(num(ca)) && ca !== '') { const n = v01(ca); if (n >= 1) cn.A1 = true; if (n >= 2) cn.A2 = true; }
+    if (Object.keys(cn).length) p.cantos = cn;
+    if (tc && !esCantos(tc)) p.tipoCanto = tipoCantoPorNombre(tc);
+    out.push(p);
+  });
+  if (!out.length) throw new Error(`«${nombreArch}» no tiene piezas válidas (nombre; largo; ancho; cantidad; veta; canto largo; canto ancho; tipo de canto)`);
+  if (malas.length) snack(`Líneas sin medidas válidas en «${nombreArch}»: ${malas.slice(0, 8).join(', ')}`);
+  return out;
+}
+let contadorId = 0;
+const nuevoId = () => 'p' + Date.now().toString(36) + (contadorId++).toString(36);
+async function abrirArchivos(lista) {
+  let n = 0, aviso = '';
+  for (const f of lista) {
+    try {
+      const t = await f.text();
+      if (/\.json$/i.test(f.name) || /^\s*\{/.test(t)) {
+        const d = JSON.parse(t);
+        if (d && d.anidador && Array.isArray(d.anidador.piezas) && d.calcador) {
+          // un tablero del Anidador: sus piezas, cada una colocada a mano donde estaba (en un tablero nuevo si ya hay otros)
+          const vacia = !piezas.length, tUsados = piezas.flatMap(p => Object.values(p.fijas || {}).map(fj => fj.t));
+          const r = piezasDeAnidado(d, f.name, vacia ? 0 : (tUsados.length ? Math.max(...tUsados) + 1 : (resultado ? resultado.tableros.length : 0)));
+          if (vacia) restaurarTablero(r.tablero);
+          piezas.push(...r.piezas); n += r.piezas.reduce((a, p) => a + p.cant, 0);
+          aviso = `Tablero «${d.nombre || f.name}»: ${r.piezas.length} pieza(s), colocadas como estaban (📌). Muévelas, gíralas o suéltalas`;
+          continue;
+        }
+        piezas.push(piezaDeJSON(d, f.name)); n++;
+      }
+      else { const ps = piezasDeCSV(t, f.name); piezas.push(...ps); n += ps.length; }
+    } catch (e) { snack(e.message && e.message.startsWith('«') ? e.message : `No se pudo leer «${f.name}»`); }
+  }
+  if (aviso) snack(aviso); else if (n) snack(`${n} pieza(s) añadida(s)`);
+  todo();
+}
+// Medidas del tablero guardado (al abrirlo con la lista vacía); la holgura, para que la separación sea la misma
+function restaurarTablero(tb) {
+  const pon = (id, v) => { if (isFinite(+v) && +v >= 0) $(id).value = String(+(+v).toFixed(3)); };
+  pon('tL', tb.largo); pon('tA', tb.ancho); pon('tG', tb.grosor); pon('tM', tb.margen);
+  if (['ii', 'si', 'id', 'sd', 'c'].includes(tb.cero)) $('tCero').value = tb.cero;
+  if (tb.modo === 'forma' || tb.modo === 'rect') $('tModo').value = tb.modo;
+  const D = num($('hD').value); if (isFinite(+tb.separacion) && isFinite(D) && +tb.separacion - D >= 0) pon('hH', +tb.separacion - D);
+}
+
+// ════════════════════════════════════════════════════════════════════
+//  Anidado: MaxRects (mejor ajuste del lado corto), varios tableros
+// ════════════════════════════════════════════════════════════════════
+function anidar(items, W, H, fijos) {
+  // items: [{ w, h, girable, ref }] ya con la separación sumada. fijos: piezas colocadas a mano [{ t, x, y, w, h, it }],
+  // que se ponen primero en su tablero; las demás se colocan alrededor. Devuelve tableros con colocaciones.
+  const tableros = [], fuera = [];
+  const nuevo = () => ({ libres: [{ x: 0, y: 0, w: W, h: H }], col: [] });
+  const mejorEn = (t, it) => {
+    let mejor = null;
+    const prueba = (w, h, rot) => t.libres.forEach(r => {
+      if (w > r.w + 1e-9 || h > r.h + 1e-9) return;
+      const corto = Math.min(r.w - w, r.h - h), largo = Math.max(r.w - w, r.h - h);
+      if (!mejor || corto < mejor.corto - 1e-9 || (Math.abs(corto - mejor.corto) < 1e-9 && largo < mejor.largo)) mejor = { x: r.x, y: r.y, w, h, rot, corto, largo };
+    });
+    prueba(it.w, it.h, 0); if (it.girable && Math.abs(it.w - it.h) > 1e-9) prueba(it.h, it.w, 1);
+    return mejor;
+  };
+  const colocar = (t, c) => {
+    const nuevos = [];
+    t.libres.forEach(r => {
+      if (c.x >= r.x + r.w - 1e-9 || c.x + c.w <= r.x + 1e-9 || c.y >= r.y + r.h - 1e-9 || c.y + c.h <= r.y + 1e-9) { nuevos.push(r); return; }
+      if (c.x > r.x + 1e-9) nuevos.push({ x: r.x, y: r.y, w: c.x - r.x, h: r.h });
+      if (c.x + c.w < r.x + r.w - 1e-9) nuevos.push({ x: c.x + c.w, y: r.y, w: r.x + r.w - c.x - c.w, h: r.h });
+      if (c.y > r.y + 1e-9) nuevos.push({ x: r.x, y: r.y, w: r.w, h: c.y - r.y });
+      if (c.y + c.h < r.y + r.h - 1e-9) nuevos.push({ x: r.x, y: c.y + c.h, w: r.w, h: r.y + r.h - c.y - c.h });
+    });
+    // quita los rectángulos libres contenidos en otros
+    t.libres = nuevos.filter((a, i) => !nuevos.some((b, j) => j !== i && a.x >= b.x - 1e-9 && a.y >= b.y - 1e-9 && a.x + a.w <= b.x + b.w + 1e-9 && a.y + a.h <= b.y + b.h + 1e-9 && (j < i || a.w !== b.w || a.h !== b.h || a.x !== b.x || a.y !== b.y)));
+    t.col.push(c);
+  };
+  (fijos || []).forEach(f => { while (tableros.length <= f.t) tableros.push(nuevo()); colocar(tableros[f.t], f); });
+  // de mayor a menor (por el lado largo y luego por el área)
+  items.slice().sort((a, b) => Math.max(b.w, b.h) - Math.max(a.w, a.h) || b.w * b.h - a.w * a.h).forEach(it => {
+    let hecho = false;
+    for (const t of tableros) { const m = mejorEn(t, it); if (m) { colocar(t, { ...m, it }); hecho = true; break; } }
+    if (hecho) return;
+    const t = nuevo(), m = mejorEn(t, it);
+    if (!m) { fuera.push(it); return; }
+    colocar(t, { ...m, it }); tableros.push(t);
+  });
+  return { tableros, fuera };
+}
+
+// ════════════════════════════════════════════════════════════════════
+//  Anidado por la forma real: las piezas se encajan por su contorno (no por su rectángulo envolvente) y las
+//  pequeñas aprovechan los huecos de las grandes. Las comprobaciones de «cabe aquí» (colocar a mano, girar, pasar
+//  a otro tablero) usan la geometría exacta; el anidado automático, una rejilla fina que deja siempre al menos la
+//  separación de la fresa entre dos piezas (y lo compara con el de rectángulos, para quedarse con el mejor).
+// ════════════════════════════════════════════════════════════════════
+const modoForma = () => $('tModo') && $('tModo').value === 'forma';
+const cacheForma = new Map();
+// La pieza girada g, sin colocar: sus contornos de corte cerrados (exteriores y huecos) como polígonos, con la
+// esquina inferior izquierda de su caja en 0 0, y sus tramos
+function formaPieza(p, g) {
+  g = norm90(g);
+  const d = geomPieza(p, g), clave = p.id + '|' + escalaDe(p) + '|' + g + '|' + (+d.w).toFixed(4) + '|' + (+d.h).toFixed(4);
+  const guardada = cacheForma.get(clave); if (guardada && guardada.src === p.contornos) return guardada;
+  let polys = [];
+  if (p.tipo !== 'rect') {
+    const cs = d.contornos, pol = cs.map(poliContorno), cl = clasesDe(cs, pol);
+    polys = cs.map((k, i) => k.cerrado && (cl[i] === 'exterior' || cl[i] === 'interior') ? pol[i].map(q => ({ x: q.x - d.bb.x0, y: q.y - d.bb.y0 })) : null).filter(Boolean);
+  }
+  if (!polys.length) polys = [[{ x: 0, y: 0 }, { x: d.w, y: 0 }, { x: d.w, y: d.h }, { x: 0, y: d.h }]];
+  const segs = [];
+  polys.forEach(P => { for (let i = 0; i < P.length; i++) { const a = P[i], b = P[(i + 1) % P.length]; if (Math.hypot(b.x - a.x, b.y - a.y) > 1e-9) segs.push([a.x, a.y, b.x, b.y]); } });
+  // superficie real (par-impar: los huecos restan)
+  let area = 0; polys.forEach(P => { let a = 0; for (let i = 0, j = P.length - 1; i < P.length; j = i++) a += (P[j].x + P[i].x) * (P[j].y - P[i].y); area += Math.abs(a / 2) * (polys.filter(Q => Q !== P && dentroPar(P[0].x, P[0].y, [Q])).length % 2 ? -1 : 1); });
+  const f = { polys, segs, w: d.w, h: d.h, area: Math.max(0, area), src: p.contornos };
+  if (cacheForma.size > 600) cacheForma.clear();
+  cacheForma.set(clave, f);
+  return f;
+}
+function dentroPar(x, y, polys) {
+  let d = false;
+  polys.forEach(P => { for (let i = 0, j = P.length - 1; i < P.length; j = i++) { const a = P[i], b = P[j]; if ((a.y > y) !== (b.y > y) && x < (b.x - a.x) * (y - a.y) / (b.y - a.y) + a.x) d = !d; } });
+  return d;
+}
+function distPtoSeg(px, py, x1, y1, x2, y2) {
+  const vx = x2 - x1, vy = y2 - y1, L = vx * vx + vy * vy; let t = L ? ((px - x1) * vx + (py - y1) * vy) / L : 0; t = t < 0 ? 0 : t > 1 ? 1 : t;
+  return Math.hypot(px - x1 - t * vx, py - y1 - t * vy);
+}
+function distSegSeg(a, b) {
+  const [x1, y1, x2, y2] = a, [x3, y3, x4, y4] = b;
+  const d1 = (x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3), d2 = (x4 - x3) * (y2 - y3) - (y4 - y3) * (x2 - x3);
+  const d3 = (x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1), d4 = (x2 - x1) * (y4 - y1) - (y2 - y1) * (x4 - x1);
+  if (((d1 > 0 && d2 < 0) || (d1 < 0 && d2 > 0)) && ((d3 > 0 && d4 < 0) || (d3 < 0 && d4 > 0))) return 0;
+  return Math.min(distPtoSeg(x1, y1, x3, y3, x4, y4), distPtoSeg(x2, y2, x3, y3, x4, y4), distPtoSeg(x3, y3, x1, y1, x2, y2), distPtoSeg(x4, y4, x1, y1, x2, y2));
+}
+// ¿Las dos piezas (forma fa en ax, ay y fb en bx, by) quedan a la separación sep o más, sin pisarse?
+function separadas(fa, ax, ay, fb, bx, by, sep) {
+  const e = 1e-6, lim = sep - 1e-4;
+  if (ax >= bx + fb.w + lim - e || bx >= ax + fa.w + lim - e || ay >= by + fb.h + lim - e || by >= ay + fa.h + lim - e) return true;
+  // una dentro de la otra (en su material): un punto de cada contorno dentro del sólido de la otra
+  if (fa.polys.some(P => dentroPar(P[0].x + ax - bx, P[0].y + ay - by, fb.polys))) return false;
+  if (fb.polys.some(P => dentroPar(P[0].x + bx - ax, P[0].y + by - ay, fa.polys))) return false;
+  // los bordes: a la separación o más (solo los tramos que están cerca de la otra pieza)
+  const cerca = (s, ox, oy, x0, y0, x1, y1) => Math.max(s[0], s[2]) + ox >= x0 - lim && Math.min(s[0], s[2]) + ox <= x1 + lim && Math.max(s[1], s[3]) + oy >= y0 - lim && Math.min(s[1], s[3]) + oy <= y1 + lim;
+  const A = fa.segs.filter(s => cerca(s, ax, ay, bx, by, bx + fb.w, by + fb.h)).map(s => [s[0] + ax, s[1] + ay, s[2] + ax, s[3] + ay]);
+  if (!A.length) return true;
+  const B = fb.segs.filter(s => cerca(s, bx, by, ax, ay, ax + fa.w, ay + fa.h)).map(s => [s[0] + bx, s[1] + by, s[2] + bx, s[3] + by]);
+  for (const s of A) {
+    const sx0 = Math.min(s[0], s[2]) - lim, sx1 = Math.max(s[0], s[2]) + lim, sy0 = Math.min(s[1], s[3]) - lim, sy1 = Math.max(s[1], s[3]) + lim;
+    for (const q of B) {
+      if (Math.max(q[0], q[2]) < sx0 || Math.min(q[0], q[2]) > sx1 || Math.max(q[1], q[3]) < sy0 || Math.min(q[1], q[3]) > sy1) continue;
+      if (distSegSeg(s, q) < lim) return false;
+    }
+  }
+  return true;
+}
+// ¿Cabe la pieza p, girada g, con su caja en x, y del tablero t? Dentro del margen y separada de las otras ({ t, p, g, x, y })
+function cabeForma(T, t, p, g, x, y, otros) {
+  const f = formaPieza(p, g), e = 1e-3;
+  if (!(t >= 0) || x < T.M - e || y < T.M - e || x + f.w > T.L - T.M + e || y + f.h > T.A - T.M + e) return false;
+  return otros.every(o => o.t !== t || separadas(f, x, y, formaPieza(o.p, o.g), o.x, o.y, T.sep));
+}
+// Las colocadas a mano del tablero i (salvo una), para cabeForma
+const fijasFormaDelTablero = (i, salvo) => resultado.tableros[i].col.filter(o => o.fija && o !== salvo).map(o => ({ t: i, p: o.p, g: o.g, x: o.x, y: o.y }));
+// ¿Cabe aquí? (por la forma o por el rectángulo, según el modo)
+function cabeAqui(T, t, c, g, x, y, salvo) {
+  if (modoForma()) return cabeForma(T, t, c.p, g, x, y, fijasFormaDelTablero(t, salvo));
+  const d = geomPieza(c.p, g);
+  return cabeFija(T, t, x, y, d.w, d.h, fijasDelTablero(t, salvo));
+}
+
+// ── Anidado automático por la forma: rejilla (celdas de lado c) y llenado de abajo a la izquierda ──
+function anidarForma(items, T, fijos) {
+  // items: [{ ref, k, gs }] (gs: giros permitidos); fijos: [{ t, p, g, x, y, it }] (colocadas a mano, ya comprobadas)
+  const L = T.L, A = T.A, s = T.sep, c = Math.max(0.5, Math.sqrt(L * A / 160000));
+  // engorde de cada pieza en la rejilla: media separación y un poco más. No garantiza por sí solo la separación
+  // (para eso haría falta media diagonal de celda, y se perdería tablero): cada sitio que da la rejilla se comprueba
+  // después con la geometría exacta, y si no vale se sigue buscando
+  const R = s / 2 + c * 0.3;
+  const GW = Math.ceil(L / c), GH = Math.ceil(A / c), WW = (GW + 31) >>> 5;
+  const nuevo = () => {
+    const b = new Uint32Array(GH * WW).fill(0xffffffff);
+    // libres: las celdas enteras dentro de [M − s/2, L − M + s/2] × [M − s/2, A − M + s/2]
+    const i0 = Math.max(0, Math.ceil((T.M - s / 2) / c - 1e-9)), i1 = Math.min(GW, Math.floor((L - T.M + s / 2) / c + 1e-9)), j0 = i0, j1 = Math.min(GH, Math.floor((A - T.M + s / 2) / c + 1e-9));
+    for (let j = j0; j < j1; j++) for (let i = i0; i < i1; i++) b[j * WW + (i >>> 5)] &= ~(1 << (i & 31));
+    return { bits: b, col: [], fin: 0, formas: [] };
+  };
+  // celdas que ocupa la forma f con su caja en (ox, oy) mm, en una rejilla local de gw × gh celdas
+  const rasterizar = (f, ox, oy, gw, gh) => {
+    const occ = new Uint8Array(gw * gh);
+    for (let j = 0; j < gh; j++) {
+      const yc = (j + 0.5) * c - oy, xs = [];
+      for (const [x1, y1, x2, y2] of f.segs) if ((y1 > yc) !== (y2 > yc)) xs.push(x1 + (yc - y1) * (x2 - x1) / (y2 - y1));
+      xs.sort((a, b) => a - b);
+      for (let k = 0; k + 1 < xs.length; k += 2) { const a = Math.max(0, Math.ceil((xs[k] + ox) / c - 0.5)), b = Math.min(gw - 1, Math.floor((xs[k + 1] + ox) / c - 0.5)); for (let i = a; i <= b; i++) occ[j * gw + i] = 1; }
+    }
+    for (const [x1, y1, x2, y2] of f.segs) {
+      const ia = Math.max(0, Math.floor((Math.min(x1, x2) + ox - R) / c)), ib = Math.min(gw - 1, Math.floor((Math.max(x1, x2) + ox + R) / c));
+      const ja = Math.max(0, Math.floor((Math.min(y1, y2) + oy - R) / c)), jb = Math.min(gh - 1, Math.floor((Math.max(y1, y2) + oy + R) / c));
+      for (let j = ja; j <= jb; j++) for (let i = ia; i <= ib; i++) if (!occ[j * gw + i] && distPtoSeg((i + 0.5) * c - ox, (j + 0.5) * c - oy, x1, y1, x2, y2) <= R) occ[j * gw + i] = 1;
+    }
+    return occ;
+  };
+  // máscara de la pieza: filas de tramos ocupados [a, b]; la caja de la pieza queda en (pad, pad) de la máscara
+  const mascaras = new Map();
+  const mascara = (p, g) => {
+    const f = formaPieza(p, g), clave = p.id + '|' + g + '|' + f.w.toFixed(4) + '|' + f.h.toFixed(4);
+    let m = mascaras.get(clave); if (m) return m;
+    const mw = Math.ceil((f.w + 2 * R) / c), mh = Math.ceil((f.h + 2 * R) / c), occ = rasterizar(f, R, R, mw, mh), filas = [];
+    for (let j = 0; j < mh; j++) { const r = []; let i = 0; while (i < mw) { if (occ[j * mw + i]) { const a = i; while (i < mw && occ[j * mw + i]) i++; r.push([a, i - 1]); } else i++; } filas.push(r); }
+    // orden de prueba de las filas: el centro primero (descarta antes las posiciones que chocan)
+    const orden = [...filas.keys()].filter(j => filas[j].length).sort((a, b) => Math.abs(a - mh / 2) - Math.abs(b - mh / 2));
+    m = { f, mw, mh, filas, orden }; mascaras.set(clave, m); return m;
+  };
+  const algun = (b, j, a, z) => {        // ¿alguna celda ocupada en la fila j, de a a z?
+    const base = j * WW; let wa = a >>> 5; const wz = z >>> 5;
+    if (wa === wz) { const m = (0xffffffff >>> (31 - (z & 31))) & (0xffffffff << (a & 31)); return (b[base + wa] & m) !== 0; }
+    if (b[base + wa] & (0xffffffff << (a & 31))) return true;
+    for (wa++; wa < wz; wa++) if (b[base + wa]) return true;
+    return (b[base + wz] & (0xffffffff >>> (31 - (z & 31)))) !== 0;
+  };
+  const cabe = (b, m, X, Y) => { for (const j of m.orden) for (const [a, z] of m.filas[j]) if (algun(b, Y + j, X + a, X + z)) return false; return true; };
+  const marcar = (b, filas, X, Y, gw) => filas.forEach((r, j) => r.forEach(([a, z]) => { for (let i = a; i <= z; i++) { const ii = X + i, jj = Y + j; if (ii >= 0 && ii < GW && jj >= 0 && jj < GH) b[jj * WW + (ii >>> 5)] |= 1 << (ii & 31); } }));
+  const tableros = [], fuera = [];
+  // las colocadas a mano, en su sitio exacto
+  (fijos || []).forEach(fj => {
+    while (tableros.length <= fj.t) tableros.push(nuevo());
+    const tb = tableros[fj.t], f = formaPieza(fj.p, fj.g), I0 = Math.floor((fj.x - R) / c) - 1, J0 = Math.floor((fj.y - R) / c) - 1;
+    const gw = Math.ceil((f.w + 2 * R) / c) + 3, gh = Math.ceil((f.h + 2 * R) / c) + 3, occ = rasterizar(f, fj.x - I0 * c, fj.y - J0 * c, gw, gh), filas = [];
+    for (let j = 0; j < gh; j++) { const r = []; for (let i = 0; i < gw; i++) if (occ[j * gw + i]) r.push([i, i]); filas.push(r); }
+    marcar(tb.bits, filas, I0, J0); tb.col.push({ ...fj, fija: true, w: f.w, h: f.h }); tb.fin = Math.max(tb.fin, fj.x + f.w); tb.formas.push({ f, x: fj.x, y: fj.y });
+  });
+  const mejorEn = (tb, it) => {
+    let mejor = null;
+    for (const g of it.gs) {
+      const m = mascara(it.ref, g); if (m.mw > GW || m.mh > GH) continue;
+      for (let X = 0; X + m.mw <= GW; X++) {
+        const fin = X * c + R + m.f.w; if (mejor && fin > mejor.fin + 1e-9) break;
+        let hecho = false;
+        for (let Y = 0; Y + m.mh <= GH; Y++) if (cabe(tb.bits, m, X, Y) && exacto(tb, m.f, X * c + R, Y * c + R)) {
+          if (!mejor || fin < mejor.fin - 1e-9 || (Math.abs(fin - mejor.fin) < 1e-9 && Y < mejor.Y)) mejor = { X, Y, g, m, fin };
+          hecho = true; break;
+        }
+        if (hecho) break;
+      }
+    }
+    return mejor;
+  };
+  // comprobación exacta: dentro del margen y a la separación de las piezas cercanas
+  const exacto = (tb, f, x, y) => { const e = 1e-3;
+    if (x < T.M - e || y < T.M - e || x + f.w > L - T.M + e || y + f.h > A - T.M + e) return false;
+    return tb.formas.every(o => separadas(f, x, y, o.f, o.x, o.y, s)); };
+  const poner = (tb, it, b) => { marcar(tb.bits, b.m.filas, b.X, b.Y); tb.formas.push({ f: b.m.f, x: b.X * c + R, y: b.Y * c + R }); tb.col.push({ it, p: it.ref, k: it.k, g: b.g, x: b.X * c + R, y: b.Y * c + R, w: b.m.f.w, h: b.m.f.h, rot: b.g !== giroBase(it.ref) }); tb.fin = Math.max(tb.fin, b.fin); };
+  // de mayor a menor superficie (las grandes primero; las pequeñas buscan sus huecos)
+  items.slice().sort((a, b) => { const fa = formaPieza(a.ref, a.gs[0]), fb = formaPieza(b.ref, b.gs[0]); return fb.w * fb.h - fa.w * fa.h || fb.area - fa.area; }).forEach(it => {
+    for (const tb of tableros) { const b = mejorEn(tb, it); if (b) { poner(tb, it, b); return; } }
+    const tb = nuevo(), b = mejorEn(tb, it);
+    if (!b) { fuera.push(it); return; }
+    poner(tb, it, b); tableros.push(tb);
+  });
+  return { tableros, fuera, celda: c };
+}
+// Giros que puede probar el anidador: el fijado en la lista; en «Auto», todos (con veta, solo 0° y 180°)
+function girosPermitidos(p, T) {
+  if (!giroAuto(p)) return [giroBase(p)];
+  const gs = T.veta && p.veta ? [0, 180] : [0, 90, 180, 270];
+  return p.tipo === 'rect' ? gs.filter(g => g < 180) : gs;
+}
+
+function datosTablero() {
+  const L = leer('tL'), A = leer('tA'), M = leer('tM'), D = leer('hD'), Hg = leer('hH'), G = leer('tG'), P = leer('tP');
+  return { L, A, M, D, Hg, G, P, sep: Math.max(0, D) + Math.max(0, Hg), veta: $('tVeta').checked, cero: $('tCero').value };
+}
+// Rectángulos (con la separación a la derecha y arriba) que se pisan
+const solapan = (a, b) => a.x < b.x + b.w - 1e-3 && b.x < a.x + a.w - 1e-3 && a.y < b.y + b.h - 1e-3 && b.y < a.y + a.h - 1e-3;   // tolerancia: 1 µm (redondeos)
+// ¿Cabe una pieza colocada a mano en (x, y) del tablero t? Dentro del margen y sin pisar otras fijas (otros: ya en coordenadas del anidado)
+function cabeFija(T, t, x, y, w, h, otros) {
+  const e = 1e-3;
+  if (!(t >= 0) || x < T.M - e || y < T.M - e || x + w > T.L - T.M + e || y + h > T.A - T.M + e) return false;
+  const r = { x: x - T.M, y: y - T.M, w: w + T.sep, h: h + T.sep };
+  return !otros.some(o => o.t === t && solapan(r, o));
+}
+function calcular() {
+  const T = datosTablero();
+  if (![T.L, T.A, T.M, T.D, T.Hg].every(isFinite) || T.L <= 0 || T.A <= 0) { resultado = null; return; }
+  // área útil + una separación (la última pieza no necesita separación hasta el margen)
+  const W = T.L - 2 * T.M + T.sep, H = T.A - 2 * T.M + T.sep, items = [], fijos = [], fijosF = [], forma = modoForma();
+  let sueltas = 0;
+  piezas.forEach(p => {
+    const n = Math.max(0, p.cant | 0);
+    if (p.fijas) Object.keys(p.fijas).forEach(k => { if (+k >= n) delete p.fijas[k]; });
+    for (let k = 0; k < n; k++) {
+      const f = p.fijas && p.fijas[k];
+      if (f) {                                 // colocada a mano: se queda donde está si sigue cabiendo
+        const g = geomPieza(p, f.g);
+        if (g.w > 0 && g.h > 0 && (forma ? cabeForma(T, f.t, p, norm90(f.g), f.x, f.y, fijosF) : cabeFija(T, f.t, f.x, f.y, g.w, g.h, fijos))) {
+          fijos.push({ t: f.t, x: f.x - T.M, y: f.y - T.M, w: g.w + T.sep, h: g.h + T.sep, it: { ref: p, k }, fija: true, g: norm90(f.g) });
+          fijosF.push({ t: f.t, p, g: norm90(f.g), x: f.x, y: f.y, it: { ref: p, k } }); continue; }
+        delete p.fijas[k]; sueltas++;
+      }
+      const g = geomPieza(p); if (!(g.w > 0 && g.h > 0)) continue;
+      items.push({ w: g.w + T.sep, h: g.h + T.sep, girable: giroAuto(p) && !(T.veta && p.veta), ref: p, k, gs: girosPermitidos(p, T) });
+    }
+    if (p.fijas && !Object.keys(p.fijas).length) delete p.fijas;
+  });
+  const r = anidar(items, W, H, fijos);
+  let tabs = r.tableros.map(t => t.col.map(c => ({ p: c.it.ref, k: c.it.k, rot: c.rot || 0, fija: !!c.fija,
+                  g: c.fija ? c.g : norm90(giroBase(c.it.ref) + (c.rot ? 90 : 0)), x: T.M + c.x, y: T.M + c.y, w: c.w - T.sep, h: c.h - T.sep })));
+  let fuera = r.fuera, porForma = false;
+  if (forma && items.length) {
+    // por la forma real; se queda con el de rectángulos si este cabe en menos tableros (o en el mismo, más corto)
+    const clave = JSON.stringify([T, items.map(it => [it.ref.id, it.k, it.gs, it.ref.tipo === 'rect' ? [it.ref.L, it.ref.A] : escalaDe(it.ref)]), fijosF.map(f => [f.p.id, f.it.k, f.t, f.g, f.x, f.y])]);
+    let rf = calcular.memo && calcular.memo.clave === clave ? calcular.memo.r : null;
+    if (!rf) { rf = anidarForma(items, T, fijosF); calcular.memo = { clave, r: rf }; }
+    const tabsF = rf.tableros.map(t => t.col.map(c => c.fija ? { p: c.p, k: c.it.k, rot: 0, fija: true, g: c.g, x: c.x, y: c.y, w: c.w, h: c.h }
+                                                              : { p: c.p, k: c.k, rot: c.rot ? 1 : 0, fija: false, g: c.g, x: c.x, y: c.y, w: c.w, h: c.h }));
+    const largo = ts => ts.length ? Math.max(0, ...ts[ts.length - 1].map(c => c.x + c.w)) : 0;
+    const peor = (rf.fuera.length - fuera.length) || (tabsF.length - tabs.length) || (largo(tabsF) - largo(tabs) > 1e-6 ? 1 : 0);
+    if (peor <= 0) { tabs = tabsF; fuera = rf.fuera; porForma = true; }
+  }
+  resultado = { T, tableros: tabs.map(col => ({ col })), porForma, forma,
+                sinColocar: [...new Set(fuera.map(it => it.ref))], nFuera: fuera.length, nItems: items.length + fijos.length };
+  // un tablero vacío entre otros (se le han quitado sus piezas): se quita y los siguientes pasan a ocupar su lugar
+  const vacio = resultado.tableros.findIndex(t => !t.col.length);
+  if (vacio >= 0 && resultado.tableros.length > 1 && (calcular.prof || 0) < 8) {
+    piezas.forEach(p => Object.values(p.fijas || {}).forEach(f => { if (f.t > vacio) f.t--; }));
+    if (tableroVisto > vacio) tableroVisto--;
+    calcular.prof = (calcular.prof || 0) + 1;
+    try { calcular(); } finally { calcular.prof--; }
+    return;
+  }
+  if (tableroVisto >= resultado.tableros.length) tableroVisto = Math.max(0, resultado.tableros.length - 1);
+  if (sueltas) snack(`${sueltas} pieza(s) colocadas a mano ya no cabían en su sitio: el anidador las ha vuelto a colocar`);
+}
+
+// Contornos de una colocación, en coordenadas del tablero (esquina inferior izquierda = 0 0)
+function contornosColocados(c, sufijo) {
+  const p = c.p;
+  if (p.tipo === 'rect') {
+    const w = c.w, h = c.h, x = c.x, y = c.y;
+    return [{ pts: [{ x, y }, { x: x + w, y }, { x: x + w, y: y + h }, { x, y: y + h }], b: [0, 0, 0, 0], cerrado: true, tipo: 'exterior',
+              mec: { op: 'corte', prof: null, puentes: { n: 0, ancho: 5, alto: 2 } }, nombrePieza: p.nombre }];
+  }
+  // pieza del Calcador con su escala y el giro de esta colocación: su caja se lleva a (x, y)
+  const geo = geomPieza(p, c.g), dx = c.x - geo.bb.x0, dy = c.y - geo.bb.y0, mov = q => ({ x: +(q.x + dx).toFixed(4), y: +(q.y + dy).toFixed(4) });
+  return geo.contornos.map(k0 => {
+    const k = JSON.parse(JSON.stringify(k0));
+    k.pts = k0.pts.map(mov);
+    if (k.mec && k.mec.puentes && Array.isArray(k.mec.puentes.pts)) k.mec.puentes.pts = k.mec.puentes.pts.map(mov);
+    if (k.texto && k.texto.receta) { k.texto.id += sufijo; if (k.texto.receta.pos) k.texto.receta.pos = mov(k.texto.receta.pos); }
+    if (k.deTexto && k.deTexto.id) k.deTexto.id += sufijo;
+    if (k.grupo) k.grupo += sufijo;
+    delete k.uid; k.nombrePieza = p.nombre;
+    return k;
+  });
+}
+// Desplazamiento según el cero pieza elegido
+function origen(T) { return { ii: { x: 0, y: 0 }, si: { x: 0, y: T.A }, id: { x: T.L, y: 0 }, sd: { x: T.L, y: T.A }, c: { x: T.L / 2, y: T.A / 2 } }[T.cero] || { x: 0, y: 0 }; }
+
+// Proyecto del Calcador para un tablero
+function proyectoTablero(i) {
+  const T = resultado.T, t = resultado.tableros[i], o = origen(T), base = nombreProyecto(), contornos = [], deCada = [];
+  t.col.forEach((c, n) => { deCada[n] = []; const ks = contornosColocados(c, `_t${i + 1}p${n + 1}`); ks.forEach(k => {
+    if (ks.length > 1) k.grupo = `pieza_t${i + 1}p${n + 1}`;
+    deCada[n].push(contornos.length);
+    k.pts = k.pts.map(q => ({ x: +(q.x - o.x).toFixed(4), y: +(q.y - o.y).toFixed(4) }));
+    if (k.mec && k.mec.puentes && Array.isArray(k.mec.puentes.pts)) k.mec.puentes.pts = k.mec.puentes.pts.map(q => ({ x: q.x - o.x, y: q.y - o.y }));
+    if (k.texto && k.texto.receta && k.texto.receta.pos) k.texto.receta.pos = { x: k.texto.receta.pos.x - o.x, y: k.texto.receta.pos.y - o.y };
+    k.uid = `n${i + 1}_${contornos.length + 1}_${Math.random().toString(36).slice(2, 6)}`;
+    delete k.nombrePieza; contornos.push(k);
+  }); });
+  // las esquinas del tablero, como puntos auxiliares (no se mecanizan)
+  const aux = [[0, 0], [T.L, 0], [T.L, T.A], [0, T.A]].map(([x, y]) => ({ t: 'P', p: { x: x - o.x, y: y - o.y } }));
+  const h = herramientaElegida();
+  const cfgMec = { prof: +(T.G + T.P).toFixed(3) };
+  if (h) Object.assign(cfgMec, { T: h.T, F: h.F, S: h.S, paso: h.paso });
+  const nombre = nombreTablero(i);
+  return { version: 7, nombre, calcador: { version: 4, escala: 10, origen: { x: 0, y: 0 }, contornos, cotasAjuste: {}, cotasManuales: [],
+    cfgCotas: { ver: false, cero: true, entrada: true, sentido: true }, aux,
+    cfgHoja: { titulo: nombre, material: `Tablero ${f1(T.L)} × ${f1(T.A)} × ${f1(T.G)} mm`, herramienta: h ? `T${h.T} · ${h.nombre}` : `Fresa Ø${f1(T.D)}` },
+    cfgMec }, anidador: { version: 4, tablero: { largo: T.L, ancho: T.A, grosor: T.G, margen: T.M, separacion: T.sep, cero: T.cero, modo: modoForma() ? 'forma' : 'rect' }, piezas: t.col.map((c, n) => ({ nombre: c.p.nombre, x: c.x, y: c.y, w: c.w, h: c.h, giro: c.g, escala: escalaDe(c.p), aMano: c.fija,
+      tipo: c.p.tipo, ref: c.p.id, veta: !!c.p.veta, color: c.p.color, giroLista: giroAuto(c.p) ? null : giroBase(c.p), contornos: deCada[n],
+      ...(nCantos(c.p) ? { cantos: c.p.tipo === 'rect' ? { ...cantosDe(c.p) } : 'contorno', tipoCanto: tipoCantoDe(c.p).nombre || 'Canto' } : {}) })) } };
+}
+const nombreTablero = i => resultado.tableros.length > 1 ? `${nombreProyecto()} - tablero ${i + 1} de ${resultado.tableros.length}` : nombreProyecto();
+const nombreProyecto = () => { const ns = [...new Set(piezas.map(p => p.nombre))]; return ns.length === 1 ? ns[0] : ns.length ? 'Anidado ' + new Date().toLocaleDateString('es-ES').replace(/\//g, '-') : 'Anidado'; };
+
+// ════════════════════════════════════════════════════════════════════
+//  Herramienta (base compartida de la suite, solo lectura)
+// ════════════════════════════════════════════════════════════════════
+function baseHerramientas() {
+  try { const d = JSON.parse(localStorage.getItem('suiteCNC:herramientas') || 'null'); if (d && Array.isArray(d.herramientas)) return d.herramientas.filter(h => h && isFinite(+h.d)); } catch (e) {}
+  return [{ id: 'h1', T: 101, nombre: 'Fresa plana Ø6', tipo: 'plana', d: 6, F: 1000, S: 12000, paso: 3 }, { id: 'h2', T: 102, nombre: 'Fresa plana Ø3', tipo: 'plana', d: 3, F: 800, S: 16000, paso: 1.5 }];
+}
+function herramientaElegida() { const id = $('hSel').value; return id ? baseHerramientas().find(h => h.id === id) || null : null; }
+function pintarHerramientas(elegida) {
+  const s = $('hSel'), hs = baseHerramientas();
+  s.innerHTML = '<option value="">— a mano —</option>' + hs.map(h => `<option value="${esc(h.id)}">T${h.T} · ${esc(h.nombre)}</option>`).join('');
+  if (elegida !== undefined && hs.some(h => h.id === elegida)) s.value = elegida;
+}
+
+// ════════════════════════════════════════════════════════════════════
+//  Cantos y coste
+// ════════════════════════════════════════════════════════════════════
+// p.cantos = { L1, L2, A1, A2 } en los rectángulos (L1 y L2: los dos lados largos; A1 y A2: los dos anchos);
+// p.cantoPerim = true en las piezas del Calcador (canto en todo su contorno exterior); p.tipoCanto = id del tipo
+let costes = { tablero: '', maquina: '', exceso: '20', F: '', paso: '', carga: '', tipos: [{ id: 'c1', nombre: 'Canto', precio: '' }] };
+const LADOS = ['L1', 'A2', 'L2', 'A1'];            // abajo, derecha, arriba, izquierda (pieza sin girar)
+const cantosDe = p => p.cantos || {};
+const nCantos = p => p.tipo === 'rect' ? LADOS.filter(l => cantosDe(p)[l]).length : (p.cantoPerim ? 1 : 0);
+const tipoCantoDe = p => costes.tipos.find(t => t.id === p.tipoCanto) || costes.tipos[0];
+function celdaCantos(p) {
+  const on = l => cantosDe(p)[l] ? ' on' : '';
+  let svg;
+  if (p.tipo === 'rect') {
+    const L = [['L1', 6, 21, 32, 21, 'largo de abajo'], ['L2', 6, 5, 32, 5, 'largo de arriba'], ['A1', 6, 5, 6, 21, 'ancho de la izquierda'], ['A2', 32, 5, 32, 21, 'ancho de la derecha']];
+    svg = `<svg class="mini" viewBox="0 0 38 26"><rect class="fondo" x="6" y="5" width="26" height="16"/>${L.map(([l, x1, y1, x2, y2, t]) => `<g data-canto="${l}"><title>Canto en el ${t} (${l}): clic para ${cantosDe(p)[l] ? 'quitarlo' : 'ponerlo'}</title><line class="toque" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/><line class="lado${on(l)}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/></g>`).join('')}</svg>`;
+  } else svg = `<svg class="mini" viewBox="0 0 38 26"><g data-canto="perim"><title>${p.cantoPerim ? 'Canto en todo el contorno exterior: clic para quitarlo' : 'Sin canto: clic para ponerlo en todo el contorno exterior'}</title><rect class="fondo" x="6" y="5" width="26" height="16" rx="8"/><rect class="lado${p.cantoPerim ? ' on' : ''}" x="6" y="5" width="26" height="16" rx="8" fill="none"/></g></svg>`;
+  const sel = costes.tipos.length > 1 && nCantos(p) ? `<br><select class="tcanto" data-c="tipoCanto" title="Tipo de canto de esta pieza">${costes.tipos.map(t => `<option value="${esc(t.id)}"${t.id === tipoCantoDe(p).id ? ' selected' : ''}>${esc(t.nombre || 'Canto')}</option>`).join('')}</select>` : '';
+  return svg + sel;
+}
+// lado que ocupa en el tablero (0 abajo, 1 derecha, 2 arriba, 3 izquierda) el lado l de la pieza, girada g grados antihorario
+const ladoColocado = (l, g) => (LADOS.indexOf(l) + norm90(g) / 90) % 4;
+// longitud de un contorno (con sus arcos) y área (con signo) de un polígono
+function longitudContorno(c) {
+  const n = c.pts.length, segs = c.cerrado ? n : n - 1; let L = 0;
+  for (let i = 0; i < segs; i++) { const a = c.pts[i], b = c.pts[(i + 1) % n], bu = (c.b && c.b[i]) || 0, cu = Math.hypot(b.x - a.x, b.y - a.y);
+    if (Math.abs(bu) < 1e-12 || cu < 1e-12) { L += cu; continue; }
+    const th = 4 * Math.atan(Math.abs(bu)); L += cu / (2 * Math.sin(th / 2)) * th; }
+  return L;
+}
+const areaPoli = pol => { let a = 0; for (let i = 0, j = pol.length - 1; i < pol.length; j = i++) a += (pol[j].x + pol[i].x) * (pol[j].y - pol[i].y); return a / 2; };
+// medidas de una unidad de la pieza: superficie real, canto, cortes (longitud y nº de contornos, a qué profundidad)
+function medidasPieza(p, T) {
+  const ex = Math.max(0, num(costes.exceso) || 0);
+  if (p.tipo === 'rect') {
+    const c = cantosDe(p), lados = LADOS.filter(l => c[l]);
+    return { area: p.L * p.A, canto: lados.reduce((a, l) => a + (l[0] === 'L' ? p.L : p.A) + ex, 0), cortes: [{ L: 2 * (p.L + p.A), prof: T.G + T.P }] };
+  }
+  const g = geomPieza(p, 0), polis = g.contornos.map(poliContorno), cl = clasesDe(g.contornos, polis);
+  let area = 0, canto = 0; const cortes = [];
+  g.contornos.forEach((k, i) => {
+    if (!k.cerrado && cl[i] !== 'exterior') return;
+    if (cl[i] === 'exterior' && k.cerrado) { area += Math.abs(areaPoli(polis[i])); if (p.cantoPerim) canto += longitudContorno(k) + ex; }
+    if (cl[i] === 'interior') area -= Math.abs(areaPoli(polis[i]));
+    if ((cl[i] === 'exterior' || cl[i] === 'interior') && !(k.mec && (k.mec.op === 'grabado' || k.mec.op === 'cajera' || k.mec.op === 'isla')))
+      cortes.push({ L: longitudContorno(k), prof: k.mec && +k.mec.prof > 0 ? +k.mec.prof : T.G + T.P });
+  });
+  return { area: Math.max(0, area), canto, cortes };
+}
+// todo el anidado: material, canto, tiempo de máquina y coste
+function resumenCoste() {
+  if (!resultado) return null;
+  const T = resultado.T, h = herramientaElegida(), colocadas = resultado.tableros.flatMap(t => t.col);
+  const F = num(costes.F) > 0 ? num(costes.F) : h && +h.F > 0 ? +h.F : 1000, paso = num(costes.paso) > 0 ? num(costes.paso) : h && +h.paso > 0 ? +h.paso : 6;
+  let area = 0, recorrido = 0, entradas = 0; const porTipo = new Map(), cache = new Map();
+  colocadas.forEach(c => {
+    if (!cache.has(c.p.id)) cache.set(c.p.id, medidasPieza(c.p, T));
+    const m = cache.get(c.p.id); area += m.area;
+    if (m.canto > 0) { const t = tipoCantoDe(c.p); porTipo.set(t.id, (porTipo.get(t.id) || 0) + m.canto); }
+    m.cortes.forEach(k => { const n = Math.max(1, Math.ceil(k.prof / paso - 1e-9)); recorrido += k.L * n; entradas += n; });
+  });
+  const nT = resultado.tableros.length, areaT = nT * T.L * T.A;
+  const carga = Math.max(0, num(costes.carga) || 0);
+  const minutos = recorrido / F + entradas * 4 / 60 + nT * carga;   // corte al avance F + unos 4 s por pasada (bajar, entrar, subir) + poner y quitar cada tablero
+  const precio = v => { const x = num(v); return isFinite(x) && x >= 0 && String(v).trim() !== '' ? x : null; };
+  const pT = precio(costes.tablero), pM = precio(costes.maquina);
+  const cantos = costes.tipos.map(t => ({ t, m: (porTipo.get(t.id) || 0) / 1000, precio: precio(t.precio) })).filter(x => x.m > 0);
+  const partes = [pT !== null ? nT * pT : null, ...cantos.map(x => x.precio !== null ? x.m * x.precio : null), pM !== null ? minutos / 60 * pM : null];
+  return { T, nT, areaT, area, desperdicio: Math.max(0, areaT - area), cantos, recorrido, entradas, minutos, F, paso, pT, pM, carga,
+           total: partes.some(v => v !== null) ? partes.reduce((a, v) => a + (v || 0), 0) : null, faltan: partes.some(v => v === null), nPiezas: colocadas.length };
+}
+const eur = v => v === null || !isFinite(v) ? '—' : v.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+const m2 = v => (v / 1e6).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' m²';
+const mins = v => !isFinite(v) ? '—' : v < 60 ? `${Math.max(1, Math.round(v))} min` : `${Math.floor(v / 60)} h ${String(Math.round(v % 60)).padStart(2, '0')} min`;
+const dec = (v, d) => (+v).toLocaleString('es-ES', { minimumFractionDigits: d, maximumFractionDigits: d });
+function pintarCoste() {
+  const h = herramientaElegida();
+  $('cF').placeholder = h && +h.F > 0 ? String(h.F) : '1000'; $('cPaso').placeholder = h && +h.paso > 0 ? String(h.paso) : '6';
+  const r = resumenCoste(), el = $('resumen');
+  if (!r || !r.nT) { el.innerHTML = '<p class="nota">Añade piezas para ver el material, el canto, el tiempo y el coste.</p>'; return; }
+  pintarResumen(r, el);
+}
+function pintarTiposCanto() {
+  $('tiposCanto').innerHTML = costes.tipos.map((t, i) => `<tr data-i="${i}"><td><input class="txt" data-k="nombre" value="${esc(t.nombre)}" title="Nombre del tipo de canto (sale en la lista de piezas y en el resumen)" placeholder="Canto"></td><td><input class="num" inputmode="decimal" data-k="precio" value="${esc(t.precio)}" placeholder="€/m" title="Precio del metro de este canto (€/m)"></td><td>${costes.tipos.length > 1 ? `<button class="quitar" data-quitarTipo title="Quitar este tipo de canto (sus piezas pasan al primero)">✕</button>` : ''}</td></tr>`).join('');
+}
+function pintarResumen(r, el) {
+  const fila = (a, b, c, ti) => `<tr title="${ti || ''}"><td>${a}</td><td class="n">${b}</td><td class="n">${c}</td></tr>`;
+  let t = `<table class="resumen"><tr><th>Concepto</th><th style="text-align:right">Cantidad</th><th style="text-align:right">Coste</th></tr>`;
+  t += fila(`Tableros <small>${f1(r.T.L)} × ${f1(r.T.A)} × ${f1(r.T.G)}</small>`, `${r.nT} · ${m2(r.areaT)}`, r.pT !== null ? eur(r.nT * r.pT) : '<small>sin precio</small>', 'Tableros que hacen falta y su superficie');
+  t += fila(`Piezas <small>${r.nPiezas} ud.</small>`, m2(r.area), `<small>${Math.round(100 * r.area / r.areaT)} % aprovechado</small>`, 'Superficie real de las piezas colocadas (sin sus agujeros) y qué parte de los tableros es');
+  t += fila('Desperdicio <small>(recortes y retales)</small>', m2(r.desperdicio), `<small>${Math.round(100 * r.desperdicio / r.areaT)} %</small>`, 'Lo que sobra de los tableros: separaciones, márgenes, agujeros y retales');
+  r.cantos.forEach(x => { t += fila(`${esc(x.t.nombre || 'Canto')} <small>con ${f1(num(costes.exceso) || 0)} mm de más por tramo</small>`, `${dec(x.m, 2)} m`, x.precio !== null ? eur(x.m * x.precio) : '<small>sin precio</small>', 'Metros de canto para todas las piezas colocadas, contando el exceso de cada tramo'); });
+  if (!r.cantos.length) t += fila('Canto <small>ninguna pieza lo lleva</small>', '0 m', '—', 'Marca los cantos en la lista de piezas (columna Cantos)');
+  t += fila(`Máquina <small>≈ ${dec(r.recorrido / 1000, 1)} m de corte a F${f1(r.F)}, bajando ${f1(r.paso)} mm por pasada${r.carga ? `, y ${f1(r.carga)} min de carga por tablero` : ''}</small>`, '≈ ' + mins(r.minutos), r.pM !== null ? eur(r.minutos / 60 * r.pM) : '<small>sin precio</small>',
+    'Estimación: el recorrido de los cortes (exteriores e interiores; sin cajeras ni grabados) en todas sus pasadas, al avance F, más unos 4 s por pasada para bajar, entrar y subir. La máquina real tarda algo más (aceleraciones, desplazamientos y cambios de herramienta)');
+  t += `<tr class="total"><td>Total aproximado${r.faltan && r.total !== null ? ' <small>(solo lo que tiene precio)</small>' : ''}</td><td></td><td class="n">${r.total !== null ? eur(r.total) : '<small>escribe los precios</small>'}</td></tr></table>`;
+  el.innerHTML = t;
+}
+// CSV del despiece con cantos, y el resumen de material, tiempo y coste
+function csvCoste() {
+  const r = resumenCoste(); if (!r || !r.nT) { snack('No hay piezas colocadas'); return; }
+  const d = v => String(v).replace('.', ','), c = t => '"' + String(t).replace(/"/g, '""') + '"', T = r.T;
+  const filas = [['Pieza', 'Tipo', 'Largo (mm)', 'Ancho (mm)', 'Ud.', 'Veta', 'Canto largo', 'Canto ancho', 'Tipo de canto', 'Canto por ud. (m)', 'Canto total (m)', 'Superficie por ud. (m²)']];
+  piezas.forEach(p => { const m = medidasPieza(p, T), g = geomPieza(p, 0), cn = cantosDe(p);
+    filas.push([c(p.nombre), p.tipo === 'rect' ? 'rectángulo' : 'Calcador', d(+g.w.toFixed(1)), d(+g.h.toFixed(1)), p.cant, p.veta ? 'sí' : 'no',
+      p.tipo === 'rect' ? (cn.L1 ? 1 : 0) + (cn.L2 ? 1 : 0) : (p.cantoPerim ? 'contorno' : 0), p.tipo === 'rect' ? (cn.A1 ? 1 : 0) + (cn.A2 ? 1 : 0) : '', c(nCantos(p) ? tipoCantoDe(p).nombre || 'Canto' : ''),
+      d((m.canto / 1000).toFixed(3)), d((m.canto * p.cant / 1000).toFixed(3)), d((m.area / 1e6).toFixed(4))]); });
+  filas.push([], ['Resumen'], ['Tableros', r.nT, c(`${f1(T.L)} × ${f1(T.A)} × ${f1(T.G)} mm`), r.pT !== null ? d((r.nT * r.pT).toFixed(2)) + ' €' : ''],
+    ['Superficie de los tableros (m²)', d((r.areaT / 1e6).toFixed(3))], ['Superficie de las piezas (m²)', d((r.area / 1e6).toFixed(3))], ['Desperdicio (m²)', d((r.desperdicio / 1e6).toFixed(3)), d(Math.round(100 * r.desperdicio / r.areaT)) + ' %']);
+  r.cantos.forEach(x => filas.push([c(`${x.t.nombre || 'Canto'} (m)`), d(x.m.toFixed(2)), x.precio !== null ? d((x.m * x.precio).toFixed(2)) + ' €' : '']));
+  filas.push(['Tiempo de máquina aproximado (min)', d(r.minutos.toFixed(1)), r.pM !== null ? d((r.minutos / 60 * r.pM).toFixed(2)) + ' €' : ''], ['Total aproximado (€)', r.total !== null ? d(r.total.toFixed(2)) : '']);
+  descargar('﻿' + filas.map(f => f.join(';')).join('\r\n') + '\r\n', nombreArchivo(nombreProyecto()) + ' - despiece y coste.csv', 'text/csv');
+}
+// "L1 L2 A1", "2L 1A", "todos": qué lados llevan canto
+function leerCantos(t) {
+  t = String(t || '').trim().toLowerCase(); const c = {};
+  if (!t) return c;
+  if (/^(todos?|4|perimetro|perímetro|contorno)$/.test(t)) { LADOS.forEach(l => c[l] = true); return c; }
+  t.replace(/([12])?\s*([la])([12])?/g, (_, n, l, k) => { const L = l.toUpperCase(); if (k) c[L + k] = true; else { c[L + '1'] = true; if (n === '2') c[L + '2'] = true; } });
+  return c;
+}
+const esCantos = t => /^\s*(todos?|perimetro|perímetro|contorno|([12]?\s*[la][12]?[\s,+y]*)+)\s*$/i.test(String(t || '')) && /[la]|todo|per|cont/i.test(String(t || ''));
+function tipoCantoPorNombre(nombre) {
+  nombre = String(nombre || '').trim(); if (!nombre) return costes.tipos[0].id;
+  let t = costes.tipos.find(x => (x.nombre || '').trim().toLowerCase() === nombre.toLowerCase());
+  if (!t) { if (costes.tipos.length === 1 && !costes.tipos[0].precio && /^canto$/i.test(costes.tipos[0].nombre)) { costes.tipos[0].nombre = nombre; t = costes.tipos[0]; }
+            else { t = { id: 'c' + Date.now().toString(36) + costes.tipos.length, nombre, precio: '' }; costes.tipos.push(t); } }
+  return t.id;
+}
+
+// ════════════════════════════════════════════════════════════════════
+//  Pintar
+// ════════════════════════════════════════════════════════════════════
+function pintarLista() {
+  const tb = $('lista'), fuera = new Set(resultado ? resultado.sinColocar.map(p => p.id) : []);
+  $('listaVacia').style.display = piezas.length ? 'none' : '';
+  tb.innerHTML = piezas.map(p => {
+    const nFijas = p.fijas ? Object.keys(p.fijas).length : 0, g0 = geomPieza(p, 0), gS = giroAuto(p) ? 'auto' : String(giroBase(p)), col = colorDe(p);
+    return `<tr data-id="${p.id}" class="${fuera.has(p.id) ? 'sinColocar' : ''}" title="${fuera.has(p.id) ? 'No cabe en el tablero (ni girada, si se puede girar)' : ''}">
+    <td><input class="txt" data-c="nombre" value="${esc(p.nombre)}" title="Nombre de la pieza"><div class="origen">${p.tipo === 'json' ? '📄 ' + esc(p.archivo || 'Calcador') : '▭ rectángulo'}${Math.abs(escalaDe(p) - 1) > 1e-9 ? ` <span class="transf" title="Escala de la pieza (cámbiala con las asas de las esquinas en el tablero)">${f1(escalaDe(p) * 100)} %</span>` : ''}${nFijas ? ` <span class="transf" title="Unidades colocadas a mano en el tablero (📌). Clic en su chincheta para soltarlas">📌 ${nFijas}</span>` : ''}</div></td>
+    ${p.tipo === 'json' ? `<td class="medida" colspan="2" title="Rectángulo envolvente de la pieza del Calcador sin girar (largo × ancho), con su escala">${f1(g0.w)} × ${f1(g0.h)}</td>`
+      : `<td><input class="num" inputmode="decimal" data-c="L" value="${f3(p.L)}" title="Largo de la pieza sin girar (a lo largo de la veta), en mm"></td><td><input class="num" inputmode="decimal" data-c="A" value="${f3(p.A)}" title="Ancho de la pieza sin girar, en mm"></td>`}
+    <td><input class="num cant" inputmode="numeric" data-c="cant" value="${p.cant}" title="Cuántas piezas iguales"></td>
+    <td><select data-c="giro" title="Giro de la pieza (antihorario). Auto: sin girar, y el anidador la gira 90° si cabe mejor (salvo con veta). Con un giro fijo, el anidador no la gira. En el tablero, doble clic gira una unidad">
+      ${[['auto', 'Auto'], ['0', '0°'], ['90', '90°'], ['180', '180°'], ['270', '270°']].map(([v, t]) => `<option value="${v}"${v === gS ? ' selected' : ''}>${t}</option>`).join('')}</select></td>
+    <td><select data-c="color" class="color" style="background:${col.c}" title="Color con el que se dibuja la pieza, para distinguirla de las demás">
+      ${COLORES.map(c => `<option value="${c.id}" style="background:${c.c};color:#fff"${c.id === col.id ? ' selected' : ''}>${c.nombre}</option>`).join('')}</select></td>
+    <td style="text-align:center"><input type="checkbox" data-c="veta" ${p.veta ? 'checked' : ''} title="Con veta (y el tablero con veta), el anidador no la gira: su largo va en X. Sin veta, la puede girar 90° si cabe mejor"></td>
+    <td class="cantos">${celdaCantos(p)}</td>
+    <td><button class="quitar" data-quitar title="Quitar esta pieza de la lista">✕</button></td></tr>`; }).join('');
+}
+// Nombre de la pieza que cabe en su recuadro (w × h px): letra entre 8 y 14 px, acortado con «…» si hace falta
+function etiquetaPieza(t, w, h) {
+  let fs = Math.max(8, Math.min(14, Math.min(w, h) / 4)); if (h < fs + 4 || w < 24) return null;
+  const cabe = n => Math.floor((w - 6) / (fs * 0.56)) >= n;
+  while (!cabe(t.length) && fs > 8.5) fs -= 0.5;
+  if (cabe(t.length)) return { t, fs };
+  const n = Math.floor((w - 6) / (fs * 0.56)) - 1;
+  return n >= 3 ? { t: t.slice(0, n).trimEnd() + '…', fs } : null;
+}
+// Qué es cada contorno de una pieza: grabado o cajera (su operación en el Calcador), interior (marcado así,
+// o «auto» dentro de otro contorno cerrado de la misma pieza) o exterior
+function clasesDe(cont, polis) {
+  const dentro = (q, pol) => { let d = false; for (let i = 0, j = pol.length - 1; i < pol.length; j = i++) { const a1 = pol[i], b1 = pol[j]; if ((a1.y > q.y) !== (b1.y > q.y) && q.x < (b1.x - a1.x) * (q.y - a1.y) / (b1.y - a1.y) + a1.x) d = !d; } return d; };
+  return cont.map((k, i) => {
+    const op = k.mec && k.mec.op;
+    if (op === 'grabado') return 'grabado';
+    if (op === 'cajera') return 'cajera';
+    if (k.tipo === 'interior' || (k.tipo !== 'exterior' && k.cerrado && cont.filter((o, j) => j !== i && o.cerrado && dentro(polis[i][0], polis[j])).length % 2 === 1)) return 'interior';
+    return 'exterior';
+  });
+}
+// Tramos con canto de una pieza colocada (coordenadas del tablero), metidos un poco hacia dentro para verlos junto al corte
+function lineasCanto(c, cont, polis, clases) {
+  if (c.p.tipo === 'rect') {
+    const x0 = c.x, y0 = c.y, x1 = c.x + c.w, y1 = c.y + c.h, d = Math.min(c.w, c.h) * 0.02;
+    const L = [[{ x: x0, y: y0 + d }, { x: x1, y: y0 + d }], [{ x: x1 - d, y: y0 }, { x: x1 - d, y: y1 }], [{ x: x0, y: y1 - d }, { x: x1, y: y1 - d }], [{ x: x0 + d, y: y0 }, { x: x0 + d, y: y1 }]];
+    return LADOS.filter(l => cantosDe(c.p)[l]).map(l => L[ladoColocado(l, c.g)]);
+  }
+  if (!c.p.cantoPerim) return [];
+  return cont.map((k, i) => clases[i] === 'exterior' && k.cerrado ? polis[i] : null).filter(Boolean);
+}
+function pintarVista() {
+  const svg = $('vista'), cs = getComputedStyle(document.documentElement), v = n => cs.getPropertyValue(n).trim();
+  const tabs = $('tableros'), datos = $('datos'), avisos = $('avisos');
+  if (!resultado) { svg.innerHTML = ''; tabs.innerHTML = ''; datos.innerHTML = ''; avisos.innerHTML = `<div class="aviso mal">Revisa las medidas del tablero y de la fresa.</div>`; botones(false); pintarCoste(); return; }
+  const T = resultado.T, n = resultado.tableros.length;
+  tabs.innerHTML = n ? resultado.tableros.map((t, i) => `<button class="${i === tableroVisto ? 'activo' : ''}" data-tab="${i}" title="Ver el tablero ${i + 1}: ${t.col.length} pieza(s). Arrastra una pieza hasta aquí para pasarla a este tablero">Tablero ${i + 1} · ${t.col.length}</button>`).join('')
+    + `<button class="nuevoTab" data-tab="${n}" title="Suelta aquí la pieza que arrastras para pasarla a un tablero nuevo">＋ Tablero nuevo</button>` : '';
+  // dibujo: el tablero a escala, Y hacia arriba
+  const W = Math.max(300, svg.clientWidth || 800), H = Math.max(220, svg.clientHeight || 500); svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  const m = 34, k = Math.min((W - 2 * m) / T.L, (H - 2 * m) / T.A), ox = (W - k * T.L) / 2, oy = (H + k * T.A) / 2;
+  const P = q => ({ x: ox + k * q.x, y: oy - k * q.y });
+  let s = `<rect x="${ox.toFixed(1)}" y="${(oy - k * T.A).toFixed(1)}" width="${(k * T.L).toFixed(1)}" height="${(k * T.A).toFixed(1)}" fill="${v('--madera')}" stroke="${v('--madera-borde')}" stroke-width="1.5"><title>Tablero ${f1(T.L)} × ${f1(T.A)} × ${f1(T.G)} mm</title></rect>`;
+  if (T.M > 0) s += `<rect x="${(ox + k * T.M).toFixed(1)}" y="${(oy - k * (T.A - T.M)).toFixed(1)}" width="${(k * (T.L - 2 * T.M)).toFixed(1)}" height="${(k * (T.A - 2 * T.M)).toFixed(1)}" fill="none" stroke="${v('--madera-borde')}" stroke-width="1" stroke-dasharray="5 4"><title>Margen del borde: ${f1(T.M)} mm</title></rect>`;
+  // veta
+  if (T.veta) for (let yy = T.A / 8; yy < T.A; yy += T.A / 8) { const a = P({ x: 0, y: yy }), b = P({ x: T.L, y: yy }); s += `<line x1="${a.x.toFixed(1)}" y1="${a.y.toFixed(1)}" x2="${b.x.toFixed(1)}" y2="${b.y.toFixed(1)}" stroke="${v('--madera-borde')}" stroke-opacity=".25" stroke-width="1"/>`; }
+  const t = resultado.tableros[tableroVisto];
+  vistaMap = { k, ox, oy };
+  if (t) t.col.forEach((c, i) => {
+    const cont = contornosColocados(c, ''), col = tonoDe(c.p);
+    const info = `${c.p.nombre}${c.p.cant > 1 ? ` (${c.k + 1} de ${c.p.cant})` : ''}: ${f1(c.w)} × ${f1(c.h)} mm · ${c.g ? `girada ${c.g}°` : 'sin girar'}${c.rot ? ' (la ha girado el anidador)' : ''}${Math.abs(escalaDe(c.p) - 1) > 1e-9 ? ` · escala ${f1(escalaDe(c.p) * 100)} %` : ''} · en X${f1(c.x)} Y${f1(c.y)} desde la esquina inferior izquierda${c.fija ? ' · 📌 colocada a mano' : ''}\nArrastra: colocarla a mano · doble clic: girar 90° (con Mayús, al otro lado) · asas de las esquinas: escala`;
+    const a = P({ x: c.x, y: c.y + c.h }), r = { w: k * c.w, h: k * c.h };
+    s += `<g class="pz${esSel(c) ? ' sel' : ''}${c.fija ? ' fija' : ''}" data-pid="${esc(c.p.id)}" data-k="${c.k}"><title>${esc(info)}</title><rect class="caja${resultado.forma ? ' marco' : ''}" x="${a.x.toFixed(1)}" y="${a.y.toFixed(1)}" width="${r.w.toFixed(1)}" height="${r.h.toFixed(1)}" fill="${col}" fill-opacity=".13" stroke="${col}" stroke-opacity="${resultado.forma ? '.25' : c.fija ? '.7' : '.4'}"${c.fija ? '' : ' stroke-dasharray="3 3"'} vector-effect="non-scaling-stroke"/>`;
+    const polis = cont.map(kk => poliContorno(kk)), clases = clasesDe(cont, polis), color = { exterior: col, interior: v('--interior'), grabado: v('--verde'), cajera: v('--naranja') };
+    if (resultado.forma) { const d = cont.map((kk, ik) => kk.cerrado && (clases[ik] === 'exterior' || clases[ik] === 'interior') ? polis[ik].map((q, j) => { const z = P(q); return (j ? 'L' : 'M') + z.x.toFixed(1) + ' ' + z.y.toFixed(1); }).join(' ') + ' Z' : '').join(' ');
+      if (d.trim()) s += `<path class="caja solido" d="${d}" fill="${col}" fill-opacity=".16" fill-rule="evenodd" stroke="${col}" stroke-opacity="${c.fija ? '.7' : '.3'}" vector-effect="non-scaling-stroke"/>`; }
+    s += lineasCanto(c, cont, polis, clases).map(pts => { const q = pts.map(P); return `<polyline points="${q.map(z => z.x.toFixed(1) + ',' + z.y.toFixed(1)).join(' ')}" fill="none" stroke="${v('--canto')}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" stroke-opacity=".9" vector-effect="non-scaling-stroke"><title>Canto</title></polyline>`; }).join('');
+    cont.forEach((kk, ik) => { const pol = polis[ik].map(P); s += `<path class="contorno ${clases[ik]}" d="${pol.map((q, j) => (j ? 'L' : 'M') + q.x.toFixed(1) + ' ' + q.y.toFixed(1)).join(' ')}${kk.cerrado ? ' Z' : ''}" fill="none" stroke="${color[clases[ik]]}" stroke-width="1.6" vector-effect="non-scaling-stroke"/>`; });
+    const et = etiquetaPieza(c.p.nombre + (c.rot ? ' ↻' : ''), r.w, r.h);
+    let lx = a.x + r.w / 2, ly = a.y + r.h / 2;
+    if (et && resultado.forma) { const f = formaPieza(c.p, c.g);
+      if (!dentroPar(f.w / 2, f.h / 2, f.polys)) for (let dd = 0; dd < f.h / 2; dd += Math.max(0.5, f.h / 200)) {
+        if (dentroPar(f.w / 2, f.h / 2 - dd, f.polys)) { let fin = dd; while (fin < f.h / 2 && dentroPar(f.w / 2, f.h / 2 - fin, f.polys)) fin += Math.max(0.5, f.h / 200);
+          ly = a.y + r.h / 2 + k * (dd + fin) / 2; et.fs = Math.max(8, Math.min(et.fs, k * (fin - dd) * 0.7)); break; } } }
+    if (et) s += `<text x="${lx.toFixed(1)}" y="${(ly + et.fs / 3).toFixed(1)}" text-anchor="middle" font-size="${et.fs.toFixed(1)}">${esc(et.t)}</text>`;
+    if (c.fija) s += `<g class="pin" data-pin><title>Colocada a mano. Clic en la chincheta para soltarla: el anidador la vuelve a colocar</title><circle cx="${(a.x + 17).toFixed(1)}" cy="${(a.y + 17).toFixed(1)}" r="8" fill="${v('--panel')}" stroke="${col}" stroke-width="1.2"/><text x="${(a.x + 17).toFixed(1)}" y="${(a.y + 20.5).toFixed(1)}" text-anchor="middle" font-size="10" style="stroke:none">📌</text></g>`;
+    s += '</g>';
+  });
+  // la pieza seleccionada: marco y asas (esquinas: escala; lados, en los rectángulos: largo o ancho)
+  const cSel = t && t.col.find(esSel);
+  if (cSel) {
+    const x0 = P({ x: cSel.x, y: cSel.y + cSel.h }), x1 = P({ x: cSel.x + cSel.w, y: cSel.y }), mx = (x0.x + x1.x) / 2, my = (x0.y + x1.y) / 2;
+    const asas = { nw: [x0.x, x0.y], ne: [x1.x, x0.y], se: [x1.x, x1.y], sw: [x0.x, x1.y] };
+    if (cSel.p.tipo === 'rect') Object.assign(asas, { n: [mx, x0.y], e: [x1.x, my], s: [mx, x1.y], w: [x0.x, my] });
+    const tit = { nw: 'Escala (desde la esquina contraria; con Alt, desde el centro)', ne: '', se: '', sw: '', n: 'Ancho del rectángulo', s: '', e: 'Largo del rectángulo', w: '' };
+    s += `<g id="asas"><rect x="${(x0.x - 3).toFixed(1)}" y="${(x0.y - 3).toFixed(1)}" width="${(x1.x - x0.x + 6).toFixed(1)}" height="${(x1.y - x0.y + 6).toFixed(1)}" fill="none" stroke="${v('--acento')}" stroke-width="1" stroke-dasharray="5 4" pointer-events="none"/>`
+       + Object.entries(asas).map(([n, [x, y]]) => `<rect class="asa asa-${n}" data-asa="${n}" x="${(x - 5).toFixed(1)}" y="${(y - 5).toFixed(1)}" width="10" height="10"><title>${tit[n] || tit[n.length === 2 ? 'nw' : n === 's' ? 'n' : 'e']}</title></rect>`).join('') + '</g>';
+  }
+  s += `<g id="etq" pointer-events="none"></g>`;
+  // cero pieza: el mismo símbolo que en los planos del Calcador
+  const o = P(origen(T)), rc = 8, Lc = 1.7 * rc, tx = v('--texto');
+  const cuarto = a0 => { let d = `M${o.x.toFixed(1)} ${o.y.toFixed(1)}`; for (let j = 0; j <= 6; j++) { const a = a0 + Math.PI / 2 * j / 6; d += ` L${(o.x + rc * Math.cos(a)).toFixed(1)} ${(o.y - rc * Math.sin(a)).toFixed(1)}`; } return `<path d="${d} Z" fill="${tx}"/>`; };
+  s += `<g><title>Cero pieza (X0 Y0) del proyecto</title><circle cx="${o.x.toFixed(1)}" cy="${o.y.toFixed(1)}" r="${rc}" fill="${v('--campo')}" stroke="${tx}" stroke-width="1.2"/>${cuarto(0)}${cuarto(Math.PI)}<line x1="${(o.x - Lc).toFixed(1)}" y1="${o.y.toFixed(1)}" x2="${(o.x + Lc).toFixed(1)}" y2="${o.y.toFixed(1)}" stroke="${tx}" stroke-width="1.2"/><line x1="${o.x.toFixed(1)}" y1="${(o.y - Lc).toFixed(1)}" x2="${o.x.toFixed(1)}" y2="${(o.y + Lc).toFixed(1)}" stroke="${tx}" stroke-width="1.2"/></g>`;
+  // cotas del tablero
+  s += `<text x="${(ox + k * T.L / 2).toFixed(1)}" y="${(oy + 22).toFixed(1)}" text-anchor="middle" font-size="12">${f1(T.L)}</text><text x="${(ox - 10).toFixed(1)}" y="${(oy - k * T.A / 2).toFixed(1)}" text-anchor="end" font-size="12">${f1(T.A)}</text>`;
+  if (!n && piezas.length) s += `<text x="${W / 2}" y="${H / 2}" text-anchor="middle" font-size="14">Ninguna pieza cabe en el tablero</text>`;
+  svg.innerHTML = s;
+  // datos y avisos
+  const areaPiezas = t ? t.col.reduce((a, c) => a + (resultado.forma ? formaPieza(c.p, c.g).area : c.w * c.h), 0) : 0, areaTab = T.L * T.A;
+  datos.innerHTML = [
+    ['Tableros', n, 'Cuántos tableros hacen falta para todas las piezas que caben'],
+    ['Piezas en este', t ? t.col.length : 0, 'Piezas colocadas en el tablero que estás viendo'],
+    ['Aprovechamiento', t ? Math.round(100 * areaPiezas / areaTab) + ' %' : '—', resultado.forma ? 'Superficie real de las piezas (sin sus huecos) sobre la del tablero' : 'Superficie de las piezas (su rectángulo envolvente) sobre la del tablero'],
+    ['Separación', f1(T.sep) + ' mm', 'Distancia mínima entre dos piezas: diámetro de la fresa + holgura'],
+    ['Profundidad', f1(T.G + T.P) + ' mm', 'Profundidad de corte que llevará el proyecto a ⚙️ Mecanizar: grosor + corte pasante'] ]
+    .map(([et, va, ti]) => `<div class="dato" title="${ti}"><div class="et">${et}</div><div class="va">${va}</div></div>`).join('');
+  let av = '';
+  if (!piezas.length) av += `<div class="aviso ojo">Añade piezas: abre proyectos del Calcador (.json), una lista de despiece (.csv) o añade rectángulos.</div>`;
+  if (resultado.nFuera) av += `<div class="aviso mal">${resultado.nFuera} pieza(s) no caben ni en un tablero vacío: ${resultado.sinColocar.map(p => esc(p.nombre)).join(', ')} (marcadas en rojo en la lista). Revisa sus medidas, la veta o el margen.</div>`;
+  if (T.D > 0 && T.Hg < 1) av += `<div class="aviso ojo">Con menos de 1 mm de holgura, los cortes de dos piezas casi se tocan: la pieza puede soltarse antes de tiempo.</div>`;
+  if (resultado.forma && n && !resultado.porForma && piezas.length) av += `<p class="nota">Por su forma real no salía mejor que por el rectángulo: se usa el anidado por rectángulos (las piezas siguen pudiendo colocarse a mano por su forma).</p>`;
+  if (piezas.some(p => p.tipo === 'json') && n) av += `<p class="nota">Las piezas del Calcador conservan su mecanizado (cajeras, grabados, puentes, profundidades propias). Las rectangulares se cortan a la profundidad general.</p>`;
+  avisos.innerHTML = av;
+  botones(n > 0);
+  pintarCoste();
+}
+function botones(hay) { ['btnCalcador', 'btnJSON', 'btnTodos', 'btnPNG', 'btnSVG', 'btnDXF'].forEach(id => $(id).disabled = !hay); $('btnTodos').style.display = resultado && resultado.tableros.length > 1 ? '' : 'none'; $('btnSoltar').style.display = piezas.some(p => p.fijas) ? '' : 'none'; }
+function notaSeparacion() { const T = datosTablero(); $('notaSep').textContent = isFinite(T.sep) ? `Separación entre piezas: ${f1(T.sep)} mm (Ø ${f1(T.D)} + holgura ${f1(T.Hg)}).` : ''; }
+function todo() { calcular(); pintarTiposCanto(); pintarLista(); pintarVista(); notaSeparacion(); guardar(); }
+
+// ════════════════════════════════════════════════════════════════════
+//  Eventos, guardado y tema
+// ════════════════════════════════════════════════════════════════════
+const CLAVE = 'anidador_estado';
+function guardar() {
+  try {
+    const d = { v: {}, veta: $('tVeta').checked, cero: $('tCero').value, herr: $('hSel').value, piezas, costes };
+    ['tL', 'tA', 'tG', 'tP', 'tM', 'hD', 'hH', 'tModo'].forEach(id => d.v[id] = $(id).value);
+    localStorage.setItem(CLAVE, JSON.stringify(d));
+  } catch (e) { /* sin sitio en el navegador: se sigue trabajando igual */ }
+}
+function cargar() {
+  let d = null; try { d = JSON.parse(localStorage.getItem(CLAVE) || 'null'); } catch (e) {}
+  pintarHerramientas(d && d.herr);
+  if (!d) { const h = baseHerramientas()[0]; if (h) { $('hSel').value = h.id; $('hD').value = h.d; } return; }
+  Object.entries(d.v || {}).forEach(([id, v]) => { if ($(id)) $(id).value = v; });
+  $('tVeta').checked = d.veta !== false; if (d.cero) $('tCero').value = d.cero;
+  if (Array.isArray(d.piezas)) piezas = d.piezas.filter(p => p && (p.tipo === 'rect' || (p.tipo === 'json' && Array.isArray(p.contornos) && p.bb)));
+  piezas.forEach(p => { if (!COLORES.some(c => c.id === p.color)) p.color = colorNuevo(); if (p.fijas && typeof p.fijas !== 'object') delete p.fijas; });
+  if (d.costes && Array.isArray(d.costes.tipos) && d.costes.tipos.length) costes = { ...costes, ...d.costes };
+}
+['tL', 'tA', 'tG', 'tP', 'tM', 'hD', 'hH'].forEach(id => $(id).addEventListener('input', todo));
+['tVeta', 'tCero', 'tModo'].forEach(id => $(id).addEventListener('change', todo));
+$('hSel').addEventListener('change', () => { const h = herramientaElegida(); if (h) $('hD').value = h.d; todo(); });  // todo() → pintarVista() → pintarCoste()
+$('hD').addEventListener('input', () => { const h = herramientaElegida(); if (h && Math.abs(num($('hD').value) - h.d) > 1e-9) $('hSel').value = ''; });
+$('lista').addEventListener('input', e => {
+  const tr = e.target.closest('tr'), p = tr && piezas.find(q => q.id === tr.dataset.id), c = e.target.dataset.c; if (!p || !c) return;
+  if (c === 'tipoCanto') return;
+  if (c === 'nombre') p.nombre = e.target.value.slice(0, 60);
+  else if (c === 'veta') p.veta = e.target.checked;
+  else { const v = num(e.target.value); const ok = c === 'cant' ? v >= 0 : v > 0; e.target.classList.toggle('mal', !ok); if (!ok) return; p[c] = c === 'cant' ? Math.min(500, Math.round(v)) : v; }
+  calcular(); pintarVista(); guardar();
+  const fuera = new Set(resultado ? resultado.sinColocar.map(q => q.id) : []); document.querySelectorAll('#lista tr').forEach(r => r.classList.toggle('sinColocar', fuera.has(r.dataset.id)));
+});
+$('lista').addEventListener('change', e => {
+  const c = e.target.dataset.c, tr = e.target.closest('tr'), p = tr && piezas.find(q => q.id === tr.dataset.id); if (!p) return;
+  if (c === 'veta') { p.veta = e.target.checked; todo(); }
+  else if (c === 'giro') {
+    const v = e.target.value; p.giro = v === 'auto' ? null : +v;
+    // las unidades colocadas a mano también se giran, sobre su centro
+    if (p.fijas && v !== 'auto') Object.values(p.fijas).forEach(f => { const a = geomPieza(p, f.g), b = geomPieza(p, +v); f.x += (a.w - b.w) / 2; f.y += (a.h - b.h) / 2; f.g = +v; });
+    todo();
+  }
+  else if (c === 'color') { p.color = e.target.value; e.target.style.background = colorDe(p).c; pintarVista(); guardar(); }
+  else if (c === 'tipoCanto') { p.tipoCanto = e.target.value; pintarCoste(); guardar(); }
+});
+$('lista').addEventListener('click', e => {
+  const g = e.target.closest('[data-canto]');
+  if (g) { const p = piezas.find(q => q.id === e.target.closest('tr').dataset.id); if (!p) return; const l = g.dataset.canto;
+    if (l === 'perim') p.cantoPerim = !p.cantoPerim; else { p.cantos = { ...cantosDe(p), [l]: !cantosDe(p)[l] }; if (!p.cantos[l]) delete p.cantos[l]; }
+    pintarLista(); pintarVista(); guardar(); return; }
+  if (!e.target.closest('[data-quitar]')) return; const id = e.target.closest('tr').dataset.id; piezas = piezas.filter(p => p.id !== id); todo(); });
+$('tableros').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (!b) return; tableroVisto = +b.dataset.tab; pintarVista(); });
+// cantos y coste
+[['cTablero', 'tablero'], ['cExceso', 'exceso'], ['cMaquina', 'maquina'], ['cF', 'F'], ['cPaso', 'paso'], ['cCarga', 'carga']].forEach(([id, k]) => $(id).addEventListener('input', () => { const t = $(id).value.trim(), ok = t === '' || num(t) >= 0; $(id).classList.toggle('mal', !ok); if (!ok) return; costes[k] = t; pintarCoste(); guardar(); }));
+const ponerCostesEnPantalla = () => { $('cTablero').value = costes.tablero || ''; $('cExceso').value = costes.exceso ?? '20'; $('cMaquina').value = costes.maquina || ''; $('cF').value = costes.F || ''; $('cPaso').value = costes.paso || ''; $('cCarga').value = costes.carga || ''; };
+$('tiposCanto').addEventListener('input', e => { const i = +e.target.closest('tr').dataset.i, k = e.target.dataset.k, t = costes.tipos[i]; if (!t || !k) return;
+  if (k === 'precio') { const ok = e.target.value.trim() === '' || num(e.target.value) >= 0; e.target.classList.toggle('mal', !ok); if (!ok) return; }
+  t[k] = e.target.value; pintarCoste(); if (k === 'nombre') pintarLista(); guardar(); });
+$('tiposCanto').addEventListener('click', e => { if (!e.target.closest('[data-quitarTipo]')) return; const i = +e.target.closest('tr').dataset.i, t = costes.tipos[i]; costes.tipos.splice(i, 1);
+  piezas.forEach(p => { if (p.tipoCanto === t.id) delete p.tipoCanto; }); pintarTiposCanto(); pintarLista(); pintarCoste(); guardar(); });
+$('btnTipoCanto').onclick = () => { costes.tipos.push({ id: 'c' + Date.now().toString(36), nombre: `Canto ${costes.tipos.length + 1}`, precio: '' }); pintarTiposCanto(); pintarLista(); pintarCoste(); guardar(); const el = document.querySelector('#tiposCanto tr:last-child input[data-k="nombre"]'); if (el) { el.focus(); el.select(); } };
+$('btnCoste').onclick = csvCoste;
+$('btnAbrir').onclick = () => $('archivo').click();
+$('archivo').onchange = e => { abrirArchivos([...e.target.files]); e.target.value = ''; };
+$('btnRect').onclick = () => { piezas.push({ id: nuevoId(), nombre: `Pieza ${piezas.length + 1}`, tipo: 'rect', L: 400, A: 300, cant: 1, veta: true, giro: null, color: colorNuevo() }); todo(); const ins = document.querySelector('#lista tr:last-child input[data-c="nombre"]'); if (ins) { ins.focus(); ins.select(); } };
+$('btnVaciar').onclick = () => { if (!piezas.length || !confirm('¿Quitar todas las piezas de la lista?')) return; piezas = []; todo(); };
+$('btnPlantilla').onclick = () => descargar('﻿nombre;largo;ancho;cantidad;veta;canto largo;canto ancho;tipo de canto\nCostado;720;400;2;sí;1;0;PVC 2 mm\nBalda;560;380;3;sí;1;0;PVC 2 mm\nTapa;800;420;1;sí;2;2;PVC 2 mm\nTrasera;720;560;1;no;0;0;\n', 'despiece_plantilla.csv', 'text/csv');
+$('btnCSV').onclick = () => { const r = piezas.filter(p => p.tipo === 'rect'); if (!r.length) { snack('No hay piezas rectangulares en la lista'); return; }
+  descargar('﻿nombre;largo;ancho;cantidad;veta;canto largo;canto ancho;tipo de canto\n' + r.map(p => { const c = cantosDe(p), n = nCantos(p);
+    return [p.nombre.replace(/;/g, ','), String(p.L).replace('.', ','), String(p.A).replace('.', ','), p.cant, p.veta ? 'sí' : 'no', (c.L1 ? 1 : 0) + (c.L2 ? 1 : 0), (c.A1 ? 1 : 0) + (c.A2 ? 1 : 0), n ? (tipoCantoDe(p).nombre || 'Canto').replace(/;/g, ',') : ''].join(';'); }).join('\n') + '\n', 'despiece.csv', 'text/csv'); };
+$('btnJSON').onclick = () => { if (!resultado || !resultado.tableros.length) return; const d = proyectoTablero(tableroVisto); descargar(JSON.stringify(d, null, 2), nombreArchivo(d.nombre) + '.json'); };
+$('btnTodos').onclick = () => { if (!resultado) return; resultado.tableros.forEach((_, i) => setTimeout(() => { const d = proyectoTablero(i); descargar(JSON.stringify(d, null, 2), nombreArchivo(d.nombre) + '.json'); }, i * 400)); };
+$('btnCalcador').onclick = () => {
+  if (!resultado || !resultado.tableros.length) return;
+  const d = proyectoTablero(tableroVisto), json = JSON.stringify(d);
+  // por el almacén del navegador y, si el Calcador no lo encuentra ahí (Firefox con archivos locales), por mensaje cuando lo pida
+  try { localStorage.setItem('suiteCNC:paraCalcador', JSON.stringify({ t: Date.now(), json })); } catch (e) { /* irá por mensaje */ }
+  paraCalcador = json;
+  const w = window.open('calcador.html#desdeGenerador', '_blank');
+  if (!w) snack('El navegador ha bloqueado la pestaña nueva: permite las ventanas emergentes, o guarda el tablero y ábrelo en el Calcador');
+  else snack('Abriendo el tablero en el Calcador…');
+};
+// ════════════════════════════════════════════════════════════════════
+//  Colocar a mano con el ratón: arrastrar (queda fijada 📌), doble clic = girar 90°,
+//  asas de las esquinas = escala (y de los lados, en los rectángulos: largo o ancho)
+// ════════════════════════════════════════════════════════════════════
+let sel = null;          // unidad seleccionada en el tablero: { id, k }
+let vistaMap = null;     // escala y origen del dibujo (pantalla ↔ mm del tablero)
+let arr = null;          // arrastre en curso
+let ultimoClic = null;   // para el doble clic (vale también en pantallas táctiles)
+const esSel = c => !!sel && sel.id === c.p.id && sel.k === c.k;
+const limitar = (v, a, b) => Math.min(Math.max(v, a), b);
+function aTablero(e) {
+  const svg = $('vista'), r = svg.getBoundingClientRect(), vb = svg.viewBox.baseVal;
+  const sx = (e.clientX - r.left) * vb.width / r.width, sy = (e.clientY - r.top) * vb.height / r.height;
+  return { sx, sy, x: (sx - vistaMap.ox) / vistaMap.k, y: (vistaMap.oy - sy) / vistaMap.k };
+}
+const elementoPieza = c => document.querySelector(`#vista .pz[data-pid="${CSS.escape(c.p.id)}"][data-k="${c.k}"]`);
+// Las piezas colocadas a mano de un tablero (salvo una), como las usa cabeFija
+function fijasDelTablero(i, salvo) {
+  const T = resultado.T;
+  return resultado.tableros[i].col.filter(o => o.fija && o !== salvo).map(o => ({ t: i, x: o.x - T.M, y: o.y - T.M, w: o.w + T.sep, h: o.h + T.sep }));
+}
+// Etiqueta junto al cursor
+function etiqueta(pt, texto, mal) {
+  const g = $('etq'); if (!g) return;
+  const cs = getComputedStyle(document.documentElement), v = n => cs.getPropertyValue(n).trim();
+  // junto al cursor, pero siempre dentro del dibujo (al arrastrar hasta una pestaña, el cursor sale por arriba)
+  const w = 8 + texto.length * 6.6, vb = $('vista').viewBox.baseVal, Wv = vb.width || 800, Hv = vb.height || 500;
+  const x = Math.max(8, Math.min(Wv - w - 4, pt.sx + 14 + w > Wv - 4 ? pt.sx - 14 - w : pt.sx + 14)), y = Math.max(20, Math.min(Hv - 8, pt.sy + 26));
+  g.innerHTML = `<rect x="${x - 4}" y="${y - 14}" width="${w}" height="20" rx="5" fill="${v('--panel')}" stroke="${mal ? v('--rojo') : v('--acento')}"/><text x="${x + 2}" y="${y}" font-size="12" style="stroke:none" fill="${mal ? v('--rojo') : v('--texto')}">${esc(texto)}</text>`;
+}
+// Fija una unidad (pieza p, unidad k) en el tablero i, en (x, y) con giro g
+function fijar(c, i, x, y, g, aviso) {
+  const p = c.p; p.fijas = p.fijas || {};
+  p.fijas[c.k] = { t: i, x: +x.toFixed(3), y: +y.toFixed(3), g: norm90(g) };
+  sel = { id: p.id, k: c.k };
+  todo(); if (aviso) snack(aviso);
+}
+function soltar(c) {
+  if (c.p.fijas) { delete c.p.fijas[c.k]; if (!Object.keys(c.p.fijas).length) delete c.p.fijas; }
+  todo(); snack('Pieza soltada: el anidador la vuelve a colocar');
+}
+// Mover: imán a los márgenes y a los bordes de las demás piezas (pegada a la separación o alineada). Alt: sin imán
+function posicionArrastre(c, dx, dy, libre) {
+  const T = resultado.T, t = resultado.tableros[tableroVisto], tol = 8 / vistaMap.k;
+  let x = c.x + dx, y = c.y + dy;
+  if (!libre) {
+    const xs = [T.M, T.L - T.M - c.w], ys = [T.M, T.A - T.M - c.h];
+    t.col.forEach(o => { if (o === c) return;
+      xs.push(o.x + o.w + T.sep, o.x - T.sep - c.w, o.x, o.x + o.w - c.w);
+      ys.push(o.y + o.h + T.sep, o.y - T.sep - c.h, o.y, o.y + o.h - c.h); });
+    const cerca = (v, l) => { let b = null, d0 = tol; l.forEach(q => { const d = Math.abs(q - v); if (d < d0) { d0 = d; b = q; } }); return b; };
+    const bx = cerca(x, xs), by = cerca(y, ys);
+    x = bx !== null ? bx : Math.round(x * 2) / 2; y = by !== null ? by : Math.round(y * 2) / 2;
+  }
+  x = limitar(x, T.M, T.L - T.M - c.w); y = limitar(y, T.M, T.A - T.M - c.h);
+  return { x, y, ok: cabeAqui(T, tableroVisto, c, c.g, x, y, c) };
+}
+// Pasar una unidad a otro tablero (o a uno nuevo): queda colocada a mano en el primer hueco, abajo a la izquierda.
+// Primero se busca un hueco que no toque ninguna pieza; si no lo hay, uno que no pise las colocadas a mano (las demás se recolocan)
+function moverATablero(c, t) {
+  const T = resultado.T, n = resultado.tableros.length, todas = t < n ? resultado.tableros[t].col.filter(o => o !== c) : [];
+  const rect = o => ({ t, x: o.x - T.M, y: o.y - T.M, w: o.w + T.sep, h: o.h + T.sep });
+  const buscar = otros => {
+    const xs = [T.M, ...todas.map(o => o.x + o.w + T.sep)], ys = [T.M, ...todas.map(o => o.y + o.h + T.sep)];
+    let mejor = null;
+    const sirve = (x, y) => modoForma() ? cabeForma(T, t, c.p, c.g, x, y, otros.formas) : cabeFija(T, t, x, y, c.w, c.h, otros);
+    ys.forEach(y => xs.forEach(x => { if (sirve(x, y) && (!mejor || y < mejor.y - 1e-9 || (Math.abs(y - mejor.y) < 1e-9 && x < mejor.x))) mejor = { x, y }; }));
+    return mejor;
+  };
+  const conFormas = l => Object.assign(l.map(rect), { formas: l.map(o => ({ t, p: o.p, g: o.g, x: o.x, y: o.y })) });
+  const sitio = buscar(conFormas(todas)) || buscar(conFormas(todas.filter(o => o.fija)));
+  if (!sitio) { pintarVista(); snack(`No cabe en el tablero ${t + 1}: las piezas colocadas a mano no le dejan sitio`); return; }
+  const p = c.p; p.fijas = p.fijas || {}; p.fijas[c.k] = { t, x: +sitio.x.toFixed(3), y: +sitio.y.toFixed(3), g: norm90(c.g) };
+  sel = { id: p.id, k: c.k }; tableroVisto = t;
+  todo();
+  const i = resultado.tableros.findIndex(tb => tb.col.some(o => o.p === p && o.k === c.k));
+  if (i >= 0 && i !== tableroVisto) { tableroVisto = i; pintarVista(); }
+  snack(`«${p.nombre}» está ahora en el tablero ${i + 1} (📌). Arrástrala a su sitio`);
+}
+// Girar una unidad 90° sobre su centro (sentido 1: antihorario; −1: horario). Queda colocada a mano
+function girarColocada(c, sentido) {
+  const T = resultado.T, g = norm90(c.g + 90 * sentido), d = geomPieza(c.p, g);
+  if (d.w > T.L - 2 * T.M + 1e-6 || d.h > T.A - 2 * T.M + 1e-6) { snack('Girada no cabe en el tablero'); return; }
+  const x = limitar(c.x + c.w / 2 - d.w / 2, T.M, T.L - T.M - d.w), y = limitar(c.y + c.h / 2 - d.h / 2, T.M, T.A - T.M - d.h);
+  if (!cabeAqui(T, tableroVisto, c, g, x, y, c)) { snack('Girada no cabe ahí: pisaría una pieza colocada a mano. Muévela antes a un hueco'); return; }
+  fijar(c, tableroVisto, x, y, g, `Girada a ${g}° (📌 colocada a mano)`);
+}
+// Escala con las asas: esquinas en proporción (desde la esquina contraria; Alt: desde el centro); lados: largo o ancho de un rectángulo
+function moverEscala(a, pt, e) {
+  const c = a.c, p = c.p, esq = a.asa.length === 2, op = { n: 's', s: 'n', e: 'w', w: 'e', ne: 'sw', nw: 'se', se: 'nw', sw: 'ne' }[a.asa];
+  const punto = q => ({ x: q.includes('w') ? c.x : q.includes('e') ? c.x + c.w : c.x + c.w / 2, y: q.includes('s') ? c.y : q.includes('n') ? c.y + c.h : c.y + c.h / 2 });
+  const piv = e.altKey ? { x: c.x + c.w / 2, y: c.y + c.h / 2 } : punto(op), p0 = punto(a.asa);
+  let sx = 1, sy = 1, txt;
+  if (esq) {
+    const v0 = { x: p0.x - piv.x, y: p0.y - piv.y }, v = { x: pt.x - piv.x, y: pt.y - piv.y }, q = v0.x * v0.x + v0.y * v0.y;
+    let f = q > 1e-12 ? (v.x * v0.x + v.y * v0.y) / q : 1;
+    f = Math.max(0.02, f);
+    if (p.tipo === 'json') {            // la escala total, en % enteros (Mayús: décimas)
+      const paso = e.shiftKey ? 1000 : 100, tot = Math.max(1, Math.round(escalaDe(p) * f * paso)) / paso;
+      f = tot / escalaDe(p); txt = `Escala ${f1(tot * 100)} % · ${f1(c.w * f)} × ${f1(c.h * f)} mm`;
+    } else {
+      f = Math.max(1, Math.round(f * (e.shiftKey ? 1000 : 100))) / (e.shiftKey ? 1000 : 100);
+      txt = `${f1(c.w * f)} × ${f1(c.h * f)} mm (${f1(f * 100)} %)`;
+    }
+    sx = sy = f;
+  } else {                                // lado de un rectángulo: largo o ancho, en mm enteros (Mayús: décimas)
+    const r = e.shiftKey ? 10 : 1, enX = a.asa === 'e' || a.asa === 'w';
+    const d0 = enX ? c.w : c.h, d = enX ? Math.abs(pt.x - piv.x) * (e.altKey ? 2 : 1) : Math.abs(pt.y - piv.y) * (e.altKey ? 2 : 1);
+    const nuevo = Math.max(1, Math.round(d * r) / r);
+    if (enX) sx = nuevo / d0; else sy = nuevo / d0;
+    txt = `${f1(c.w * sx)} × ${f1(c.h * sy)} mm`;
+  }
+  a.res = { sx, sy, piv };
+  const K = vistaMap.k, P = { x: vistaMap.ox + K * piv.x, y: vistaMap.oy - K * piv.y }, gEl = elementoPieza(c);
+  if (gEl) gEl.setAttribute('transform', `translate(${P.x.toFixed(1)} ${P.y.toFixed(1)}) scale(${sx.toFixed(5)} ${sy.toFixed(5)}) translate(${(-P.x).toFixed(1)} ${(-P.y).toFixed(1)})`);
+  const T = resultado.T, x = piv.x + (c.x - piv.x) * sx, y = piv.y + (c.y - piv.y) * sy;
+  a.x = x; a.y = y; a.w = c.w * sx; a.h = c.h * sy;
+  a.ok = cabeFija(T, tableroVisto, x, y, a.w, a.h, fijasDelTablero(tableroVisto, c));
+  if (gEl) gEl.classList.toggle('mal', !a.ok);
+  etiqueta(pt, txt + (a.ok ? '' : ' · ahí no cabe'), !a.ok);
+}
+function aplicarEscala(a) {
+  const c = a.c, p = c.p, { sx, sy } = a.res;
+  if (Math.abs(sx - 1) < 1e-9 && Math.abs(sy - 1) < 1e-9) { pintarVista(); return; }
+  if (p.tipo === 'json') p.escala = +(escalaDe(p) * sx).toFixed(5);
+  else { const enX = c.g % 180 === 0; p.L = +(p.L * (enX ? sx : sy)).toFixed(3); p.A = +(p.A * (enX ? sy : sx)).toFixed(3); }
+  const txt = p.tipo === 'json' ? `escala ${f1(escalaDe(p) * 100)} %` : `${f1(p.L)} × ${f1(p.A)} mm`;
+  if (a.ok) fijar(c, tableroVisto, a.x, a.y, c.g, `«${p.nombre}»: ${txt} (📌 colocada a mano)`);
+  else { if (p.fijas) delete p.fijas[c.k]; todo(); snack(`«${p.nombre}»: ${txt}. No cabía ahí: el anidador la ha vuelto a colocar`); }
+}
+const vista = $('vista');
+vista.addEventListener('pointerdown', e => {
+  if (!resultado || !vistaMap || (e.pointerType === 'mouse' && e.button !== 0)) return;
+  const t = resultado.tableros[tableroVisto]; if (!t) return;
+  const asa = e.target.closest('[data-asa]'), g = e.target.closest('.pz'), pt = aTablero(e);
+  if (asa) {
+    const c = t.col.find(esSel); if (!c) return;
+    e.preventDefault(); vista.setPointerCapture(e.pointerId);
+    arr = { tipo: 'escala', asa: asa.dataset.asa, c, ini: pt };
+    const gE = elementoPieza(c); if (gE) gE.parentNode.insertBefore(gE, $('asas') || $('etq'));
+    const gA = $('asas'); if (gA) gA.style.display = 'none';
+    return;
+  }
+  if (g) {
+    const c = t.col.find(o => o.p.id === g.dataset.pid && o.k === +g.dataset.k); if (!c) return;
+    e.preventDefault();
+    if (e.target.closest('[data-pin]')) { arr = { tipo: 'pin', c }; return; }
+    if (!esSel(c)) { sel = { id: c.p.id, k: c.k }; pintarVista(); }
+    vista.setPointerCapture(e.pointerId);
+    arr = { tipo: 'mover', c, ini: pt, movido: false };
+    return;
+  }
+  if (sel) { sel = null; pintarVista(); }
+});
+vista.addEventListener('pointermove', e => {
+  if (!arr || arr.tipo === 'pin') return;
+  const pt = aTablero(e);
+  if (arr.tipo === 'escala') { moverEscala(arr, pt, e); return; }
+  if (!arr.movido && Math.hypot(pt.sx - arr.ini.sx, pt.sy - arr.ini.sy) < 4) return;
+  if (!arr.movido) { arr.movido = true; const gA = $('asas'); if (gA) gA.style.display = 'none'; const gE = elementoPieza(arr.c); if (gE && $('etq')) gE.parentNode.insertBefore(gE, $('asas') || $('etq')); $('tableros').classList.add('arrastrando'); }
+  // ¿encima de la pestaña de otro tablero (o de «＋ Tablero nuevo»)? Al soltar, la pieza pasa a ese tablero
+  const sobre = document.elementFromPoint(e.clientX, e.clientY), tab = sobre && sobre.closest('#tableros [data-tab]');
+  document.querySelectorAll('#tableros .destino').forEach(b => b.classList.remove('destino'));
+  arr.aTab = tab && +tab.dataset.tab !== tableroVisto ? +tab.dataset.tab : undefined;
+  if (arr.aTab !== undefined) {
+    tab.classList.add('destino'); const gE = elementoPieza(arr.c); if (gE) gE.classList.remove('mal');
+    etiqueta(pt, arr.aTab >= resultado.tableros.length ? 'Soltar: a un tablero nuevo' : `Soltar: al tablero ${arr.aTab + 1}`, false);
+    return;
+  }
+  const r = posicionArrastre(arr.c, pt.x - arr.ini.x, pt.y - arr.ini.y, e.altKey), K = vistaMap.k, gEl = elementoPieza(arr.c);
+  Object.assign(arr, r);
+  if (gEl) { gEl.setAttribute('transform', `translate(${((r.x - arr.c.x) * K).toFixed(1)} ${(-(r.y - arr.c.y) * K).toFixed(1)})`); gEl.classList.toggle('mal', !r.ok); gEl.classList.add('arrastrando'); }
+  etiqueta(pt, `X${f1(r.x)} Y${f1(r.y)}` + (r.ok ? '' : ' · ahí no cabe'), !r.ok);
+});
+vista.addEventListener('pointerup', e => {
+  const a = arr; arr = null; if (!a) return;
+  if (a.tipo === 'pin') { if (e.target.closest('[data-pin]')) soltar(a.c); return; }
+  if (a.tipo === 'escala') { if (a.res) aplicarEscala(a); else pintarVista(); return; }
+  if (a.movido) $('tableros').classList.remove('arrastrando');
+  if (a.movido && a.aTab !== undefined) { moverATablero(a.c, a.aTab); return; }
+  if (a.movido) {
+    if (a.ok) fijar(a.c, tableroVisto, a.x, a.y, a.c.g, a.c.fija ? '' : 'Colocada a mano (📌): las demás se colocan alrededor');
+    else { pintarVista(); snack('Ahí no cabe: pisaría una pieza colocada a mano'); }
+    return;
+  }
+  // clic sin mover: el segundo clic seguido sobre la misma pieza la gira
+  const ahora = performance.now(), u = ultimoClic;
+  if (u && u.id === a.c.p.id && u.k === a.c.k && ahora - u.t < 450) { ultimoClic = null; girarColocada(a.c, e.shiftKey ? -1 : 1); }
+  else ultimoClic = { id: a.c.p.id, k: a.c.k, t: ahora };
+});
+vista.addEventListener('pointercancel', () => { if (arr) { arr = null; $('tableros').classList.remove('arrastrando'); pintarVista(); } });
+vista.addEventListener('dblclick', e => e.preventDefault());
+document.addEventListener('keydown', e => {
+  if (/^(INPUT|SELECT|TEXTAREA)$/.test((e.target.tagName || ''))) return;
+  if (e.key === 'Escape' && (arr || sel)) { arr = null; sel = null; pintarVista(); }
+  if ((e.key === 'r' || e.key === 'R') && sel && resultado) { const c = (resultado.tableros[tableroVisto] || { col: [] }).col.find(esSel); if (c) girarColocada(c, e.shiftKey ? -1 : 1); }
+});
+$('btnSoltar').onclick = () => { if (!piezas.some(p => p.fijas)) return; piezas.forEach(p => delete p.fijas); todo(); snack('Todas las piezas sueltas: el anidador las coloca de nuevo'); };
+
+// ════════════════════════════════════════════════════════════════════
+//  Exportar el tablero que se ve: PNG, SVG y DXF
+// ════════════════════════════════════════════════════════════════════
+// Nombre de una pieza para el SVG y el DXF (medidas en mm): cabe en su rectángulo; si no, letra más pequeña o acortado
+function nombreEnMM(t, w, h, max) {
+  let a = Math.max(2, Math.min(max, Math.min(w, h) / 5)); const cabe = n => (w * 0.9) / (a * 0.6) >= n;
+  while (!cabe(t.length) && a > 3) a = Math.max(3, a * 0.9);
+  if (cabe(t.length)) return { t, h: a };
+  const n = Math.floor((w * 0.9) / (a * 0.6)) - 1;
+  return n >= 3 ? { t: t.slice(0, n).trimEnd() + '…', h: a } : null;
+}
+const COLOR_EXP = { exterior: '#1e6fd9', interior: '#d64545', grabado: '#00897b', cajera: '#c8741a' };
+// Piezas del tablero i con sus contornos (coordenadas del tablero, esquina inferior izquierda = 0 0) y su tipo
+function dibujoTablero(i) {
+  return resultado.tableros[i].col.map(c => { const cont = contornosColocados(c, ''), polis = cont.map(poliContorno); return { c, cont, clases: clasesDe(cont, polis) }; });
+}
+const fx = n => { const t = (+(+n).toFixed(4)).toString(); return t === '-0' ? '0' : t; };
+function svgTablero(i) {
+  const T = resultado.T, pad = Math.max(20, 0.05 * Math.max(T.L, T.A)), W = T.L + 2 * pad, H = T.A + 2 * pad;
+  const X = x => fx(x + pad), Y = y => fx(T.A - y + pad), sw = fx(Math.max(0.3, Math.max(T.L, T.A) / 1200));
+  const nombre = nombreTablero(i);
+  let s = `<?xml version="1.0" encoding="UTF-8"?>\n<svg xmlns="http://www.w3.org/2000/svg" width="${fx(W)}mm" height="${fx(H)}mm" viewBox="0 0 ${fx(W)} ${fx(H)}" font-family="Segoe UI, Arial, sans-serif">\n<title>${esc(nombre)}</title>\n`;
+  s += `<rect x="0" y="0" width="${fx(W)}" height="${fx(H)}" fill="#ffffff"/>\n`;
+  s += `<rect id="tablero" x="${X(0)}" y="${Y(T.A)}" width="${fx(T.L)}" height="${fx(T.A)}" fill="#f3e6cc" stroke="#b8956a" stroke-width="${sw}"/>\n`;
+  if (T.M > 0) s += `<rect id="margen" x="${X(T.M)}" y="${Y(T.A - T.M)}" width="${fx(T.L - 2 * T.M)}" height="${fx(T.A - 2 * T.M)}" fill="none" stroke="#b8956a" stroke-width="${sw}" stroke-dasharray="${fx(4 * sw)} ${fx(3 * sw)}"/>\n`;
+  // contornos con sus arcos de verdad. El bulge del Calcador: positivo = antihorario. El SVG se ve como el plano (la Y se
+  // invierte para dibujar), así que un arco antihorario sigue viéndose antihorario: en el SVG, sweep = 0
+  const camino = k => {
+    const n = k.pts.length, segs = k.cerrado ? n : n - 1; let d = `M${X(k.pts[0].x)} ${Y(k.pts[0].y)}`;
+    for (let j = 0; j < segs; j++) {
+      const a = k.pts[j], b = k.pts[(j + 1) % n], bu = (k.b && k.b[j]) || 0;
+      if (Math.abs(bu) < 1e-12) { d += ` L${X(b.x)} ${Y(b.y)}`; continue; }
+      const cu = Math.hypot(b.x - a.x, b.y - a.y), r = cu * (1 + bu * bu) / (4 * Math.abs(bu));
+      d += ` A${fx(r)} ${fx(r)} 0 ${Math.abs(bu) > 1 ? 1 : 0} ${bu > 0 ? 0 : 1} ${X(b.x)} ${Y(b.y)}`;
+    }
+    return d + (k.cerrado ? ' Z' : '');
+  };
+  dibujoTablero(i).forEach(({ c, cont, clases }, n) => {
+    s += `<g id="pieza${n + 1}"><title>${esc(c.p.nombre)}</title>\n`;
+    lineasCanto(c, cont, cont.map(poliContorno), clases).forEach(pts => { s += `  <polyline class="canto" points="${pts.map(q => X(q.x) + ',' + Y(q.y)).join(' ')}" fill="none" stroke="#e09a00" stroke-width="${fx(3 * sw)}" stroke-linecap="round" stroke-linejoin="round"/>\n`; });
+    cont.forEach((k, j) => { const ext = clases[j] === 'exterior', col = ext ? colorDe(c.p).c : COLOR_EXP[clases[j]];
+      s += `  <path class="${clases[j]}" d="${camino(k)}" fill="${ext && k.cerrado ? col + '" fill-opacity=".12' : 'none'}" stroke="${col}" stroke-width="${sw}"/>\n`; });
+    const et = nombreEnMM(c.p.nombre, c.w, c.h, 30);
+    s += (et ? `  <text x="${X(c.x + c.w / 2)}" y="${Y(c.y + c.h / 2)}" font-size="${fx(et.h)}" text-anchor="middle" dominant-baseline="central" fill="#1d2733" fill-opacity=".75">${esc(et.t)}</text>\n` : '') + '</g>\n';
+  });
+  // cero pieza, con el mismo símbolo que en los planos del Calcador
+  const o = origen(T), rc = Math.max(4, 0.012 * Math.max(T.L, T.A)), Lc = 1.7 * rc, ox = +X(o.x), oy = +Y(o.y);
+  const cuarto = a0 => { let d = `M${fx(ox)} ${fx(oy)}`; for (let j = 0; j <= 6; j++) { const a = a0 + Math.PI / 2 * j / 6; d += ` L${fx(ox + rc * Math.cos(a))} ${fx(oy - rc * Math.sin(a))}`; } return `<path d="${d} Z" fill="#1d2733"/>`; };
+  s += `<g id="cero"><title>Cero pieza (X0 Y0)</title><circle cx="${fx(ox)}" cy="${fx(oy)}" r="${fx(rc)}" fill="#ffffff" stroke="#1d2733" stroke-width="${sw}"/>${cuarto(0)}${cuarto(Math.PI)}<line x1="${fx(ox - Lc)}" y1="${fx(oy)}" x2="${fx(ox + Lc)}" y2="${fx(oy)}" stroke="#1d2733" stroke-width="${sw}"/><line x1="${fx(ox)}" y1="${fx(oy - Lc)}" x2="${fx(ox)}" y2="${fx(oy + Lc)}" stroke="#1d2733" stroke-width="${sw}"/></g>\n`;
+  // medidas del tablero
+  const ft = fx(Math.max(5, pad * 0.4));
+  s += `<text x="${X(T.L / 2)}" y="${fx(+Y(0) + pad * 0.6)}" font-size="${ft}" text-anchor="middle" dominant-baseline="central" fill="#1d2733">${f1(T.L)}</text>\n`;
+  s += `<text x="${fx(pad * 0.5)}" y="${Y(T.A / 2)}" font-size="${ft}" text-anchor="middle" dominant-baseline="central" fill="#1d2733" transform="rotate(-90 ${fx(pad * 0.5)} ${Y(T.A / 2)})">${f1(T.A)}</text>\n`;
+  return s + '</svg>\n';
+}
+function descargarBlob(blob, nombre) { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = nombre; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); }
+function exportarSVG() { if (!hayTablero()) return; descargar(svgTablero(tableroVisto), nombreArchivo(nombreTablero(tableroVisto)) + '.svg', 'image/svg+xml'); }
+function pngTablero(i, ladoMax) {
+  return new Promise((ok, mal) => {
+    const svg = svgTablero(i), vb = svg.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/), W = +vb[1], H = +vb[2], k = (ladoMax || 4000) / Math.max(W, H);
+    const img = new Image(), url = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
+    img.onload = () => {
+      const cv = document.createElement('canvas'); cv.width = Math.round(W * k); cv.height = Math.round(H * k);
+      const g = cv.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, cv.width, cv.height); g.drawImage(img, 0, 0, cv.width, cv.height);
+      URL.revokeObjectURL(url); cv.toBlob(b => b ? ok(b) : mal(new Error('png')), 'image/png');
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); mal(new Error('svg')); };
+    img.src = url;
+  });
+}
+function exportarPNG() { if (!hayTablero()) return; const i = tableroVisto; pngTablero(i).then(b => descargarBlob(b, nombreArchivo(nombreTablero(i)) + '.png')).catch(() => snack('No se pudo hacer la imagen: prueba con ⬇ SVG')); }
+// DXF R12 (AC1009): lo abre cualquier CAD y el Calcador. Origen = el cero pieza del proyecto (como el .json)
+const CAPAS_DXF = [['TABLERO', 8], ['EXTERIOR', 5], ['INTERIOR', 1], ['GRABADO', 3], ['CAJERA', 6], ['NOMBRES', 7]];
+function dxfTablero(i) {
+  const T = resultado.T, o = origen(T), L = [], g = (c, v) => L.push(String(c), String(v));
+  const PX = x => fx(x - o.x), PY = y => fx(y - o.y);
+  const poli = (capa, pts, b, cerrado, color) => {
+    g(0, 'POLYLINE'); g(8, capa); if (color) g(62, color); g(66, 1); g(10, 0); g(20, 0); g(30, 0); g(70, cerrado ? 1 : 0);
+    pts.forEach((p, j) => { g(0, 'VERTEX'); g(8, capa); g(10, PX(p.x)); g(20, PY(p.y)); g(30, 0); const bu = b ? b[j] || 0 : 0; if ((cerrado || j < pts.length - 1) && Math.abs(bu) > 1e-12) g(42, fx(bu)); });
+    g(0, 'SEQEND'); g(8, capa);
+  };
+  g(0, 'SECTION'); g(2, 'HEADER'); g(9, '$ACADVER'); g(1, 'AC1009'); g(9, '$DWGCODEPAGE'); g(3, 'ANSI_1252');
+  g(9, '$EXTMIN'); g(10, PX(0)); g(20, PY(0)); g(30, 0); g(9, '$EXTMAX'); g(10, PX(T.L)); g(20, PY(T.A)); g(30, 0); g(0, 'ENDSEC');
+  g(0, 'SECTION'); g(2, 'TABLES');
+  g(0, 'TABLE'); g(2, 'LTYPE'); g(70, 1); g(0, 'LTYPE'); g(2, 'CONTINUOUS'); g(70, 0); g(3, 'Solid line'); g(72, 65); g(73, 0); g(40, 0); g(0, 'ENDTAB');
+  g(0, 'TABLE'); g(2, 'LAYER'); g(70, CAPAS_DXF.length); CAPAS_DXF.forEach(([n, col]) => { g(0, 'LAYER'); g(2, n); g(70, 0); g(62, col); g(6, 'CONTINUOUS'); }); g(0, 'ENDTAB');
+  g(0, 'ENDSEC');
+  g(0, 'SECTION'); g(2, 'ENTITIES');
+  poli('TABLERO', [{ x: 0, y: 0 }, { x: T.L, y: 0 }, { x: T.L, y: T.A }, { x: 0, y: T.A }], null, true);
+  dibujoTablero(i).forEach(({ c, cont, clases }) => {
+    // el corte exterior, con el color de la pieza; lo demás (interiores, grabados, cajeras), con el de su capa
+    cont.forEach((k, j) => poli(clases[j].toUpperCase(), k.pts, k.b, !!k.cerrado, clases[j] === 'exterior' ? colorDe(c.p).aci : 0));
+    // en el DXF va el nombre entero (en CAD se amplía); la altura, la que lo hace caber en la pieza si se puede
+    const et = nombreEnMM(c.p.nombre, c.w, c.h, 20), h = et && et.t === c.p.nombre ? et.h : 2, cx = PX(c.x + c.w / 2), cy = PY(c.y + c.h / 2);
+    g(0, 'TEXT'); g(8, 'NOMBRES'); g(62, colorDe(c.p).aci); g(10, cx); g(20, cy); g(30, 0); g(40, fx(h)); g(1, textoDXF(c.p.nombre)); g(72, 1); g(11, cx); g(21, cy); g(31, 0); g(73, 2);
+  });
+  g(0, 'ENDSEC'); g(0, 'EOF');
+  return L.join('\r\n') + '\r\n';
+}
+// Texto para el DXF: solo ASCII; los acentos y la ñ, con \U+XXXX (lo entienden AutoCAD, LibreCAD y los demás)
+const textoDXF = t => String(t).replace(/[\r\n]+/g, ' ').replace(/[^\x20-\x7e]/g, ch => '\\U+' + ch.charCodeAt(0).toString(16).toUpperCase().padStart(4, '0'));
+function exportarDXF() { if (!hayTablero()) return; descargarBlob(new Blob([dxfTablero(tableroVisto)], { type: 'application/dxf' }), nombreArchivo(nombreTablero(tableroVisto)) + '.dxf'); }
+const hayTablero = () => !!(resultado && resultado.tableros.length && resultado.tableros[tableroVisto]);
+$('btnPNG').onclick = exportarPNG;
+$('btnSVG').onclick = exportarSVG;
+$('btnDXF').onclick = exportarDXF;
+
+// El Calcador pide el proyecto si no lo ha encontrado en el almacén del navegador
+let paraCalcador = null;
+window.addEventListener('message', e => {
+  const d = e.data; if (!d || typeof d !== 'object') return;
+  if (d.tipo === 'calcador-listo' && paraCalcador && e.source) { e.source.postMessage({ tipo: 'proyecto-generador', json: paraCalcador }, '*'); paraCalcador = null; }
+});
+
+// arrastrar archivos
+const zona = $('zona');
+zona.addEventListener('dragover', e => { e.preventDefault(); zona.classList.add('soltar'); });
+zona.addEventListener('dragleave', e => { if (e.target === zona) zona.classList.remove('soltar'); });
+zona.addEventListener('drop', e => { e.preventDefault(); zona.classList.remove('soltar'); if (e.dataTransfer.files.length) abrirArchivos([...e.dataTransfer.files]); });
+// ventanas
+const abrirVelo = id => $(id).classList.add('visible');
+document.querySelectorAll('.velo').forEach(vl => vl.addEventListener('click', e => { if (e.target === vl || e.target.closest('[data-cerrar]')) vl.classList.remove('visible'); }));
+$('btnAyuda').onclick = () => abrirVelo('veloAyuda');
+$('btnInfo').onclick = () => abrirVelo('veloInfo');
+document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.velo').forEach(vl => vl.classList.remove('visible')); if (e.key === 'F1') { e.preventDefault(); abrirVelo('veloAyuda'); } });
+// tema
+function ponerTema(t) { document.documentElement.dataset.tema = t; if (resultado) pintarVista(); }
+(() => { let t = null; try { t = localStorage.getItem('anidador_tema'); } catch (e) {} ponerTema(t || (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'oscuro' : 'claro')); })();
+$('btnTema').onclick = () => { const t = document.documentElement.dataset.tema === 'oscuro' ? 'claro' : 'oscuro'; ponerTema(t); try { localStorage.setItem('anidador_tema', t); } catch (e) {} };
+window.addEventListener('resize', () => { clearTimeout(window._rs); window._rs = setTimeout(pintarVista, 120); });
+window.addEventListener('storage', e => { if (e.key === 'suiteCNC:herramientas') pintarHerramientas($('hSel').value); });
+
+cargar();
+ponerCostesEnPantalla();
+todo();
+</script>
+</body>
+</html>

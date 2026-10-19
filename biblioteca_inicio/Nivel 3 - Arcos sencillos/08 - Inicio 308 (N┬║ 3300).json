@@ -1,0 +1,271 @@
+{
+ "version": 7,
+ "nombre": "Inicio 308 - Arcos sencillos",
+ "vertices": [
+  {
+   "x": 0,
+   "y": 600,
+   "seg": "recta",
+   "arcAng": 180
+  },
+  {
+   "x": 700,
+   "y": 600,
+   "seg": "recta",
+   "arcAng": 180
+  },
+  {
+   "x": 700,
+   "y": 120,
+   "seg": "recta",
+   "arcAng": 180
+  },
+  {
+   "x": 500,
+   "y": -80,
+   "seg": "arco-e",
+   "arcAng": 90
+  },
+  {
+   "x": 100,
+   "y": -80,
+   "seg": "recta",
+   "arcAng": 180
+  },
+  {
+   "x": 0,
+   "y": 20,
+   "seg": "recta",
+   "arcAng": 180
+  }
+ ],
+ "poligonoListo": true,
+ "segModoCierre": "recta",
+ "trazadoTipoActual": "exterior",
+ "entryIdx": 0,
+ "mec": null,
+ "uid": "kmv9gofmx185zq",
+ "estrategia": "plano",
+ "wcs": {
+  "x": 0,
+  "y": 0,
+  "activo": true
+ },
+ "trazados": [
+  {
+   "vertices": [
+    {
+     "x": 340,
+     "y": 240,
+     "seg": "recta",
+     "arcAng": 180
+    },
+    {
+     "x": 180,
+     "y": 240,
+     "seg": "arco-i",
+     "arcAng": 180
+    }
+   ],
+   "segModoCierre": "arco-i",
+   "tipo": "interior",
+   "entryIdx": 0,
+   "mec": null,
+   "uid": "kmv9gofmx196l7"
+  }
+ ],
+ "calcador": {
+  "version": 4,
+  "escala": 10,
+  "origen": {
+   "x": 0,
+   "y": 0
+  },
+  "contornos": [
+   {
+    "pts": [
+     {
+      "x": 0,
+      "y": 0
+     },
+     {
+      "x": 175,
+      "y": 0
+     },
+     {
+      "x": 175,
+      "y": 120
+     },
+     {
+      "x": 125,
+      "y": 170
+     },
+     {
+      "x": 25,
+      "y": 170
+     },
+     {
+      "x": 0,
+      "y": 145
+     }
+    ],
+    "b": [
+     0,
+     0,
+     -0.41421356237309503,
+     0,
+     0,
+     0
+    ],
+    "cerrado": true,
+    "tipo": "auto",
+    "forma": {
+     "tipo": "rectangulo",
+     "c": {
+      "x": 87.5,
+      "y": 85
+     },
+     "w": 175,
+     "h": 170,
+     "rot": 0,
+     "esq": [
+      {
+       "t": "v",
+       "r": 0
+      },
+      {
+       "t": "v",
+       "r": 0
+      },
+      {
+       "t": "c",
+       "r": 50
+      },
+      {
+       "t": "ch",
+       "r": 25
+      }
+     ]
+    },
+    "grupo": "gmv9gofmxdmkz",
+    "uid": "kmv9gofmx185zq"
+   },
+   {
+    "pts": [
+     {
+      "x": 85,
+      "y": 90
+     },
+     {
+      "x": 45,
+      "y": 90
+     }
+    ],
+    "b": [
+     1,
+     1
+    ],
+    "cerrado": true,
+    "tipo": "auto",
+    "forma": {
+     "tipo": "circulo",
+     "c": {
+      "x": 65,
+      "y": 90
+     },
+     "r": 20,
+     "rot": 0
+    },
+    "grupo": "gmv9gofmxdmkz",
+    "uid": "kmv9gofmx196l7"
+   }
+  ],
+  "cotasAjuste": {},
+  "cotasManuales": [],
+  "cfgCotas": {
+   "ver": true,
+   "nivel": "todo",
+   "incl": "proy",
+   "cero": true,
+   "entrada": true,
+   "sentido": true,
+   "centros": true,
+   "cadena": true,
+   "verOcultas": false
+  },
+  "aux": [],
+  "cfgHoja": {
+   "titulo": "Nivel 3 · Arcos sencillos · Ejercicio 8",
+   "num": "308",
+   "grupo": "",
+   "fecha": "",
+   "material": "Madera",
+   "espesor": "",
+   "herramienta": "Fresa Ø6",
+   "centro": "",
+   "orient": "h",
+   "prog": "g90",
+   "reqEntrada": false,
+   "reqSentido": false,
+   "enunciado": "Programa en código ISO el contorno de la pieza tomando como origen el cero pieza indicado en el plano.",
+   "tabla": true,
+   "rayado": false
+  },
+  "cfgMec": {
+   "T": 101,
+   "F": 1000,
+   "Fz": 300,
+   "F0": 5000,
+   "S": 12000,
+   "zSeg": 20,
+   "prof": 3,
+   "paso": 3,
+   "acab": 0,
+   "coord": "G90",
+   "comp": "G40",
+   "estr": "plano",
+   "unid": "G71",
+   "ancho": true,
+   "orden": "int"
+  },
+  "generado": {
+   "semilla": 3300,
+   "cfg": {
+    "nivel": "tangentes",
+    "serieN": 25,
+    "ancho": 250,
+    "alto": 200,
+    "ocupar": 60,
+    "pMin": 1,
+    "pMax": 1,
+    "ext": [
+     "rectangulo",
+     "escalonada"
+    ],
+    "iMin": 1,
+    "iMax": 2,
+    "int": [
+     "rectangulo",
+     "circulo",
+     "ranura"
+    ],
+    "paso": 5,
+    "girar": false,
+    "fresa": 6,
+    "pared": 6,
+    "pEsq": 45,
+    "esq": [
+     "r",
+     "c",
+     "ch"
+    ],
+    "pLado": 0,
+    "lado": [
+     "fuera",
+     "dentro"
+    ],
+    "modInt": true
+   }
+  }
+ }
+}

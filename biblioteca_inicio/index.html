@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biblioteca de inicio — Suite CNC</title>
+<style>
+  :root { --acento:#005A9C; --acento-suave:rgba(0,90,156,.10); --fondo:#eef2f6; --panel:#fff; --texto:#1d2733; --texto-sec:#5b6878; --borde:#d7dee7; --sombra:0 6px 22px rgba(20,40,70,.10); --verde:#00897b; --naranja:#c8741a; --morado:#7b4bb7; }
+  @media (prefers-color-scheme: dark) { :root { --acento:#5aa9e6; --acento-suave:rgba(90,169,230,.14); --fondo:#14181d; --panel:#1d232a; --texto:#e6ebf0; --texto-sec:#9aa7b5; --borde:#2e3843; --sombra:0 6px 22px rgba(0,0,0,.35); --verde:#4dd0c4; --naranja:#e8a25a; --morado:#b48ce6; } .mini { background:#f4f7fa; } }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:'Segoe UI', system-ui, -apple-system, Roboto, Arial, sans-serif; background:var(--fondo); color:var(--texto); line-height:1.5; }
+  .envoltura { max-width:1120px; margin:0 auto; padding:28px 16px 40px; }
+  header { display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+  .casa { font-size:22px; text-decoration:none; color:var(--texto-sec); }
+  h1 { margin:0; font-size:clamp(22px, 3.2vw, 30px); }
+  .sub { margin:2px 0 0; color:var(--texto-sec); font-size:15px; }
+  .uso { background:var(--panel); border:1px solid var(--borde); border-radius:14px; padding:16px 18px; margin:22px 0 8px; box-shadow:var(--sombra); font-size:14.5px; }
+  .uso ol { margin:6px 0 0; padding-left:22px; } .uso li { margin:3px 0; }
+  .acciones { display:flex; gap:8px; flex-wrap:wrap; }
+  .boton { display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border-radius:8px; background:var(--acento); color:#fff; text-decoration:none; font-weight:600; font-size:14px; }
+  .boton.sec { background:transparent; color:var(--acento); border:1px solid var(--acento); }
+  .boton:hover { filter:brightness(1.08); }
+  .nivel { background:var(--panel); border:1px solid var(--borde); border-radius:14px; padding:18px; margin-top:18px; box-shadow:var(--sombra); }
+  .cab-nivel { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap; margin-bottom:12px; }
+  .cab-nivel p { margin:2px 0 0; color:var(--texto-sec); font-size:14px; max-width:620px; }
+  h2 { margin:0; font-size:19px; display:flex; align-items:center; gap:10px; }
+  h2 .n { display:inline-flex; width:30px; height:30px; border-radius:9px; background:var(--acento-suave); color:var(--acento); align-items:center; justify-content:center; font-size:16px; }
+  .ejs { display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:10px; }
+  .ej { display:flex; flex-direction:column; gap:3px; padding:8px; border:1px solid var(--borde); border-radius:10px; text-decoration:none; color:var(--texto); transition:border-color .12s, transform .12s; }
+  .ej:hover { border-color:var(--acento); transform:translateY(-2px); }
+  .mini { height:110px; border-radius:6px; background:#f7f9fb; padding:6px; } .mini svg { width:100%; height:100%; display:block; }
+  .pie { display:flex; justify-content:space-between; align-items:center; font-size:14px; }
+  .prog { font-size:11px; font-weight:700; padding:1px 8px; border-radius:9px; background:var(--acento-suave); color:var(--acento); }
+  .p-g91 { color:var(--verde); background:rgba(0,137,123,.12); } .p-mix { color:var(--naranja); background:rgba(200,116,26,.12); } .p-libre { color:var(--morado); background:rgba(123,75,183,.12); }
+  small { color:var(--texto-sec); font-size:12px; }
+  footer { margin-top:28px; text-align:center; font-size:12.5px; color:var(--texto-sec); }
+</style>
+</head>
+<body>
+<div class="envoltura">
+  <header>
+    <a class="casa" href="../index.html" title="Portada de las herramientas">⌂</a>
+    <div><h1>📚 Biblioteca de inicio</h1><p class="sub">40 ejercicios para el Calcador, en 4 niveles y de menos a más dentro de cada nivel · Suite CNC</p></div>
+  </header>
+  <div class="uso">
+    <b>Cómo se usa</b>
+    <ol>
+      <li><b>Todos de una vez:</b> descarga <a href="Biblioteca_de_inicio.json" download>Biblioteca_de_inicio.json</a> y, en el Calcador, abre 📚 Biblioteca → «Importar archivos…». Quedan en la carpeta <i>Biblioteca de inicio</i>, con las etiquetas <i>Inicio</i> y <i>Nivel 1</i> … <i>Nivel 4</i>.</li>
+      <li><b>Uno a uno:</b> pulsa un ejercicio para descargar su JSON y ábrelo en el Calcador como cualquier proyecto. (Si ya has importado el archivo de todos, no hace falta: saldrían dos veces.)</li>
+      <li><b>Para imprimir:</b> cada nivel tiene sus hojas de ejercicio y sus soluciones en PDF.</li>
+    </ol>
+    <div class="acciones" style="margin-top:10px"><a class="boton" href="Biblioteca_de_inicio.json" download>⬇ Biblioteca_de_inicio.json (los 40)</a><a class="boton sec" href="../calcador.html">Abrir el Calcador</a></div>
+  </div>
+  
+    <section class="nivel">
+      <div class="cab-nivel">
+        <div><h2><span class="n">1</span>Rectas</h2><p>Rectas horizontales y verticales: un rectángulo, piezas escalonadas y, al final, agujeros rectangulares.</p></div>
+        <div class="acciones">
+          <a class="boton" href="Nivel%201%20-%20Rectas%20-%20hojas.pdf" target="_blank" rel="noopener">📄 Hojas (PDF)</a>
+          <a class="boton sec" href="Nivel%201%20-%20Rectas%20-%20soluciones.pdf" target="_blank" rel="noopener">✅ Soluciones (PDF)</a>
+        </div>
+      </div>
+      <div class="ejs">
+        <a class="ej" href="Nivel%201%20-%20Rectas/01%20-%20Inicio%20101%20(N%C2%BA%201100).json" download title="Descargar el JSON del ejercicio 101 (se abre en el Calcador)">
+          <div class="mini"><svg viewBox="-13.7 -133.7 247.4 147.4" preserveAspectRatio="xMidYMid meet"><g transform="scale(1,-1)">
+        <path d="M 0 0 L 220 0 L 220 120 L 0 120 L 0 0 Z" fill="rgba(0,90,156,.10)" fill-rule="evenodd" stroke="#005a9c" stroke-width="2.25"/>
+        </g></svg></div>
+          <div class="pie"><b>1</b><span class="prog p-g90" title="En absolutas (G90)">G90</span></div>
+          <small>220 × 120 mm</small>
+        </a>
+        <a class="ej" href="Nivel%201%20-%20Rectas/02%20-%20Inicio%20102%20(N%C2%BA%201201).json" download title="Descargar el JSON del ejercicio 102 (se abre en el Calcador)">
+          <div class="mini"><svg viewBox="-12.5 -147.5 225 160" preserveAspectRatio="xMidYMid meet"><g transform="scale(1,-1)">
+        <path d="M 0 0 L 130 0 L 130 20 L 200 20 L 200 90 L 125 90 L 125 135 L 0 135 L 0 0 Z" fill="rgba(0,90,156,.10)" fill-rule="evenodd" stroke="#005a9c" stroke-width="2.05"/>
+        </g></svg></div>
+          <div class="pie"><b>2</b><span class="prog p-g90" title="En absolutas (G90)">G90</span></div>
+          <small>200 × 135 mm</small>
+        </a>
+        <a class="ej" href="Nivel%201%20-%20Rectas/03%20-%20Inicio%20103%20(N%C2%BA%201220).json" download title="Descargar el JSON del ejercicio 103 (se abre en el Calcador)">
+          <div class="mini"><svg viewBox="-12.2 -137.2 219.4 149.4" preserveAspectRatio="xMidYMid meet"><g transform="scale(1,-1)">
+        <path d="M 0 0 L 195 0 L 195 90 L 160 90 L 160 125 L 70 125 L 70 80 L 0 80 L 0 0 Z" fill="rgba(0,90,156,.10)" fill-rule="evenodd" stroke="#005a9c" stroke-width="1.99"/>
+        </g></svg></div>
+          <div class="pie"><b>3</b><span class="prog p-g90" title="En absolutas (G90)">G90</span></div>
+          <small>195 × 125 mm</small>
+        </a>
+        <a class="ej" href="Nivel%201%20-%20Rectas/04%20-%20Inicio%20104%20(N%C2%BA%201231).json" download title="Descargar el JSON del ejercicio 104 (se abre en el Calcador)">
+          <div class="mini"><svg viewBox="-12.8 -202.8 230.6 215.6" preserveAspectRatio="xMidYMid meet"><g transform="scale(1,-1)">
+        <path d="M 0 0 L 205 0 L 205 190 L 75 190 L 75 130 L 0 130 L 0 0 Z" fill="rgba(0,90,156,.10)" fill-rule="evenodd" stroke="#005a9c" stroke-width="2.1"/>
+        </g></svg></div>
+          <div class="pie"><b>4</b><span class="prog p-g90" title="En absolutas (G90)">G90</span></div>
+          <small>205 × 190 mm</small>
+        </a>
+        <a class="ej" href="Nivel%201%20-%20Rectas/05%20-%20Inicio%20105%20(N%C2%BA%201203).json" download title="Descargar el JSON del ejercicio 105 (se abre en el Calcador)">
+          <div class="mini"><svg viewBox="-12.2 -142.2 219.4 154.4" preserveAspectRatio="xMidYMid meet"><g transform="scale(1,-1)">
+        <path d="M 0 0 L 165 0 L 165 50 L 195 50 L 195 130 L 55 130 L 55 90 L 0 90 L 0 0 Z" fill="rgba(0,90,156,.10)" fill-rule="evenodd" stroke="#005a9c" stroke-width="1.99"/>
+        </g></svg></div>
+          <div class="pie"><b>5</b><span class="prog p-g90" title="En absolutas (G90)">G90</span></div>
+          <small>195 × 130 mm</small>
+        </a>
+        <a class="ej" href="Nivel%201%20-%20Rectas/06%20-%20Inicio%20106%20(N%C2%BA%201219).json" download title="Descargar el JSON del ejercicio 106 (se abre en el Calcador)">
+          <div class="mini"><svg viewBox="-11.9 -146.9 213.8 158.8" preserveAspectRatio="xMidYMid meet"><g transform="scale(1,-1)">
+        <path d="M 70 0 L 155 0 L 155 45 L 190 45 L 190 135 L 80 135 L 80 120 L 50 120 L 50 135 L 0 135 L 0 30 L 70 30 L 70 0 Z" fill="rgba(0,90,156,.10)" fill-rule="evenodd" stroke="#005a9c" stroke-width="1.94"/>
+        </g></svg></div>
+          <div class="pie"><b>6</b><span class="prog p-g91" title="En incrementales (G91)">G91</span></div>
+          <small>190 × 135 mm</small>
+        </a>
+        <a class="ej" href="Nivel%201%20-%20Rectas/07%20-%20Inicio%20107%20(N%C2%BA%201224).json" download title="Descargar el JSON del ejercicio 107 (se abre en el Calcador)">
+          <div class="mini"><svg viewBox="-14.3 -144.3 258.6 158.6" preserveAspectRatio="xMidYMid meet"><g transform="scale(1,-1)">
+        <path d="M 70 0 L 105 0 L 105 15 L 175 15 L 175 0 L 230 0 L 230 130 L 120 130 L 120 95 L 80 95 L 80 130 L 50 130 L 50 110 L 0 110 L 0 35 L 70 35 L 70 0 Z" fill="rgba(0,90,156,.10)" fill-rule="evenodd" stroke="#005a9c" stroke-width="2.35"/>
+        </g></svg></div>
+          <div class="pie"><b>7</b><span class="prog p-g91" title="En incrementales (G91)">G91</span></div>
+          <small>230 × 130 mm</small>
+        </a>
+        <a class="ej" href="Nivel%201%20-%20Rectas/08%20-%20Inicio%20108%20(N%C2%BA%201301).json" download title="Descargar el JSON del ejercicio 108 (se abre en el Calcador)">
+          <div class="mini"><svg viewBox="-12.8 -187.8 230.6 200.6" preserveAspectRatio="xMidYMid meet"><g transform="scale(1,-1)">
+        <path d="M 0 0 L 205 0 L 205 175 L 0 175 L 0 0 Z M 50 35 L 105 35 L 105 75 L 50 75 L 50 35 Z" fill="rgba(0,90,156,.10)" fill-rule="evenodd" stroke="#005a9c" stroke-width="2.1"/>
+        </g></svg></div>
+          <div class="pie"><b>8</b><span class="prog p-g91" title="En incrementales (G91)">G91</span></div>
+          <small>205 × 175 mm · 1 agujero</small>
+        </a>
+        <a class="ej" href="Nivel%201%20-%20Rectas/09%20-%20Inicio%20109%20(N%C2%BA%201306).json" download title="Descargar el JSON del ejercicio 109 (se abre en el Calcador)">
+          <div class="mini"><svg viewBox="-14 -209 253 223" preserveAspectRatio="xMidYMid meet"><g transform="scale(1,-1)">
+        <path d="M 70 0 L 140 0 L 140 70 L 225 70 L 225 195 L 85 195 L 85 150 L 0 150 L 0 60 L 70 60 L 70 0 Z M 85 80 L 130 80 L 130 130 L 85 130 L 85 80 Z" fill="rgba(0,90,156,.10)" fill-rule="evenodd" stroke="#005a9c" stroke-width="2.3"/>
+        </g></svg></div>
+          <div class="pie"><b>9</b><span class="prog p-g91" title="En incrementales (G91)">G91</span></div>
+          <small>225 × 195 mm · 1 agujero</small>
+        </a>
+        <a class="ej" href="Nivel%201%20-%20Rectas/10%20-%20Inicio%20110%20(N%C2%BA%201312).json" download title="Descargar el JSON del ejercicio 110 (se abre en el Calcador)">
+          <div class="mini"><svg viewBox="-11.6 -156.6 208.2 168.2" preserveAspectRatio="xMidYMid meet"><g transform="scale(1,-1)">
+        <path d="M 50 0 L 150 0 L 150 30 L 185 30 L 185 115 L 155 115 L 155 145 L 0 145 L 0 40 L 50 40 L 50 0 Z M 115 35 L 135 35 L 135 60 L 115 60 L 115 35 Z M 50 70 L 105 70 L 105 120 L 50 120 L 50 70 Z" fill="rgba(0,90,156,.10)" fill-rule="evenodd" stroke="#005a9c" stroke-width="1.89"/>
+        </g></svg></div>
+          <div class="pie"><b>10</b><span class="prog p-g91" title="En incrementales (G91)">G91</span></div>
+          <small>185 × 145 mm · 2 agujeros</small>
+        </a></div>
+    </section>
+    <section class="nivel">
+      <div class="cab-nivel">
+        <div><h2><span class="n">2</span>Rectas inclinadas</h2><p>Chaflanes, que se calculan por proyecciones.</p></div>
+        <div class="acciones">
+          <a class="boton" href="Nivel%202%20-%20Rectas%20inclinadas%20-%20hojas.pdf" target="_blank" rel="noopener">📄 Hojas (PDF)</a>
+          <a class="boton sec" href="Nivel%202%20-%20Rectas%20inclinadas%20-%20soluciones.pdf" target="_blank" rel="noopener">✅ Soluciones (PDF)</a>
+        </div>
+      </div>
+      <div class="ejs">
+        <a class="ej" href="Nivel%202%20-%20Rectas%20inclinadas/01%20-%20Inicio%20201%20(N%C2%BA%202105).json" download title="Descargar el JSON del ejercicio 201 (se abre en el Calcador)">
+          <div class="mini"><svg viewBox="-11 -171 197 182" preserveAspectRatio="xMidYMid meet"><g transform="scale(1,-1)">
+        <path d="M 0 15 L 15 0 L 175 0 L 175 130 L 145 160 L 0 160 L 0 15 Z" fill="rgba(0,90,156,.10)" fill-rule="evenodd" stroke="#005a9c" stroke-width="1.79"/>
+        </g></svg></div>
+          <div class="pie"><b>1</b><span class="prog p-g90" title="En absolutas (G90)">G90</span></div>
+          <small>175 × 160 mm</small>
+        </a>
+        <a class="ej" href="Nivel%202%20-%20Rectas%20inclinadas/02%20-%20Inicio%20202%20(N%C2%BA%202102).json" download title="Descargar el JSON del ejercicio 202 (se abre en el Calcador)">
+          <div class="mini"><svg viewBox="-11.3 -136.3 202.6 147.6" preserveAspectRatio="xMidYMid meet"><g transform="scale(1,-1)">
+        <path d="M 0 0 L 170 0 L 180 10 L 180 105 L 160 125 L 35 125 L 0 90 L 0 0 Z" fill="rgba(0,90,156,.10)" fill-rule="evenodd" stroke="#005a9c" stroke-width="1.84"/>
+        </g></svg></div>
+          <div class="pie"><b>2</b><span class="prog p-g90" title="En absolutas (G90)">G90</span></div>
+          <small>180 × 125 mm</small>
+        </a>
+        <a class="ej" href="Nivel%202%20-%20Rectas%20inclinadas/03%20-%20Inicio%20203%20(N%C2%BA%202125).json" download title="Descargar el JSON del ejercicio 203 (se abre en el Calcador)">
+          <div class="mini"><svg viewBox="-10.1 -130.1 180.2 140.2" preserveAspectRatio="xMidYMid meet"><g transform="scale(1,-1)">
+        <path d="M 0 15 L 15 0 L 145 0 L 160 15 L 160 100 L 140 120 L 10 120 L 0 110 L 0 15 Z" fill="rgba(0,90,156,.10)" fill-rule="evenodd" stroke="#005a9c" stroke-width="1.64"/>
+        </g></svg></div>
+          <div class="pie"><b>3</b><span class="prog p-g90" title="En absolutas (G90)">G90</span></div>
+          <small>160 × 120 mm</small>
+        </a>
+        <a class="ej" href="Nivel%202%20-%20Rectas%20inclinadas/04%20-%20Inicio%20204%20(N%C2%BA%202134).json" download title="Descargar el JSON del ejercicio 204 (se abre en el Calcador)">
+          <div class="mini"><svg viewBox="-14.9 -209.9 269.8 224.8" preserveAspectRatio="xMidYMid meet"><g transform="scale(1,-1)">
+        <path d="M 0 45 L 45 0 L 215 0 L 240 25 L 240 140 L 185 195 L 35 195 L 0 160 L 0 45 Z" fill="rgba(0,90,156,.10)" fill-rule="evenodd" stroke="#005a9c" stroke-width="2.45"/>
+        </g></svg></div>
+          <div class="pie"><b>4</b><span class="prog p-g90" title="En absolutas (G90)">G90</span></div>
+          <small>240 × 195 mm</small>
+        </a>
+        <a class="ej" href="Nivel%202%20-%20Rectas%20inclinadas/05%20-%20Inicio%20205%20(N%C2%BA%202201).json" download title="Descargar el JSON del ejercicio 205 (se abre en el Calcador)">
+          <div class="mini"><svg viewBox="-13.1 -153.1 236.2 166.2" preserveAspectRatio="xMidYMid meet"><g transform="scale(1,-1)">
+        <path d="M 0 20 L 20 0 L 200 0 L 210 10 L 210 120 L 190 140 L 25 140 L 0 115 L 0 20 Z M 55 80 L 80 80 L 80 110 L 60 110 L 55 105 L 55 80 Z" fill="rgba(0,90,156,.10)" fill-rule="evenodd" stroke="#005a9c" stroke-width="2.15"/>
+        </g></svg></div>
+          <div class="pie"><b>5</b><span class="prog p-g90" title="En absolutas (G90)">G90</span></div>
+          <small>210 × 140 mm · 1 agujero</small>
+        </a>
+        <a class="ej" href="Nivel%202%20-%20Rectas%20inclinadas/06%20-%20Inicio%20206%20(N%C2%BA%202219).json" download title="Descargar el JSON del ejercicio 206 (se abre en el Calcador)">
+          <div class="mini"><svg viewBox="-11.9 -151.9 213.8 163.8" preserveAspectRatio="xMidYMid meet"><g transform="scale(1,-1)">
+        <path d="M 0 40 L 40 0 L 190 0 L 190 130 L 180 140 L 15 140 L 0 125 L 0 40 Z M 45 65 L 85 65 L 90 70 L 90 90 L 85 95 L 50 95 L 45 90 L 45 65 Z" fill="rgba(0,90,156,.10)" fill-rule="evenodd" stroke="#005a9c" stroke-width="1.94"/>
+        </g></svg></div>
+          <div class="pie"><b>6</b><span class="prog p-mix" title="Mixta: G90 para entrar y salir, G91 en el recorrido">Mixta</span></div>
+          <small>190 × 140 mm · 1 agujero</small>
+        </a>
+        <a class="ej" href="Nivel%202%20-%20Rectas%20inclinadas/07%20-%20Inicio%20207%20(N%C2%BA%202222).json" download title="Descargar el JSON del ejercicio 207 (se abre en el Calcador)">
+          <div class="mini"><svg viewBox="-14.9 -144.9 269.8 159.8" preserveAspectRatio="xMidYMid meet"><g transform="scale(1,-1)">
+        <path d="M 80 5 L 85 0 L 240 0 L 240 130 L 60 130 L 60 85 L 10 85 L 0 75 L 0 45 L 10 35 L 80 35 L 80 5 Z M 140 85 L 145 80 L 180 80 L 180 105 L 175 110 L 145 110 L 140 105 L 140 85 Z" fill="rgba(0,90,156,.10)" fill-rule="evenodd" stroke="#005a9c" stroke-width="2.45"/>
+        </g></svg></div>
+          <div class="pie"><b>7</b><span class="prog p-mix" title="Mixta: G90 para entrar y salir, G91 en el recorrido">Mixta</span></div>
+          <small>240 × 130 mm · 1 agujero</small>
+        </a>
+        <a class="ej" href="Nivel%202%20-%20Rectas%20inclinadas/08%20-%20Inicio%20208%20(N%C2%BA%202300).json" download title="Descargar el JSON del ejercicio 208 (se abre en el Calcador)">
+          <div class="mini"><svg viewBox="-13.4 -163.4 241.8 176.8" preserveAspectRatio="xMidYMid meet"><g transform="scale(1,-1)">
+        <path d="M 0 25 L 25 0 L 215 0 L 215 120 L 185 150 L 15 150 L 0 135 L 0 25 Z M 120 25 L 130 15 L 155 15 L 160 20 L 160 55 L 120 55 L 120 25 Z M 175 110 L 190 110 L 190 125 L 175 125 L 175 110 Z" fill="rgba(0,90,156,.10)" fill-rule="evenodd" stroke="#005a9c" stroke-width="2.2"/>
+        </g></svg></div>
+          <div class="pie"><b>8</b><span class="prog p-mix" title="Mixta: G90 para entrar y salir, G91 en el recorrido">Mixta</span></div>
+          <small>215 × 150 mm · 2 agujeros</small>
+        </a>
+        <a class="ej" href="Nivel%202%20-%20Rectas%20inclinadas/09%20-%20Inicio%20209%20(N%C2%BA%202314).json" download title="Descargar el JSON del ejercicio 209 (se abre en el Calcador)">
+          <div class="mini"><svg viewBox="-14.6 -199.6 264.2 214.2" preserveAspectRatio="xMidYMid meet"><g transform="scale(1,-1)">
+        <path d="M 0 0 L 235 0 L 235 185 L 0 185 L 0 0 Z M 40 50 L 55 35 L 80 35 L 95 50 L 95 115 L 55 115 L 40 100 L 40 50 Z M 125 40 L 135 30 L 155 30 L 165 40 L 165 65 L 130 65 L 125 60 L 125 40 Z" fill="rgba(0,90,156,.10)" fill-rule="evenodd" stroke="#005a9c" stroke-width="2.4"/>
+        </g></svg></div>
+          <div class="pie"><b>9</b><span class="prog p-mix" title="Mixta: G90 para entrar y salir, G91 en el recorrido">Mixta</span></div>
+          <small>235 × 185 mm · 2 agujeros</small>
+        </a>
+        <a class="ej" href="Nivel%202%20-%20Rectas%20inclinadas/10%20-%20Inicio%20210%20(N%C2%BA%202329).json" download title="Descargar el JSON del ejercicio 210 (se abre en el Calcador)">
+          <div class="mini"><svg viewBox="-13.4 -158.4 241.8 171.8" preserveAspectRatio="xMidYMid meet"><g transform="scale(1,-1)">
+        <path d="M 0 35 L 35 0 L 120 0 L 120 20 L 125 25 L 150 25 L 150 0 L 215 0 L 215 120 L 180 120 L 175 125 L 175 145 L 15 145 L 0 130 L 0 35 Z M 95 80 L 130 80 L 130 95 L 95 95 L 95 80 Z M 45 90 L 55 80 L 85 80 L 85 125 L 45 125 L 45 90 Z" fill="rgba(0,90,156,.10)" fill-rule="evenodd" stroke="#005a9c" stroke-width="2.2"/>
+        </g></svg></div>
+          <div class="pie"><b>10</b><span class="prog p-mix" title="Mixta: G90 para entrar y salir, G91 en el recorrido">Mixta</span></div>
+          <small>215 × 145 mm · 2 agujeros</small>
+        </a></div>
+    </section>
+    <section class="nivel">
+      <div class="cab-nivel">
+        <div><h2><span class="n">3</span>Arcos sencillos</h2><p>Ranuras, esquinas redondeadas y hacia dentro y agujeros redondos, con el centro de los arcos en la rejilla (I J enteros).</p></div>
+        <div class="acciones">
+          <a class="boton" href="Nivel%203%20-%20Arcos%20sencillos%20-%20hojas.pdf" target="_blank" rel="noopener">📄 Hojas (PDF)</a>
+          <a class="boton sec" href="Nivel%203%20-%20Arcos%20sencillos%20-%20soluciones.pdf" target="_blank" rel="noopener">✅ Soluciones (PDF)</a>
+        </div>
+      </div>
+      <div class="ejs">
+        <a class="ej" href="Nivel%203%20-%20Arcos%20sencillos/01%20-%20Inicio%20301%20(N%C2%BA%203105).json" download title="Descargar el JSON del ejercicio 301 (se abre en el Calcador)">
+          <div class="mini"><svg viewBox="-13.1 -83.1 236.2 96.2" preserveAspectRatio="xMidYMid meet"><g transform="scale(1,-1)">
+        <path d="M 35 70 L 175 70 A 35 35 0 0 0 175 0 L 35 0 A 35 35 0 0 0 35 70 Z" fill="rgba(0,90,156,.10)" fill-rule="evenodd" stroke="#005a9c" stroke-width="2.15"/>
+        </g></svg></div>
+          <div class="pie"><b>1</b><span class="prog p-g90" title="En absolutas (G90)">G90</span></div>
+          <small>210 × 70 mm</small>
+        </a>
+        <a class="ej" href="Nivel%203%20-%20Arcos%20sencillos/02%20-%20Inicio%20302%20(N%C2%BA%203116).json" download title="Descargar el JSON del ejercicio 302 (se abre en el Calcador)">
+          <div class="mini"><svg viewBox="-10.4 -135.4 185.8 145.8" preserveAspectRatio="xMidYMid meet"><g transform="scale(1,-1)">
+        <path d="M 0 30 A 30 30 0 0 1 30 0 L 165 0 L 165 125 L 0 125 L 0 30 Z" fill="rgba(0,90,156,.10)" fill-rule="evenodd" stroke="#005a9c" stroke-width="1.69"/>
+        </g></svg></div>
+          <div class="pie"><b>2</b><span class="prog p-g90" title="En absolutas (G90)">G90</span></div>
+          <small>165 × 125 mm</small>
+        </a>
+        <a class="ej" href="Nivel%203%20-%20Arcos%20sencillos/03%20-%20Inicio%20303%20(N%C2%BA%203134).json" download title="Descargar el JSON del ejercicio 303 (se abre en el Calcador)">
+          <div class="mini"><svg viewBox="-13.1 -143.1 236.2 156.2" preserveAspectRatio="xMidYMid meet"><g transform="scale(1,-1)">
+        <path d="M 0 10 A 10 10 0 0 0 10 0 L 185 0 A 25 25 0 0 0 210 25 L 210 130 L 10 130 A 10 10 0 0 0 0 120 L 0 10 Z" fill="rgba(0,90,156,.10)" fill-rule="evenodd" stroke="#005a9c" stroke-width="2.15"/>
+        </g></svg></div>
+          <div class="pie"><b>3</b><span class="prog p-g90" title="En absolutas (G90)">G90</span></div>
+          <small>210 × 130 mm</small>
+        </a>
+        <a class="ej" href="Nivel%203%20-%20Arcos%20sencillos/04%20-%20Inicio%20304%20(N%C2%BA%203208).json" download title="Descargar el JSON del ejercicio 304 (se abre en el Calcador)">
+          <div class="mini"><svg viewBox="-9.8 -134.8 174.6 144.6" preserveAspectRatio="xMidYMid meet"><g transform="scale(1,-1)">
+        <path d="M 0 0 L 155 0 L 155 125 L 45 125 L 40 120 L 40 110 A 10 10 0 0 0 30 100 L 10 100 L 0 90 L 0 0 Z M 115 55 A 20 20 0 0 1 75 55 A 20 20 0 0 1 115 55 Z" fill="rgba(0,90,156,.10)" fill-rule="evenodd" stroke="#005a9c" stroke-width="1.59"/>
+        </g></svg></div>
+          <div class="pie"><b>4</b><span class="prog p-g90" title="En absolutas (G90)">G90</span></div>
+          <small>155 × 125 mm · 1 agujero</small>
+        </a>
+        <a class="ej" href="Nivel%203%20-%20Arcos%20sencillos/05%20-%20Inicio%20305%20(N%C2%BA%203201).json" download title="Descargar el JSON del ejercicio 305 (se abre en el Calcador)">
+          <div class="mini"><svg viewBox="-13.4 -153.4 241.8 166.8" preserveAspectRatio="xMidYMid meet"><g transform="scale(1,-1)">
+        <path d="M 50 5 L 55 0 L 200 0 A 15 15 0 0 1 215 15 L 215 100 L 195 100 A 10 10 0 0 0 185 110 L 185 140 L 85 140 A 10 10 0 0 0 75 130 L 75 110 L 15 110 A 15 15 0 0 0 0 95 L 0 40 A 10 10 0 0 0 10 30 L 50 30 L 50 5 Z M 80 55 L 110 55 A 10 10 0 0 0 110 35 L 80 35 A 10 10 0 0 0 80 55 Z" fill="rgba(0,90,156,.10)" fill-rule="evenodd" stroke="#005a9c" stroke-width="2.2"/>
+        </g></svg></div>
+          <div class="pie"><b>5</b><span class="prog p-g90" title="En absolutas (G90)">G90</span></div>
+          <small>215 × 140 mm · 1 agujero</small>
+        </a>
+        <a class="ej" href="Nivel%203%20-%20Arcos%20sencillos/06%20-%20Inicio%20306%20(N%C2%BA%203219).json" download title="Descargar el JSON del ejercicio 306 (se abre en el Calcador)">
+          <div class="mini"><svg viewBox="-14 -174 253 188" preserveAspectRatio="xMidYMid meet"><g transform="scale(1,-1)">
+        <path d="M 35 0 L 225 0 L 225 115 A 45 45 0 0 0 180 160 L 0 160 L 0 45 L 35 45 L 35 0 Z M 80 85 A 15 15 0 0 1 50 85 A 15 15 0 0 1 80 85 Z" fill="rgba(0,90,156,.10)" fill-rule="evenodd" stroke="#005a9c" stroke-width="2.3"/>
+        </g></svg></div>
+          <div class="pie"><b>6</b><span class="prog p-g90" title="En absolutas (G90)">G90</span></div>
+          <small>225 × 160 mm · 1 agujero</small>
+        </a>
+        <a class="ej" href="Nivel%203%20-%20Arcos%20sencillos/07%20-%20Inicio%20307%20(N%C2%BA%203225).json" download title="Descargar el JSON del ejercicio 307 (se abre en el Calcador)">
+          <div class="mini"><svg viewBox="-13.1 -188.1 236.2 201.2" preserveAspectRatio="xMidYMid meet"><g transform="scale(1,-1)">
+        <path d="M 65 0 L 155 0 L 155 35 L 160 40 L 195 40 L 210 55 L 210 175 L 40 175 A 10 10 0 0 1 30 165 L 30 145 L 25 140 L 10 140 A 10 10 0 0 0 0 130 L 0 65 L 65 65 L 65 0 Z M 140 140 A 20 20 0 0 1 100 140 A 20 20 0 0 1 140 140 Z" fill="rgba(0,90,156,.10)" fill-rule="evenodd" stroke="#005a9c" stroke-width="2.15"/>
+        </g></svg></div>
+          <div class="pie"><b>7</b><span class="prog p-g90" title="En absolutas (G90)">G90</span></div>
+          <small>210 × 175 mm · 1 agujero</small>
+        </a>
+        <a class="ej" href="Nivel%203%20-%20Arcos%20sencillos/08%20-%20Inicio%20308%20(N%C2%BA%203300).json" download title="Descargar el JSON del ejercicio 308 (se abre en el Calcador)">
+          <div class="mini"><svg viewBox="-11 -181 197 192" preserveAspectRatio="xMidYMid meet"><g transform="scale(1,-1)">
+        <path d="M 0 0 L 175 0 L 175 120 A 50 50 0 0 0 125 170 L 25 170 L 0 145 L 0 0 Z M 85 90 A 20 20 0 0 1 45 90 A 20 20 0 0 1 85 90 Z" fill="rgba(0,90,156,.10)" fill-rule="evenodd" stroke="#005a9c" stroke-width="1.79"/>
+        </g></svg></div>
+          <div class="pie"><b>8</b><span class="prog p-g90" title="En absolutas (G90)">G90</span></div>
+          <small>175 × 170 mm · 1 agujero</small>
+        </a>
+        <a class="ej" href="Nivel%203%20-%20Arcos%20sencillos/09%20-%20Inicio%20309%20(N%C2%BA%203309).json" download title="Descargar el JSON del ejercicio 309 (se abre en el Calcador)">
+          <div class="mini"><svg viewBox="-10.4 -145.4 185.8 155.8" preserveAspectRatio="xMidYMid meet"><g transform="scale(1,-1)">
+        <path d="M 0 0 L 145 0 A 20 20 0 0 1 165 20 L 165 95 L 125 135 L 40 135 A 40 40 0 0 0 0 95 L 0 0 Z M 110 35 A 20 20 0 0 1 70 35 A 20 20 0 0 1 110 35 Z M 130 60 L 130 80 A 10 10 0 0 0 150 80 L 150 60 A 10 10 0 0 0 130 60 Z" fill="rgba(0,90,156,.10)" fill-rule="evenodd" stroke="#005a9c" stroke-width="1.69"/>
+        </g></svg></div>
+          <div class="pie"><b>9</b><span class="prog p-g90" title="En absolutas (G90)">G90</span></div>
+          <small>165 × 135 mm · 2 agujeros</small>
+        </a>
+        <a class="ej" href="Nivel%203%20-%20Arcos%20sencillos/10%20-%20Inicio%20310%20(N%C2%BA%203318).json" download title="Descargar el JSON del ejercicio 310 (se abre en el Calcador)">
+          <div class="mini"><svg viewBox="-14 -184 253 198" preserveAspectRatio="xMidYMid meet"><g transform="scale(1,-1)">
+        <path d="M 0 10 L 10 0 L 55 0 L 55 20 A 10 10 0 0 0 65 30 L 95 30 A 10 10 0 0 0 105 20 L 105 10 L 115 0 L 180 0 L 180 35 L 225 35 L 225 160 A 10 10 0 0 1 215 170 L 180 170 L 180 130 L 110 130 L 110 160 L 100 170 L 45 170 A 10 10 0 0 1 35 160 L 35 140 L 0 140 L 0 10 Z M 170 80 A 25 25 0 0 1 120 80 A 25 25 0 0 1 170 80 Z M 65 120 A 15 15 0 0 1 35 120 A 15 15 0 0 1 65 120 Z" fill="rgba(0,90,156,.10)" fill-rule="evenodd" stroke="#005a9c" stroke-width="2.3"/>
+        </g></svg></div>
+          <div class="pie"><b>10</b><span class="prog p-g90" title="En absolutas (G90)">G90</span></div>
+          <small>225 × 170 mm · 2 agujeros</small>
+        </a></div>
+    </section>
+    <section class="nivel">
+      <div class="cab-nivel">
+        <div><h2><span class="n">4</span>Arcos con I J</h2><p>Lados en arco, polígonos y varios agujeros: hay que calcular I J.</p></div>
+        <div class="acciones">
+          <a class="boton" href="Nivel%204%20-%20Arcos%20con%20I%20J%20-%20hojas.pdf" target="_blank" rel="noopener">📄 Hojas (PDF)</a>
+          <a class="boton sec" href="Nivel%204%20-%20Arcos%20con%20I%20J%20-%20soluciones.pdf" target="_blank" rel="noopener">✅ Soluciones (PDF)</a>
+        </div>
+      </div>
+      <div class="ejs">
+        <a class="ej" href="Nivel%204%20-%20Arcos%20con%20I%20J/01%20-%20Inicio%20401%20(N%C2%BA%204104).json" download title="Descargar el JSON del ejercicio 401 (se abre en el Calcador)">
+          <div class="mini"><svg viewBox="-11.53 -161.53 206.87 173.06" preserveAspectRatio="xMidYMid meet"><g transform="scale(1,-1)">
+        <path d="M 0 0 L 160 0 A 130 130 0 0 1 160 150 L 0 150 L 0 0 Z M 140 85 A 15 15 0 0 1 110 85 A 15 15 0 0 1 140 85 Z" fill="rgba(0,90,156,.10)" fill-rule="evenodd" stroke="#005a9c" stroke-width="1.88"/>
+        </g></svg></div>
+          <div class="pie"><b>1</b><span class="prog p-libre" title="Programación libre">Libre</span></div>
+          <small>184 × 150 mm · 1 agujero</small>
+        </a>
+        <a class="ej" href="Nivel%204%20-%20Arcos%20con%20I%20J/02%20-%20Inicio%20402%20(N%C2%BA%204132).json" download title="Descargar el JSON del ejercicio 402 (se abre en el Calcador)">
+          <div class="mini"><svg viewBox="-14.65 -179.92 265.04 194.56" preserveAspectRatio="xMidYMid meet"><g transform="scale(1,-1)">
+        <path d="M 0 15 L 15 0 L 150 0 L 155 5 L 155 30 L 220 30 A 95 95 0 0 1 220 135 A 215 215 0 0 1 0 135 L 0 15 Z" fill="rgba(0,90,156,.10)" fill-rule="evenodd" stroke="#005a9c" stroke-width="2.41"/>
+        </g></svg></div>
+          <div class="pie"><b>2</b><span class="prog p-libre" title="Programación libre">Libre</span></div>
+          <small>236 × 165 mm</small>
+        </a>
+        <a class="ej" href="Nivel%204%20-%20Arcos%20con%20I%20J/03%20-%20Inicio%20403%20(N%C2%BA%204113).json" download title="Descargar el JSON del ejercicio 403 (se abre en el Calcador)">
+          <div class="mini"><svg viewBox="-10.1 -130.1 180.2 140.2" preserveAspectRatio="xMidYMid meet"><g transform="scale(1,-1)">
+        <path d="M 0 0 L 145 0 L 160 15 L 160 120 L 0 120 A 90 90 0 0 0 0 0 Z M 102.27 65 L 106.76 78.82 L 100.88 83.09 A 10 10 0 0 1 89.12 83.09 L 83.24 78.82 L 85.49 71.91 A 10 10 0 0 1 95 65 L 102.27 65 Z" fill="rgba(0,90,156,.10)" fill-rule="evenodd" stroke="#005a9c" stroke-width="1.64"/>
+        </g></svg></div>
+          <div class="pie"><b>3</b><span class="prog p-libre" title="Programación libre">Libre</span></div>
+          <small>160 × 120 mm · 1 agujero</small>
+        </a>
+        <a class="ej" href="Nivel%204%20-%20Arcos%20con%20I%20J/04%20-%20Inicio%20404%20(N%C2%BA%204209).json" download title="Descargar el JSON del ejercicio 404 (se abre en el Calcador)">
+          <div class="mini"><svg viewBox="-11.9 -176.9 213.8 188.8" preserveAspectRatio="xMidYMid meet"><g transform="scale(1,-1)">
+        <path d="M 0 40 A 40 40 0 0 0 40 0 L 150 0 A 40 40 0 0 0 190 40 L 190 120 A 45 45 0 0 0 145 165 L 40 165 L 0 125 L 0 40 Z M 90 60 A 10 10 0 0 1 70 60 A 10 10 0 0 1 90 60 Z" fill="rgba(0,90,156,.10)" fill-rule="evenodd" stroke="#005a9c" stroke-width="1.94"/>
+        </g></svg></div>
+          <div class="pie"><b>4</b><span class="prog p-libre" title="Programación libre">Libre</span></div>
+          <small>190 × 165 mm · 1 agujero</small>
+        </a>
+        <a class="ej" href="Nivel%204%20-%20Arcos%20con%20I%20J/05%20-%20Inicio%20405%20(N%C2%BA%204214).json" download title="Descargar el JSON del ejercicio 405 (se abre en el Calcador)">
+          <div class="mini"><svg viewBox="-5.63 -154.57 161.99 163.79" preserveAspectRatio="xMidYMid meet"><g transform="scale(1,-1)">
+        <path d="M 127.23 0 L 147.14 61.3 L 132.14 107.46 L 80 145.34 L 3.59 89.83 L 27.16 17.27 A 25 25 0 0 1 50.94 0 L 127.23 0 Z M 70 40 A 15 15 0 0 1 40 40 A 15 15 0 0 1 70 40 Z" fill="rgba(0,90,156,.10)" fill-rule="evenodd" stroke="#005a9c" stroke-width="1.49"/>
+        </g></svg></div>
+          <div class="pie"><b>5</b><span class="prog p-libre" title="Programación libre">Libre</span></div>
+          <small>144 × 145 mm · 1 agujero</small>
+        </a>
+        <a class="ej" href="Nivel%204%20-%20Arcos%20con%20I%20J/06%20-%20Inicio%20406%20(N%C2%BA%204206).json" download title="Descargar el JSON del ejercicio 406 (se abre en el Calcador)">
+          <div class="mini"><svg viewBox="-6.99 -185.26 213.99 197.17" preserveAspectRatio="xMidYMid meet"><g transform="scale(1,-1)">
+        <path d="M 172.58 0 L 195.08 38.97 L 117.5 173.35 L 92.5 173.35 L 4.92 21.65 A 25 25 0 0 0 17.42 0 L 172.58 0 Z M 85 55 L 115 55 A 15 15 0 0 0 115 25 L 85 25 A 15 15 0 0 0 85 55 Z M 105 70 A 25 25 0 0 1 105 110 L 75 110 A 10 10 0 0 0 65 100 L 65 80 A 10 10 0 0 0 75 70 L 105 70 Z" fill="rgba(0,90,156,.10)" fill-rule="evenodd" stroke="#005a9c" stroke-width="1.95"/>
+        </g></svg></div>
+          <div class="pie"><b>6</b><span class="prog p-libre" title="Programación libre">Libre</span></div>
+          <small>190 × 173 mm · 2 agujeros</small>
+        </a>
+        <a class="ej" href="Nivel%204%20-%20Arcos%20con%20I%20J/07%20-%20Inicio%20407%20(N%C2%BA%204232).json" download title="Descargar el JSON del ejercicio 407 (se abre en el Calcador)">
+          <div class="mini"><svg viewBox="-11.6 -141.6 208.2 153.2" preserveAspectRatio="xMidYMid meet"><g transform="scale(1,-1)">
+        <path d="M 0 0 L 185 0 A 80 80 0 0 0 185 130 L 35 130 A 35 35 0 0 0 0 95 L 0 0 Z M 85 85 A 25 25 0 0 1 35 85 A 25 25 0 0 1 85 85 Z M 135 75 A 15 15 0 0 1 105 75 A 15 15 0 0 1 135 75 Z" fill="rgba(0,90,156,.10)" fill-rule="evenodd" stroke="#005a9c" stroke-width="1.89"/>
+        </g></svg></div>
+          <div class="pie"><b>7</b><span class="prog p-libre" title="Programación libre">Libre</span></div>
+          <small>185 × 130 mm · 2 agujeros</small>
+        </a>
+        <a class="ej" href="Nivel%204%20-%20Arcos%20con%20I%20J/08%20-%20Inicio%20408%20(N%C2%BA%204302).json" download title="Descargar el JSON del ejercicio 408 (se abre en el Calcador)">
+          <div class="mini"><svg viewBox="-13.4 -178.4 241.8 191.8" preserveAspectRatio="xMidYMid meet"><g transform="scale(1,-1)">
+        <path d="M 80 0 L 125 0 A 10 10 0 0 0 135 10 L 135 25 L 215 25 L 215 110 A 10 10 0 0 1 205 120 L 155 120 L 145 130 L 145 155 A 10 10 0 0 0 135 165 L 115 165 A 10 10 0 0 1 105 155 L 105 140 L 80 140 L 75 145 L 75 160 L 70 165 L 0 165 L 0 60 A 10 10 0 0 1 10 50 L 80 50 A 75 75 0 0 1 80 0 Z M 145 95 A 25 25 0 0 1 95 95 A 25 25 0 0 1 145 95 Z M 165 55 A 15 15 0 0 1 135 55 A 15 15 0 0 1 165 55 Z" fill="rgba(0,90,156,.10)" fill-rule="evenodd" stroke="#005a9c" stroke-width="2.2"/>
+        </g></svg></div>
+          <div class="pie"><b>8</b><span class="prog p-libre" title="Programación libre">Libre</span></div>
+          <small>215 × 165 mm · 2 agujeros</small>
+        </a>
+        <a class="ej" href="Nivel%204%20-%20Arcos%20con%20I%20J/09%20-%20Inicio%20409%20(N%C2%BA%204313).json" download title="Descargar el JSON del ejercicio 409 (se abre en el Calcador)">
+          <div class="mini"><svg viewBox="-10.4 -160.4 185.8 170.8" preserveAspectRatio="xMidYMid meet"><g transform="scale(1,-1)">
+        <path d="M 0 10 L 10 0 L 165 0 L 165 105 L 160 110 L 140 110 L 140 145 L 135 150 L 45 150 L 45 120 L 40 115 L 10 115 A 10 10 0 0 0 0 105 L 0 10 Z M 82.32 75 L 67.5 100.67 L 62.5 100.67 L 47.68 75 L 82.32 75 Z M 85 45 A 20 20 0 0 1 45 45 A 20 20 0 0 1 85 45 Z M 135 30 A 20 20 0 0 1 95 30 A 20 20 0 0 1 135 30 Z" fill="rgba(0,90,156,.10)" fill-rule="evenodd" stroke="#005a9c" stroke-width="1.69"/>
+        </g></svg></div>
+          <div class="pie"><b>9</b><span class="prog p-libre" title="Programación libre">Libre</span></div>
+          <small>165 × 150 mm · 3 agujeros</small>
+        </a>
+        <a class="ej" href="Nivel%204%20-%20Arcos%20con%20I%20J/10%20-%20Inicio%20410%20(N%C2%BA%204322).json" download title="Descargar el JSON del ejercicio 410 (se abre en el Calcador)">
+          <div class="mini"><svg viewBox="-12.8 -167.8 230.6 180.6" preserveAspectRatio="xMidYMid meet"><g transform="scale(1,-1)">
+        <path d="M 55 0 A 105 105 0 0 0 205 0 A 115 115 0 0 0 205 155 A 185 185 0 0 0 0 155 A 80 80 0 0 0 0 25 L 55 25 A 25 25 0 0 1 55 0 Z M 97.27 85 L 101.76 98.82 L 90 107.36 A 15 15 0 0 0 78.24 98.82 L 82.73 85 A 15 15 0 0 0 97.27 85 Z M 160 65 A 15 15 0 0 1 130 65 A 15 15 0 0 1 160 65 Z M 105 50 A 20 20 0 0 1 65 50 A 20 20 0 0 1 105 50 Z" fill="rgba(0,90,156,.10)" fill-rule="evenodd" stroke="#005a9c" stroke-width="2.1"/>
+        </g></svg></div>
+          <div class="pie"><b>10</b><span class="prog p-libre" title="Programación libre">Libre</span></div>
+          <small>205 × 155 mm · 3 agujeros</small>
+        </a></div>
+    </section>
+  <footer>La etiqueta de cada ejercicio es la programación que pide: <b>G90</b>, <b>G91</b>, <b>Mixta</b> o <b>Libre</b>. © 2026 Eloi A.A. · Ejercicios con licencia CC BY-SA 4.0.</footer>
+</div>
+</body>
+</html>
