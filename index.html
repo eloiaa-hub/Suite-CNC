@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Herramientas CNC — Por Eloi A.A.</title>
+<meta name="description" content="Herramientas para aprender y enseñar programación CNC en código ISO: Calcador de contornos (con ⚙️ Mecanizar para el G-code de la máquina), Corrector, Anidador de tableros, Simulador 3D y Calculadora de taller. Funcionan en el navegador, sin instalar nada.">
+<style>
+  :root {
+    --acento: #005A9C; --acento-suave: rgba(0,90,156,.10); --fondo: #eef2f6; --panel: #ffffff; --texto: #1d2733; --texto-sec: #5b6878;
+    --borde: #d7dee7; --sombra: 0 6px 22px rgba(20,40,70,.10); --verde: #00897b; --naranja: #c8741a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --acento: #5aa9e6; --acento-suave: rgba(90,169,230,.14); --fondo: #14181d; --panel: #1d232a; --texto: #e6ebf0; --texto-sec: #9aa7b5; --borde: #2e3843; --sombra: 0 6px 22px rgba(0,0,0,.35); --verde: #4dd0c4; --naranja: #f0a35e; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Segoe UI', system-ui, -apple-system, Roboto, Arial, sans-serif; background: var(--fondo); color: var(--texto); line-height: 1.5; }
+  .envoltura { max-width: 1120px; margin: 0 auto; padding: 32px 22px 40px; }
+  header { display: flex; align-items: center; gap: 16px; margin-bottom: 8px; }
+  .logo { width: 54px; height: 54px; flex: 0 0 auto; }
+  h1 { margin: 0; font-size: clamp(22px, 3.2vw, 32px); letter-spacing: -.01em; }
+  .sub { margin: 2px 0 0; color: var(--texto-sec); font-size: 15px; }
+  .flujo { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px; margin: 26px 0 30px; padding: 16px; border-radius: 14px; background: var(--panel); border: 1px solid var(--borde); box-shadow: var(--sombra); font-size: 14px; }
+  .paso { display: flex; flex-direction: column; align-items: center; padding: 6px 12px; border-radius: 10px; background: var(--acento-suave); min-width: 118px; text-align: center; }
+  .paso b { color: var(--acento); } .paso small { color: var(--texto-sec); font-size: 12px; }
+  .flecha { color: var(--texto-sec); font-size: 18px; }
+  .archivo { font-family: Consolas, 'Courier New', monospace; font-size: 12px; padding: 2px 8px; border-radius: 6px; border: 1px dashed var(--borde); color: var(--texto-sec); }
+  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--texto-sec); margin: 30px 0 12px; }
+  .fichas { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+  .fase { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--texto-sec); }
+  .ficha { background: var(--panel); border: 1px solid var(--borde); border-radius: 14px; padding: 18px; display: flex; flex-direction: column; gap: 10px; box-shadow: var(--sombra); transition: transform .12s, border-color .12s; }
+  .ficha:hover { transform: translateY(-2px); border-color: var(--acento); }
+  .cab { display: flex; align-items: center; gap: 12px; }
+  .icono { width: 44px; height: 44px; flex: 0 0 auto; border-radius: 11px; background: var(--acento-suave); display: flex; align-items: center; justify-content: center; }
+  .icono svg { width: 26px; height: 26px; stroke: var(--acento); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .nombre { font-size: 17px; font-weight: 700; margin: 0; }
+  .ver { font-size: 11px; font-weight: 600; padding: 1px 8px; border-radius: 9px; background: var(--acento-suave); color: var(--acento); margin-left: 6px; vertical-align: middle; }
+  .para { font-size: 11.5px; font-weight: 600; color: var(--texto-sec); }
+  .para.prof { color: var(--naranja); } .para.alum { color: var(--verde); }
+  .desc { margin: 0; font-size: 14px; color: var(--texto-sec); flex: 1; }
+  .acciones { display: flex; gap: 8px; flex-wrap: wrap; }
+  .boton { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; background: var(--acento); color: #fff; text-decoration: none; font-weight: 600; font-size: 14px; }
+  .boton.sec { background: transparent; color: var(--acento); border: 1px solid var(--acento); }
+  .boton:hover { filter: brightness(1.08); }
+  .avisos { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-top: 30px; }
+  .aviso { background: var(--panel); border: 1px solid var(--borde); border-radius: 12px; padding: 14px 16px; font-size: 13.5px; color: var(--texto-sec); }
+  .aviso b { color: var(--texto); display: block; margin-bottom: 3px; }
+  footer { margin-top: 34px; text-align: center; font-size: 12.5px; color: var(--texto-sec); }
+</style>
+</head>
+<body>
+<div class="envoltura">
+  <header>
+    <svg class="logo" viewBox="0 0 54 54" aria-hidden="true"><rect x="1" y="1" width="52" height="52" rx="13" fill="#005A9C"/><path d="M12 38 L12 20 L24 20 L24 28 A6 6 0 0 0 36 28 L36 20 L42 20 L42 38 Z" fill="none" stroke="#fff" stroke-width="2.6" stroke-linejoin="round"/><circle cx="18" cy="31" r="2.6" fill="#fff"/></svg>
+    <div>
+      <h1>Herramientas CNC <span class="ver" title="Versión de la suite (año.mes). Las novedades están en NOVEDADES.md">Suite CNC 2026.10</span></h1>
+      <p class="sub">Para aprender y enseñar a programar en código ISO (G-code) · Por Eloi A.A.</p>
+    </div>
+  </header>
+
+  <div class="flujo" aria-label="Flujo de trabajo">
+    <div class="paso"><b>Calcador</b><small>dibujar la pieza</small></div>
+    <span class="flecha">→</span>
+    <div class="paso"><b>⚙️ Mecanizar</b><small>preparar el mecanizado</small></div>
+    <span class="archivo">.nc</span><span class="flecha">→</span>
+    <div class="paso"><b>Simulador 3D</b><small>comprobar el programa</small></div>
+  </div>
+
+  <h2>Las herramientas</h2>
+  <div class="fichas">
+    <div class="ficha">
+      <span class="fase">1 · Diseñar y mecanizar</span>
+      <div class="cab"><div class="icono"><svg viewBox="0 0 24 24"><path d="M4 18 L4 7 L11 7 L11 11 A3 3 0 0 0 17 11 L17 7 L20 7 L20 18 Z"/><path d="M4 21 h16" stroke-dasharray="2 2"/></svg></div>
+        <div><p class="nombre">Calcador de contornos<span class="ver">v95</span></p><span class="para prof">Profesorado</span></div></div>
+      <p class="desc">Dibuja o calca la pieza sobre un plano, acótala y prepara la hoja de ejercicio y la de soluciones. Mientras dibujas, el panel derecho escribe el programa de la pieza, comentado y con su recorrido sobre el plano: el de la solución o el de la máquina (⚙️ Mecanizar). Corrige los programas de los alumnos, uno a uno o toda la clase a la vez (también directamente desde el zip de entregas de Aules), prepara cuestionarios para Aules, guarda tus ejercicios en la biblioteca y prepara ejercicios para el Tutor G-Code (🎓). Para empezar, la <strong>biblioteca de inicio</strong>: 40 ejercicios en 4 niveles, con sus hojas y soluciones.</p>
+      <div class="acciones"><a class="boton" href="calcador.html">Abrir</a><a class="boton sec" href="manual_calcador.html">📖 Manual</a><a class="boton sec" href="manual_calcador.pdf">PDF</a><a class="boton sec" href="biblioteca_inicio/index.html" title="Carpeta biblioteca_inicio: Biblioteca_de_inicio.json (se importa en 📚 Biblioteca), los ejercicios por niveles y las hojas y soluciones en PDF">📚 Biblioteca de inicio</a></div>
+    </div>
+
+    <div class="ficha">
+      <span class="fase">1 · Corregir y mecanizar</span>
+      <div class="cab"><div class="icono"><svg viewBox="0 0 24 24"><path d="M5 4 h10 l4 4 v12 h-14 Z"/><path d="M8.5 13.5 l2.5 2.5 l4.5 -5"/></svg></div>
+        <div><p class="nombre">Corrector<span class="ver">v42</span></p><span class="para prof">Profesorado</span></div></div>
+      <p class="desc">El Calcador sin dibujo: abre un ejercicio, corrige y simula los programas de los alumnos (uno a uno o toda la clase, desde el zip de Aules, comprobando su informe de entrega), imprime hojas y soluciones o genera el G-code con ⚙️ Mecanizar, sin riesgo de modificarlo.</p>
+      <div class="acciones"><a class="boton" href="corrector.html">Abrir</a><a class="boton sec" href="manual_corrector.html">📖 Manual</a><a class="boton sec" href="manual_corrector.pdf">PDF</a></div>
+    </div>
+
+
+    <div class="ficha">
+      <span class="fase">1 · Preparar el tablero</span>
+      <div class="cab"><div class="icono"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="1.5"/><rect x="5.5" y="7.5" width="6" height="4"/><rect x="5.5" y="13" width="6" height="3.5"/><circle cx="16" cy="11" r="3"/></svg></div>
+        <div><p class="nombre">Anidador de tableros<span class="ver">v8</span></p><span class="para prof">Profesorado</span></div></div>
+      <p class="desc">Coloca varias piezas en el tablero para cortarlas de una vez: piezas del Calcador (.json) o una lista de despiece (.csv), con su cantidad y su veta. Con el ratón se colocan a mano, se giran de 90 en 90° (doble clic) y se escalan con asas; cada pieza con su color. Devuelve el tablero como proyecto del Calcador, listo para ⚙️ Mecanizar, y lo exporta en PNG, SVG y DXF. Coloca por el rectángulo o por la forma real (las piezas curvas se encajan y las pequeñas aprovechan los huecos). Con cantos, metros de canto, desperdicio, tiempo de máquina y coste.</p>
+      <div class="acciones"><a class="boton" href="anidador.html">Abrir</a><a class="boton sec" href="manual_anidador.html">📖 Manual</a><a class="boton sec" href="manual_anidador.pdf">PDF</a></div>
+    </div>
+
+    <div class="ficha">
+      <span class="fase">2 · Simular</span>
+      <div class="cab"><div class="icono"><svg viewBox="0 0 24 24"><path d="M12 3 L20 7.5 L20 16.5 L12 21 L4 16.5 L4 7.5 Z"/><path d="M12 12 L20 7.5 M12 12 L4 7.5 M12 12 L12 21"/></svg></div>
+        <div><p class="nombre">Simulador 3D<span class="ver">V44</span></p><span class="para alum">Alumnado</span> <span class="para prof">y profesorado</span></div></div>
+      <p class="desc">Abre un programa ISO (G‑code) y mira cómo se mecaniza la pieza en 3D o en 2D, bloque a bloque, con su revisión y el plano del ejercicio. Con ✏️ Editar, se corrige el programa sobre la marcha y se guarda; con 🧾 Entrega, el informe en PDF para subirlo a Aules.</p>
+      <div class="acciones"><a class="boton" href="simulador3d.html">Abrir</a><a class="boton sec" href="guia_simulador.html" title="Guía para el alumnado y el profesorado: cargar el programa, la revisión, la herramienta, la compensación, el plano del ejercicio, el editor, el vídeo y el informe de entrega">📖 Guía</a><a class="boton sec" href="guia_simulador.pdf">PDF</a></div>
+    </div>
+    <div class="ficha">
+      <span class="fase">Ayuda · Aprender</span>
+      <div class="cab"><div class="icono"><svg viewBox="0 0 24 24"><path d="M3 9 L12 5 L21 9 L12 13 Z"/><path d="M7 11 V15.5 C9.5 17.5 14.5 17.5 17 15.5 V11"/><path d="M21 9 V14"/></svg></div>
+        <div><p class="nombre">Tutor G-Code<span class="ver">v1</span></p><span class="para alum">Alumnado</span></div></div>
+      <p class="desc">Dibuja una pieza y mira cómo se escribe su programa, línea a línea y comentado, y cómo se mueve la fresa (👁 Aprender), en G90, G91 o mixta, con o sin compensación. O escríbelo tú y el Tutor te corrige cada línea y te dice por qué está mal (✍ Practicar). Con los programas resueltos de los apuntes, los ejercicios de la biblioteca de inicio y los ejercicios que prepara el profesor.</p>
+      <div class="acciones"><a class="boton" href="tutor.html">Abrir</a><a class="boton sec" href="guia_tutor.html" title="Guía para el alumnado: aprender con los ejemplos, practicar línea a línea, los ejercicios del profesor y la compensación">📖 Guía</a><a class="boton sec" href="guia_tutor.pdf">PDF</a></div>
+    </div>
+    <div class="ficha">
+      <span class="fase">Ayuda · Calcular</span>
+      <div class="cab"><div class="icono"><svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7 h8 M8.5 11 h1 M11.5 11 h1 M14.5 11 h1 M8.5 14 h1 M11.5 14 h1 M14.5 14 h1 M8.5 17 h1 M11.5 17 h4"/></svg></div>
+        <div><p class="nombre">Calculadora de taller<span class="ver">v5</span></p><span class="para alum">Alumnado</span></div></div>
+      <p class="desc">Los cálculos de programar: proyecciones de una recta inclinada, polares a X Y, el centro, I J y R de un arco, pasar un programa de G90 a G91 (o mixto) y las revoluciones y el avance de la fresa.</p>
+      <div class="acciones"><a class="boton" href="calculadora.html">Abrir</a><a class="boton sec" href="manual_calculadora.html">📖 Manual</a><a class="boton sec" href="manual_calculadora.pdf">PDF</a></div>
+    </div>
+    <div class="ficha">
+      <span class="fase">Ayuda · Aprender</span>
+      <div class="cab"><div class="icono"><svg viewBox="0 0 24 24"><path d="M4 5.5 C7 4 10 4 12 6 C14 4 17 4 20 5.5 V19 C17 17.5 14 17.5 12 19 C10 17.5 7 17.5 4 19 Z"/><path d="M12 6 V19"/></svg></div>
+        <div><p class="nombre">Códigos ISO<span class="ver">apuntes</span></p><span class="para alum">Alumnado</span></div></div>
+      <p class="desc">Apuntes de los códigos que usamos: el orden de las letras y la numeración, ejes y cero pieza, G90 y G91, rectas y arcos (I J K y R), polares, herramienta y avances, la compensación G41 y G42 paso a paso, M30 y M02, los errores frecuentes, una hoja resumen y un poco de historia.</p>
+      <div class="acciones"><a class="boton" href="apuntes_iso.html">📖 Leer</a><a class="boton sec" href="apuntes_iso.pdf">PDF</a></div>
+    </div>
+  </div>
+
+  <div class="avisos">
+    <div class="aviso"><b>Sin instalar nada</b>Cada herramienta es un único archivo que funciona en el navegador (Chrome, Edge o Firefox), también sin conexión a internet.</div>
+    <div class="aviso"><b>Tus datos no salen de tu ordenador</b>Todo se procesa en el navegador: los dibujos, los programas y las correcciones de los alumnos no se envían a ningún sitio.</div>
+    <div class="aviso"><b>Guarda tus archivos</b>Cada herramienta recuerda tu último trabajo en este navegador, pero lo seguro es guardarlo en archivos (.json, .nc) con los botones de cada programa.</div>
+  </div>
+
+  <footer>Herramientas CNC · © 2026 Eloi A.A. · Programas: <a href="LICENSE" style="color:inherit">EUPL-1.2</a> · Manual: <a href="LICENCIA-MANUAL.txt" style="color:inherit">CC BY-SA 4.0</a> · <a href="licencias.html" style="color:inherit">Créditos y licencias</a></footer>
+</div>
+</body>
+</html>

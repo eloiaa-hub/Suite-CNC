@@ -1,0 +1,304 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Programas ISO para TpaCAD — Apuntes para el alumnado</title><style>
+@page { size: A4; margin: 16mm 15mm 18mm 15mm; }
+* { box-sizing: border-box; }
+body { font-family: 'Segoe UI', 'DejaVu Sans', Arial, sans-serif; color: #1c2733; font-size: 10.6pt; line-height: 1.5; margin: 0; }
+.portada { height: 255mm; display: flex; flex-direction: column; justify-content: center; page-break-after: always; text-align: left; }
+.portada .sup { color: #C4580C; font-weight: 700; letter-spacing: .14em; font-size: 10pt; text-transform: uppercase; }
+.portada h1 { font-size: 34pt; margin: 6mm 0 2mm; color: #005A9C; line-height: 1.1; }
+.portada h2 { font-size: 15pt; font-weight: 500; margin: 0 0 12mm; color: #3d4b59; }
+.portada .pie { margin-top: auto; font-size: 9.5pt; color: #5d6d7e; border-top: 1px solid #d5dde5; padding-top: 4mm; }
+.portada img { width: 100%; border-radius: 6px; box-shadow: 0 4px 18px rgba(0,0,0,.18); margin-bottom: 10mm; }
+.indice { page-break-after: always; }
+.indice h2 { color: #005A9C; font-size: 18pt; margin: 0 0 6mm; }
+.indice ol { font-size: 11.5pt; line-height: 2; padding-left: 7mm; }
+section { page-break-before: always; }
+section:first-of-type { page-break-before: auto; }
+h2.cap { color: #005A9C; font-size: 18pt; margin: 0 0 4mm; border-bottom: 3px solid #C4580C; padding-bottom: 2mm; }
+h2.cap span { color: #C4580C; margin-right: 3mm; }
+h3 { color: #005A9C; font-size: 12pt; margin: 5mm 0 2mm; }
+figure { margin: 3mm 0 4mm; page-break-inside: avoid; }
+figure img { border: 1px solid #d5dde5; border-radius: 5px; display: block; }
+figcaption { font-size: 8.8pt; color: #5d6d7e; margin-top: 1.5mm; font-style: italic; }
+.par { display: flex; gap: 5mm; align-items: flex-start; }
+.par > div { flex: 1; min-width: 0; }
+.par img { width: 100%; }
+.boton { display: inline-block; border: 1px solid #b9c6d3; background: #f2f6fa; border-radius: 4px; padding: 0 5px; font-size: 9.5pt; white-space: nowrap; }
+code { font-family: Consolas, 'DejaVu Sans Mono', monospace; background: #f4f6f8; border: 1px solid #e3e8ee; border-radius: 3px; padding: 0 3px; font-size: 9.4pt; }
+.nota { border-left: 4px solid #005A9C; background: #eef4fa; padding: 3mm 4mm; margin: 4mm 0; border-radius: 0 5px 5px 0; page-break-inside: avoid; }
+.nota.atencion { border-color: #C4580C; background: #fdf1e8; }
+.nota.clase { border-color: #2e9e52; background: #edf7f0; }
+table { border-collapse: collapse; width: 100%; margin: 3mm 0; page-break-inside: avoid; }
+.tabla th { background: #005A9C; color: #fff; text-align: left; padding: 2mm 3mm; font-size: 9.6pt; }
+.tabla td { border-bottom: 1px solid #e3e8ee; padding: 2mm 3mm; vertical-align: top; font-size: 9.8pt; }
+.zonas td { padding: 1.6mm 2mm; vertical-align: top; border-bottom: 1px solid #eef1f4; }
+.zonas td.n { width: 9mm; } .zonas td.n { color: #fff; font-weight: 700; text-align: center; }
+.zonas td.n { background: #C4580C; border-radius: 50%; display: inline-block; width: 7mm; height: 7mm; line-height: 7mm; padding: 0; margin-top: 1mm; }
+ul, ol { padding-left: 6mm; } li { margin: 1mm 0; }
+.colores { list-style: none; padding-left: 0; } .colores .c { display: inline-block; width: 9mm; height: 3mm; border-radius: 2px; margin-right: 2.5mm; vertical-align: middle; }
+.verde { background: #27ae60; } .rojo { background: #d84343; } .naranja { background: #e67e22; }
+.check { list-style: none; padding-left: 0; } .check li { padding-left: 8mm; position: relative; margin: 2.5mm 0; }
+.check li::before { content: '☐'; position: absolute; left: 0; top: -1px; font-size: 13pt; color: #005A9C; }
+.faq dt { font-weight: 700; color: #005A9C; margin-top: 4mm; } .faq dd { margin: 1mm 0 0 0; }
+
+.verde-t { color:#1e8449; font-weight:700; } .rojo-t { color:#c0392b; font-weight:700; } .naranja-t { color:#d35400; font-weight:700; }
+/* margen-pantalla */
+@media screen {
+  html { background: #e9edf2; }
+  body { max-width: 190mm; margin: 0 auto; padding: 14mm 16mm 20mm; background: #fff; box-shadow: 0 2px 16px rgba(20,40,70,.13); box-sizing: border-box; }
+}
+@media screen and (max-width: 760px) { body { padding: 18px 16px 30px; box-shadow: none; } html { background: #fff; } }
+.junto { break-inside: avoid; page-break-inside: avoid; }
+
+/* margen-pantalla */
+@media screen {
+  html { background: #e9edf2; }
+  body { max-width: 190mm; margin: 0 auto; padding: 14mm 16mm 20mm; background: #fff; box-shadow: 0 2px 16px rgba(20,40,70,.13); box-sizing: border-box; }
+}
+@media screen and (max-width: 760px) { body { padding: 18px 16px 30px; box-shadow: none; } html { background: #fff; } }
+.junto { break-inside: avoid; page-break-inside: avoid; }
+h3 { break-after: avoid-page; page-break-after: avoid; }
+figure { text-align: center; } figure img { margin: 0 auto; } figcaption { text-align: center; }
+.formula { font-family: Consolas, "DejaVu Sans Mono", monospace; background: #f4f6f8; border: 1px solid #e3e8ee; border-radius: 5px; padding: 2mm 3mm; margin: 2mm 0; page-break-inside: avoid; }
+</style></head><body>
+<style>
+
+section + section { page-break-before: auto; break-before: auto; margin-top: 9mm; } h2.cap { break-after: avoid-page; page-break-after: avoid; break-inside: avoid; }
+section.resumen, section.historia { page-break-before: always; break-before: page; margin-top: 0; }
+pre.prog { font-family: Consolas, 'DejaVu Sans Mono', monospace; font-size: 9.2pt; line-height: 1.45; background: #f4f6f8; border: 1px solid #e3e8ee; border-left: 4px solid #005A9C; border-radius: 0 5px 5px 0; padding: 2.5mm 4mm; margin: 3mm 0; white-space: pre; page-break-inside: avoid; overflow: hidden; }
+pre.prog .c { color: #6b7b8c; } pre.prog .g { color: #005A9C; font-weight: 700; } pre.prog .m { color: #C4580C; font-weight: 700; } pre.prog .k { color: #1e8449; font-weight: 700; }
+svg.dib { display: block; margin: 0 auto; max-width: 100%; }
+figure.dib { border: 1px solid #e3e8ee; border-radius: 6px; padding: 2mm 0 1mm; }
+.tabla.cod td:first-child { font-family: Consolas, 'DejaVu Sans Mono', monospace; font-weight: 700; color: #005A9C; white-space: nowrap; width: 24mm; }
+.tabla.regla td, .tabla.regla th { text-align: center; } .tabla.regla td:first-child { text-align: left; font-weight: 700; }
+.resumen { font-size: 9pt; } .resumen td { padding: 1.2mm 2mm !important; font-size: 9pt !important; } .resumen td:first-child { width: 30mm; }
+.resumen h3 { margin-top: 3mm; }
+.faq dt { margin-top: 2.6mm !important; } .faq dd { font-size: 9.8pt; line-height: 1.4; }
+.dos-col { column-count: 2; column-gap: 7mm; } .dos-col > * { break-inside: avoid; }
+pre.prog.b { border-left-color: #d35400; }
+pre.prog .c { color: #6b7b8c; } pre.prog .g { color: #005A9C; font-weight: 700; } pre.prog .o { color: #d35400; font-weight: 700; }
+.dos { display: flex; gap: 4mm; page-break-inside: avoid; } .dos > * { flex: 1; margin: 2mm 0; }
+.va { color: #005A9C; font-weight: 700; } .vb { color: #d35400; font-weight: 700; }
+.pasos { counter-reset: p; list-style: none; padding-left: 0; } .pasos > li { counter-increment: p; position: relative; padding-left: 10mm; margin: 2.5mm 0; page-break-inside: avoid; }
+.pasos > li::before { content: counter(p); position: absolute; left: 0; top: 0; width: 7mm; height: 7mm; border-radius: 50%; background: #d35400; color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 10pt; }
+.cuenta { font-family: Consolas, 'DejaVu Sans Mono', monospace; background: #fdf3ec; border: 1px solid #f3d6c2; border-radius: 5px; padding: 1.8mm 3mm; margin: 1.5mm 0; display: block; }
+table.comp td:first-child { font-weight: 700; } table.comp td:nth-child(2) { color: #005A9C; } table.comp td:nth-child(3) { color: #d35400; }
+table.comp td, table.comp th { text-align: center; } table.comp td:first-child, table.comp th:first-child { text-align: left; }
+h4 { font-size: 11pt; color: #C4580C; margin: 4mm 0 1.5mm; break-after: avoid-page; page-break-after: avoid; }
+
+
+.validar { border: 2px dashed #C4580C; border-radius: 6px; padding: 2.5mm 4mm; margin: 3mm 0; background: #fff8f2; page-break-inside: avoid; }
+.validar strong:first-child { color: #C4580C; }
+.manual { border-left: 4px solid #8a97a5; background: #f4f6f8; padding: 2mm 4mm; margin: 2.5mm 0; font-size: 9.8pt; page-break-inside: avoid; }
+.manual::before { content: "📘 Lo que dice el manual de TpaCAD"; display: block; font-weight: 700; color: #5b6878; font-size: 9pt; margin-bottom: 1mm; }
+table.dif td:nth-child(2) { color: #005A9C; } table.dif td:nth-child(3) { color: #C4580C; }
+</style>
+<div class="portada"><div class="sup">Suite CNC · Apuntes para el alumnado · Borrador para revisar</div><h1>Programas ISO para TpaCAD</h1><h2>Cómo escribir un programa ISO que TpaCAD importe bien: perfiles, compensación, arcos y taladros, lo que lee y lo que ignora, y un programa que también entiende el Simulador</h2>
+<figure class="dib"><svg class="dib" viewBox="0 0 640 330" style="width:100%" xmlns="http://www.w3.org/2000/svg"><defs><marker id="f005A9C" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#005A9C"/></marker><marker id="fC4580C" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#C4580C"/></marker><marker id="f1e8449" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1e8449"/></marker><marker id="f8a97a5" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a97a5"/></marker><marker id="fc0392b" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c0392b"/></marker><marker id="f1c2733" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1c2733"/></marker></defs><polyline points="238.0,240.0 436.0,240.0 436.0,108.0 436.0,108.0 435.64,101.1 434.56,94.28 432.77,87.6 430.29,81.16 427.16,75.0 423.4,69.21 419.05,63.84 414.16,58.95 408.79,54.6 403.0,50.84 396.84,47.71 390.4,45.23 383.72,43.44 376.9,42.36 370.0,42.0 287.5,42.0 287.5,42.0 287.23,47.17 286.42,52.29 285.08,57.3 283.22,62.13 280.87,66.75 278.05,71.1 274.79,75.12 271.12,78.79 267.1,82.05 262.75,84.87 258.13,87.22 253.3,89.08 248.29,90.42 243.17,91.23 238.0,91.5 232.83,91.23 227.71,90.42 222.7,89.08 217.87,87.22 213.25,84.87 208.9,82.05 204.88,78.79 201.21,75.12 197.95,71.1 195.13,66.75 192.78,62.13 190.92,57.3 189.58,52.29 188.77,47.17 188.5,42.0 106.0,42.0 106.0,42.0 99.1,42.36 92.28,43.44 85.6,45.23 79.16,47.71 73.0,50.84 67.21,54.6 61.84,58.95 56.95,63.84 52.6,69.21 48.84,75.0 45.71,81.16 43.23,87.6 41.44,94.28 40.36,101.1 40.0,108.0 40.0,240.0 238.0,240.0" fill="#f3e3c3" stroke="#1c2733" stroke-width="1" stroke-linejoin="round"/><polyline points="238.0,266.4 238.0,240.0 238.0,240.0 436.0,240.0 436.0,108.0 436.0,108.0 435.64,101.1 434.56,94.28 432.77,87.6 430.29,81.16 427.16,75.0 423.4,69.21 419.05,63.84 414.16,58.95 408.79,54.6 403.0,50.84 396.84,47.71 390.4,45.23 383.72,43.44 376.9,42.36 370.0,42.0 287.5,42.0 287.5,42.0 287.23,47.17 286.42,52.29 285.08,57.3 283.22,62.13 280.87,66.75 278.05,71.1 274.79,75.12 271.12,78.79 267.1,82.05 262.75,84.87 258.13,87.22 253.3,89.08 248.29,90.42 243.17,91.23 238.0,91.5 232.83,91.23 227.71,90.42 222.7,89.08 217.87,87.22 213.25,84.87 208.9,82.05 204.88,78.79 201.21,75.12 197.95,71.1 195.13,66.75 192.78,62.13 190.92,57.3 189.58,52.29 188.77,47.17 188.5,42.0 106.0,42.0 106.0,42.0 99.1,42.36 92.28,43.44 85.6,45.23 79.16,47.71 73.0,50.84 67.21,54.6 61.84,58.95 56.95,63.84 52.6,69.21 48.84,75.0 45.71,81.16 43.23,87.6 41.44,94.28 40.36,101.1 40.0,108.0 40.0,240.0 238.0,240.0 238.0,266.4" fill="none" stroke="#C4580C" stroke-width="2.6" stroke-linejoin="round"/><circle cx="238.0" cy="266.4" r="6" fill="#C4580C"/><circle cx="212.0" cy="272.4" r="9" fill="#C4580C"/><text x="212.0" y="276.59999999999997" fill="#fff" font-size="12" font-weight="700" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif">G0</text><text x="248.0" y="284.4" fill="#C4580C" font-size="12" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="700">mecanizado 1 (setup): G0 X… Y… Z20 T101 S12000</text><text x="248.0" y="299.4" fill="#C4580C" font-size="12" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="400">G42 · G1 · G2 · G3 … hasta el siguiente G0</text><circle cx="139.0" cy="141.0" r="13.2" fill="#ffffff" stroke="#005A9C" stroke-width="2"/><line x1="132.4" y1="141.0" x2="145.6" y2="141.0" stroke="#005A9C" stroke-width="1.2"/><line x1="139.0" y1="147.6" x2="139.0" y2="134.4" stroke="#005A9C" stroke-width="1.2"/><circle cx="337.0" cy="141.0" r="13.2" fill="#ffffff" stroke="#005A9C" stroke-width="2"/><line x1="330.4" y1="141.0" x2="343.6" y2="141.0" stroke="#005A9C" stroke-width="1.2"/><line x1="337.0" y1="147.6" x2="337.0" y2="134.4" stroke="#005A9C" stroke-width="1.2"/><text x="139.0" y="125.0" fill="#005A9C" font-size="12" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="middle" font-weight="700">G81</text><text x="337.0" y="125.0" fill="#005A9C" font-size="12" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="middle" font-weight="700">G81</text><text x="455.8" y="68.4" fill="#C4580C" font-size="14" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="700">Mecanizado 1 (setup)</text><text x="455.8" y="88.2" fill="#C4580C" font-size="11.5" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="400">el contorno, con su fresa y su corrección</text><text x="455.8" y="127.8" fill="#005A9C" font-size="14" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="700">Agujeros</text><text x="455.8" y="147.6" fill="#005A9C" font-size="11.5" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="400">una línea G81 por agujero</text><text x="455.8" y="193.8" fill="#8a97a5" font-size="11.5" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="400">Todo en la cara 1 (la de arriba).</text><text x="455.8" y="210.3" fill="#8a97a5" font-size="11.5" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="400">TpaCAD decide cómo llega la</text><text x="455.8" y="226.8" fill="#8a97a5" font-size="11.5" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="400">máquina a cada perfil y agujero.</text><circle cx="40.0" cy="240.0" r="7" fill="#fff" stroke="#1c2733" stroke-width="1.3"/><path d="M40.0,240.0 L47.0,240.0 A7,7 0 0,0 40.0,233.0 Z" fill="#1c2733"/><path d="M40.0,240.0 L33.0,240.0 A7,7 0 0,0 40.0,247.0 Z" fill="#1c2733"/></svg></figure><div class="pie">Programas ISO para TpaCAD · Suite CNC 2026.10 · © 2026 Eloi A.A.<br>Apuntes publicados con licencia CC BY-SA 4.0. Basados en el manual de TpaCAD, «Programas de conversión: desde formato ISO a formato TpaCAD».</div></div>
+<div class="indice"><h2>Contenido</h2><ol><li>Qué hace TpaCAD con un programa ISO</li><li>La primera línea, los comentarios y las mayúsculas</li><li>Unidades y medidas de la pieza: G71 y G70</li><li>Los mecanizados: cada G0 es un setup</li><li>La compensación: G40, G41 y G42</li><li>Rectas y arcos dentro del perfil</li><li>Los taladros: G81</li><li>Lo que TpaCAD no lee</li><li>La configuración del importador</li><li>Un programa para TpaCAD que también entiende el Simulador</li><li>Nuestros programas de clase y TpaCAD</li><li>Antes de importar</li></ol></div>
+
+<section><h2 class="cap"><span>1</span>Qué hace TpaCAD con un programa ISO</h2>
+<p>TpaCAD es el programa con el que se preparan los trabajos de muchas máquinas CNC de madera. Tiene su propio formato, y un <strong>importador</strong> que lee archivos ISO y los <strong>convierte</strong> a ese formato. Hay que entender bien esto:</p>
+<ul>
+<li>TpaCAD <strong>no ejecuta el programa línea a línea</strong>, como haría el control de una fresadora. Lo lee para sacar de él <strong>mecanizados</strong>: <strong>perfiles</strong> (los trazados de la fresa, cada uno con su fresa asociada: lo que TpaCAD llama un <strong>setup</strong>) y <strong>perforaciones</strong> (los agujeros).</li>
+<li>Después es TpaCAD quien decide cómo se mueve la máquina para hacerlos: cómo llega a cada perfil, cómo sube, qué velocidades usa en el aire… Por eso hay códigos que en una fresadora son importantes y que TpaCAD <strong>no lee</strong> (capítulo 8).</li>
+<li>Solo importa mecanizados en la <strong>cara 1</strong>: la de arriba de la pieza.</li>
+<li>El importador lo tiene que <strong>habilitar el fabricante</strong> de la máquina, y su configuración cambia cómo se leen algunas cosas (capítulo 9).</li>
+</ul>
+<figure class="dib"><svg class="dib" viewBox="0 0 640 330" style="width:100%" xmlns="http://www.w3.org/2000/svg"><defs><marker id="f005A9C" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#005A9C"/></marker><marker id="fC4580C" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#C4580C"/></marker><marker id="f1e8449" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1e8449"/></marker><marker id="f8a97a5" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a97a5"/></marker><marker id="fc0392b" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c0392b"/></marker><marker id="f1c2733" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1c2733"/></marker></defs><polyline points="238.0,240.0 436.0,240.0 436.0,108.0 436.0,108.0 435.64,101.1 434.56,94.28 432.77,87.6 430.29,81.16 427.16,75.0 423.4,69.21 419.05,63.84 414.16,58.95 408.79,54.6 403.0,50.84 396.84,47.71 390.4,45.23 383.72,43.44 376.9,42.36 370.0,42.0 287.5,42.0 287.5,42.0 287.23,47.17 286.42,52.29 285.08,57.3 283.22,62.13 280.87,66.75 278.05,71.1 274.79,75.12 271.12,78.79 267.1,82.05 262.75,84.87 258.13,87.22 253.3,89.08 248.29,90.42 243.17,91.23 238.0,91.5 232.83,91.23 227.71,90.42 222.7,89.08 217.87,87.22 213.25,84.87 208.9,82.05 204.88,78.79 201.21,75.12 197.95,71.1 195.13,66.75 192.78,62.13 190.92,57.3 189.58,52.29 188.77,47.17 188.5,42.0 106.0,42.0 106.0,42.0 99.1,42.36 92.28,43.44 85.6,45.23 79.16,47.71 73.0,50.84 67.21,54.6 61.84,58.95 56.95,63.84 52.6,69.21 48.84,75.0 45.71,81.16 43.23,87.6 41.44,94.28 40.36,101.1 40.0,108.0 40.0,240.0 238.0,240.0" fill="#f3e3c3" stroke="#1c2733" stroke-width="1" stroke-linejoin="round"/><polyline points="238.0,266.4 238.0,240.0 238.0,240.0 436.0,240.0 436.0,108.0 436.0,108.0 435.64,101.1 434.56,94.28 432.77,87.6 430.29,81.16 427.16,75.0 423.4,69.21 419.05,63.84 414.16,58.95 408.79,54.6 403.0,50.84 396.84,47.71 390.4,45.23 383.72,43.44 376.9,42.36 370.0,42.0 287.5,42.0 287.5,42.0 287.23,47.17 286.42,52.29 285.08,57.3 283.22,62.13 280.87,66.75 278.05,71.1 274.79,75.12 271.12,78.79 267.1,82.05 262.75,84.87 258.13,87.22 253.3,89.08 248.29,90.42 243.17,91.23 238.0,91.5 232.83,91.23 227.71,90.42 222.7,89.08 217.87,87.22 213.25,84.87 208.9,82.05 204.88,78.79 201.21,75.12 197.95,71.1 195.13,66.75 192.78,62.13 190.92,57.3 189.58,52.29 188.77,47.17 188.5,42.0 106.0,42.0 106.0,42.0 99.1,42.36 92.28,43.44 85.6,45.23 79.16,47.71 73.0,50.84 67.21,54.6 61.84,58.95 56.95,63.84 52.6,69.21 48.84,75.0 45.71,81.16 43.23,87.6 41.44,94.28 40.36,101.1 40.0,108.0 40.0,240.0 238.0,240.0 238.0,266.4" fill="none" stroke="#C4580C" stroke-width="2.6" stroke-linejoin="round"/><circle cx="238.0" cy="266.4" r="6" fill="#C4580C"/><circle cx="212.0" cy="272.4" r="9" fill="#C4580C"/><text x="212.0" y="276.59999999999997" fill="#fff" font-size="12" font-weight="700" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif">G0</text><text x="248.0" y="284.4" fill="#C4580C" font-size="12" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="700">mecanizado 1 (setup): G0 X… Y… Z20 T101 S12000</text><text x="248.0" y="299.4" fill="#C4580C" font-size="12" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="400">G42 · G1 · G2 · G3 … hasta el siguiente G0</text><circle cx="139.0" cy="141.0" r="13.2" fill="#ffffff" stroke="#005A9C" stroke-width="2"/><line x1="132.4" y1="141.0" x2="145.6" y2="141.0" stroke="#005A9C" stroke-width="1.2"/><line x1="139.0" y1="147.6" x2="139.0" y2="134.4" stroke="#005A9C" stroke-width="1.2"/><circle cx="337.0" cy="141.0" r="13.2" fill="#ffffff" stroke="#005A9C" stroke-width="2"/><line x1="330.4" y1="141.0" x2="343.6" y2="141.0" stroke="#005A9C" stroke-width="1.2"/><line x1="337.0" y1="147.6" x2="337.0" y2="134.4" stroke="#005A9C" stroke-width="1.2"/><text x="139.0" y="125.0" fill="#005A9C" font-size="12" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="middle" font-weight="700">G81</text><text x="337.0" y="125.0" fill="#005A9C" font-size="12" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="middle" font-weight="700">G81</text><text x="455.8" y="68.4" fill="#C4580C" font-size="14" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="700">Mecanizado 1 (setup)</text><text x="455.8" y="88.2" fill="#C4580C" font-size="11.5" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="400">el contorno, con su fresa y su corrección</text><text x="455.8" y="127.8" fill="#005A9C" font-size="14" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="700">Agujeros</text><text x="455.8" y="147.6" fill="#005A9C" font-size="11.5" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="400">una línea G81 por agujero</text><text x="455.8" y="193.8" fill="#8a97a5" font-size="11.5" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="400">Todo en la cara 1 (la de arriba).</text><text x="455.8" y="210.3" fill="#8a97a5" font-size="11.5" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="400">TpaCAD decide cómo llega la</text><text x="455.8" y="226.8" fill="#8a97a5" font-size="11.5" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="400">máquina a cada perfil y agujero.</text><circle cx="40.0" cy="240.0" r="7" fill="#fff" stroke="#1c2733" stroke-width="1.3"/><path d="M40.0,240.0 L47.0,240.0 A7,7 0 0,0 40.0,233.0 Z" fill="#1c2733"/><path d="M40.0,240.0 L33.0,240.0 A7,7 0 0,0 40.0,247.0 Z" fill="#1c2733"/></svg><figcaption>Así ve TpaCAD un programa: cada G0 empieza un mecanizado (un setup con su fresa), y su trazado son las líneas G1, G2 y G3 hasta el siguiente G0. Cada G81 es un agujero.</figcaption></figure>
+</section>
+
+<section><h2 class="cap"><span>2</span>La primera línea, los comentarios y las mayúsculas</h2>
+<div class="manual">El archivo es válido si la <strong>primera línea empieza</strong> por uno de estos caracteres: <code>%</code> <code>(</code> <code>;</code> <code>:</code> <code>[</code> <code>/</code> o las letras <code>O P G N M T S</code>. No distingue mayúsculas de minúsculas. La primera cadena entre paréntesis, antes de cualquier instrucción, es el comentario (el nombre) del programa. Las líneas que empiezan por <code>%</code>, <code>(</code> o <code>;</code> no se leen. Un <code>;</code> dentro de una línea hace que lo que sigue sea comentario.</div>
+<ul>
+<li><strong>Empieza con el nombre entre paréntesis</strong>: <code>(PIEZA CON MUESCA)</code>. Es una primera línea válida y TpaCAD la usa como nombre del programa.</li>
+<li><strong>Nunca empieces con una línea en blanco</strong> ni con otro carácter (una letra X, un espacio…): TpaCAD no reconocería el archivo.</li>
+<li><strong>Los comentarios, con <code>;</code></strong> al final de la línea. Los paréntesis solo como línea entera: el manual no dice qué hace con un paréntesis en medio de una línea.</li>
+<li><code>g1 x10</code> y <code>G1 X10</code> son lo mismo, pero en clase escribimos siempre en mayúsculas.</li>
+<li>Evita los <strong>acentos y la ñ</strong> en los comentarios y el nombre: no todos los programas los leen bien.</li>
+</ul>
+</section>
+
+<section><h2 class="cap"><span>3</span>Unidades y medidas de la pieza: G71 y G70</h2>
+<div class="manual">La unidad por defecto es el milímetro. <code>G70</code> (pulgadas) o <code>G71</code> (milímetros) se tienen que escribir <strong>antes del primer G0</strong>, y no en una línea que no se lee. Con X Y Z en la misma línea dan también las medidas de la pieza: <code>G71X1300Y1300Z80</code> es una pieza de 1300 × 1300 y 80 de grueso. Si no se dan, TpaCAD las calcula a partir de los mecanizados.</div>
+<ul>
+<li>Escribe la línea de <code>G71</code> justo después del nombre, con las <strong>medidas del tablero</strong>: <strong>X el largo</strong>, <strong>Y el ancho</strong> y <strong>Z el grosor</strong>. Por ejemplo, <code>G71 X200 Y150 Z10</code> es un tablero de 200 × 150 y 10 de grueso. Así TpaCAD toma las medidas del material.</li>
+<li>El cero pieza es la esquina inferior izquierda del tablero (cuadrante 1, capítulo 9): todo lo que mecanices tiene que caber entre X0 y el largo, y entre Y0 y el ancho.</li>
+<li>Si escribes solo <code>G71</code>, TpaCAD calcula unas medidas que abarcan los mecanizados.</li>
+</ul>
+<div class="nota"><strong>💡 En el Simulador.</strong> Desde la versión V41, el Simulador también lee así la línea <code>G71 X… Y… Z…</code> cuando va antes del primer movimiento: pone el material en manual con esas medidas y el cero en la esquina inferior izquierda, y avisa si el programa corta fuera del tablero o más hondo que su grosor. En una fresadora normal, en cambio, esa línea sería un movimiento: para otras máquinas, escribe solo <code>G71</code>.</div>
+</section>
+
+<section><h2 class="cap"><span>4</span>Los mecanizados: cada G0 es un setup</h2>
+<div class="manual">La lectura de un perfil empieza en una línea <strong>G0</strong>. En ella lee <strong>X Y Z</strong> (las coordenadas iniciales del perfil), <strong>G90/G91</strong>, la herramienta <strong>T</strong> y las revoluciones <strong>S</strong> (y los ejes rotativos B A, en las máquinas que los tienen). Cada línea siguiente puede ser un tramo G1, G2 o G3, o un <strong>nuevo G0</strong>, que empieza otro perfil. Si hay líneas G1, G2 o G3 <strong>sin un G0 antes</strong>, la conversión se anula.</div>
+<p>Así se organiza un programa para TpaCAD:</p>
+<ol>
+<li><strong>Primero, el material</strong>: la línea <code>G71 X… Y… Z…</code> (capítulo 3).</li>
+<li><strong>Cada <code>G0</code> empieza un mecanizado nuevo</strong>: un trazado con su fresa asociada, lo que TpaCAD muestra como un <strong>setup</strong>. En la línea del G0 van el punto donde empieza (X Y Z), la fresa (T) y las revoluciones (S); la corrección (G40, G41 o G42), en esa línea o en la siguiente.</li>
+<li><strong>Las líneas G1, G2 y G3 que siguen son el trazado</strong> de ese setup, hasta el próximo G0.</li>
+<li><strong>Otro G0 es otro mecanizado</strong>, con su propio setup, sobre el mismo material. Así se hacen varios trazados en un solo programa: un exterior, un agujero rectangular, un rebaje…</li>
+</ol>
+<pre class="prog">(DOS MECANIZADOS)
+<span class="g">G71</span> X200 Y150 Z19                  <span class="c">; el material</span>
+<span class="g">G0</span> X100 Y5 Z20 T101 S12000          <span class="c">; MECANIZADO 1: setup con la fresa T101</span>
+<span class="g">G42</span>
+<span class="g">G1</span> …                                <span class="c">; su trazado</span>
+<span class="g">G0</span> X60 Y60 Z20 T102 S16000          <span class="c">; MECANIZADO 2: otro setup, con la fresa T102</span>
+<span class="g">G41</span>
+<span class="g">G1</span> …                                <span class="c">; su trazado</span>
+<span class="m">M2</span></pre>
+<p>Esto cambia la forma de escribir el programa:</p>
+<ul>
+<li><strong>T y S en cada G0</strong>, aunque la fresa sea la misma que en el mecanizado anterior. El manual no dice qué hace TpaCAD con un G0 sin T: así cada setup queda completo. TpaCAD no dice nada de <code>M06</code> ni de <code>M03</code>.</li>
+<li><strong>El G0 lleva X, Y y Z juntas</strong>: es el punto donde empieza el trazado, en el aire.</li>
+<li><strong>No hay G0 «para moverse».</strong> Un <code>G0 Z20</code> suelto para subir, o un <code>G0 X0 Y0</code> para volver al cero, serían mecanizados que empiezan y no tienen trazado: un setup vacío. El manual los llama <strong>G0 aislados</strong>, y hay una opción para que el importador los quite (capítulo 9).</li>
+<li><strong>Antes del primer G1 tiene que haber un G0.</strong> Un trazado sin su G0 no tiene setup, y TpaCAD anula la conversión.</li>
+<li>Las coordenadas que no escribes se mantienen del tramo anterior, como en cualquier ISO.</li>
+<li>Los <strong>agujeros no son un G0</strong>: cada línea G81 es una perforación con su propia T, S y F (capítulo 7).</li>
+</ul>
+<div class="nota"><strong>💡 Para subir al acabar un trazado.</strong> Como un G0 empieza otro mecanizado, para salir de la madera al acabar sube con un <strong>G1</strong> dentro del mismo trazado (<code>G1 Z20 F5000</code>) y empieza el siguiente con su G0. De todos modos, TpaCAD decide cómo se mueve la máquina de un mecanizado a otro.</div>
+</section>
+
+<section><h2 class="cap"><span>5</span>La compensación: G40, G41 y G42</h2>
+<div class="manual">En la <strong>misma línea del G0</strong> o en la <strong>siguiente</strong> se puede leer la corrección del radio de la fresa: <code>G40</code> ninguna (la que hay si no se dice nada), <code>G41</code> a la izquierda del perfil, <code>G42</code> a la derecha.</div>
+<ul>
+<li>En TpaCAD la compensación es <strong>de todo el mecanizado</strong> (del setup): se dice una vez, al principio, y vale para todo su trazado. No se activa en una recta de entrada ni se anula en una de salida, como hacemos en la fresadora.</li>
+<li>Escríbela en la línea siguiente al G0: <code>G42</code> sola. Es la forma que también entiende el Simulador.</li>
+<li>El lado se elige igual que siempre: la fresa por la zona que sobra. Exterior en antihorario, G42; exterior en horario, G41; los interiores, al revés.</li>
+</ul>
+<div class="validar"><strong>🔎 Para comprobar en TpaCAD.</strong> Si el perfil tiene recta de entrada y de salida (como los nuestros), TpaCAD también las compensará, porque son parte del perfil. Importa el programa del capítulo 10 y mira en TpaCAD cómo queda la entrada. Puede que sea mejor que el perfil empiece directamente sobre el contorno y dejar que TpaCAD añada su propia entrada (en la configuración de la fresa).</div>
+</section>
+
+<section><h2 class="cap"><span>6</span>Rectas y arcos dentro del perfil</h2>
+<div class="manual"><strong>G1</strong>: lee X Y Z (el final del tramo), G90/G91 y la velocidad <strong>F</strong> en mm/min. <strong>G2 / G3</strong> (horario / antihorario): lee X Y Z (el final), el plano <strong>G17</strong> (XY, el de siempre), <strong>G18</strong> (ZX) o <strong>G19</strong> (YZ), el centro con <strong>I J K</strong> (las dos del plano del arco) y F. En el plano XY, si no hay I ni J y el arco no es un círculo, usa el radio <strong>R</strong>, que no puede ser menor que la distancia entre los extremos del arco; si no, la conversión se detiene con un error. En G18 o G19, sin las dos coordenadas del centro, es un error.</div>
+<ul>
+<li><strong>I y J, como en clase</strong>: con la configuración normal, el centro se da <strong>en incremental desde el punto de inicio del arco</strong>, aunque el programa esté en G90. Es lo mismo que hacemos nosotros. (Hay una opción del importador para que sigan G90/G91: capítulo 9.)</li>
+<li><strong>Mejor I J que R.</strong> Con R hay dos arcos posibles (el corto y el largo) y además, según el manual, TpaCAD pone un límite al radio. Con I J no hay ninguna duda.</li>
+<li><strong>Círculos completos.</strong> Se pueden hacer en una línea con I J. Al exportar, TpaCAD convierte un círculo que forma parte de un perfil en dos semicírculos: si lo programas en dos semicírculos, como en clase, no hay problema.</li>
+<li>Los arcos en G18 o G19 (cantos redondeados de lado) también los lee, pero en nuestros ejercicios no los usamos.</li>
+</ul>
+</section>
+
+<section><h2 class="cap"><span>7</span>Los taladros: G81</h2>
+<div class="manual">Un agujero se lee en una línea con el código <strong>G81</strong> (el fabricante puede elegir otro entre G81 y G89). En ella lee <strong>X Y Z</strong>, <strong>G90/G91</strong>, la herramienta <strong>T</strong>, las revoluciones <strong>S</strong> y la velocidad de entrada <strong>F</strong>.</div>
+<ul>
+<li><strong>Una línea G81 completa por agujero</strong>: <code>G81 X30 Y30 Z-20 T104 S4000 F300</code>. No te fíes de que repita los datos del agujero anterior.</li>
+<li>Solo hay un código de taladro: si es G81, una línea con <strong>G83</strong> (picoteo) no se lee como agujero. El picoteo, si hace falta, lo hace TpaCAD con su configuración.</li>
+<li><strong>R, Q, P, G98 y G99 no los lee</strong>: la aproximación y la salida las decide TpaCAD. Puedes dejar la R (la necesita el Simulador): TpaCAD solo lee las letras de la lista.</li>
+<li>Todo lo que hay que saber de los ciclos de taladrado está en los apuntes «Taladros: los ciclos fijos».</li>
+</ul>
+<div class="validar"><strong>🔎 Para comprobar en TpaCAD.</strong> El manual dice que en la línea G81 lee «X Y Z como coordenadas iniciales». Comprueba con un archivo de prueba que la <strong>Z es la profundidad del fondo</strong> (Z-20) y que una <strong>R</strong> en la línea no da problemas.</div>
+</section>
+
+<section><h2 class="cap"><span>8</span>Lo que TpaCAD no lee</h2>
+<div class="manual">Las líneas con otros códigos G se ignoran. La lectura del programa termina al final del archivo o en un <strong>M2</strong>.</div>
+<table class="tabla cod">
+<tr><th>Código</th><th>En TpaCAD</th></tr>
+<tr><td>M2</td><td><strong>Termina la lectura.</strong> Lo que haya después no se lee. Es el fin que da el manual.</td></tr>
+<tr><td>M30</td><td>El manual no lo nombra: la lectura acaba igual al llegar al final del archivo. Para TpaCAD, mejor <code>M2</code>.</td></tr>
+<tr><td>M03 M05 M06</td><td>El manual no los nombra. La herramienta y las revoluciones las toma de la T y la S de la línea del G0 (o del G81).</td></tr>
+<tr><td>G80 G98 G99</td><td>Otros códigos G: se ignoran.</td></tr>
+<tr><td>G28</td><td>Se ignora. Las vueltas a referencia las hace la máquina.</td></tr>
+<tr><td>R Q P en G81</td><td>No los lee (aproximación, picoteo y pausa los pone TpaCAD).</td></tr>
+<tr><td>(…) a media línea</td><td>No está claro: usa <code>;</code> para los comentarios.</td></tr>
+</table>
+<div class="nota"><strong>💡 ¿Entonces sobran?</strong> Para TpaCAD sí, pero no molestan: si un programa tiene que servir también para el Simulador o para otra máquina, se pueden dejar <code>M03</code>, <code>G80</code> o la R del ciclo. Compruébalo una vez importando el programa.</div>
+</section>
+
+<section><h2 class="cap"><span>9</span>La configuración del importador</h2>
+<p>El importador tiene una ventana de configuración (normalmente la cambia el fabricante o el responsable de la máquina). Conviene saber cómo está, porque cambia la forma de leer el programa:</p>
+<table class="tabla">
+<tr><th>Opción</th><th>Qué hace</th><th>Lo normal en clase</th></tr>
+<tr><td>Código G de tamaños</td><td>El código cuya línea da las medidas de la pieza. G70/G71 funcionan siempre; se puede poner otro (de 100 a 10000).</td><td>G71</td></tr>
+<tr><td>Código G de perforación</td><td>El código que se lee como agujero (de 81 a 89).</td><td>81</td></tr>
+<tr><td>Cuadrante de máquina</td><td>Si las coordenadas X Y del archivo están en una zona negativa de la máquina (2, 3 o 4), las pasa a positivas.</td><td>1 (no cambia nada)</td></tr>
+<tr><td>Ejes rotativos (B, A)</td><td>Qué letras del archivo son los ejes rotativos.</td><td>No se usan</td></tr>
+<tr><td>Z en sistema absoluto</td><td>Activada, lee las Z desde la base de la pieza. Sin activar, desde la cara 1 (la de arriba): Z0 es la superficie, como hacemos nosotros.</td><td>Sin activar</td></tr>
+<tr><td>Centros con G90/G91</td><td>Activada, I J siguen G90/G91 (en G90 serían el centro absoluto). Sin activar, son siempre incrementales desde el inicio del arco.</td><td>Sin activar</td></tr>
+<tr><td>Eliminar los G0 aislados</td><td>Quita los G0 que no siguen con ningún tramo: subidas, vueltas al cero, cambios de herramienta.</td><td>Activada</td></tr>
+<tr><td>Setup fresa</td><td>La configuración que se aplica a los perfiles de fresa vertical.</td><td>La del fabricante</td></tr>
+</table>
+<figure class="dib"><svg class="dib" viewBox="0 0 640 230" style="width:80%" xmlns="http://www.w3.org/2000/svg"><defs><marker id="f005A9C" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#005A9C"/></marker><marker id="fC4580C" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#C4580C"/></marker><marker id="f1e8449" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1e8449"/></marker><marker id="f8a97a5" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a97a5"/></marker><marker id="fc0392b" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c0392b"/></marker><marker id="f1c2733" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1c2733"/></marker></defs><rect x="150" y="45" width="70" height="70" fill="#dfe5eb" stroke="#fff" stroke-width="2"/><text x="185.0" y="87.0" font-size="22" font-weight="700" fill="#1c2733" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif">2</text><rect x="220" y="45" width="70" height="70" fill="#cfe3f3" stroke="#fff" stroke-width="2"/><text x="255.0" y="87.0" font-size="22" font-weight="700" fill="#1c2733" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif">1</text><rect x="150" y="115" width="70" height="70" fill="#dfe5eb" stroke="#fff" stroke-width="2"/><text x="185.0" y="157.0" font-size="22" font-weight="700" fill="#1c2733" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif">3</text><rect x="220" y="115" width="70" height="70" fill="#dfe5eb" stroke="#fff" stroke-width="2"/><text x="255.0" y="157.0" font-size="22" font-weight="700" fill="#1c2733" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif">4</text><line x1="140" y1="115" x2="308" y2="115" stroke="#c0392b" stroke-width="2" marker-end="url(#fc0392b)"/><text x="312" y="120" fill="#c0392b" font-size="14" font-weight="700" font-family="Arial">X+</text><line x1="220" y1="195" x2="220" y2="31" stroke="#1e8449" stroke-width="2" marker-end="url(#f1e8449)"/><text x="226" y="37" fill="#1e8449" font-size="14" font-weight="700" font-family="Arial">Y+</text><text x="340" y="80" fill="#1c2733" font-size="12.5" font-weight="700" font-family="'Segoe UI',Arial,sans-serif">1: X e Y positivas (lo normal en clase).</text><text x="340" y="100" fill="#5b6878" font-size="12.5" font-weight="400" font-family="'Segoe UI',Arial,sans-serif">2: X negativas · 3: X e Y negativas · 4: Y negativas.</text><text x="340" y="120" fill="#5b6878" font-size="12.5" font-weight="400" font-family="'Segoe UI',Arial,sans-serif">Con 2, 3 o 4, TpaCAD pasa las cotas a positivas</text><text x="340" y="140" fill="#5b6878" font-size="12.5" font-weight="400" font-family="'Segoe UI',Arial,sans-serif">usando las medidas de la pieza.</text></svg><figcaption>El cuadrante de máquina: en clase programamos en el 1, con el cero pieza abajo a la izquierda y todo en positivo.</figcaption></figure>
+</section>
+
+<section><h2 class="cap"><span>10</span>Un programa para TpaCAD que también entiende el Simulador</h2>
+<p>La pieza de la muesca R15 (variante A) con dos agujeros de Ø8, en un tablero de 160 × 100 y 19 de grueso. La pieza está a 20 mm de los bordes del tablero, así que sus cotas son las del plano más 20 en X y en Y. Está escrito para que TpaCAD lo importe y, a la vez, para poder comprobarlo antes en el Simulador. El contorno va a 3 mm de profundidad, para probar.</p>
+<pre class="prog">(PIEZA CON MUESCA - TPACAD)
+<span class="g">G71</span> X160 Y100 Z19                      <span class="c">; medidas del tablero: largo X, ancho Y, grosor Z</span>
+<span class="g">G0</span> X80 Y12 Z20 T101 S12000 <span class="m">M03</span>         <span class="c">; mecanizado 1 (setup): fresa T101</span>
+<span class="g">G42</span>                                    <span class="c">; corrección: toda la pieza por fuera</span>
+<span class="g">G1</span> Z-3 <span class="k">F150</span>                            <span class="c">; baja en la zona que sobra</span>
+<span class="g">G1</span> X80 Y20 <span class="k">F1500</span>                       <span class="c">; entrada hasta el contorno</span>
+<span class="g">G1</span> X140 Y20
+<span class="g">G1</span> X140 Y60
+<span class="g">G3</span> X120 Y80 I-20 J0
+<span class="g">G1</span> X95 Y80
+<span class="g">G2</span> X65 Y80 I-15 J0
+<span class="g">G1</span> X40 Y80
+<span class="g">G3</span> X20 Y60 I0 J-20
+<span class="g">G1</span> X20 Y20
+<span class="g">G1</span> X80 Y20                             <span class="c">; vuelve al punto de entrada</span>
+<span class="g">G40 G1</span> X80 Y12                         <span class="c">; salida</span>
+<span class="g">G1</span> Z20 <span class="k">F5000</span>                           <span class="c">; sube sin empezar otro mecanizado</span>
+<span class="g">G0</span> X50 Y50 Z20 T104 S4000              <span class="c">; G0 aislado (TpaCAD lo quita)</span>
+<span class="g">G81</span> X50 Y50 Z-20 R2 T104 S4000 <span class="k">F300</span>
+<span class="g">G81</span> X110 Y50 Z-20 R2 T104 S4000 <span class="k">F300</span>
+<span class="g">G80</span>
+<span class="m">M2</span></pre>
+<ul>
+<li><strong>La segunda línea da las medidas del tablero</strong>: TpaCAD las toma como medidas del material, y el Simulador también.</li>
+<li>La <strong>T y la S van en el G0</strong> de cada mecanizado (su setup) y en cada G81; el <code>M03</code> no lo necesita TpaCAD, pero sí el Simulador.</li>
+<li>No hay <code>G0 Z20</code> ni <code>G0 X0 Y0</code> sueltos: serían G0 aislados.</li>
+<li>La compensación va justo después del G0, no en la recta de entrada: así lo pide TpaCAD.</li>
+<li>Los agujeros, uno por línea y completos, pasantes: Z-20 en un tablero de 19 (el Simulador avisa de que muerden 1 mm el martiriño). La R se queda para el Simulador.</li>
+</ul>
+<p>En el Simulador, con el plano de la pieza desplazado 20 mm, el contorno sale al 100 %.</p>
+</section>
+
+<section><h2 class="cap"><span>11</span>Nuestros programas de clase y TpaCAD</h2>
+<table class="tabla dif">
+<tr><th></th><th>En clase (fresadora, Simulador, Calcador)</th><th>Para TpaCAD</th></tr>
+<tr><td>Primera línea</td><td>Cualquiera (comentario, G71…)</td><td>Empieza por ( ; % G N M T S O P : [ /. Mejor el nombre: (PIEZA)</td></tr>
+<tr><td>Medidas del tablero</td><td>No se dicen (el Simulador las calcula o se ponen en su panel)</td><td><code>G71 X200 Y150 Z10</code>: largo, ancho y grosor</td></tr>
+<tr><td>Herramienta</td><td><code>T101 M06</code> en su línea</td><td><code>T101</code> en la línea del G0 de cada mecanizado (su setup)</td></tr>
+<tr><td>Husillo</td><td><code>S12000 M03</code> en su línea</td><td><code>S12000</code> en la línea del G0</td></tr>
+<tr><td>Subir y moverse</td><td><code>G0 Z20</code>, <code>G0 X… Y…</code></td><td>Cada G0 empieza un mecanizado (un setup con su fresa): un G0 con X Y Z T S por trazado; subir con G1</td></tr>
+<tr><td>Compensación</td><td>G41/G42 en la recta de entrada; G40 en la de salida</td><td>G41/G42 en el G0 o en la línea siguiente, para todo el mecanizado</td></tr>
+<tr><td>Arcos</td><td>I J incrementales desde el inicio; R con signo</td><td>Igual (con la configuración normal); mejor I J</td></tr>
+<tr><td>Taladros</td><td>G81/G82/G83… con R, G98/G99, ciclo activo hasta G80</td><td>Solo G81 (o el configurado), una línea completa por agujero; R Q P G98 G99 no se leen</td></tr>
+<tr><td>Fin</td><td><code>M05</code> y <code>M30</code></td><td><code>M2</code> (o el final del archivo)</td></tr>
+</table>
+<div class="nota"><strong>💡 ¿Y el Calcador?</strong> ⚙️ Mecanizar escribe hoy el programa «de clase» (para una fresadora y para el Simulador). Una vez validado este documento en la máquina, se le puede añadir una salida «para TpaCAD» que siga estas reglas.</div>
+</section>
+
+<section><h2 class="cap"><span>12</span>Antes de importar</h2>
+<ul>
+<li>La <strong>primera línea</strong> es el nombre entre paréntesis. Ninguna línea en blanco antes.</li>
+<li><code>G71 X… Y… Z…</code> con el largo, el ancho y el grosor del tablero, antes del primer G0. Todo lo mecanizado cabe dentro.</li>
+<li>Cada mecanizado (setup) empieza con un <strong>G0 con X, Y, Z, T y S</strong>, y la compensación justo después.</li>
+<li>No hay G1, G2 ni G3 antes del primer G0. No hay <code>G0</code> sueltos para subir o volver al cero (o el importador los quita).</li>
+<li>Arcos con <strong>I J</strong> incrementales desde el inicio. Los círculos, mejor en dos semicírculos.</li>
+<li>Una línea <strong>G81 completa</strong> por agujero (X Y Z T S F).</li>
+<li>Comentarios con <code>;</code>, sin acentos ni ñ. Termina con <code>M2</code>.</li>
+<li>Pásalo antes por el <strong>Simulador</strong> con el plano del ejercicio.</li>
+</ul>
+<div class="validar"><strong>🔎 Para validar en la máquina antes de usarlo en clase.</strong> Importa en TpaCAD el programa del capítulo 10 y comprueba:
+<ol style="margin:1.5mm 0 0">
+<li>Que reconoce el archivo, toma el nombre de la primera línea y crea un tablero de 160 × 100 × 19, con el cero en su esquina inferior izquierda (la pieza, a 20 mm de los bordes).</li>
+<li>Que sale <strong>un mecanizado</strong> (un setup con el contorno) con la fresa T101 y 12000 rpm, la corrección a la derecha y la muesca y las esquinas bien.</li>
+<li>Cómo quedan la entrada y la salida con la corrección.</li>
+<li>Que salen <strong>dos agujeros</strong> con la T104, a la profundidad de Z-20, y que la R no molesta.</li>
+<li>Que el <code>G0</code> de antes de los agujeros desaparece (G0 aislado) o qué hace si no.</li>
+<li>Que <code>M03</code>, <code>G40</code> y <code>G80</code> no dan problemas.</li>
+<li>Cómo está configurado el importador (capítulo 9).</li>
+</ol></div>
+</section>
+
+<script>/* titulos-juntos */
+document.querySelectorAll('h2.cap, h3, h4').forEach(h => {
+  if (!h.nextElementSibling || !h.parentNode || h.parentNode.classList.contains('junto')) return;
+  // el título, el párrafo que lo presenta y lo primero que no sea un párrafo (un dibujo, una lista, un programa…)
+  const d = document.createElement('div'); d.className = 'junto'; h.parentNode.insertBefore(d, h); d.appendChild(h);
+  for (let k = 0; k < 3; k++) { const sig = d.nextElementSibling; if (!sig || /^H[1-4]$/.test(sig.tagName)) break; d.appendChild(sig); if (sig.tagName !== 'P') break; }
+});
+</script>
+</body></html>

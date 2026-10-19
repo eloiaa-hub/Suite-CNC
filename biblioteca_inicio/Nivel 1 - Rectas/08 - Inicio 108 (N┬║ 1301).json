@@ -1,0 +1,288 @@
+{
+ "version": 7,
+ "nombre": "Inicio 108 - Rectas",
+ "vertices": [
+  {
+   "x": 0,
+   "y": 600,
+   "seg": "recta",
+   "arcAng": 180
+  },
+  {
+   "x": 820,
+   "y": 600,
+   "seg": "recta",
+   "arcAng": 180
+  },
+  {
+   "x": 820,
+   "y": -100,
+   "seg": "recta",
+   "arcAng": 180
+  },
+  {
+   "x": 0,
+   "y": -100,
+   "seg": "recta",
+   "arcAng": 180
+  }
+ ],
+ "poligonoListo": true,
+ "segModoCierre": "recta",
+ "trazadoTipoActual": "exterior",
+ "entryIdx": 0,
+ "mec": null,
+ "uid": "kmv9gofj17jow",
+ "estrategia": "plano",
+ "wcs": {
+  "x": 0,
+  "y": 0,
+  "activo": true
+ },
+ "trazados": [
+  {
+   "vertices": [
+    {
+     "x": 200,
+     "y": 460,
+     "seg": "recta",
+     "arcAng": 180
+    },
+    {
+     "x": 420,
+     "y": 460,
+     "seg": "recta",
+     "arcAng": 180
+    },
+    {
+     "x": 420,
+     "y": 300,
+     "seg": "recta",
+     "arcAng": 180
+    },
+    {
+     "x": 200,
+     "y": 300,
+     "seg": "recta",
+     "arcAng": 180
+    }
+   ],
+   "segModoCierre": "recta",
+   "tipo": "interior",
+   "entryIdx": 0,
+   "mec": null,
+   "uid": "kmv9gofj18fqj"
+  }
+ ],
+ "calcador": {
+  "version": 4,
+  "escala": 10,
+  "origen": {
+   "x": 0,
+   "y": 0
+  },
+  "contornos": [
+   {
+    "pts": [
+     {
+      "x": 0,
+      "y": 0
+     },
+     {
+      "x": 205,
+      "y": 0
+     },
+     {
+      "x": 205,
+      "y": 175
+     },
+     {
+      "x": 0,
+      "y": 175
+     }
+    ],
+    "b": [
+     0,
+     0,
+     0,
+     0
+    ],
+    "cerrado": true,
+    "tipo": "auto",
+    "forma": {
+     "tipo": "rectangulo",
+     "c": {
+      "x": 102.5,
+      "y": 87.5
+     },
+     "w": 205,
+     "h": 175,
+     "rot": 0,
+     "esq": [
+      {
+       "t": "v",
+       "r": 0
+      },
+      {
+       "t": "v",
+       "r": 0
+      },
+      {
+       "t": "v",
+       "r": 0
+      },
+      {
+       "t": "v",
+       "r": 0
+      }
+     ]
+    },
+    "grupo": "gmv9gofj10eyp",
+    "uid": "kmv9gofj17jow"
+   },
+   {
+    "pts": [
+     {
+      "x": 50,
+      "y": 35
+     },
+     {
+      "x": 105,
+      "y": 35
+     },
+     {
+      "x": 105,
+      "y": 75
+     },
+     {
+      "x": 50,
+      "y": 75
+     }
+    ],
+    "b": [
+     0,
+     0,
+     0,
+     0
+    ],
+    "cerrado": true,
+    "tipo": "auto",
+    "forma": {
+     "tipo": "rectangulo",
+     "c": {
+      "x": 77.5,
+      "y": 55
+     },
+     "w": 55,
+     "h": 40,
+     "rot": 0,
+     "esq": [
+      {
+       "t": "v",
+       "r": 0
+      },
+      {
+       "t": "v",
+       "r": 0
+      },
+      {
+       "t": "v",
+       "r": 0
+      },
+      {
+       "t": "v",
+       "r": 0
+      }
+     ]
+    },
+    "grupo": "gmv9gofj10eyp",
+    "uid": "kmv9gofj18fqj"
+   }
+  ],
+  "cotasAjuste": {},
+  "cotasManuales": [],
+  "cfgCotas": {
+   "ver": true,
+   "nivel": "todo",
+   "incl": "proy",
+   "cero": true,
+   "entrada": true,
+   "sentido": true,
+   "centros": true,
+   "cadena": true,
+   "verOcultas": false
+  },
+  "aux": [],
+  "cfgHoja": {
+   "titulo": "Nivel 1 · Rectas · Ejercicio 8",
+   "num": "108",
+   "grupo": "",
+   "fecha": "",
+   "material": "Madera",
+   "espesor": "",
+   "herramienta": "Fresa Ø6",
+   "centro": "",
+   "orient": "h",
+   "prog": "g91",
+   "reqEntrada": false,
+   "reqSentido": false,
+   "enunciado": "Programa en código ISO el contorno de la pieza tomando como origen el cero pieza indicado en el plano.",
+   "tabla": true,
+   "rayado": false
+  },
+  "cfgMec": {
+   "T": 101,
+   "F": 1000,
+   "Fz": 300,
+   "F0": 5000,
+   "S": 12000,
+   "zSeg": 20,
+   "prof": 3,
+   "paso": 3,
+   "acab": 0,
+   "coord": "G90",
+   "comp": "G40",
+   "estr": "plano",
+   "unid": "G71",
+   "ancho": true,
+   "orden": "int"
+  },
+  "generado": {
+   "semilla": 1301,
+   "cfg": {
+    "nivel": "rectas",
+    "serieN": 25,
+    "ancho": 250,
+    "alto": 200,
+    "ocupar": 60,
+    "pMin": 1,
+    "pMax": 1,
+    "ext": [
+     "rectangulo",
+     "escalonada"
+    ],
+    "iMin": 1,
+    "iMax": 2,
+    "int": [
+     "rectangulo"
+    ],
+    "paso": 5,
+    "girar": false,
+    "fresa": 6,
+    "pared": 6,
+    "pEsq": 0,
+    "esq": [
+     "r",
+     "c",
+     "ch"
+    ],
+    "pLado": 0,
+    "lado": [
+     "fuera",
+     "dentro"
+    ],
+    "modInt": true
+   }
+  }
+ }
+}

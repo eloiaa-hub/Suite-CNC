@@ -1,0 +1,236 @@
+{
+ "version": 7,
+ "nombre": "Inicio 203 - Rectas inclinadas",
+ "vertices": [
+  {
+   "x": 0,
+   "y": 540,
+   "seg": "recta",
+   "arcAng": 180
+  },
+  {
+   "x": 60,
+   "y": 600,
+   "seg": "recta",
+   "arcAng": 180
+  },
+  {
+   "x": 580,
+   "y": 600,
+   "seg": "recta",
+   "arcAng": 180
+  },
+  {
+   "x": 640,
+   "y": 540,
+   "seg": "recta",
+   "arcAng": 180
+  },
+  {
+   "x": 640,
+   "y": 200,
+   "seg": "recta",
+   "arcAng": 180
+  },
+  {
+   "x": 560,
+   "y": 120,
+   "seg": "recta",
+   "arcAng": 180
+  },
+  {
+   "x": 40,
+   "y": 120,
+   "seg": "recta",
+   "arcAng": 180
+  },
+  {
+   "x": 0,
+   "y": 160,
+   "seg": "recta",
+   "arcAng": 180
+  }
+ ],
+ "poligonoListo": true,
+ "segModoCierre": "recta",
+ "trazadoTipoActual": "exterior",
+ "entryIdx": 0,
+ "mec": null,
+ "uid": "kmv9gofl1giwl",
+ "estrategia": "plano",
+ "wcs": {
+  "x": 0,
+  "y": 0,
+  "activo": true
+ },
+ "trazados": [],
+ "calcador": {
+  "version": 4,
+  "escala": 10,
+  "origen": {
+   "x": 0,
+   "y": 0
+  },
+  "contornos": [
+   {
+    "pts": [
+     {
+      "x": 0,
+      "y": 15
+     },
+     {
+      "x": 15,
+      "y": 0
+     },
+     {
+      "x": 145,
+      "y": 0
+     },
+     {
+      "x": 160,
+      "y": 15
+     },
+     {
+      "x": 160,
+      "y": 100
+     },
+     {
+      "x": 140,
+      "y": 120
+     },
+     {
+      "x": 10,
+      "y": 120
+     },
+     {
+      "x": 0,
+      "y": 110
+     }
+    ],
+    "b": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "cerrado": true,
+    "tipo": "auto",
+    "forma": {
+     "tipo": "rectangulo",
+     "c": {
+      "x": 80,
+      "y": 60
+     },
+     "w": 160,
+     "h": 120,
+     "rot": 0,
+     "esq": [
+      {
+       "t": "ch",
+       "r": 15
+      },
+      {
+       "t": "ch",
+       "r": 15
+      },
+      {
+       "t": "ch",
+       "r": 20
+      },
+      {
+       "t": "ch",
+       "r": 10
+      }
+     ]
+    },
+    "uid": "kmv9gofl1giwl"
+   }
+  ],
+  "cotasAjuste": {},
+  "cotasManuales": [],
+  "cfgCotas": {
+   "ver": true,
+   "nivel": "todo",
+   "incl": "proy",
+   "cero": true,
+   "entrada": true,
+   "sentido": true,
+   "centros": true,
+   "cadena": true,
+   "verOcultas": false
+  },
+  "aux": [],
+  "cfgHoja": {
+   "titulo": "Nivel 2 · Rectas inclinadas · Ejercicio 3",
+   "num": "203",
+   "grupo": "",
+   "fecha": "",
+   "material": "Madera",
+   "espesor": "",
+   "herramienta": "Fresa Ø6",
+   "centro": "",
+   "orient": "h",
+   "prog": "g90",
+   "reqEntrada": false,
+   "reqSentido": false,
+   "enunciado": "Programa en código ISO el contorno de la pieza tomando como origen el cero pieza indicado en el plano.",
+   "tabla": true,
+   "rayado": false
+  },
+  "cfgMec": {
+   "T": 101,
+   "F": 1000,
+   "Fz": 300,
+   "F0": 5000,
+   "S": 12000,
+   "zSeg": 20,
+   "prof": 3,
+   "paso": 3,
+   "acab": 0,
+   "coord": "G90",
+   "comp": "G40",
+   "estr": "plano",
+   "unid": "G71",
+   "ancho": true,
+   "orden": "int"
+  },
+  "generado": {
+   "semilla": 2125,
+   "cfg": {
+    "nivel": "inclinadas",
+    "serieN": 25,
+    "ancho": 250,
+    "alto": 200,
+    "ocupar": 60,
+    "pMin": 1,
+    "pMax": 1,
+    "ext": [
+     "rectangulo"
+    ],
+    "iMin": 0,
+    "iMax": 0,
+    "int": [
+     "rectangulo"
+    ],
+    "paso": 5,
+    "girar": false,
+    "fresa": 6,
+    "pared": 6,
+    "pEsq": 45,
+    "esq": [
+     "ch"
+    ],
+    "pLado": 0,
+    "lado": [
+     "fuera",
+     "dentro"
+    ],
+    "modInt": true
+   }
+  }
+ }
+}

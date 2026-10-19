@@ -1,0 +1,353 @@
+{
+ "version": 7,
+ "nombre": "Inicio 406 - Arcos con I J",
+ "vertices": [
+  {
+   "x": 690.33321,
+   "y": 600,
+   "seg": "recta",
+   "arcAng": 180
+  },
+  {
+   "x": 780.33321,
+   "y": 444.115427,
+   "seg": "recta",
+   "arcAng": 180
+  },
+  {
+   "x": 470,
+   "y": -93.39746,
+   "seg": "recta",
+   "arcAng": 180
+  },
+  {
+   "x": 370,
+   "y": -93.39746,
+   "seg": "recta",
+   "arcAng": 180
+  },
+  {
+   "x": 19.66679,
+   "y": 513.39746,
+   "seg": "recta",
+   "arcAng": 180
+  },
+  {
+   "x": 69.66679,
+   "y": 600,
+   "seg": "arco-e",
+   "arcAng": 60
+  }
+ ],
+ "poligonoListo": true,
+ "segModoCierre": "recta",
+ "trazadoTipoActual": "exterior",
+ "entryIdx": 0,
+ "mec": null,
+ "uid": "kmv9gofot1p50u",
+ "estrategia": "plano",
+ "wcs": {
+  "x": 0,
+  "y": 0,
+  "activo": true
+ },
+ "trazados": [
+  {
+   "vertices": [
+    {
+     "x": 340,
+     "y": 380,
+     "seg": "recta",
+     "arcAng": 180
+    },
+    {
+     "x": 460,
+     "y": 380,
+     "seg": "recta",
+     "arcAng": 180
+    },
+    {
+     "x": 460,
+     "y": 500,
+     "seg": "arco-e",
+     "arcAng": 180
+    },
+    {
+     "x": 340,
+     "y": 500,
+     "seg": "recta",
+     "arcAng": 180
+    }
+   ],
+   "segModoCierre": "arco-e",
+   "tipo": "interior",
+   "entryIdx": 0,
+   "mec": null,
+   "uid": "kmv9gofot1qe27"
+  },
+  {
+   "vertices": [
+    {
+     "x": 420,
+     "y": 320,
+     "seg": "recta",
+     "arcAng": 180
+    },
+    {
+     "x": 420,
+     "y": 160,
+     "seg": "arco-i",
+     "arcAng": 106.26020471
+    },
+    {
+     "x": 300,
+     "y": 160,
+     "seg": "recta",
+     "arcAng": 180
+    },
+    {
+     "x": 260,
+     "y": 200,
+     "seg": "arco-e",
+     "arcAng": 90
+    },
+    {
+     "x": 260,
+     "y": 280,
+     "seg": "recta",
+     "arcAng": 180
+    },
+    {
+     "x": 300,
+     "y": 320,
+     "seg": "arco-e",
+     "arcAng": 90
+    }
+   ],
+   "segModoCierre": "recta",
+   "tipo": "interior",
+   "entryIdx": 0,
+   "mec": null,
+   "uid": "kmv9gofot1ry6e"
+  }
+ ],
+ "calcador": {
+  "version": 4,
+  "escala": 10,
+  "origen": {
+   "x": 0,
+   "y": 0
+  },
+  "contornos": [
+   {
+    "pts": [
+     {
+      "x": 172.583302491977,
+      "y": 3.1251262520693275e-14
+     },
+     {
+      "x": 195.083302491977,
+      "y": 38.971143170299754
+     },
+     {
+      "x": 117.50000000000004,
+      "y": 173.349364905389
+     },
+     {
+      "x": 92.50000000000003,
+      "y": 173.34936490538902
+     },
+     {
+      "x": 4.91669750802296,
+      "y": 21.650635094611058
+     },
+     {
+      "x": 17.41669750802295,
+      "y": 9.000908978114109e-14
+     }
+    ],
+    "b": [
+     0,
+     0,
+     0,
+     0,
+     -0.26794919243112264,
+     0
+    ],
+    "cerrado": true,
+    "tipo": "auto",
+    "grupo": "gmv9gofotkmg7",
+    "uid": "kmv9gofot1p50u"
+   },
+   {
+    "pts": [
+     {
+      "x": 85,
+      "y": 55
+     },
+     {
+      "x": 115,
+      "y": 55
+     },
+     {
+      "x": 115,
+      "y": 25
+     },
+     {
+      "x": 85,
+      "y": 25
+     }
+    ],
+    "b": [
+     0,
+     -1,
+     0,
+     -1
+    ],
+    "cerrado": true,
+    "tipo": "auto",
+    "forma": {
+     "tipo": "ranura",
+     "c": {
+      "x": 100,
+      "y": 40
+     },
+     "L": 30,
+     "w": 30,
+     "rot": 0
+    },
+    "grupo": "gmv9gofotkmg7",
+    "uid": "kmv9gofot1qe27"
+   },
+   {
+    "pts": [
+     {
+      "x": 105,
+      "y": 70
+     },
+     {
+      "x": 105,
+      "y": 110
+     },
+     {
+      "x": 75,
+      "y": 110
+     },
+     {
+      "x": 65,
+      "y": 100
+     },
+     {
+      "x": 65,
+      "y": 80
+     },
+     {
+      "x": 75,
+      "y": 70
+     }
+    ],
+    "b": [
+     0.5,
+     0,
+     -0.41421356237309503,
+     0,
+     -0.41421356237309503,
+     0
+    ],
+    "cerrado": true,
+    "tipo": "auto",
+    "grupo": "gmv9gofotkmg7",
+    "uid": "kmv9gofot1ry6e"
+   }
+  ],
+  "cotasAjuste": {},
+  "cotasManuales": [],
+  "cfgCotas": {
+   "ver": true,
+   "nivel": "todo",
+   "incl": "proy",
+   "cero": true,
+   "entrada": true,
+   "sentido": true,
+   "centros": true,
+   "cadena": true,
+   "verOcultas": false
+  },
+  "aux": [],
+  "cfgHoja": {
+   "titulo": "Nivel 4 · Arcos con I J · Ejercicio 6",
+   "num": "406",
+   "grupo": "",
+   "fecha": "",
+   "material": "Madera",
+   "espesor": "",
+   "herramienta": "Fresa Ø6",
+   "centro": "",
+   "orient": "h",
+   "prog": "libre",
+   "reqEntrada": false,
+   "reqSentido": false,
+   "enunciado": "Programa en código ISO el contorno de la pieza tomando como origen el cero pieza indicado en el plano.",
+   "tabla": true,
+   "rayado": false
+  },
+  "cfgMec": {
+   "T": 101,
+   "F": 1000,
+   "Fz": 300,
+   "F0": 5000,
+   "S": 12000,
+   "zSeg": 20,
+   "prof": 3,
+   "paso": 3,
+   "acab": 0,
+   "coord": "G90",
+   "comp": "G40",
+   "estr": "plano",
+   "unid": "G71",
+   "ancho": true,
+   "orden": "int"
+  },
+  "generado": {
+   "semilla": 4206,
+   "cfg": {
+    "nivel": "ij",
+    "serieN": 25,
+    "ancho": 250,
+    "alto": 200,
+    "ocupar": 60,
+    "pMin": 1,
+    "pMax": 1,
+    "ext": [
+     "rectangulo",
+     "escalonada",
+     "poligono"
+    ],
+    "iMin": 1,
+    "iMax": 2,
+    "int": [
+     "rectangulo",
+     "circulo",
+     "ranura",
+     "poligono"
+    ],
+    "paso": 5,
+    "girar": false,
+    "fresa": 6,
+    "pared": 6,
+    "pEsq": 40,
+    "esq": [
+     "r",
+     "c",
+     "ch"
+    ],
+    "pLado": 35,
+    "lado": [
+     "fuera",
+     "dentro"
+    ],
+    "modInt": true
+   }
+  }
+ }
+}

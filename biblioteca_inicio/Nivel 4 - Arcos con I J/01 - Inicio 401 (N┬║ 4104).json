@@ -1,0 +1,222 @@
+{
+ "version": 7,
+ "nombre": "Inicio 401 - Arcos con I J",
+ "vertices": [
+  {
+   "x": 0,
+   "y": 600,
+   "seg": "recta",
+   "arcAng": 180
+  },
+  {
+   "x": 640,
+   "y": 600,
+   "seg": "recta",
+   "arcAng": 180
+  },
+  {
+   "x": 640,
+   "y": 0,
+   "seg": "arco-i",
+   "arcAng": 70.46883597
+  },
+  {
+   "x": 0,
+   "y": 0,
+   "seg": "recta",
+   "arcAng": 180
+  }
+ ],
+ "poligonoListo": true,
+ "segModoCierre": "recta",
+ "trazadoTipoActual": "exterior",
+ "entryIdx": 0,
+ "mec": null,
+ "uid": "kmv9gofoh1g9xh",
+ "estrategia": "plano",
+ "wcs": {
+  "x": 0,
+  "y": 0,
+  "activo": true
+ },
+ "trazados": [
+  {
+   "vertices": [
+    {
+     "x": 560,
+     "y": 260,
+     "seg": "recta",
+     "arcAng": 180
+    },
+    {
+     "x": 440,
+     "y": 260,
+     "seg": "arco-i",
+     "arcAng": 180
+    }
+   ],
+   "segModoCierre": "arco-i",
+   "tipo": "interior",
+   "entryIdx": 0,
+   "mec": null,
+   "uid": "kmv9gofoh1hrwb"
+  }
+ ],
+ "calcador": {
+  "version": 4,
+  "escala": 10,
+  "origen": {
+   "x": 0,
+   "y": 0
+  },
+  "contornos": [
+   {
+    "pts": [
+     {
+      "x": 0,
+      "y": 0
+     },
+     {
+      "x": 160,
+      "y": 0
+     },
+     {
+      "x": 160,
+      "y": 150
+     },
+     {
+      "x": 0,
+      "y": 150
+     }
+    ],
+    "b": [
+     0,
+     0.3175492945603132,
+     0,
+     0
+    ],
+    "cerrado": true,
+    "tipo": "auto",
+    "grupo": "gmv9gofohg2me",
+    "uid": "kmv9gofoh1g9xh"
+   },
+   {
+    "pts": [
+     {
+      "x": 140,
+      "y": 85
+     },
+     {
+      "x": 110,
+      "y": 85
+     }
+    ],
+    "b": [
+     1,
+     1
+    ],
+    "cerrado": true,
+    "tipo": "auto",
+    "forma": {
+     "tipo": "circulo",
+     "c": {
+      "x": 125,
+      "y": 85
+     },
+     "r": 15,
+     "rot": 0
+    },
+    "grupo": "gmv9gofohg2me",
+    "uid": "kmv9gofoh1hrwb"
+   }
+  ],
+  "cotasAjuste": {},
+  "cotasManuales": [],
+  "cfgCotas": {
+   "ver": true,
+   "nivel": "todo",
+   "incl": "proy",
+   "cero": true,
+   "entrada": true,
+   "sentido": true,
+   "centros": true,
+   "cadena": true,
+   "verOcultas": false
+  },
+  "aux": [],
+  "cfgHoja": {
+   "titulo": "Nivel 4 · Arcos con I J · Ejercicio 1",
+   "num": "401",
+   "grupo": "",
+   "fecha": "",
+   "material": "Madera",
+   "espesor": "",
+   "herramienta": "Fresa Ø6",
+   "centro": "",
+   "orient": "h",
+   "prog": "libre",
+   "reqEntrada": false,
+   "reqSentido": false,
+   "enunciado": "Programa en código ISO el contorno de la pieza tomando como origen el cero pieza indicado en el plano.",
+   "tabla": true,
+   "rayado": false
+  },
+  "cfgMec": {
+   "T": 101,
+   "F": 1000,
+   "Fz": 300,
+   "F0": 5000,
+   "S": 12000,
+   "zSeg": 20,
+   "prof": 3,
+   "paso": 3,
+   "acab": 0,
+   "coord": "G90",
+   "comp": "G40",
+   "estr": "plano",
+   "unid": "G71",
+   "ancho": true,
+   "orden": "int"
+  },
+  "generado": {
+   "semilla": 4104,
+   "cfg": {
+    "nivel": "ij",
+    "serieN": 25,
+    "ancho": 250,
+    "alto": 200,
+    "ocupar": 60,
+    "pMin": 1,
+    "pMax": 1,
+    "ext": [
+     "rectangulo",
+     "escalonada"
+    ],
+    "iMin": 0,
+    "iMax": 1,
+    "int": [
+     "rectangulo",
+     "circulo",
+     "ranura",
+     "poligono"
+    ],
+    "paso": 5,
+    "girar": false,
+    "fresa": 6,
+    "pared": 6,
+    "pEsq": 40,
+    "esq": [
+     "r",
+     "c",
+     "ch"
+    ],
+    "pLado": 35,
+    "lado": [
+     "fuera",
+     "dentro"
+    ],
+    "modInt": true
+   }
+  }
+ }
+}

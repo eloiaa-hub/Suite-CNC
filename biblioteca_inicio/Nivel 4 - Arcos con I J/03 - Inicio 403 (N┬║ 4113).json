@@ -1,0 +1,279 @@
+{
+ "version": 7,
+ "nombre": "Inicio 403 - Arcos con I J",
+ "vertices": [
+  {
+   "x": 0,
+   "y": 600,
+   "seg": "recta",
+   "arcAng": 83.62062979
+  },
+  {
+   "x": 580,
+   "y": 600,
+   "seg": "recta",
+   "arcAng": 180
+  },
+  {
+   "x": 640,
+   "y": 540,
+   "seg": "recta",
+   "arcAng": 180
+  },
+  {
+   "x": 640,
+   "y": 120,
+   "seg": "recta",
+   "arcAng": 180
+  },
+  {
+   "x": 0,
+   "y": 120,
+   "seg": "recta",
+   "arcAng": 180
+  }
+ ],
+ "poligonoListo": true,
+ "segModoCierre": "arco-e",
+ "trazadoTipoActual": "exterior",
+ "entryIdx": 0,
+ "mec": null,
+ "uid": "kmv9gofoj1juvz",
+ "estrategia": "plano",
+ "wcs": {
+  "x": 0,
+  "y": 0,
+  "activo": true
+ },
+ "trazados": [
+  {
+   "vertices": [
+    {
+     "x": 409.061701,
+     "y": 340,
+     "seg": "recta",
+     "arcAng": 180
+    },
+    {
+     "x": 427.02282,
+     "y": 284.72136,
+     "seg": "recta",
+     "arcAng": 180
+    },
+    {
+     "x": 403.51141,
+     "y": 267.63932,
+     "seg": "recta",
+     "arcAng": 180
+    },
+    {
+     "x": 356.48859,
+     "y": 267.63932,
+     "seg": "arco-i",
+     "arcAng": 72
+    },
+    {
+     "x": 332.97718,
+     "y": 284.72136,
+     "seg": "recta",
+     "arcAng": 180
+    },
+    {
+     "x": 341.957739,
+     "y": 312.36068,
+     "seg": "recta",
+     "arcAng": 180
+    },
+    {
+     "x": 380,
+     "y": 340,
+     "seg": "arco-i",
+     "arcAng": 72
+    }
+   ],
+   "segModoCierre": "recta",
+   "tipo": "interior",
+   "entryIdx": 0,
+   "mec": null,
+   "uid": "kmv9gofoj1kknu"
+  }
+ ],
+ "calcador": {
+  "version": 4,
+  "escala": 10,
+  "origen": {
+   "x": 0,
+   "y": 0
+  },
+  "contornos": [
+   {
+    "pts": [
+     {
+      "x": 0,
+      "y": 0
+     },
+     {
+      "x": 145,
+      "y": 0
+     },
+     {
+      "x": 160,
+      "y": 15
+     },
+     {
+      "x": 160,
+      "y": 120
+     },
+     {
+      "x": 0,
+      "y": 120
+     }
+    ],
+    "b": [
+     0,
+     0,
+     0,
+     0,
+     -0.38196601125010515
+    ],
+    "cerrado": true,
+    "tipo": "auto",
+    "grupo": "gmv9gofojht0g",
+    "uid": "kmv9gofoj1juvz"
+   },
+   {
+    "pts": [
+     {
+      "x": 102.2654252800536,
+      "y": 65
+     },
+     {
+      "x": 106.75570504584947,
+      "y": 78.81966011250105
+     },
+     {
+      "x": 100.87785252292473,
+      "y": 83.09016994374947
+     },
+     {
+      "x": 89.12214747707527,
+      "y": 83.09016994374947
+     },
+     {
+      "x": 83.24429495415053,
+      "y": 78.81966011250105
+     },
+     {
+      "x": 85.48943483704846,
+      "y": 71.90983005625053
+     },
+     {
+      "x": 95,
+      "y": 65
+     }
+    ],
+    "b": [
+     0,
+     0,
+     0.32491969623290595,
+     0,
+     0,
+     0.3249196962329062,
+     0
+    ],
+    "cerrado": true,
+    "tipo": "auto",
+    "grupo": "gmv9gofojht0g",
+    "uid": "kmv9gofoj1kknu"
+   }
+  ],
+  "cotasAjuste": {},
+  "cotasManuales": [],
+  "cfgCotas": {
+   "ver": true,
+   "nivel": "todo",
+   "incl": "proy",
+   "cero": true,
+   "entrada": true,
+   "sentido": true,
+   "centros": true,
+   "cadena": true,
+   "verOcultas": false
+  },
+  "aux": [],
+  "cfgHoja": {
+   "titulo": "Nivel 4 · Arcos con I J · Ejercicio 3",
+   "num": "403",
+   "grupo": "",
+   "fecha": "",
+   "material": "Madera",
+   "espesor": "",
+   "herramienta": "Fresa Ø6",
+   "centro": "",
+   "orient": "h",
+   "prog": "libre",
+   "reqEntrada": false,
+   "reqSentido": false,
+   "enunciado": "Programa en código ISO el contorno de la pieza tomando como origen el cero pieza indicado en el plano.",
+   "tabla": true,
+   "rayado": false
+  },
+  "cfgMec": {
+   "T": 101,
+   "F": 1000,
+   "Fz": 300,
+   "F0": 5000,
+   "S": 12000,
+   "zSeg": 20,
+   "prof": 3,
+   "paso": 3,
+   "acab": 0,
+   "coord": "G90",
+   "comp": "G40",
+   "estr": "plano",
+   "unid": "G71",
+   "ancho": true,
+   "orden": "int"
+  },
+  "generado": {
+   "semilla": 4113,
+   "cfg": {
+    "nivel": "ij",
+    "serieN": 25,
+    "ancho": 250,
+    "alto": 200,
+    "ocupar": 60,
+    "pMin": 1,
+    "pMax": 1,
+    "ext": [
+     "rectangulo",
+     "escalonada"
+    ],
+    "iMin": 0,
+    "iMax": 1,
+    "int": [
+     "rectangulo",
+     "circulo",
+     "ranura",
+     "poligono"
+    ],
+    "paso": 5,
+    "girar": false,
+    "fresa": 6,
+    "pared": 6,
+    "pEsq": 40,
+    "esq": [
+     "r",
+     "c",
+     "ch"
+    ],
+    "pLado": 35,
+    "lado": [
+     "fuera",
+     "dentro"
+    ],
+    "modInt": true
+   }
+  }
+ }
+}

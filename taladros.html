@@ -1,0 +1,259 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Taladros: los ciclos fijos — Apuntes para el alumnado</title><style>
+@page { size: A4; margin: 16mm 15mm 18mm 15mm; }
+* { box-sizing: border-box; }
+body { font-family: 'Segoe UI', 'DejaVu Sans', Arial, sans-serif; color: #1c2733; font-size: 10.6pt; line-height: 1.5; margin: 0; }
+.portada { height: 255mm; display: flex; flex-direction: column; justify-content: center; page-break-after: always; text-align: left; }
+.portada .sup { color: #C4580C; font-weight: 700; letter-spacing: .14em; font-size: 10pt; text-transform: uppercase; }
+.portada h1 { font-size: 34pt; margin: 6mm 0 2mm; color: #005A9C; line-height: 1.1; }
+.portada h2 { font-size: 15pt; font-weight: 500; margin: 0 0 12mm; color: #3d4b59; }
+.portada .pie { margin-top: auto; font-size: 9.5pt; color: #5d6d7e; border-top: 1px solid #d5dde5; padding-top: 4mm; }
+.portada img { width: 100%; border-radius: 6px; box-shadow: 0 4px 18px rgba(0,0,0,.18); margin-bottom: 10mm; }
+.indice { page-break-after: always; }
+.indice h2 { color: #005A9C; font-size: 18pt; margin: 0 0 6mm; }
+.indice ol { font-size: 11.5pt; line-height: 2; padding-left: 7mm; }
+section { page-break-before: always; }
+section:first-of-type { page-break-before: auto; }
+h2.cap { color: #005A9C; font-size: 18pt; margin: 0 0 4mm; border-bottom: 3px solid #C4580C; padding-bottom: 2mm; }
+h2.cap span { color: #C4580C; margin-right: 3mm; }
+h3 { color: #005A9C; font-size: 12pt; margin: 5mm 0 2mm; }
+figure { margin: 3mm 0 4mm; page-break-inside: avoid; }
+figure img { border: 1px solid #d5dde5; border-radius: 5px; display: block; }
+figcaption { font-size: 8.8pt; color: #5d6d7e; margin-top: 1.5mm; font-style: italic; }
+.par { display: flex; gap: 5mm; align-items: flex-start; }
+.par > div { flex: 1; min-width: 0; }
+.par img { width: 100%; }
+.boton { display: inline-block; border: 1px solid #b9c6d3; background: #f2f6fa; border-radius: 4px; padding: 0 5px; font-size: 9.5pt; white-space: nowrap; }
+code { font-family: Consolas, 'DejaVu Sans Mono', monospace; background: #f4f6f8; border: 1px solid #e3e8ee; border-radius: 3px; padding: 0 3px; font-size: 9.4pt; }
+.nota { border-left: 4px solid #005A9C; background: #eef4fa; padding: 3mm 4mm; margin: 4mm 0; border-radius: 0 5px 5px 0; page-break-inside: avoid; }
+.nota.atencion { border-color: #C4580C; background: #fdf1e8; }
+.nota.clase { border-color: #2e9e52; background: #edf7f0; }
+table { border-collapse: collapse; width: 100%; margin: 3mm 0; page-break-inside: avoid; }
+.tabla th { background: #005A9C; color: #fff; text-align: left; padding: 2mm 3mm; font-size: 9.6pt; }
+.tabla td { border-bottom: 1px solid #e3e8ee; padding: 2mm 3mm; vertical-align: top; font-size: 9.8pt; }
+.zonas td { padding: 1.6mm 2mm; vertical-align: top; border-bottom: 1px solid #eef1f4; }
+.zonas td.n { width: 9mm; } .zonas td.n { color: #fff; font-weight: 700; text-align: center; }
+.zonas td.n { background: #C4580C; border-radius: 50%; display: inline-block; width: 7mm; height: 7mm; line-height: 7mm; padding: 0; margin-top: 1mm; }
+ul, ol { padding-left: 6mm; } li { margin: 1mm 0; }
+.colores { list-style: none; padding-left: 0; } .colores .c { display: inline-block; width: 9mm; height: 3mm; border-radius: 2px; margin-right: 2.5mm; vertical-align: middle; }
+.verde { background: #27ae60; } .rojo { background: #d84343; } .naranja { background: #e67e22; }
+.check { list-style: none; padding-left: 0; } .check li { padding-left: 8mm; position: relative; margin: 2.5mm 0; }
+.check li::before { content: '☐'; position: absolute; left: 0; top: -1px; font-size: 13pt; color: #005A9C; }
+.faq dt { font-weight: 700; color: #005A9C; margin-top: 4mm; } .faq dd { margin: 1mm 0 0 0; }
+
+.verde-t { color:#1e8449; font-weight:700; } .rojo-t { color:#c0392b; font-weight:700; } .naranja-t { color:#d35400; font-weight:700; }
+/* margen-pantalla */
+@media screen {
+  html { background: #e9edf2; }
+  body { max-width: 190mm; margin: 0 auto; padding: 14mm 16mm 20mm; background: #fff; box-shadow: 0 2px 16px rgba(20,40,70,.13); box-sizing: border-box; }
+}
+@media screen and (max-width: 760px) { body { padding: 18px 16px 30px; box-shadow: none; } html { background: #fff; } }
+.junto { break-inside: avoid; page-break-inside: avoid; }
+
+/* margen-pantalla */
+@media screen {
+  html { background: #e9edf2; }
+  body { max-width: 190mm; margin: 0 auto; padding: 14mm 16mm 20mm; background: #fff; box-shadow: 0 2px 16px rgba(20,40,70,.13); box-sizing: border-box; }
+}
+@media screen and (max-width: 760px) { body { padding: 18px 16px 30px; box-shadow: none; } html { background: #fff; } }
+.junto { break-inside: avoid; page-break-inside: avoid; }
+h3 { break-after: avoid-page; page-break-after: avoid; }
+figure { text-align: center; } figure img { margin: 0 auto; } figcaption { text-align: center; }
+.formula { font-family: Consolas, "DejaVu Sans Mono", monospace; background: #f4f6f8; border: 1px solid #e3e8ee; border-radius: 5px; padding: 2mm 3mm; margin: 2mm 0; page-break-inside: avoid; }
+</style></head><body>
+<style>
+
+section + section { page-break-before: auto; break-before: auto; margin-top: 9mm; } h2.cap { break-after: avoid-page; page-break-after: avoid; break-inside: avoid; }
+section.resumen, section.historia { page-break-before: always; break-before: page; margin-top: 0; }
+pre.prog { font-family: Consolas, 'DejaVu Sans Mono', monospace; font-size: 9.2pt; line-height: 1.45; background: #f4f6f8; border: 1px solid #e3e8ee; border-left: 4px solid #005A9C; border-radius: 0 5px 5px 0; padding: 2.5mm 4mm; margin: 3mm 0; white-space: pre; page-break-inside: avoid; overflow: hidden; }
+pre.prog .c { color: #6b7b8c; } pre.prog .g { color: #005A9C; font-weight: 700; } pre.prog .m { color: #C4580C; font-weight: 700; } pre.prog .k { color: #1e8449; font-weight: 700; }
+svg.dib { display: block; margin: 0 auto; max-width: 100%; }
+figure.dib { border: 1px solid #e3e8ee; border-radius: 6px; padding: 2mm 0 1mm; }
+.tabla.cod td:first-child { font-family: Consolas, 'DejaVu Sans Mono', monospace; font-weight: 700; color: #005A9C; white-space: nowrap; width: 24mm; }
+.tabla.regla td, .tabla.regla th { text-align: center; } .tabla.regla td:first-child { text-align: left; font-weight: 700; }
+.resumen { font-size: 9pt; } .resumen td { padding: 1.2mm 2mm !important; font-size: 9pt !important; } .resumen td:first-child { width: 30mm; }
+.resumen h3 { margin-top: 3mm; }
+.faq dt { margin-top: 2.6mm !important; } .faq dd { font-size: 9.8pt; line-height: 1.4; }
+.dos-col { column-count: 2; column-gap: 7mm; } .dos-col > * { break-inside: avoid; }
+pre.prog.b { border-left-color: #d35400; }
+pre.prog .c { color: #6b7b8c; } pre.prog .g { color: #005A9C; font-weight: 700; } pre.prog .o { color: #d35400; font-weight: 700; }
+.dos { display: flex; gap: 4mm; page-break-inside: avoid; } .dos > * { flex: 1; margin: 2mm 0; }
+.va { color: #005A9C; font-weight: 700; } .vb { color: #d35400; font-weight: 700; }
+.pasos { counter-reset: p; list-style: none; padding-left: 0; } .pasos > li { counter-increment: p; position: relative; padding-left: 10mm; margin: 2.5mm 0; page-break-inside: avoid; }
+.pasos > li::before { content: counter(p); position: absolute; left: 0; top: 0; width: 7mm; height: 7mm; border-radius: 50%; background: #d35400; color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 10pt; }
+.cuenta { font-family: Consolas, 'DejaVu Sans Mono', monospace; background: #fdf3ec; border: 1px solid #f3d6c2; border-radius: 5px; padding: 1.8mm 3mm; margin: 1.5mm 0; display: block; }
+table.comp td:first-child { font-weight: 700; } table.comp td:nth-child(2) { color: #005A9C; } table.comp td:nth-child(3) { color: #d35400; }
+table.comp td, table.comp th { text-align: center; } table.comp td:first-child, table.comp th:first-child { text-align: left; }
+h4 { font-size: 11pt; color: #C4580C; margin: 4mm 0 1.5mm; break-after: avoid-page; page-break-after: avoid; }
+
+
+.validar { border: 2px dashed #C4580C; border-radius: 6px; padding: 2.5mm 4mm; margin: 3mm 0; background: #fff8f2; page-break-inside: avoid; }
+.validar strong:first-child { color: #C4580C; }
+</style>
+<div class="portada"><div class="sup">Suite CNC · Apuntes para el alumnado · Borrador para revisar</div><h1>Taladros: los ciclos fijos</h1><h2>Cómo se programa un agujero en ISO: G81, G82, G83 y G73, los planos R e inicial, G98 y G99, el picoteo, los agujeros pasantes y cómo lo lee TpaCAD</h2>
+<figure class="dib"><svg class="dib" viewBox="0 0 640 330" style="width:100%" xmlns="http://www.w3.org/2000/svg"><defs><marker id="f005A9C" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#005A9C"/></marker><marker id="fC4580C" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#C4580C"/></marker><marker id="f1e8449" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1e8449"/></marker><marker id="f8a97a5" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a97a5"/></marker><marker id="fc0392b" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c0392b"/></marker><marker id="f1c2733" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1c2733"/></marker></defs><rect x="40.0" y="156.0" width="332.8" height="98.80000000000001" fill="#f3e3c3" stroke="#8a97a5" stroke-width="1.2"/><rect x="24.4" y="254.8" width="364.0" height="20.80000000000001" fill="#e7dcc8" stroke="#8a97a5" stroke-width="1.0"/><line x1="19.2" y1="52.0" x2="404.0" y2="52.0" stroke="#8a97a5" stroke-width="1" stroke-dasharray="6 4"/><text x="410.0" y="56.0" fill="#8a97a5" font-size="12" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="600">plano inicial: Z20 (donde está la fresa)</text><line x1="19.2" y1="145.6" x2="404.0" y2="145.6" stroke="#C4580C" stroke-width="1" stroke-dasharray="6 4"/><text x="410.0" y="142.6" fill="#C4580C" font-size="12" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="600">plano R: R2</text><line x1="19.2" y1="156.0" x2="404.0" y2="156.0" stroke="#1c2733" stroke-width="1" stroke-dasharray="6 4"/><text x="410.0" y="169.0" fill="#1c2733" font-size="12" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="600">Z0: la cara de arriba</text><line x1="19.2" y1="260.0" x2="404.0" y2="260.0" stroke="#c0392b" stroke-width="1" stroke-dasharray="6 4"/><text x="410.0" y="264.0" fill="#c0392b" font-size="12" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="600">fondo: Z-20</text><rect x="175.2" y="156.0" width="41.60000000000002" height="104.0" fill="#ffffff" stroke="#8a97a5" stroke-width="0.8"/><polyline points="71.2,8.3 71.2,39.5 92.0,52.0 112.8,39.5 112.8,8.3" fill="#9aa6b2" stroke="#1c2733" stroke-width="1.2" stroke-linejoin="round"/><line x1="92.0" y1="48.88" x2="192.88" y2="48.88" stroke="#005A9C" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#f005A9C)"/><circle cx="144.0" cy="34.88" r="9" fill="#005A9C"/><text x="144.0" y="39.080000000000005" fill="#fff" font-size="12" font-weight="700" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif">1</text><line x1="196.0" y1="52.0" x2="196.0" y2="141.44" stroke="#005A9C" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#f005A9C)"/><circle cx="180.0" cy="98.8" r="9" fill="#005A9C"/><text x="180.0" y="103.0" fill="#fff" font-size="12" font-weight="700" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif">2</text><line x1="202.24" y1="145.6" x2="202.24" y2="255.84" stroke="#C4580C" stroke-width="2.6" marker-end="url(#fC4580C)"/><circle cx="218.24" cy="202.8" r="9" fill="#C4580C"/><text x="218.24" y="207.0" fill="#fff" font-size="12" font-weight="700" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif">3</text><line x1="189.76" y1="260.0" x2="189.76" y2="149.76" stroke="#005A9C" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#f005A9C)"/><circle cx="173.76" cy="202.8" r="9" fill="#005A9C"/><text x="173.76" y="207.0" fill="#fff" font-size="12" font-weight="700" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif">4</text><line x1="29.6" y1="166.4" x2="29.6" y2="166.4" stroke="#8a97a5" stroke-width="1.6"/><text x="19.2" y="306.8" fill="#8a97a5" font-size="11.5" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="400">Rápido (G0): discontinuo y azul · al avance F: continuo y naranja</text></svg></figure><div class="pie">Taladros: los ciclos fijos · Suite CNC 2026.10 · © 2026 Eloi A.A.<br>Apuntes publicados con licencia CC BY-SA 4.0.</div></div>
+<div class="indice"><h2>Contenido</h2><ol><li>Taladrar a mano y con un ciclo</li><li>Qué hace la máquina en cada agujero</li><li>Las letras del ciclo</li><li>G98 y G99: hasta dónde sube entre agujeros</li><li>Los ciclos: G81, G82, G83, G73 y G80</li><li>La profundidad: agujeros pasantes y ciegos</li><li>Un programa completo</li><li>Errores frecuentes</li><li>Los taladros en TpaCAD</li><li>Hoja resumen</li></ol></div>
+
+<section><h2 class="cap"><span>1</span>Taladrar a mano y con un ciclo</h2>
+<p>Un agujero se puede programar con lo que ya sabemos: ir encima en rápido, bajar en rápido hasta casi tocar la madera, taladrar con G1 y salir. Son cuatro líneas por agujero:</p>
+<pre class="prog"><span class="g">G0</span> X30 Y20          <span class="c">; encima del agujero</span>
+<span class="g">G0</span> Z2              <span class="c">; baja en rápido hasta 2 mm de la madera</span>
+<span class="g">G1</span> Z-20 <span class="k">F300</span>       <span class="c">; taladra</span>
+<span class="g">G0</span> Z2              <span class="c">; sale</span></pre>
+<p>Con diez agujeros, cuarenta líneas casi iguales. Por eso los controles tienen <strong>ciclos fijos</strong> (o ciclos de taladrado): <strong>una sola línea</strong> le dice a la máquina toda la secuencia, y además se queda activa. Cada línea siguiente que solo lleve X e Y es otro agujero igual, hasta que se anula con <code>G80</code>.</p>
+<pre class="prog"><span class="g">G81 G99</span> X30 Y20 Z-20 R2 <span class="k">F300</span>   <span class="c">; agujero 1: todo en una línea</span>
+X90                              <span class="c">; agujero 2: misma Y, mismo ciclo</span>
+X90 Y50                          <span class="c">; agujero 3</span>
+<span class="g">G80</span>                              <span class="c">; fin del ciclo</span></pre>
+<div class="nota"><strong>💡 Una sintaxis, muchas máquinas.</strong> En estos apuntes usamos la forma de <strong>Fanuc</strong>, la más extendida y la que entiende el Simulador. Otros controles (Fagor, Heidenhain…) escriben los ciclos de otra manera, y muchas máquinas de madera con cabezal de taladros (Biesse, SCM…) taladran con sus propias órdenes. Antes de llevar un programa a una máquina, mira su manual. Cómo lo lee <strong>TpaCAD</strong> está en el capítulo 9.</div>
+</section>
+
+<section><h2 class="cap"><span>2</span>Qué hace la máquina en cada agujero</h2>
+<figure class="dib"><svg class="dib" viewBox="0 0 640 330" style="width:100%" xmlns="http://www.w3.org/2000/svg"><defs><marker id="f005A9C" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#005A9C"/></marker><marker id="fC4580C" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#C4580C"/></marker><marker id="f1e8449" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1e8449"/></marker><marker id="f8a97a5" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a97a5"/></marker><marker id="fc0392b" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c0392b"/></marker><marker id="f1c2733" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1c2733"/></marker></defs><rect x="40.0" y="156.0" width="332.8" height="98.80000000000001" fill="#f3e3c3" stroke="#8a97a5" stroke-width="1.2"/><rect x="24.4" y="254.8" width="364.0" height="20.80000000000001" fill="#e7dcc8" stroke="#8a97a5" stroke-width="1.0"/><line x1="19.2" y1="52.0" x2="404.0" y2="52.0" stroke="#8a97a5" stroke-width="1" stroke-dasharray="6 4"/><text x="410.0" y="56.0" fill="#8a97a5" font-size="12" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="600">plano inicial: Z20 (donde está la fresa)</text><line x1="19.2" y1="145.6" x2="404.0" y2="145.6" stroke="#C4580C" stroke-width="1" stroke-dasharray="6 4"/><text x="410.0" y="142.6" fill="#C4580C" font-size="12" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="600">plano R: R2</text><line x1="19.2" y1="156.0" x2="404.0" y2="156.0" stroke="#1c2733" stroke-width="1" stroke-dasharray="6 4"/><text x="410.0" y="169.0" fill="#1c2733" font-size="12" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="600">Z0: la cara de arriba</text><line x1="19.2" y1="260.0" x2="404.0" y2="260.0" stroke="#c0392b" stroke-width="1" stroke-dasharray="6 4"/><text x="410.0" y="264.0" fill="#c0392b" font-size="12" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="600">fondo: Z-20</text><rect x="175.2" y="156.0" width="41.60000000000002" height="104.0" fill="#ffffff" stroke="#8a97a5" stroke-width="0.8"/><polyline points="71.2,8.3 71.2,39.5 92.0,52.0 112.8,39.5 112.8,8.3" fill="#9aa6b2" stroke="#1c2733" stroke-width="1.2" stroke-linejoin="round"/><line x1="92.0" y1="48.88" x2="192.88" y2="48.88" stroke="#005A9C" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#f005A9C)"/><circle cx="144.0" cy="34.88" r="9" fill="#005A9C"/><text x="144.0" y="39.080000000000005" fill="#fff" font-size="12" font-weight="700" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif">1</text><line x1="196.0" y1="52.0" x2="196.0" y2="141.44" stroke="#005A9C" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#f005A9C)"/><circle cx="180.0" cy="98.8" r="9" fill="#005A9C"/><text x="180.0" y="103.0" fill="#fff" font-size="12" font-weight="700" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif">2</text><line x1="202.24" y1="145.6" x2="202.24" y2="255.84" stroke="#C4580C" stroke-width="2.6" marker-end="url(#fC4580C)"/><circle cx="218.24" cy="202.8" r="9" fill="#C4580C"/><text x="218.24" y="207.0" fill="#fff" font-size="12" font-weight="700" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif">3</text><line x1="189.76" y1="260.0" x2="189.76" y2="149.76" stroke="#005A9C" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#f005A9C)"/><circle cx="173.76" cy="202.8" r="9" fill="#005A9C"/><text x="173.76" y="207.0" fill="#fff" font-size="12" font-weight="700" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif">4</text><line x1="29.6" y1="166.4" x2="29.6" y2="166.4" stroke="#8a97a5" stroke-width="1.6"/><text x="19.2" y="306.8" fill="#8a97a5" font-size="11.5" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="400">Rápido (G0): discontinuo y azul · al avance F: continuo y naranja</text></svg><figcaption>Un agujero con <code>G81 G99 X30 Y20 Z-20 R2 F300</code>, visto de lado. Antes del ciclo la fresa está en Z20.</figcaption></figure>
+<ol>
+<li>Va <strong>en rápido</strong> a la X Y del agujero, a la altura a la que estaba. Esa altura es el <strong>plano inicial</strong> (aquí, Z20).</li>
+<li>Baja <strong>en rápido</strong> hasta el <strong>plano R</strong> (R2: 2 mm por encima de la madera).</li>
+<li>Taladra <strong>al avance F</strong> hasta la <strong>Z</strong> del fondo (Z-20).</li>
+<li>Sale <strong>en rápido</strong>: hasta el plano R con <code>G99</code>, o hasta el plano inicial con <code>G98</code> (capítulo 4).</li>
+</ol>
+<p>El plano R sirve para ganar tiempo: en el aire la broca baja en rápido, y solo va despacio el último tramo, el que corta. Por eso R tiene que estar <strong>siempre por encima de la madera</strong>.</p>
+</section>
+
+<section><h2 class="cap"><span>3</span>Las letras del ciclo</h2>
+<table class="tabla cod">
+<tr><th>Letra</th><th>Qué es</th><th>Ejemplo</th></tr>
+<tr><td>X Y</td><td>Dónde está el agujero. Como siempre, en G90 desde el cero pieza.</td><td>X30 Y20</td></tr>
+<tr><td>Z</td><td>La profundidad final: el <strong>fondo</strong> del agujero.</td><td>Z-20</td></tr>
+<tr><td>R</td><td>El <strong>plano de aproximación</strong>: hasta ahí baja en rápido. Siempre por encima de la madera.</td><td>R2</td></tr>
+<tr><td>F</td><td>El avance al taladrar, en mm/min.</td><td>F300</td></tr>
+<tr><td>Q</td><td>El <strong>picoteo</strong>: lo que profundiza cada vez (G83 y G73).</td><td>Q8</td></tr>
+<tr><td>P</td><td>La <strong>pausa en el fondo</strong> (G82). En Fanuc va en milésimas de segundo.</td><td>P500 = ½ s</td></tr>
+</table>
+<ul>
+<li>El orden de las letras es el de siempre: <strong>G, después X Y Z, R, Q, P y F</strong>.</li>
+<li>Las letras se quedan guardadas mientras el ciclo esté activo: en el agujero siguiente basta con escribir lo que cambia (normalmente, X o Y).</li>
+<li>Las revoluciones y la herramienta se ponen antes, como siempre: <code>T104 M06</code> y <code>S4000 M03</code>.</li>
+</ul>
+</section>
+
+<section><h2 class="cap"><span>4</span>G98 y G99: hasta dónde sube entre agujeros</h2>
+<figure class="dib"><svg class="dib" viewBox="0 0 640 200" style="width:100%" xmlns="http://www.w3.org/2000/svg"><defs><marker id="f005A9C" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#005A9C"/></marker><marker id="fC4580C" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#C4580C"/></marker><marker id="f1e8449" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1e8449"/></marker><marker id="f8a97a5" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a97a5"/></marker><marker id="fc0392b" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c0392b"/></marker><marker id="f1c2733" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1c2733"/></marker></defs><rect x="40.0" y="119.0" width="256.0" height="60.80000000000001" fill="#f3e3c3" stroke="#8a97a5" stroke-width="1.2"/><rect x="152.0" y="80.6" width="32.0" height="38.400000000000006" fill="#c7ced6" stroke="#1c2733" stroke-width="1.2"/><text x="168.0" y="74.6" fill="#8a97a5" font-size="11" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="middle" font-weight="600">sargento</text><rect x="75.2" y="119.0" width="25.599999999999994" height="60.80000000000001" fill="#fff" stroke="#8a97a5" stroke-width="0.8"/><rect x="235.2" y="119.0" width="25.600000000000023" height="60.80000000000001" fill="#fff" stroke="#8a97a5" stroke-width="0.8"/><line x1="33.6" y1="55.0" x2="302.4" y2="55.0" stroke="#8a97a5" stroke-width="1" stroke-dasharray="6 4"/><text x="308.4" y="59.0" fill="#8a97a5" font-size="12" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="600"></text><line x1="33.6" y1="112.6" x2="302.4" y2="112.6" stroke="#C4580C" stroke-width="1" stroke-dasharray="6 4"/><text x="308.4" y="116.6" fill="#C4580C" font-size="12" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="600"></text><line x1="88.0" y1="179.8" x2="88.0" y2="112.6" stroke="#005A9C" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#f005A9C)"/><line x1="88.0" y1="112.6" x2="148.8" y2="112.6" stroke="#c0392b" stroke-width="2.4" stroke-dasharray="6 4" marker-end="url(#fc0392b)"/><text x="155.2" y="114.2" fill="#c0392b" font-size="22" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="middle" font-weight="700">✖</text><text x="168.0" y="23.0" fill="#c0392b" font-size="13" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="middle" font-weight="700">G99: sube solo a R2 y choca</text><text x="29.6" y="59.0" fill="#8a97a5" font-size="11" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="end" font-weight="400">Z20</text><text x="29.6" y="116.6" fill="#C4580C" font-size="11" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="end" font-weight="700">R2</text><rect x="360.0" y="119.0" width="256.0" height="60.80000000000001" fill="#f3e3c3" stroke="#8a97a5" stroke-width="1.2"/><rect x="472.0" y="80.6" width="32.0" height="38.400000000000006" fill="#c7ced6" stroke="#1c2733" stroke-width="1.2"/><text x="488.0" y="74.6" fill="#8a97a5" font-size="11" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="middle" font-weight="600">sargento</text><rect x="395.2" y="119.0" width="25.600000000000023" height="60.80000000000001" fill="#fff" stroke="#8a97a5" stroke-width="0.8"/><rect x="555.2" y="119.0" width="25.59999999999991" height="60.80000000000001" fill="#fff" stroke="#8a97a5" stroke-width="0.8"/><line x1="353.6" y1="55.0" x2="622.4" y2="55.0" stroke="#8a97a5" stroke-width="1" stroke-dasharray="6 4"/><text x="628.4" y="59.0" fill="#8a97a5" font-size="12" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="600"></text><line x1="353.6" y1="112.6" x2="622.4" y2="112.6" stroke="#C4580C" stroke-width="1" stroke-dasharray="6 4"/><text x="628.4" y="116.6" fill="#C4580C" font-size="12" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="600"></text><line x1="408.0" y1="179.8" x2="408.0" y2="55.0" stroke="#005A9C" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#f005A9C)"/><line x1="408.0" y1="55.0" x2="568.0" y2="55.0" stroke="#005A9C" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#f005A9C)"/><line x1="568.0" y1="55.0" x2="568.0" y2="176.6" stroke="#C4580C" stroke-width="2.4" marker-end="url(#fC4580C)"/><text x="488.0" y="23.0" fill="#1e8449" font-size="13" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="middle" font-weight="700">G98: sube a Z20 y pasa por encima</text><text x="349.6" y="59.0" fill="#8a97a5" font-size="11" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="end" font-weight="400">Z20</text><text x="349.6" y="116.6" fill="#C4580C" font-size="11" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="end" font-weight="700">R2</text></svg><figcaption>Dos agujeros con un sargento entre ellos. Con G99 la broca va de un agujero al otro a 2 mm de la madera… y se lleva el sargento por delante.</figcaption></figure>
+<ul>
+<li><strong>G99</strong>: al acabar cada agujero, sube solo <strong>hasta el plano R</strong>. Es lo más rápido, y vale cuando entre un agujero y otro no hay nada que esquivar.</li>
+<li><strong>G98</strong>: sube <strong>hasta el plano inicial</strong> (la altura que tenía antes del ciclo). Hay que usarlo si entre los agujeros hay <strong>sargentos, mordazas, topes o ventosas</strong> más altos que R.</li>
+<li>Se pueden cambiar en cualquier agujero. Un truco habitual: todos en G99 y el último en G98, para que al acabar la broca quede arriba.</li>
+</ul>
+<div class="nota atencion"><strong>⚠️ El plano inicial es «donde estaba la fresa».</strong> Si antes del ciclo la dejas en Z5, G98 solo sube hasta Z5. Antes de un ciclo, sube siempre a la altura de seguridad: <code>G0 Z20</code>.</div>
+</section>
+
+<section><h2 class="cap"><span>5</span>Los ciclos: G81, G82, G83, G73 y G80</h2>
+<h3>G81: taladrado simple</h3>
+<p>Baja, taladra hasta Z de una vez y sale. Es el de casi todo en madera: agujeros pasantes, de clavija, de tornillo…</p>
+<pre class="prog"><span class="g">G81 G99</span> X30 Y20 Z-20 R2 <span class="k">F300</span></pre>
+<h3>G82: con pausa en el fondo</h3>
+<p>Como G81, pero al llegar al fondo se queda <strong>P</strong> milésimas de segundo girando antes de salir. Deja el fondo limpio y plano: sirve para agujeros <strong>ciegos</strong>, por ejemplo con una broca Forstner o de fondo plano.</p>
+<pre class="prog"><span class="g">G82 G99</span> X50 Y50 Z-12 R2 P500 <span class="k">F200</span>   <span class="c">; medio segundo en el fondo</span></pre>
+<h3>G83: taladrado profundo con picoteo</h3>
+<figure class="dib"><svg class="dib" viewBox="0 0 640 310" style="width:100%" xmlns="http://www.w3.org/2000/svg"><defs><marker id="f005A9C" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#005A9C"/></marker><marker id="fC4580C" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#C4580C"/></marker><marker id="f1e8449" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1e8449"/></marker><marker id="f8a97a5" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a97a5"/></marker><marker id="fc0392b" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c0392b"/></marker><marker id="f1c2733" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1c2733"/></marker></defs><rect x="60.0" y="30.0" width="506.0" height="207.0" fill="#f3e3c3" stroke="#8a97a5" stroke-width="1.2"/><line x1="41.6" y1="20.8" x2="575.2" y2="20.8" stroke="#C4580C" stroke-width="1" stroke-dasharray="6 4"/><text x="581.2" y="17.8" fill="#C4580C" font-size="12" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="600">R2</text><line x1="41.6" y1="30.0" x2="575.2" y2="30.0" stroke="#1c2733" stroke-width="1" stroke-dasharray="6 4"/><text x="581.2" y="43.0" fill="#1c2733" font-size="12" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="600">Z0</text><line x1="41.6" y1="214.0" x2="575.2" y2="214.0" stroke="#c0392b" stroke-width="1" stroke-dasharray="6 4"/><text x="581.2" y="218.0" fill="#c0392b" font-size="12" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="600">Z-40</text><rect x="96.8" y="30.0" width="36.8" height="36.8" fill="#fff" stroke="#8a97a5" stroke-width="0.8"/><line x1="115.2" y1="20.8" x2="115.2" y2="64.04" stroke="#C4580C" stroke-width="2.4" marker-end="url(#fC4580C)"/><line x1="122.1" y1="66.8" x2="122.1" y2="23.56" stroke="#005A9C" stroke-width="1.8" stroke-dasharray="5 3" marker-end="url(#f005A9C)"/><text x="115.2" y="82.8" fill="#1c2733" font-size="12" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="middle" font-weight="700">1.º</text><rect x="188.8" y="30.0" width="36.79999999999998" height="73.6" fill="#fff" stroke="#8a97a5" stroke-width="0.8"/><line x1="200.3" y1="20.8" x2="200.3" y2="64.5" stroke="#005A9C" stroke-width="1.8" stroke-dasharray="5 3" marker-end="url(#f005A9C)"/><line x1="207.2" y1="64.5" x2="207.2" y2="100.84" stroke="#C4580C" stroke-width="2.4" marker-end="url(#fC4580C)"/><line x1="214.1" y1="103.6" x2="214.1" y2="23.56" stroke="#005A9C" stroke-width="1.8" stroke-dasharray="5 3" marker-end="url(#f005A9C)"/><text x="207.2" y="119.6" fill="#1c2733" font-size="12" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="middle" font-weight="700">2.º</text><rect x="280.8" y="30.0" width="36.80000000000001" height="110.4" fill="#fff" stroke="#8a97a5" stroke-width="0.8"/><line x1="292.3" y1="20.8" x2="292.3" y2="101.3" stroke="#005A9C" stroke-width="1.8" stroke-dasharray="5 3" marker-end="url(#f005A9C)"/><line x1="299.2" y1="101.3" x2="299.2" y2="137.64" stroke="#C4580C" stroke-width="2.4" marker-end="url(#fC4580C)"/><line x1="306.1" y1="140.4" x2="306.1" y2="23.56" stroke="#005A9C" stroke-width="1.8" stroke-dasharray="5 3" marker-end="url(#f005A9C)"/><text x="299.2" y="156.4" fill="#1c2733" font-size="12" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="middle" font-weight="700">3.º</text><rect x="372.8" y="30.0" width="36.80000000000001" height="147.2" fill="#fff" stroke="#8a97a5" stroke-width="0.8"/><line x1="384.3" y1="20.8" x2="384.3" y2="138.1" stroke="#005A9C" stroke-width="1.8" stroke-dasharray="5 3" marker-end="url(#f005A9C)"/><line x1="391.2" y1="138.1" x2="391.2" y2="174.44" stroke="#C4580C" stroke-width="2.4" marker-end="url(#fC4580C)"/><line x1="398.1" y1="177.2" x2="398.1" y2="23.56" stroke="#005A9C" stroke-width="1.8" stroke-dasharray="5 3" marker-end="url(#f005A9C)"/><text x="391.2" y="193.2" fill="#1c2733" font-size="12" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="middle" font-weight="700">4.º</text><rect x="464.8" y="30.0" width="36.80000000000001" height="184.0" fill="#fff" stroke="#8a97a5" stroke-width="0.8"/><line x1="476.3" y1="20.8" x2="476.3" y2="174.9" stroke="#005A9C" stroke-width="1.8" stroke-dasharray="5 3" marker-end="url(#f005A9C)"/><line x1="483.2" y1="174.9" x2="483.2" y2="211.24" stroke="#C4580C" stroke-width="2.4" marker-end="url(#fC4580C)"/><line x1="490.1" y1="214.0" x2="490.1" y2="23.56" stroke="#005A9C" stroke-width="1.8" stroke-dasharray="5 3" marker-end="url(#f005A9C)"/><text x="483.2" y="230.0" fill="#1c2733" font-size="12" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="middle" font-weight="700">5.º</text><text x="123.2" y="48.4" fill="#C4580C" font-size="12" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="700">Q8</text><text x="41.6" y="264.6" fill="#8a97a5" font-size="11.5" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="400">G83 G99 X… Y… Z-40 R2 Q8 F250: baja 8 mm, sale hasta R2 para sacar la viruta, vuelve a bajar en rápido</text><text x="41.6" y="280.6" fill="#8a97a5" font-size="11.5" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="400">hasta casi donde lo dejó y taladra otros 8 mm… hasta Z-40.</text></svg><figcaption>Con <code>Q8</code>, la broca baja de 8 en 8 mm y sale del agujero entre cada picoteo.</figcaption></figure>
+<p>Baja <strong>Q</strong> mm, <strong>sale del todo hasta R</strong> para sacar la viruta, vuelve a bajar en rápido hasta casi donde lo había dejado y taladra otros Q mm, hasta llegar a Z. Se usa en agujeros <strong>profundos</strong> (a partir de unas tres veces el diámetro de la broca): sin picoteo, la viruta se apelmaza en la broca, se calienta y la madera se quema, o la broca se rompe.</p>
+<pre class="prog"><span class="g">G83 G99</span> X50 Y30 Z-40 R2 Q8 <span class="k">F250</span>   <span class="c">; 40 mm de hondo, de 8 en 8</span></pre>
+<h3>G73: picoteo rápido</h3>
+<p>Parecido a G83, pero en cada picoteo solo <strong>retrocede un poco</strong>, lo justo para romper la viruta, sin salir del agujero. Es más rápido, pero no saca la viruta: es más propio del metal. En madera, mejor <strong>G83</strong>.</p>
+<h3>G80: fin del ciclo</h3>
+<p><code>G80</code> anula el ciclo activo. Escríbelo siempre al acabar los agujeros: mientras el ciclo esté activo, <strong>cualquier línea con X o Y hace otro agujero</strong>.</p>
+<div class="nota"><strong>💡 Hay más ciclos.</strong> G85, G86 y G89 son de mandrinado (afinar un agujero que ya está hecho, sobre todo en metal). En madera casi no se usan. El Simulador los entiende todos.</div>
+</section>
+
+<section><h2 class="cap"><span>6</span>La profundidad: agujeros pasantes y ciegos</h2>
+<figure class="dib"><svg class="dib" viewBox="0 0 640 290" style="width:100%" xmlns="http://www.w3.org/2000/svg"><defs><marker id="f005A9C" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#005A9C"/></marker><marker id="fC4580C" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#C4580C"/></marker><marker id="f1e8449" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1e8449"/></marker><marker id="f8a97a5" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a97a5"/></marker><marker id="fc0392b" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c0392b"/></marker><marker id="f1c2733" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1c2733"/></marker></defs><rect x="40.0" y="60.0" width="224.0" height="106.4" fill="#f3e3c3" stroke="#8a97a5" stroke-width="1.2"/><rect x="23.2" y="166.4" width="257.6" height="33.599999999999994" fill="#e7dcc8" stroke="#8a97a5" stroke-width="1.0"/><polygon points="129.6,60.0 129.6,152.94 152.0,166.4 174.4,152.94 174.4,60.0" fill="#ffffff" stroke="#8a97a5" stroke-width="0.8" stroke-linejoin="round"/><polyline points="129.6,108.14 129.6,152.94 152.0,166.4 174.4,152.94 174.4,108.14" fill="rgba(154,166,178,.55)" stroke="#1c2733" stroke-width="1.2" stroke-linejoin="round"/><line x1="12.0" y1="166.4" x2="297.6" y2="166.4" stroke="#c0392b" stroke-width="1" stroke-dasharray="4 3"/><text x="152.0" y="219.2" fill="#c0392b" font-size="13" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="middle" font-weight="700">Z-19</text><text x="152.0" y="235.2" fill="#c0392b" font-size="11.5" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="middle" font-weight="400">la punta llega al fondo</text><text x="152.0" y="250.2" fill="#c0392b" font-size="11.5" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="middle" font-weight="400">pero el agujero no sale entero por abajo</text><rect x="348.0" y="60.0" width="224.0" height="106.4" fill="#f3e3c3" stroke="#8a97a5" stroke-width="1.2"/><rect x="331.2" y="166.4" width="257.59999999999997" height="33.599999999999994" fill="#e7dcc8" stroke="#8a97a5" stroke-width="1.0"/><polygon points="437.6,60.0 437.6,166.94 460.0,180.4 482.4,166.94 482.4,60.0" fill="#ffffff" stroke="#8a97a5" stroke-width="0.8" stroke-linejoin="round"/><polyline points="437.6,122.14 437.6,166.94 460.0,180.4 482.4,166.94 482.4,122.14" fill="rgba(154,166,178,.55)" stroke="#1c2733" stroke-width="1.2" stroke-linejoin="round"/><line x1="320.0" y1="180.4" x2="605.6" y2="180.4" stroke="#1e8449" stroke-width="1" stroke-dasharray="4 3"/><text x="460.0" y="219.2" fill="#1e8449" font-size="13" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="middle" font-weight="700">Z-21.5</text><text x="460.0" y="235.2" fill="#1e8449" font-size="11.5" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="middle" font-weight="400">muerde el martiriño y el agujero sale entero</text><text x="42.0" y="54.0" fill="#8a97a5" font-size="11" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="400">tablero de 19</text><text x="42.0" y="190.4" fill="#8a97a5" font-size="11" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="400">martiriño</text></svg><figcaption>Un tablero de 19 con una broca de Ø8. La punta es un cono: para que el agujero salga entero por abajo, hay que bajar más que el grueso.</figcaption></figure>
+<ul>
+<li><strong>Agujero pasante.</strong> La Z tiene que ser <strong>más honda que el grueso</strong> del tablero, mordiendo un poco el tablero de sacrificio (el martiriño): en un tablero de 19, Z-20 o Z-21. Si además quieres el agujero entero por la cara de abajo, suma la <strong>punta de la broca</strong>: en una broca helicoidal el cono mide más o menos un tercio del diámetro (unos 2,5 mm en una de Ø8). En una broca de centrar (con punta y espuelas) la punta es más corta.</li>
+<li><strong>Agujero ciego.</strong> La Z es la profundidad del plano. Recuerda que con una broca helicoidal el fondo queda en cono: si hace falta un fondo plano, broca de fondo plano o Forstner, y mejor con G82.</li>
+<li><strong>El diámetro del agujero es el de la broca.</strong> En los taladros no hay compensación (G41 o G42). Si el agujero es más grande que cualquier broca que tengas, se hace con una fresa: un círculo con G2 o G3, o una cajera.</li>
+</ul>
+<div class="nota atencion"><strong>⚠️ Fíjate en el martiriño.</strong> Si la Z baja más que el tablero más el martiriño, la broca llega a la mesa de la máquina. El Simulador avisa cuando la fresa baja más que el grosor del tablero que le has puesto.</div>
+</section>
+
+<section><h2 class="cap"><span>7</span>Un programa completo</h2>
+<p>Tres agujeros pasantes de Ø8 en un tablero de 19, con un sargento entre el segundo y el tercero:</p>
+<pre class="prog"><span class="g">G71 G90</span>                          <span class="c">; milímetros y absolutas</span>
+<span class="m">T104 M06</span>                         <span class="c">; broca de Ø8</span>
+S4000 <span class="m">M03</span>                       <span class="c">; arranca el husillo</span>
+<span class="g">G0</span> Z20                          <span class="c">; altura de seguridad: será el plano inicial</span>
+<span class="g">G0</span> X30 Y20                      <span class="c">; encima del primer agujero</span>
+<span class="g">G81 G99</span> X30 Y20 Z-21 R2 <span class="k">F300</span>   <span class="c">; agujero 1: sale a R2 (no hay nada hasta el 2)</span>
+<span class="g">G98</span> X60                          <span class="c">; agujero 2: sale a Z20 (después viene el sargento)</span>
+X90                              <span class="c">; agujero 3: sigue en G98, acaba arriba</span>
+<span class="g">G80</span>                              <span class="c">; fin del ciclo</span>
+<span class="g">G0</span> Z20
+<span class="g">G0</span> X0 Y0
+<span class="m">M05</span>
+<span class="m">M30</span></pre>
+<div class="nota atencion"><strong>⚠️ G98 va en el agujero de antes del obstáculo.</strong> G98 y G99 dicen hasta dónde sube la broca <strong>al acabar</strong> ese agujero, y el viaje al siguiente se hace a esa altura. Como el sargento está entre el 2 y el 3, el que tiene que salir en G98 es el <strong>2</strong>. Si pusieras G98 en el 3, la broca iría del 2 al 3 a 2 mm de la madera.</div>
+<p>Cárgalo en el Simulador: en 3D, con la vista de alzado, se ve cada bajada en rápido hasta R, el taladrado al avance y la salida. Para que dibuje la broca de Ø8, añádela a la base de herramientas (🧰) con el número T104; si no, avisa y simula con la fresa del panel.</p>
+</section>
+
+<section><h2 class="cap"><span>8</span>Errores frecuentes</h2>
+<dl class="faq">
+<dt>R por debajo de la madera (o negativo)</dt><dd>La broca entra en la madera en rápido. R siempre por encima: R2, R3.</dd>
+<dt>Falta R o falta Z</dt><dd>El ciclo no se puede hacer: el control da error. El Simulador avisa: «Ciclo G81 sin R o sin Z».</dd>
+<dt>Olvidar G80</dt><dd>Después de los agujeros, la siguiente línea con X o Y hace un agujero donde no toca. En Fanuc, un G0 o un G1 también anula el ciclo, pero no te fíes: escribe G80.</dd>
+<dt>G99 con un sargento en medio</dt><dd>La broca viaja a 2 mm de la madera y choca. Usa G98 en el agujero de antes del obstáculo.</dd>
+<dt>No subir antes del ciclo</dt><dd>El plano inicial es la altura a la que estaba la fresa. Sube a Z20 antes del ciclo.</dd>
+<dt>Agujero pasante que no sale entero</dt><dd>La Z es igual al grueso: la punta llega, pero el agujero no sale entero por abajo. Baja uno o dos milímetros más.</dd>
+<dt>Ciclos en G91</dt><dd>En incrementales, R se mide desde el plano inicial y Z desde R. Las cuentas cambian por completo: en clase, los ciclos siempre en G90. El Simulador avisa si ve un ciclo en G91.</dd>
+<dt>Q en G81</dt><dd>G81 no hace picoteo: la Q no hace nada. Para picotear, G83.</dd>
+</dl>
+</section>
+
+<section><h2 class="cap"><span>9</span>Los taladros en TpaCAD</h2>
+<p>TpaCAD no ejecuta el programa ISO línea a línea: lo <strong>convierte</strong> a su propio formato. Su importador lee los agujeros así (manual de TpaCAD, «Desde formato ISO a formato TpaCAD»):</p>
+<ul>
+<li>Un agujero es una línea con <strong>G81</strong>. El fabricante de la máquina puede elegir otro código entre G81 y G89 («código G de perforación»), pero <strong>solo uno</strong>: si es G81, una línea con G83 no se lee como agujero.</li>
+<li>En esa línea lee <strong>X, Y y Z</strong>, <strong>G90/G91</strong>, la herramienta <strong>T</strong>, las revoluciones <strong>S</strong> y la velocidad de entrada <strong>F</strong>.</li>
+<li><strong>No lee R, Q, P, G98 ni G99</strong>: la aproximación, la salida y el picoteo los decide TpaCAD con la configuración de la herramienta y de la máquina.</li>
+<li>Las líneas con otros códigos G se ignoran (G80 incluido).</li>
+</ul>
+<p>Por eso, para TpaCAD, cada agujero va <strong>en su propia línea, completa</strong>:</p>
+<pre class="prog"><span class="g">G81</span> X30 Y20 Z-21 R2 T104 S4000 <span class="k">F300</span>   <span class="c">; agujero 1 (TpaCAD no lee la R; el Simulador sí la necesita)</span>
+<span class="g">G81</span> X60 Y20 Z-21 R2 T104 S4000 <span class="k">F300</span>   <span class="c">; agujero 2</span>
+<span class="g">G81</span> X90 Y20 Z-21 R2 T104 S4000 <span class="k">F300</span>   <span class="c">; agujero 3</span>
+<span class="g">G80</span>                                     <span class="c">; TpaCAD lo ignora; el Simulador lo necesita</span></pre>
+<div class="validar"><strong>🔎 Para comprobar en TpaCAD.</strong> El extracto del manual no deja claras estas cosas; conviene importar un archivo de prueba y mirarlas:
+<ul style="margin:1.5mm 0 0">
+<li>Si la Z de la línea G81 es la <strong>profundidad del fondo</strong> (Z-21) o otra cosa: el manual dice «coordenadas iniciales del perfil», como en G0.</li>
+<li>Si un G81 sin X o Y repetidas toma las del agujero anterior, o hay que escribirlas siempre (por si acaso, escríbelas).</li>
+<li>Si la letra <strong>R</strong> en la línea G81 se ignora sin problema (la necesita el Simulador).</li>
+<li>Qué herramienta T hay que poner: en las máquinas con cabezal de taladros, el número de la broca lo da la configuración de la máquina.</li>
+</ul></div>
+</section>
+
+<section class="resumen"><h2 class="cap"><span>10</span>Hoja resumen</h2>
+<table class="tabla cod">
+<tr><th>Código</th><th>Qué hace</th></tr>
+<tr><td>G81</td><td>Taladrado simple: R en rápido, hasta Z al avance F, sale en rápido</td></tr>
+<tr><td>G82</td><td>Como G81, con pausa P en el fondo (fondo limpio, agujeros ciegos)</td></tr>
+<tr><td>G83</td><td>Picoteo: baja Q, sale hasta R, vuelve… (agujeros profundos, saca la viruta)</td></tr>
+<tr><td>G73</td><td>Picoteo rápido: baja Q y retrocede un poco (rompe la viruta, no la saca)</td></tr>
+<tr><td>G80</td><td>Fin del ciclo</td></tr>
+<tr><td>G98</td><td>Al acabar el agujero, sube al plano inicial (donde estaba la fresa)</td></tr>
+<tr><td>G99</td><td>Al acabar el agujero, sube al plano R</td></tr>
+<tr><td>X Y</td><td>Dónde está el agujero</td></tr>
+<tr><td>Z</td><td>El fondo del agujero (pasante: más que el grueso)</td></tr>
+<tr><td>R</td><td>Plano de aproximación, siempre por encima de la madera</td></tr>
+<tr><td>Q · P · F</td><td>Picoteo · pausa (ms) · avance al taladrar</td></tr>
+</table>
+<h3>Un agujero, paso a paso</h3>
+<ol><li>Rápido a X Y, a la altura del plano inicial.</li><li>Rápido hasta R.</li><li>Al avance F hasta Z.</li><li>Rápido hasta R (G99) o hasta el plano inicial (G98).</li></ol>
+<h3>Antes de llevarlo a la máquina</h3>
+<ul><li>Subir a Z20 antes del ciclo. R por encima de la madera. Z pasante: grueso + 1 o 2 mm (y la punta).</li><li>G98 si hay sargentos entre agujeros. G80 al acabar. Siempre en G90.</li><li>En TpaCAD: una línea G81 completa por agujero (X Y Z T S F).</li></ul>
+</section>
+
+<script>/* titulos-juntos */
+document.querySelectorAll('h2.cap, h3, h4').forEach(h => {
+  if (!h.nextElementSibling || !h.parentNode || h.parentNode.classList.contains('junto')) return;
+  // el título, el párrafo que lo presenta y lo primero que no sea un párrafo (un dibujo, una lista, un programa…)
+  const d = document.createElement('div'); d.className = 'junto'; h.parentNode.insertBefore(d, h); d.appendChild(h);
+  for (let k = 0; k < 3; k++) { const sig = d.nextElementSibling; if (!sig || /^H[1-4]$/.test(sig.tagName)) break; d.appendChild(sig); if (sig.tagName !== 'P') break; }
+});
+</script>
+</body></html>
