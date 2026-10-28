@@ -313,7 +313,8 @@
     .hoja-grid input, .hoja-grid select, .hoja-larga textarea { background: var(--bg-app); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 4px; padding: 5px 7px; font-size: 12.5px; font-family: inherit; }
     .hoja-larga { margin-top: 10px; }
     .hoja-checks { display: flex; flex-direction: column; gap: 5px; margin-top: 10px; font-size: 12.5px; }
-    .hoja-checks input { accent-color: var(--accent); }
+    .hoja-checks input, .bib-color input { accent-color: var(--accent); }
+    .bib-color { display: inline-flex; align-items: center; gap: 5px; font-size: 12.5px; color: var(--text-main); cursor: pointer; }
     .btn-manual { font-size: 12.5px; font-weight: 600; color: var(--accent); text-decoration: none; padding: 4px 10px; border: 1px solid var(--accent); border-radius: 5px; margin-right: 4px; white-space: nowrap; }
     .btn-manual:hover { background: var(--accent); color: #fff; }
     .cr-modal { width: min(1280px, 96vw); height: min(860px, 92vh); display: flex; flex-direction: column; }
@@ -539,6 +540,18 @@
     .tu-aviso[hidden] { display: none; }
     body.dark-mode .tu-aviso { color: #f1948a; }
     #fresaLista { display: none !important; }
+    /* 🧾 Informe para Aules (Tutor) */
+    .tu-inf { width: min(560px, 94vw); display: flex; flex-direction: column; gap: 8px; }
+    .tu-inf label { display: flex; flex-direction: column; gap: 3px; font-size: 12px; color: var(--text-muted); flex: 1; }
+    .tu-inf label.corto { flex: .45; }
+    .tu-inf input { font-size: 14px; padding: 5px 7px; border: 1px solid var(--border-color); border-radius: 5px; background: var(--bg-panel); color: var(--text-main); }
+    .tu-inf-fila { display: flex; gap: 10px; }
+    #tuInfResumen { font-size: 13px; line-height: 1.55; background: var(--bg-app, #f4f6f8); border: 1px solid var(--border-color); border-radius: 6px; padding: 8px 10px; }
+    .tu-inf-cod { margin-top: 4px; font-size: 13px; } .tu-inf-cod b { font-family: Consolas, monospace; font-size: 16px; color: var(--accent); letter-spacing: .5px; }
+    .tu-inf-bot { display: flex; justify-content: flex-end; gap: 8px; }
+    .tu-inf-bot button { padding: 6px 14px; }
+    .tu-inf-bot .principal { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 600; }
+    .tu-inf-bot .principal:disabled { opacity: .5; }
     .params-box.visor-si > button[onclick*="abrirMec"], .params-box.visor-si > button[onclick*="abrirCuestionario"], .params-box.visor-si > button[onclick*="abrirVariantes"],
     .params-box.visor-si > button[onclick*="abrirCorregir"], .params-box.visor-si > button[onclick*="abrirMasiva"], .params-box.visor-si > button[onclick*="exportarEjercicioTutor"],
     .params-box.visor-si > .btn-row:has(button[onclick*="exportarDXF"]), .params-box.visor-si > .btn-row:has(button[onclick*="abrirHoja"]),
@@ -565,7 +578,7 @@
 <body>
 <div class="app-window">
     <header class="top-bar">
-        <a href="index.html" class="ir-portada" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a><span class="top-bar-title">🎓 Tutor G-Code — Por Eloi A.A.<span class="ver-suite" title="Versión del programa (hecho a partir del Calcador v95)" style="font-size:11px;font-weight:600;padding:1px 7px;margin-left:8px;border-radius:9px;background:rgba(0,90,156,.12);color:#005A9C;vertical-align:middle">v1</span></span>
+        <a href="index.html" class="ir-portada" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a><span class="top-bar-title">🎓 Tutor G-Code — Por Eloi A.A.<span class="ver-suite" title="Versión del programa (hecho a partir del Calcador v102)" style="font-size:11px;font-weight:600;padding:1px 7px;margin-left:8px;border-radius:9px;background:rgba(0,90,156,.12);color:#005A9C;vertical-align:middle">v4</span></span>
         <div class="top-bar-right">
             <input class="project-name" id="projectName" type="text" value="calco_sin_nombre" placeholder="Nombre del proyecto">
             <div class="c2-archivo"><button class="btn-manual" onclick="nuevo()" title="Empieza un dibujo nuevo (se puede deshacer). Si estás en un ejercicio, lo deja">🗋 Nuevo</button><button class="btn-manual" onclick="document.getElementById('fileJSON').click()" title="Abre un dibujo guardado o un ejercicio que te ha dado el profesor (.json). Si es un ejercicio, se abre en ✍ Practicar">📂 Abrir</button><button class="btn-manual" onclick="exportarJSON()" title="Guarda tu dibujo en un archivo .json, para seguir otro día o abrirlo en el Simulador">💾 Guardar</button><button class="btn-manual" onclick="tuAbrirEjemplos()" title="Piezas para ver su programa (los programas resueltos) y ejercicios para escribirlo tú (la biblioteca de inicio)">📚 Ejemplos</button></div>
@@ -959,12 +972,21 @@
         <p>En <b>📋 Puntos</b>, la tabla con las coordenadas de cada punto (y, en G91, lo que se mueve la fresa). En el dibujo, cada punto lleva su nombre: P1, P2… en el exterior; A1, A2… en los agujeros. Con compensación, la fresa baja en F1 (fuera del contorno) y entra en E1, en el medio de un lado.</p>
         <h3>✍ Practicar</h3>
         <p>El programa lo escribes tú. Escribe cada línea y pulsa <b>Intro</b>: si está bien, pasa a la siguiente; si no, el Tutor te dice qué falla (el signo, G90 o G91, el centro del arco…). En verde, en el dibujo, el tramo que toca. <b>💡 Pista</b> enseña el comentario de la línea y <b>👁 Ver la línea</b> la escribe por ti (cuenta como vista).</p>
-        <p>Vale cualquier forma correcta: con o sin el G1 si ya venía de antes, el arco con I J o con R…</p>
+        <p>Vale cualquier forma correcta: con o sin el G1 si ya venía de antes, el arco con I J o con R… Pero las letras van en el orden de la norma: <b>N G X Y Z (I J K o R) F S T M</b>. Por ejemplo, <b>S12000 M03</b> y no M03 S12000. La cabecera también se puede escribir agrupada (G71 G90 G40 G0 Z20 · T101 M06 · F1000 S12000 M03): mira los apuntes «La cabecera del programa».</p>
         <h3>🎓 Ejercicios</h3>
         <p>Los ejercicios (los de la biblioteca de inicio o los que te dé el profesor en un .json) se abren en Practicar y no enseñan el programa ni las coordenadas: las sacas tú de las cotas del plano.</p>
         <h3>Para terminar</h3>
         <p>Arriba, junto al nombre: <b>📂 Abrir</b> abre tu dibujo guardado o un ejercicio del profesor (un ejercicio se abre solo en Practicar), <b>💾 Guardar</b> guarda tu dibujo (.json), <b>🗋 Nuevo</b> empieza otro y <b>📚 Ejemplos</b> abre las piezas de ejemplo y los ejercicios. Junto a <b>⬇ Guardar .nc</b>, <b>➜ Simulador 3D</b> abre el programa en el Simulador 3D, con el plano, para verlo mecanizado. El nivel de las herramientas de dibujo está arriba en la pestaña Dibujo.</p>
     </div>
+</div>
+<div class="modal-overlay" id="tuModalInforme" onclick="if(event.target===this) tuCerrarInforme()">
+    <div class="modal tu-inf"><div style="display:flex;justify-content:space-between;align-items:center"><h2 style="margin:0">🧾 Informe para Aules</h2><button onclick="tuCerrarInforme()">✕</button></div>
+        <p class="ctx-nota">Un PDF con tu programa y cómo lo has hecho: las líneas a la primera, con fallos o vistas, las pistas y tus errores más repetidos, con un código de comprobación. Súbelo a la tarea de Aules.</p>
+        <div class="tu-inf-fila"><label>Nombre y apellidos<input type="text" id="tuInfAlumno" oninput="tuActualizarInforme()" placeholder="Como aparece en Aules" title="Sale en el informe y en el nombre del archivo. Se recuerda para la próxima vez"></label>
+            <label class="corto">Grupo<input type="text" id="tuInfGrupo" oninput="tuActualizarInforme()" placeholder="1.º DA"></label></div>
+        <label>Ejercicio<input type="text" id="tuInfEjercicio" oninput="tuActualizarInforme()"></label>
+        <div id="tuInfResumen"></div>
+        <div class="tu-inf-bot"><button onclick="tuCerrarInforme()">Cancelar</button><button class="principal" id="tuInfDescargar" onclick="tuDescargarInforme()">⬇ Descargar el PDF</button></div></div>
 </div>
 <div class="modal-overlay" id="modalCal">
     <div class="modal">
@@ -1326,9 +1348,9 @@ OTHER DEALINGS IN THE FONT SOFTWARE.</pre>
             <p><strong>Recortar</strong> (<kbd>Y</kbd>): clic en el trozo de un contorno que sobra; se quita lo que hay entre los dos cruces más cercanos con otros contornos o líneas auxiliares (o hasta el extremo del trazo). Antes de hacer clic se ve en rosa lo que se quitará. <strong>Alargar</strong> (<kbd>H</kbd>): clic junto al extremo de un trazo abierto; la recta o el arco se prolonga hasta el primer contorno o auxiliar que encuentra (se ve antes, en verde). Con las dos, <kbd>Esc</kbd> vuelve a Editar.</p>
             <p><strong>Mover con las flechas</strong> (Editar): con algo seleccionado, las flechas lo mueven 1 mm (<kbd>Mayús</kbd>: 10 mm; <kbd>Ctrl</kbd>: 0,1 mm); varias pulsaciones seguidas se deshacen de una vez. Sin nada seleccionado, siguen recorriendo la pieza bloque a bloque. <kbd>Esc</kbd> quita la selección.</p>
             <p><strong>📝 Cuestionario para Aules</strong> (Exportar): prepara preguntas sobre el ejercicio abierto para un cuestionario de Aules (Moodle XML): coordenadas absolutas, incrementales y polares de un punto, I y J o R de un arco, ¿G2 o G3? y ¿G41 o G42? Cada pregunta lleva el plano con los puntos (P1, P2…), los arcos (A1, A2…), el cero pieza y el sentido de recorrido, y sale en varias variantes de la pieza (las de 🎲 Variantes). Impórtalo en el banco de preguntas y, en el cuestionario, añade una pregunta aleatoria de cada categoría: cada alumno recibe una variante distinta y Aules la corrige solo.</p>
-            <p><strong>📚 Corrección masiva</strong> (Exportar, o «Varios alumnos…» en la ventana de corregir): abre el ejercicio desde la propia ventana (📂 Abrir ejercicio…) y añade o arrastra los programas de toda la clase (cada archivo es un alumno; su nombre se toma del nombre del archivo) o, directamente, el <strong>.zip de Aules</strong> («Descargar todas las entregas»): cada alumno sale del nombre de su carpeta, también con el texto en línea o con un .zip dentro. Si el alumno entrega el <strong>🧾 informe de entrega</strong> del Simulador (.pdf), se comprueba su código y que el programa es el del informe (🧾 junto al nombre; 🧾⚠️ si no coincide); si solo entrega el informe, se corrige el programa que lleva dentro. Se corrigen con los mismos requisitos y aparecen en una tabla con veredicto, errores, parte del contorno bien mecanizada y una nota orientativa sobre 10 con criterios ajustables. Pulsa un alumno para ver su corrección detallada. «⬇ CSV» descarga la tabla para Excel o LibreOffice; «🖨 Informes» imprime un resumen de la clase y una hoja por alumno con su recorrido, sus observaciones y pistas, el desglose de la nota y su programa.</p>
+            <p><strong>📚 Corrección masiva</strong> (Exportar, o «Varios alumnos…» en la ventana de corregir): abre el ejercicio desde la propia ventana (📂 Abrir ejercicio…) y añade o arrastra los programas de toda la clase (cada archivo es un alumno; su nombre se toma del nombre del archivo) o, directamente, el <strong>.zip de Aules</strong> («Descargar todas las entregas»): cada alumno sale del nombre de su carpeta, también con el texto en línea o con un .zip dentro. Si el alumno entrega el <strong>🧾 informe de entrega</strong> del Simulador (.pdf), se comprueba su código y que el programa es el del informe (🧾 junto al nombre; 🧾⚠️ si no coincide); si solo entrega el informe, se corrige el programa que lleva dentro. Si entrega el programa en un <strong>documento</strong> (LibreOffice .odt, Word .docx o .doc, RTF), aunque lo haya renombrado a .nc o .txt, se corrige igual, pero se avisa de que el formato de archivo es incorrecto (📄⚠️ junto al nombre, en el resumen, en el CSV y en su informe). Se corrigen con los mismos requisitos y aparecen en una tabla con veredicto, errores, parte del contorno bien mecanizada y una nota orientativa sobre 10 con criterios ajustables. Pulsa un alumno para ver su corrección detallada. «⬇ CSV» descarga la tabla para Excel o LibreOffice; «🖨 Informes» imprime un resumen de la clase y una hoja por alumno con su recorrido, sus observaciones y pistas, el desglose de la nota y su programa.</p>
             <h3>Hoja de ejercicio</h3>
-            <p>Exportar → 🖨 Hoja de ejercicio: A4 con el plano acotado (1:1 si cabe; si no, a escala normalizada), el enunciado y un cajetín con título, número, alumno (en blanco), curso, fecha, material, espesor, herramienta, escala y tipo de programación pedida. Opcionalmente, una tabla de coordenadas en blanco con una fila por movimiento y una hoja rayada para el programa. Su pareja es la hoja de soluciones (📋 Soluciones).</p>
+            <p>Exportar → 🖨 Hoja de ejercicio: A4 con el plano acotado (1:1 si cabe; si no, ajustado al papel), el enunciado y un cajetín con título, número, alumno (en blanco), curso, fecha, material, espesor, herramienta, escala y tipo de programación pedida. Opcionalmente, una tabla de coordenadas en blanco con una fila por movimiento y una hoja rayada para el programa. Su pareja es la hoja de soluciones (📋 Soluciones).</p>
             <h3>Equidistante</h3>
             <p>Herramienta <span class="kbd">Q</span>. Escribe la distancia (en Formas o tecleando el número) y pasa el ratón junto a un contorno: la paralela se previsualiza <strong>en el lado del cursor</strong> (fuera o dentro si es cerrado; a un lado u otro si es abierto). Clic para crearla; el original se conserva. Las rectas siguen siendo rectas y los arcos, arcos concéntricos (exactos para G2/G3).</p>
             <table class="help-table">
@@ -1426,6 +1448,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.</pre>
             <div class="bib-selbarra" id="bibSelBarra" style="display:none">
                 <strong id="bibSelN"></strong>
                 <button class="btn-action" onclick="imprimirLoteBib([...bib.sel], 'hoja')">🖨 Imprimir sus hojas de ejercicio</button>
+                <label class="bib-color" title="El plano de las hojas de ejercicio con los colores del Calcador (sin marcar, en negro)"><input type="checkbox" id="bibColor" onchange="cfgHoja.color = this.checked; guardarAutoPronto()"> En color</label>
                 <button class="btn-action sec" onclick="imprimirLoteBib([...bib.sel], 'sol')">📋 Imprimir sus soluciones</button>
                 <button class="btn-action sec" onclick="quitarDeBiblioteca([...bib.sel])">✕ Quitar</button>
                 <span class="mv-sep"></span>
@@ -1459,7 +1482,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.</pre>
                 <button class="btn-action sec" onclick="document.getElementById('mvJSON').click()" title="Abre el JSON del ejercicio: la lista se recorrige con esa pieza y sus requisitos">📂 Abrir ejercicio…</button>
             </div>
             <div class="mv-barra">
-                <input type="file" id="mvArchivos" multiple accept=".nc,.txt,.iso,.cnc,.tap,.gcode,.ngc,.mpf,.h,.zip,.pdf" style="display:none" onchange="anadirProgramas(this.files); this.value=''">
+                <input type="file" id="mvArchivos" multiple accept=".nc,.txt,.iso,.cnc,.tap,.gcode,.ngc,.mpf,.h,.zip,.pdf,.odt,.docx,.doc,.rtf" style="display:none" onchange="anadirProgramas(this.files); this.value=''">
                 <button class="btn-action" onclick="document.getElementById('mvArchivos').click()" title="Los programas de los alumnos (.nc, .txt…), o directamente el .zip que descarga Aules con «Descargar todas las entregas»: cada alumno sale del nombre de su carpeta. Si entregan el 🧾 informe del Simulador (.pdf), se comprueba que coincide con el programa">📂 Añadir programas o zip de Aules…</button>
                 <button class="btn-action sec" onclick="vaciarMasiva()">🗑 Vaciar</button>
                 <span class="mv-sep"></span>
@@ -1606,10 +1629,10 @@ OTHER DEALINGS IN THE FONT SOFTWARE.</pre>
             </div>
             <label class="hoja-larga">Enunciado<textarea id="hj_enunciado" rows="3"></textarea></label>
             <div class="hoja-checks">
-                <label><input type="checkbox" id="hj_tabla"> Añadir tabla de coordenadas en blanco para rellenar</label>
+                <label title="Los contornos exteriores, los interiores, las cotas y las entradas con los colores de la pantalla del Calcador. Sin marcar, todo en negro."><input type="checkbox" id="hj_color"> Imprimir el plano en color (los colores del Calcador)</label>
                 <label><input type="checkbox" id="hj_rayado"> Añadir hoja rayada para escribir el programa</label>
             </div>
-            <p class="ctx-nota">El plano sale con las cotas activas (automáticas y manuales), el cero pieza y las entradas, a 1:1 si cabe en A4; si no, a la escala normalizada que quepa, indicada en el cajetín. La línea del alumno queda en blanco. Estos datos se recuerdan para el siguiente ejercicio.</p>
+            <p class="ctx-nota">El plano sale con las cotas activas (automáticas y manuales), el cero pieza y las entradas, a 1:1 si cabe en A4; si no, ajustado al papel, y en el cajetín pone «Escala: ajustada (las cotas mandan)». La línea del alumno queda en blanco. En color, el plano sale con los colores de la pantalla; si no, en negro. Estos datos se recuerdan para el siguiente ejercicio.</p>
             <div class="btn-row" style="margin-top:10px">
                 <button class="btn-action sec" onclick="cerrarHoja()">Cancelar</button>
                 <button class="btn-action" onclick="imprimirHoja()">🖨 Imprimir</button>
@@ -7160,6 +7183,7 @@ function textoTabla(modo) {
         });
         if (d.grupos.length) zLinea(`G0 Z${zSeg}`);
         if (modal === 'G16') lineas.push('G15');
+        if (tActual !== null) lineas.push('M05', 'M30');
         return lineas.join('\n') + '\n';
     }
     const sep = modo === 'csv' ? ';' : '\t';
@@ -9060,8 +9084,8 @@ function borrarCotaManual(id) {
 //  HOJA DE EJERCICIO (A4 con cajetín, para el alumno)
 // ════════════════════════════════════════════════
 let cfgHoja = { titulo:'', num:'', grupo:'', fecha:'', material:'Madera', espesor:'', herramienta:'', centro:'', orient:'h',
-                prog:'libre', reqEntrada:false, reqSentido:false, enunciado:'Programa en código ISO el contorno de la pieza tomando como origen el cero pieza indicado en el plano.', tabla:true, rayado:false };
-const CAMPOS_HOJA = ['titulo', 'num', 'grupo', 'fecha', 'material', 'espesor', 'herramienta', 'centro', 'orient', 'prog', 'enunciado', 'tabla', 'rayado'];
+                prog:'libre', reqEntrada:false, reqSentido:false, enunciado:'Programa en código ISO el contorno de la pieza tomando como origen el cero pieza indicado en el plano.', rayado:false, color:false };
+const CAMPOS_HOJA = ['titulo', 'num', 'grupo', 'fecha', 'material', 'espesor', 'herramienta', 'centro', 'orient', 'prog', 'enunciado', 'rayado', 'color'];
 // Requisitos del ejercicio para la corrección (propios de cada ejercicio, como la programación pedida)
 function requisitoValido() { if (!['libre', 'g90', 'g91', 'mix', 'polar'].includes(cfgHoja.prog)) cfgHoja.prog = 'libre'; if (!['cualquiera', 'g4142', 'contorno40', 'centro40'].includes(cfgHoja.comp)) cfgHoja.comp = 'cualquiera'; if (!['h', 'v'].includes(cfgHoja.orient)) cfgHoja.orient = 'h'; }
 function requisitosPorDefecto() { cfgHoja.prog = 'libre'; cfgHoja.reqEntrada = false; cfgHoja.reqSentido = false; cfgHoja.comp = 'cualquiera'; }
@@ -9099,50 +9123,36 @@ function imprimirHoja() {
     const chk = document.getElementById('chkCotasSVG'), antes = chk.checked;
     chk.checked = true;
     let svg = '';
-    try { svg = exportarSVG(true, false) || ''; } finally { chk.checked = antes; }
+    try { svg = exportarSVG(true, !!H.color) || ''; } finally { chk.checked = antes; }
     if (!svg) { snack('No se ha podido generar el plano'); return; }
     svg = svg.replace(/^<\?xml[^>]*>\s*/, '');
     const W = parseFloat((svg.match(/width="([\d.]+)mm"/) || [])[1]), Hh = parseFloat((svg.match(/height="([\d.]+)mm"/) || [])[1]);
     const apaisada = H.orient !== 'v', pw = apaisada ? 297 : 210, ph = apaisada ? 210 : 297;
     const altoCaj = 34, altoEnun = H.enunciado.trim() ? 16 : 0;
     const dispW = pw - 20 - 8, dispH = ph - 20 - altoCaj - altoEnun - 10;
-    const k = [1, 2, 2.5, 5, 10, 20, 50].find(k => W / k <= dispW && Hh / k <= dispH) || 50;
-    const escala = k === 1 ? '1:1' : '1:' + fmt(k, 1);
-    svg = svg.replace(/width="[\d.]+mm"/, `width="${(W / k).toFixed(3)}mm"`).replace(/height="[\d.]+mm"/, `height="${(Hh / k).toFixed(3)}mm"`);
+    // a 1:1 si cabe; si no, ajustado al hueco (con un pequeño margen): la escala no es exacta y en el cajetín pone «ajustada»
+    const k = W <= dispW && Hh <= dispH ? 1 : Math.max(W / (dispW - 4), Hh / (dispH - 4));
+    const ajustada = k > 1, escala = ajustada ? 'ajustada (las cotas mandan)' : '1:1';
+    svg = ajustada ? svg.replace(/width="[\d.]+mm"/, 'width="100%"').replace(/height="[\d.]+mm"/, 'height="100%"')
+                   : svg.replace(/width="[\d.]+mm"/, `width="${(W / k).toFixed(3)}mm"`).replace(/height="[\d.]+mm"/, `height="${(Hh / k).toFixed(3)}mm"`);
     const esc = t => String(t || '').replace(/&/g, '&amp;').replace(/</g, '&lt;');
-    // Filas en blanco de la tabla (orden de mecanizado: exteriores y luego interiores)
-    const tipos = tiposResueltos();
-    const lista = contornos.map((c, i) => ({ c, i })).filter(o => o.c.pts.length >= 2).sort((a, b) => (rangoMecanizado(tipos[a.i], contornos[a.i]) - rangoMecanizado(tipos[b.i], contornos[b.i])) || a.i - b.i);
-    const polar = H.prog === 'polar';
-    const cab = ['N', 'G', polar ? 'Radio (X)' : 'X', polar ? 'Ángulo (Y)' : 'Y', 'I', 'J', 'Observaciones'];
-    let filas = '';
-    lista.forEach(({ c, i }, k2) => {
-        filas += `<tr class="g"><td colspan="${cab.length}">Contorno ${k2 + 1} · ${esGrabado(c) ? 'grabado' : tipos[i] === 'interior' ? 'interior (hueco)' : 'exterior'} — entrada E${k2 + 1}</td></tr>`;
-        const n = tramos(c).length + 1;
-        for (let r = 0; r < n; r++) filas += `<tr>${cab.map(() => '<td></td>').join('')}</tr>`;
-    });
     const rayas = Array.from({ length: apaisada ? 26 : 38 }, () => '<div class="raya"></div>').join('');
     const html = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>${esc(H.titulo)} — hoja de ejercicio</title>
 <style>
   @page { size: A4 ${apaisada ? 'landscape' : 'portrait'}; margin: 10mm; }
   * { box-sizing: border-box; }
-  body { margin: 0; font-family: 'Segoe UI', Arial, sans-serif; color: #111; }
+  body { margin: 0; font-family: 'Segoe UI', Arial, sans-serif; color: #111; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .pag { width: ${pw - 20}mm; height: ${ph - 20}mm; border: 0.5mm solid #111; padding: 4mm; display: flex; flex-direction: column; page-break-after: always; }
   .pag:last-child { page-break-after: auto; }
   .enun { height: ${altoEnun}mm; font-size: 10.5pt; line-height: 1.35; border-bottom: 0.25mm solid #999; padding-bottom: 2mm; margin-bottom: 2mm; overflow: hidden; }
-  .dib { flex: 1; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  .dib { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  .dib svg[width="100%"] { display: block; padding: 1mm; }
   table.caj { width: 100%; border-collapse: collapse; height: ${altoCaj}mm; font-size: 8.5pt; }
   table.caj td { border: 0.35mm solid #111; padding: 1mm 2mm; vertical-align: top; }
   table.caj .et { display: block; font-size: 6.5pt; color: #555; text-transform: uppercase; letter-spacing: .03em; }
   table.caj .tit { font-size: 15pt; font-weight: 700; }
   table.caj .v { font-size: 10pt; font-weight: 600; }
   h2 { font-size: 13pt; margin: 0 0 3mm; }
-  table.tc { width: 100%; border-collapse: collapse; font-size: 9pt; }
-  table.tc th { border: 0.3mm solid #111; background: #eee; padding: 1mm; font-size: 8pt; }
-  table.tc td { border: 0.25mm solid #777; height: 6.5mm; }
-  table.tc tr.g td { background: #f3f3f3; font-weight: 600; font-size: 8pt; height: auto; padding: 0.8mm 2mm; }
-  table.tc th:nth-child(1), table.tc th:nth-child(2) { width: 12%; }
-  table.tc th:last-child { width: 26%; }
   .raya { border-bottom: 0.25mm solid #bbb; height: 6.5mm; }
   .cab2 { display: flex; justify-content: space-between; font-size: 9pt; margin-bottom: 3mm; }
 </style></head><body>
@@ -9152,12 +9162,10 @@ function imprimirHoja() {
   <table class="caj">
     <tr><td colspan="3"><span class="et">Ejercicio</span><span class="tit">${esc(H.titulo)}</span></td><td style="width:18%"><span class="et">Nº</span><span class="tit">${esc(H.num)}</span></td></tr>
     <tr><td colspan="2"><span class="et">Alumno/a</span>&nbsp;</td><td><span class="et">Curso / grupo</span><span class="v">${esc(H.grupo)}</span></td><td><span class="et">Fecha</span><span class="v">${esc(H.fecha)}</span></td></tr>
-    <tr><td><span class="et">Material</span><span class="v">${esc(H.material)}</span></td><td><span class="et">Espesor</span><span class="v">${esc(H.espesor)}${H.espesor && !/mm/i.test(H.espesor) ? ' mm' : ''}</span></td><td><span class="et">Herramienta${variasHerramientas() ? 's' : ''}</span><span class="v">${variasHerramientas() ? textoHerramientasHoja() : esc(H.herramienta)}</span></td><td><span class="et">Escala</span><span class="v">${escala}</span></td></tr>
+    <tr><td><span class="et">Material</span><span class="v">${esc(H.material)}</span></td><td><span class="et">Espesor</span><span class="v">${esc(H.espesor)}${H.espesor && !/mm/i.test(H.espesor) ? ' mm' : ''}</span></td><td><span class="et">Herramienta${variasHerramientas() ? 's' : ''}</span><span class="v">${variasHerramientas() ? textoHerramientasHoja() : esc(H.herramienta)}</span></td><td><span class="et">Escala</span><span class="v"${ajustada ? ' style="font-size:8.5pt"' : ''}>${escala}</span></td></tr>
     <tr><td colspan="2"><span class="et">Programación</span><span class="v">Coordenadas ${esc(PROG_TXT[H.prog] || '')}</span></td><td><span class="et">Cotas en</span><span class="v">mm</span></td><td><span class="et">Centro / profesor</span><span class="v">${esc(H.centro)}</span></td></tr>
   </table>
 </div>
-${H.tabla ? `<div class="pag"><div class="cab2"><h2>Tabla de coordenadas — ${esc(H.titulo)}</h2><span>Alumno/a: ______________________ &nbsp; Coordenadas ${esc(PROG_TXT[H.prog] || '')}</span></div>
-  <table class="tc"><thead><tr>${cab.map(c => `<th>${c}</th>`).join('')}</tr></thead><tbody>${filas}</tbody></table></div>` : ''}
 ${H.rayado ? `<div class="pag"><div class="cab2"><h2>Programa ISO — ${esc(H.titulo)}</h2><span>Alumno/a: ______________________</span></div>${rayas}</div>` : ''}
 <script>window.onload = () => setTimeout(() => window.print(), 250);<\/script>
 </body></html>`;
@@ -9165,7 +9173,7 @@ ${H.rayado ? `<div class="pag"><div class="cab2"><h2>Programa ISO — ${esc(H.ti
     if (!w) { snack('El navegador ha bloqueado la ventana de impresión: permite las ventanas emergentes para este archivo'); return; }
     w.document.open(); w.document.write(html); w.document.close();
     cerrarHoja();
-    snack(`Hoja de ejercicio a escala ${escala}` + (k > 1 ? ' (la pieza no cabía a 1:1)' : ''));
+    snack(ajustada ? 'Hoja de ejercicio: la pieza no cabía a 1:1 y el plano se ajusta al papel (escala ajustada: las cotas mandan)' : 'Hoja de ejercicio a escala 1:1');
 }
 
 // ════════════════════════════════════════════════
@@ -9322,6 +9330,7 @@ function interpretarISO(texto) {
     const usaM06 = /(^|[^A-Z0-9])M0?6(?![0-9])/i.test(texto.replace(/\([^)]*\)/g, ' ').replace(/;.*$/gm, ' '));
     let pos = { x:0, y:0 }, z = null, hayZ = /(^|[^A-Z(])Z\s*[-+.\d]/i.test(texto.replace(/\([^)]*\)/g, '').replace(/;.*$/gm, ''));
     let hayF = false, avisoF = false;
+    const fin = { m:null, li:null, et:'', husillo:false, despues:null, arranque:null, numeros:[] };   // el final del programa y los números de bloque
     const lineas = texto.replace(/\r/g, '').split('\n');
     const nota = (tipo, linea, msg, extra) => notas.push(Object.assign({ tipo, linea, msg }, extra || {}));
     const ignorar = (cod, linea, n) => { if (!ignorados.has(cod)) ignorados.set(cod, []); ignorados.get(cod).push(n || ('línea ' + (linea + 1))); };
@@ -9333,6 +9342,8 @@ function interpretarISO(texto) {
         const palabras = [...t.matchAll(/([A-Z])\s*([+-]?(?:\d+\.?\d*|\.\d+))/g)].map(m => ({ l:m[1], v:parseFloat(m[2]), s:m[2] }));
         if (!palabras.length) return;
         const nPal = palabras.find(w => w.l === 'N'), etiqueta = nPal ? 'N' + nPal.s : 'línea ' + (li + 1);
+        if (nPal) fin.numeros.push({ n:nPal.v, li, etiqueta });
+        if (fin.m !== null && !fin.despues && palabras.some(w => w.l !== 'N')) fin.despues = { li, etiqueta };
         const val = l => { const w = palabras.filter(p => p.l === l); return w.length ? w[w.length - 1].v : undefined; };
         // Funciones G del bloque
         palabras.filter(w => w.l === 'G').forEach(w => {
@@ -9373,7 +9384,8 @@ function interpretarISO(texto) {
                   est.T = est.Tsel; est.husillo = false; est.tras06 = true;
               }
           }
-          if (Ms.includes(3) || Ms.includes(4)) est.husillo = true;
+          if (Ms.includes(3) || Ms.includes(4)) { est.husillo = true; if (fin.m === null) fin.arranque = { li, etiqueta, m: Ms.includes(4) ? 'M04' : 'M03', nSegs: segs.length }; }
+          if ((Ms.includes(2) || Ms.includes(30)) && fin.m === null) { fin.m = Ms.includes(30) ? 30 : 2; fin.li = li; fin.et = etiqueta; fin.husillo = est.husillo === true && !Ms.includes(5); fin.arranqueAntes = fin.arranque; fin.z = z; }
         }
         if (palabras.some(w => w.l === 'F')) hayF = true;
         if (est.ciclo) return; // posiciones de un ciclo fijo: no se interpretan
@@ -9442,6 +9454,34 @@ function interpretarISO(texto) {
     });
     ignorados.forEach((donde, cod) => nota('aviso', null, `${cod} no se interpreta (${donde.slice(0, 4).join(', ')}${donde.length > 4 ? '…' : ''}); si define parte del recorrido, esa parte no se ha comparado.`));
     if (comaDecimal.length) nota('aviso', comaDecimal[0], `Coma decimal en ${comaDecimal.length === 1 ? 'la línea ' + (comaDecimal[0] + 1) : comaDecimal.length + ' líneas (la primera, la ' + (comaDecimal[0] + 1) + ')'} (por ejemplo «X10,5»): el control no la acepta, hay que escribir punto (X10.5). Se ha leído como punto.`);
+    // ── El final del programa ──
+    const ultimaLinea = (() => { for (let k = lineas.length - 1; k >= 0; k--) if (lineas[k].replace(/\([^)]*\)/g, '').replace(/;.*$/, '').trim()) return k; return null; })();
+    const hayCorte = segs.some(sg => sg.corte);
+    // husillo arrancado después del último corte (y sin pararlo): «N22 M03» al final
+    const arr = fin.m === null ? fin.arranque : fin.arranqueAntes, ultCorte = segs.reduce((k, sg, j) => sg.corte ? j : k, -1);
+    const arrancaAlFinal = hayCorte && arr && arr.nSegs > ultCorte && (fin.m === null ? est.husillo === true : fin.husillo);
+    if (arrancaAlFinal) nota('error', arr.li, `${arr.etiqueta}: ${arr.m} arranca el husillo, y el programa ya ha terminado de cortar. Para terminar se escribe M05 (parar el husillo) y M30 (fin de programa), o M02.`, { cat:'seguridad', pista:'al final: G0 Z20 · M05 · M30' });
+    if (fin.m === null && hayCorte && fin.arranque && !arrancaAlFinal) nota('error', ultimaLinea, 'El programa no termina: falta el fin de programa, M05 (parar el husillo) y M30 (o M02).', { cat:'seguridad', pista:'al final: G0 Z20 · M05 · M30' });
+    if (fin.m === 30 && fin.husillo && !arrancaAlFinal) nota('aviso', fin.li, `${fin.et}: M30 con el husillo en marcha: escribe antes M05 para pararlo (M30 lo para en muchas máquinas, pero conviene escribirlo).`);
+    if (fin.despues) nota('aviso', fin.despues.li, `${fin.despues.etiqueta}: va después del fin de programa (M${String(fin.m).padStart(2, '0')} en ${fin.et}): la máquina termina ahí y no lo ejecuta.`);
+    // la fresa, arriba al terminar (los programas con Z)
+    const zFin = fin.m !== null ? fin.z : z, lFin = fin.m !== null ? fin.li : ultimaLinea, eFin = fin.m !== null ? fin.et : 'Al final';
+    if (hayZ && hayCorte && zFin !== null && zFin !== undefined) {
+        if (zFin < -1e-9) nota('error', lFin, `${eFin}: el programa termina con la fresa dentro de la pieza (Z${fmt(zFin, 3)}). Antes del fin, sube a la altura de seguridad (G0 Z20).`, { cat:'seguridad', pista:'al final: G0 Z20 · M05 · M30' });
+        else if (zFin < 5 - 1e-9) nota('aviso', lFin, `${eFin}: el programa termina con la fresa abajo (Z${fmt(zFin, 3)}): antes del fin, sube a la altura de seguridad (G0 Z20).`);
+    }
+    // bajar en diagonal: entrar en el material a la vez que se mueve en X/Y, desde arriba o con mucha pendiente (una rampa suave, de pocos grados, sí vale)
+    if (hayZ) {
+        const diag = segs.filter(sg => sg.corte && !sg.rapido && sg.z0 !== null && sg.z1 !== null && sg.z1 < -1e-9 && sg.z1 < sg.z0 - 1e-9 && dist(sg.p1, sg.p2) > 1e-6
+            && (sg.z0 > 1e-9 || Math.atan2(sg.z0 - sg.z1, dist(sg.p1, sg.p2)) > 15 * Math.PI / 180));
+        if (diag.length) { const d0 = diag[0]; nota('aviso', d0.linea, `${d0.etiqueta}: baja en diagonal, de Z${fmt(d0.z0, 3)} a Z${fmt(d0.z1, 3)} a la vez que se mueve en X/Y${diag.length > 1 ? ` (y ${diag.length - 1} más)` : ''}. La fresa no corta bien de punta en diagonal: primero se baja en vertical, con el avance de penetración (G1 Z… F300), y después se corta en X/Y. (Una rampa suave, de pocos grados, sí es una forma de entrar.)`); }
+    }
+    // ── Los números de bloque (si los hay): de 10 en 10 y siempre creciendo ──
+    if (fin.numeros.length >= 3) {
+        const N = fin.numeros, baja = N.find((x, k) => k && x.n <= N[k - 1].n);
+        if (baja) { const k = N.indexOf(baja); nota('aviso', baja.li, `${baja.etiqueta}: los números de bloque tienen que ir creciendo, y este va después de ${N[k - 1].etiqueta}${baja.n === N[k - 1].n ? ' (repetido)' : ''}.`); }
+        else if (N.every((x, k) => !k || x.n - N[k - 1].n === 1)) nota('aviso', N[0].li, `Los números de bloque van de 1 en 1 (${N[0].etiqueta}, ${N[1].etiqueta}, ${N[2].etiqueta}…): es mejor de 10 en 10 (N10, N20, N30…), así se pueden intercalar líneas sin renumerar el programa.`);
+    }
     notas.forEach(n => { if (typeof n.seg === 'number') n.seg = segs[n.seg]; });      // el «seg» de un aviso es el tramo, no su posición
     return { segs, notas, hayZ, lineas, movZ, compFinal:est.comp };
 }
@@ -11241,12 +11281,13 @@ function sha256Hex(texto) {
 }
 // El programa se compara sin tener en cuenta los finales de línea ni los espacios del final
 const normalizarPrograma = t => String(t || '').replace(/\r\n?/g, '\n').split('\n').map(l => l.replace(/\s+$/, '')).join('\n').replace(/\n+$/, '');
-// Código de comprobación: resume el programa y lo que dice el informe. Si se cambia algo (el programa, el nombre,
+// Código de comprobación: resume el programa y lo que dice el informe (y, en el del Tutor, su registro de Practicar). Si se cambia algo (el programa, el nombre,
 // la fecha o el resultado), el código ya no coincide. Lo calculan igual el Simulador (al crear el informe) y el
 // Corrector (al leerlo).
 function codigoInforme(d) {
     const base = JSON.stringify([d.v || 1, d.alumno || '', d.grupo || '', d.ejercicio || '', d.archivo || '', d.fecha || '',
-        sha256Hex(normalizarPrograma(d.programa)), d.errores | 0, d.avisos | 0, d.plano ? [d.plano.pc, d.plano.mal] : null, 'SuiteCNC']);
+        sha256Hex(normalizarPrograma(d.programa)), d.errores | 0, d.avisos | 0, d.plano ? [d.plano.pc, d.plano.mal] : null, 'SuiteCNC']
+        .concat(d.tutor ? [sha256Hex(JSON.stringify(d.tutor))] : []));     // informe de ✍ Practicar del Tutor: también su registro
     return sha256Hex(base).slice(0, 12).toUpperCase().replace(/(.{4})(?=.)/g, '$1-');
 }
 const huellaPrograma = t => sha256Hex(normalizarPrograma(t)).slice(0, 8).toUpperCase();
@@ -11351,6 +11392,119 @@ function anotarEntrega(dest, ruta, bytes, alumno) {
     dest.push({ alumno: alumno || nombreAlumno(base.replace(/^.*?_\d+_assign(?:submission|feedback)_[a-z]*_?/i, '')), archivo:base.replace(/^.*?_\d+_assign(?:submission|feedback)_(?:file_)?/i, ''), tipo:'programa', texto:textoDeBytes(bytes) });
     return true;
 }
+// ── Corrección masiva: programas entregados en un documento (Word, LibreOffice, RTF) en lugar de en texto ──
+// Se saca el texto del documento y se corrige igual, pero se avisa de que el formato no es el pedido (.txt, .nc o .gcode).
+const EXT_DOCUMENTO = /\.(odt|ott|fodt|docx|docm|dotx|doc|rtf|wpd)$/i;
+const FORMATO_PEDIDO = 'debe ser un archivo de texto (.txt, .nc o .gcode)';
+// Lo que el procesador de textos cambia al escribir: guiones largos, espacios duros, comillas tipográficas, «ﬁ»…
+function limpiarTextoDocumento(t) {
+    return String(t).replace(/[‐-―−﹣－]/g, '-').replace(/[  -​  　]/g, ' ')
+        .replace(/[‘’‚′]/g, "'").replace(/[“”„″]/g, '"').replace(/…/g, '...')
+        .replace(/[‌‍⁠﻿­]/g, '').replace(/\r\n?/g, '\n').replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+}
+// Recorre el XML de un documento: cada párrafo, una línea
+function textoXMLDocumento(xml, tipo) {
+    const d = new DOMParser().parseFromString(xml, 'application/xml'); if (d.getElementsByTagName('parsererror').length) return '';
+    let out = '';
+    const ir = n => {
+        if (n.nodeType === 3) { if (tipo === 'odt') out += n.nodeValue; return; }
+        if (n.nodeType !== 1) return;
+        const l = n.localName;
+        if (tipo === 'odt') {
+            if (l === 's') { out += ' '.repeat(Math.max(1, parseInt(n.getAttribute('text:c') || n.getAttribute('c') || '1', 10) || 1)); return; }
+            if (l === 'tab') { out += '\t'; return; } if (l === 'line-break') { out += '\n'; return; }
+            if (l === 'annotation' || l === 'note-citation' || l === 'tracked-changes' || l === 'sequence-decls') return;
+            if (l === 'note') return;
+        } else {
+            if (l === 't') { out += n.textContent; return; } if (l === 'tab') { out += '\t'; return; } if (l === 'br' || l === 'cr') { out += '\n'; return; }
+            if (l === 'delText' || l === 'instrText' || l === 'del' || l === 'commentReference' || l === 'footnoteReference') return;
+        }
+        for (const c of n.childNodes) ir(c);
+        if (l === 'p' || l === 'h') out += '\n';
+    };
+    const cuerpo = tipo === 'odt' ? (d.getElementsByTagNameNS('*', 'text')[0] || d.documentElement) : (d.getElementsByTagNameNS('*', 'body')[0] || d.documentElement);
+    ir(cuerpo); return out;
+}
+// RTF (WordPad, TextEdit): sin grupos de control, con \par, \tab, \'hh y \uN
+function textoDeRTF(r) {
+    let out = '', i = 0, salto = 0; const pila = [], DESTINOS = /^(fonttbl|colortbl|stylesheet|info|pict|header|footer|headerl|headerr|footerl|footerr|object|themedata|colorschememapping|datastore|latentstyles|listtable|listoverridetable|rsidtbl|generator|xmlnstbl|mmathPr)$/;
+    let ignorar = false, uc = 1;
+    while (i < r.length) {
+        const c = r[i];
+        if (c === '{') { pila.push({ ignorar, uc }); i++; if (r.startsWith('\\*', i)) ignorar = true; continue; }
+        if (c === '}') { const p = pila.pop() || { ignorar:false, uc:1 }; ignorar = p.ignorar; uc = p.uc; i++; continue; }
+        if (c === '\\') {
+            const n = r[i + 1];
+            if (n === '\\' || n === '{' || n === '}') { if (!ignorar) out += n; i += 2; continue; }
+            if (n === "'") { if (!ignorar && salto <= 0) out += new TextDecoder('windows-1252').decode(new Uint8Array([parseInt(r.substr(i + 2, 2), 16) || 32])); else salto--; i += 4; continue; }
+            if (n === '\n' || n === '\r') { if (!ignorar) out += '\n'; i += 2; continue; }
+            const m = /^([a-zA-Z]+)(-?\d+)? ?/.exec(r.slice(i + 1, i + 40));
+            if (!m) { i += 2; continue; }
+            const w = m[1], v = m[2]; i += 1 + m[0].length;
+            if (DESTINOS.test(w)) { ignorar = true; continue; }
+            if (ignorar) continue;
+            if (w === 'par' || w === 'line' || w === 'row' || w === 'sect' || w === 'page') out += '\n';
+            else if (w === 'tab' || w === 'cell') out += '\t';
+            else if (w === 'uc') uc = +v || 0;
+            else if (w === 'u') { out += String.fromCharCode((+v + 65536) % 65536); salto = uc; }
+            else if (w === 'emdash' || w === 'endash') out += '-';
+            continue;
+        }
+        if (c === '\r' || c === '\n') { i++; continue; }
+        if (!ignorar) { if (salto > 0) salto--; else out += c; }
+        i++;
+    }
+    return out;
+}
+// Word antiguo (.doc, binario OLE): no se interpreta el formato; se busca el texto (en 8 bits o en UTF-16) que parece un programa
+function textoDeDOC(b) {
+    const trozos = [];
+    const buscar = txt => { const re = /[^\x00-\x08\x0B\x0C\x0E-\x1F\x7F�\uD800-\uDFFF]{6,}/g; let m; while ((m = re.exec(txt))) trozos.push(m[0]); };
+    buscar(new TextDecoder('windows-1252').decode(b));
+    const u16 = new TextDecoder('utf-16le').decode(b.length % 2 ? b.subarray(0, b.length - 1) : b); buscar(u16);
+    const linea = l => /^\s*(N\d+\s*)?([GMTSFXYZIJR]-?[\d.]|\(|;|%)/i.test(l);
+    let mejor = '', puntos = 0;
+    trozos.forEach(t => { const ls = t.replace(/\r\n?/g, '\n').split('\n'), p = ls.filter(linea).length; if (p > puntos) { puntos = p; mejor = ls; } });
+    if (!puntos || !pareceGcode(mejor.join('\n'))) return '';
+    let a = 0, z = mejor.length - 1; while (a < z && !linea(mejor[a])) a++; while (z > a && !linea(mejor[z])) z--;
+    return mejor.slice(a, z + 1).join('\n');
+}
+// El programa de un documento: { texto, formato } o null si no es un documento (o no se puede leer)
+async function programaDeDocumento(nombre, bytes) {
+    const ext = ((/\.([a-z0-9]+)$/i.exec(nombre) || [])[1] || '').toLowerCase();
+    const b = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
+    const pk = b[0] === 0x50 && b[1] === 0x4B, ole = b[0] === 0xD0 && b[1] === 0xCF && b[2] === 0x11 && b[3] === 0xE0;
+    const cab = new TextDecoder('latin1').decode(b.subarray(0, 64)), rtf = /^\s*\{\\rtf/.test(cab), fodt = /^\s*<\?xml/.test(cab) && /office:document/.test(new TextDecoder('utf-8').decode(b.subarray(0, 2000)));
+    if (!pk && !ole && !rtf && !fodt) return null;
+    const conExt = n => `${n}${ext && !new RegExp('\\.' + ext + '\\b', 'i').test(n) ? ` guardado como .${ext}` : ''}`;
+    let texto = '', formato = '';
+    if (pk) {
+        const ent = listarZip(b.slice().buffer), busca = n => ent.find(e => e.nombre === n);
+        const odt = busca('content.xml'), docx = busca('word/document.xml');
+        if (odt) { texto = textoXMLDocumento(textoDeBytes(await odt.leer()), 'odt'); formato = conExt('un documento de LibreOffice (.odt)'); }
+        else if (docx) { texto = textoXMLDocumento(textoDeBytes(await docx.leer()), 'docx'); formato = conExt('un documento de Word (.docx)'); }
+        else return null;
+    } else if (fodt) { texto = textoXMLDocumento(textoDeBytes(b), 'odt'); formato = conExt('un documento de LibreOffice (.fodt)'); }
+    else if (rtf) { texto = textoDeRTF(new TextDecoder('latin1').decode(b)); formato = conExt('un documento RTF (WordPad o TextEdit, .rtf)'); }
+    else { texto = textoDeDOC(b); formato = conExt('un documento de Word antiguo (.doc)') + (texto ? '; el texto se ha recuperado buscándolo dentro del archivo: revisa que el programa esté completo' : ''); }
+    texto = limpiarTextoDocumento(texto);
+    return { texto, formato: `Formato de archivo incorrecto: es ${formato}; ${FORMATO_PEDIDO}.` };
+}
+// Igual que anotarEntrega, pero si el archivo es un documento (por su extensión o por lo que lleva dentro, aunque se llame .nc o .txt)
+async function anotarEntregaDoc(dest, ruta, bytes, alumno) {
+    const base = ruta.split('/').pop();
+    if (EXT_DOCUMENTO.test(base) || EXT_PROGRAMA.test(base)) {
+        let doc = null; try { doc = await programaDeDocumento(base, bytes); } catch (e) { doc = null; }
+        if (doc) {
+            const al = alumno || nombreAlumno(base.replace(/^.*?_\d+_assign(?:submission|feedback)_[a-z]*_?/i, '')), ar = base.replace(/^.*?_\d+_assign(?:submission|feedback)_(?:file_)?/i, '');
+            // sin programa dentro (o ilegible): solo cuenta si el alumno no entrega nada más
+            if (!doc.texto || !pareceGcode(doc.texto)) { dest.push({ alumno:al, archivo:ar, tipo:'docsin', texto:'', formato:doc.formato + ' No se ha encontrado ningún programa dentro del documento.' }); return true; }
+            dest.push({ alumno: alumno || nombreAlumno(base.replace(/^.*?_\d+_assign(?:submission|feedback)_[a-z]*_?/i, '')), archivo:base.replace(/^.*?_\d+_assign(?:submission|feedback)_(?:file_)?/i, ''), tipo:'programa', texto:doc.texto, formato:doc.formato });
+            return true;
+        }
+    }
+    return anotarEntrega(dest, ruta, bytes, alumno);
+}
 async function entregasDeZip(ab, dest, ignorados, nivel) {
     const ent = listarZip(ab).filter(e => !/(^|\/)(__MACOSX|\.)/.test(e.nombre));
     // sin el formato de Aules: si los programas están en varias carpetas, cada carpeta es un alumno
@@ -11364,18 +11518,23 @@ async function entregasDeZip(ab, dest, ignorados, nivel) {
                 const sub = []; await entregasDeZip((await e.leer()).slice().buffer, sub, ignorados, 1);
                 sub.forEach(x => { if (alumno) x.alumno = alumno; dest.push(x); }); continue;
             }
-            if (!(EXT_PROGRAMA.test(e.nombre) || /\.(pdf|html?)$/i.test(e.nombre)) || e.tam > 2e7) { ignorados.push(e.nombre); continue; }
-            if (!anotarEntrega(dest, e.nombre, await e.leer(), alumno)) ignorados.push(e.nombre);
+            if (!(EXT_PROGRAMA.test(e.nombre) || EXT_DOCUMENTO.test(e.nombre) || /\.(pdf|html?)$/i.test(e.nombre)) || e.tam > 2e7) { ignorados.push(e.nombre); continue; }
+            if (!(await anotarEntregaDoc(dest, e.nombre, await e.leer(), alumno))) ignorados.push(e.nombre);
         } catch (err) { ignorados.push(e.nombre + ' (' + err.message + ')'); }
     }
+}
+// Del informe del Tutor (✍ Practicar): cómo ha escrito el programa
+function resumenTutor(inf) {
+    const t = inf && inf.tutor; if (!t || typeof t !== 'object') return '';
+    return ` · informe del Tutor: ${t.bien | 0} de ${t.total | 0} líneas a la primera, ${t.ayuda | 0} con fallos, ${t.vistas | 0} vistas, ${t.pistas | 0} pistas, nota orientativa ${String(t.nota).replace('.', ',')}`;
 }
 // Estado del informe de entrega de un alumno (texto corto y si está bien)
 function estadoInforme(it) {
     const inf = it.informe; if (!inf) return null;
     if (!inf.valido) return { ok:false, txt:'El informe de entrega se ha modificado: su código de comprobación no coincide' };
-    if (it.desdeInforme) return { ok:true, txt:`Programa tomado del informe de entrega (código ${inf.codigo}, ${inf.fecha})` };
+    if (it.desdeInforme) return { ok:true, txt:`Programa tomado del informe de entrega (código ${inf.codigo}, ${inf.fecha})` + resumenTutor(inf) };
     if (huellaPrograma(inf.programa) !== huellaPrograma(it.texto)) return { ok:false, txt:`El programa entregado no es el del informe de entrega (código ${inf.codigo}, ${inf.fecha})` };
-    return { ok:true, txt:`El informe de entrega coincide con el programa (código ${inf.codigo}, ${inf.fecha})` };
+    return { ok:true, txt:`El informe de entrega coincide con el programa (código ${inf.codigo}, ${inf.fecha})` + resumenTutor(inf) };
 }
 async function anadirProgramas(files) {
     const lista = [...files].filter(Boolean);
@@ -11385,23 +11544,23 @@ async function anadirProgramas(files) {
         try {
             if (/\.zip$/i.test(f.name)) { await entregasDeZip(await f.arrayBuffer(), ent, ignorados, 0); continue; }
             if (f.size > 2e7) { ignorados.push(f.name); continue; }
-            if (!anotarEntrega(ent, f.name, new Uint8Array(await f.arrayBuffer()), alumnoDeRuta(f.name))) ignorados.push(f.name);
+            if (!(await anotarEntregaDoc(ent, f.name, new Uint8Array(await f.arrayBuffer()), alumnoDeRuta(f.name)))) ignorados.push(f.name);
         } catch (e) { problemas.push(`${f.name}: ${e.message}`); }
     }
     // por alumno: sus programas (o el texto en línea si no hay archivo) y su informe de entrega
     const grupos = new Map();
     ent.forEach(x => { const k = (x.alumno || '').trim() || x.archivo; if (!grupos.has(k)) grupos.set(k, []); grupos.get(k).push(x); });
-    let n = 0, nInf = 0;
+    let n = 0, nInf = 0, nFmt = 0;
     grupos.forEach((xs, alumno) => {
-        let progs = xs.filter(x => x.tipo === 'programa'); if (!progs.length) progs = xs.filter(x => x.tipo === 'texto');
+        let progs = xs.filter(x => x.tipo === 'programa'); if (!progs.length) progs = xs.filter(x => x.tipo === 'texto'); if (!progs.length && !xs.some(x => x.tipo === 'informe')) progs = xs.filter(x => x.tipo === 'docsin');
         const infs = xs.filter(x => x.tipo === 'informe');
-        const items = progs.map(x => ({ alumno: progs.length > 1 ? `${alumno} · ${x.archivo}` : alumno, archivo:x.archivo, texto:x.texto }));
+        const items = progs.map(x => ({ alumno: progs.length > 1 ? `${alumno} · ${x.archivo}` : alumno, archivo:x.archivo, texto:x.texto, ...(x.formato ? { formato:x.formato } : {}) }));
         if (!items.length) infs.forEach(x => items.push({ alumno: infs.length > 1 ? `${alumno} · ${x.archivo}` : alumno, archivo:x.archivo, texto:x.informe.programa, informe:x.informe, desdeInforme:true }));
         else infs.forEach(x => { const it = items.find(i => huellaPrograma(i.texto) === huellaPrograma(x.informe.programa)) || items.find(i => i.archivo === x.informe.archivo) || (items.length === 1 ? items[0] : null); if (it && !it.informe) it.informe = x.informe; });
-        items.forEach(it => { corregirAlumno(it); masiva.lista.push(it); n++; if (it.informe) nInf++; });
+        items.forEach(it => { corregirAlumno(it); masiva.lista.push(it); n++; if (it.informe) nInf++; if (it.formato) nFmt++; });
     });
     corr = null; pintarMasiva();
-    snack(`${n} programa(s) añadido(s) y corregido(s)${nInf ? ` · ${nInf} con informe de entrega` : ''}${ignorados.length ? ` · ${ignorados.length} archivo(s) que no son programas, sin usar` : ''}`);
+    snack(`${n} programa(s) añadido(s) y corregido(s)${nInf ? ` · ${nInf} con informe de entrega` : ''}${nFmt ? ` · ⚠️ ${nFmt} en un formato de archivo incorrecto (documento en lugar de texto)` : ''}${ignorados.length ? ` · ${ignorados.length} archivo(s) que no son programas, sin usar` : ''}`);
     if (problemas.length) alert('No se han podido leer:\n\n' + problemas.join('\n'));
     if (ignorados.length) console.info('Archivos sin usar:', ignorados);
 }
@@ -11426,7 +11585,7 @@ function pintarMasiva() {
     document.querySelectorAll('#mvCab th[data-c]').forEach(th => th.querySelector('.fl').textContent = flecha(th.dataset.c));
     cuerpo.innerHTML = listaOrdenada().map(({ it, k }) => { const v = it.v;
         return `<tr class="mv-${v.veredicto}" data-k="${k}">
-            <td class="mv-al" title="${esc(it.archivo)}">${esc(it.alumno)}${(e => e ? ` <span class="mv-inf ${e.ok ? 'ok' : 'mal'}" title="${esc(e.txt)}">🧾${e.ok ? '' : '⚠️'}</span>` : '')(estadoInforme(it))}</td>
+            <td class="mv-al" title="${esc(it.archivo)}">${esc(it.alumno)}${(e => e ? ` <span class="mv-inf ${e.ok ? 'ok' : 'mal'}" title="${esc(e.txt)}">🧾${e.ok ? '' : '⚠️'}</span>` : '')(estadoInforme(it))}${it.formato ? ` <span class="mv-inf mal" title="${esc(it.formato)}">📄⚠️</span>` : ''}</td>
             <td>${VER_TXT[v.veredicto]}</td>
             ${v.veredicto === 'pendiente' ? '<td class="n" colspan="6" style="color:var(--text-muted)">se corregirá al abrir el ejercicio</td>' : v.veredicto === 'vacio' ? '<td class="n" colspan="4" style="color:var(--text-muted)">ningún movimiento de corte</td>' : `<td class="n">${v.errGeo + v.faltas || '·'}</td><td class="n">${v.incumple || '·'}</td><td class="n">${v.seguridad || '·'}</td><td class="n">${v.avisos || '·'}</td>`}
             ${v.veredicto === 'pendiente' ? '' : `<td class="n">${pct(v.cob)}</td>
@@ -11442,7 +11601,7 @@ function pintarMasiva() {
     if (!hayPieza()) { res.innerHTML = `<strong>${L.length}</strong> programa${L.length === 1 ? '' : 's'} en espera: pulsa <strong>📂 Abrir ejercicio…</strong> para corregirlos.`; return; }
     const n = L.length, bien = L.filter(it => it.v.veredicto === 'bien').length, sale = L.filter(it => it.v.veredicto === 'bien' || it.v.veredicto === 'nocumple').length;
     const media = L.reduce((a, it) => a + it.v.nota, 0) / n, aprob = L.filter(it => it.v.nota >= 5).length;
-    res.innerHTML = `<strong>${n}</strong> alumno${n === 1 ? '' : 's'} · la pieza sale bien en <strong>${sale}</strong>${hayRequisitos() ? ` · cumplen lo pedido <strong>${bien}</strong>` : ''} · nota media <strong>${nf(media, 1)}</strong> · aprueban <strong>${aprob}</strong> de ${n}`;
+    res.innerHTML = `<strong>${n}</strong> alumno${n === 1 ? '' : 's'} · la pieza sale bien en <strong>${sale}</strong>${hayRequisitos() ? ` · cumplen lo pedido <strong>${bien}</strong>` : ''} · nota media <strong>${nf(media, 1)}</strong> · aprueban <strong>${aprob}</strong> de ${n}${(f => f ? ` · <span style="color:#b0301f" title="Han entregado un documento (Word, LibreOffice…) en lugar de un archivo de texto">📄⚠️ formato de archivo incorrecto: <strong>${f}</strong></span>` : '')(L.filter(it => it.formato).length)}`;
 }
 // Ver el detalle de un alumno en la ventana de corrección (y volver)
 function verAlumno(k) {
@@ -11452,6 +11611,7 @@ function verAlumno(k) {
     masiva.viendo = k; masiva.textoVisto = it.texto;
     document.getElementById('crTexto').value = it.texto; ejecutarCorreccion();
     const b = document.getElementById('crVolver'); b.style.display = ''; b.textContent = `← Volver a la lista (${it.alumno})`;
+    if (it.formato) setTimeout(() => snack('⚠️ ' + it.formato), 400);
 }
 function volverAMasiva() {
     const k = masiva.viendo, it = masiva.lista[k];
@@ -11464,9 +11624,9 @@ function exportarCSVMasiva() {
     if (!masiva.lista.length) { snack('No hay programas en la lista'); return; }
     if (!hayPieza()) { snack('Abre antes el ejercicio (📂 Abrir ejercicio…)'); return; }
     const c = t => '"' + String(t).replace(/"/g, '""') + '"', d = v => String(v).replace('.', ',');
-    const filas = [['Alumno', 'Archivo', 'Veredicto', 'Errores de geometría', 'Incumplimientos de lo pedido', 'Errores de seguridad', 'Avisos', 'Contorno bien mecanizado (%)', 'Nota', 'Geometría', 'Lo pedido', 'Seguridad', 'Informe de entrega', 'Observaciones']];
+    const filas = [['Alumno', 'Archivo', 'Veredicto', 'Errores de geometría', 'Incumplimientos de lo pedido', 'Errores de seguridad', 'Avisos', 'Contorno bien mecanizado (%)', 'Nota', 'Geometría', 'Lo pedido', 'Seguridad', 'Informe de entrega', 'Formato del archivo', 'Observaciones']];
     listaOrdenada().forEach(({ it }) => { const v = it.v, obs = it.r && it.r.hallazgos ? it.r.hallazgos.filter(h => h.tipo === 'error').map(h => h.msg + (h.pista ? ' (Pista: ' + h.pista + ')' : '')).join(' | ') : (it.r && it.r.error) || '';
-        filas.push([it.alumno, it.archivo, VER_TXT[v.veredicto].replace(/^\S+\s/, ''), v.errGeo + v.faltas, v.incumple, v.seguridad, v.avisos, d(Math.round(v.cob * 1000) / 10), d(v.nota), d(v.desglose.geo), d(v.desglose.pedido), d(v.desglose.seg), (e => e ? e.txt : '')(estadoInforme(it)), obs]); });
+        filas.push([it.alumno, it.archivo, VER_TXT[v.veredicto].replace(/^\S+\s/, ''), v.errGeo + v.faltas, v.incumple, v.seguridad, v.avisos, d(Math.round(v.cob * 1000) / 10), d(v.nota), d(v.desglose.geo), d(v.desglose.pedido), d(v.desglose.seg), (e => e ? e.txt : '')(estadoInforme(it)), it.formato || 'Correcto', obs]); });
     const esNum = x => typeof x === 'number' || /^-?\d+(,\d+)?$/.test(String(x));
     const txt = '\ufeff' + filas.map((f, fi) => f.map(x => fi > 0 && esNum(x) ? String(x) : c(x)).join(';')).join('\r\n');
     descargar(txt, `${nombreProyecto()}_correccion.csv`, 'text/csv;charset=utf-8');
@@ -11514,6 +11674,7 @@ function imprimirInformes(ks) {
                 <div class="nota ${v.nota >= 5 ? 'ap' : 'su'}"><span>Nota orientativa</span><b>${nf(v.nota, 1)}</b></div></header>
             <div class="al"><span>Alumno/a:</span> <b>${esc(it.alumno)}</b> <span class="ar">(${esc(it.archivo)})</span></div>
             ${(e => e ? `<div class="ar" style="margin:-4px 0 8px;color:${e.ok ? '#1e7a46' : '#b0301f'}">🧾 ${esc(e.txt)}</div>` : '')(estadoInforme(it))}
+            ${it.formato ? `<div class="ar" style="margin:-4px 0 8px;color:#b0301f;font-weight:600">⚠️ ${esc(it.formato)}</div>` : ''}
             <div class="ver v-${v.veredicto}">${VER_TXT[v.veredicto]}${r.error ? ' — ' + esc(r.error) : ''}</div>
             <div class="dib">${r.segs ? svgCorreccion(r) : ''}<div class="ley"><i style="background:#1e9e5a"></i>correcto <i style="background:#d83a3a"></i>se mete en la pieza <i style="background:#e08a1e"></i>zona que sobra <i style="background:#f3a6a6"></i>sin mecanizar</div></div>
             <table class="des"><tr><th>Geometría</th><th>Lo pedido</th><th>Seguridad</th><th>Contorno bien mecanizado</th></tr>
@@ -12100,6 +12261,7 @@ function pintarBiblioteca() {
 function pintarSeleccionBib() {
     const b = document.getElementById('bibSelBarra'), n = bib.sel.size;
     b.style.display = n ? '' : 'none';
+    const bc = document.getElementById('bibColor'); if (bc) bc.checked = !!cfgHoja.color;
     document.getElementById('bibSelN').textContent = `${n} seleccionado${n === 1 ? '' : 's'}`;
 }
 function seleccionarVisiblesBib(todos) { if (todos) bibFiltrada().forEach(e => bib.sel.add(e.id)); else bib.sel.clear(); pintarBiblioteca(); }
@@ -12169,7 +12331,7 @@ async function imprimirLoteBib(ids, tipo) {
         for (const e of entradas) {
             capturado = null;
             abrirJSONDatos(JSON.parse(JSON.stringify(e.datos)));
-            if (tipo === 'hoja') { abrirHoja(); imprimirHoja(); cerrarHoja(); }
+            if (tipo === 'hoja') { cfgHoja.color = !!antes.cfgHoja.color; abrirHoja(); imprimirHoja(); cerrarHoja(); }
             else { abrirTabla(); document.getElementById('tbCont').value = 'todos'; document.getElementById('tbProg').value = cfgHoja.prog === 'libre' ? 'g90' : cfgHoja.prog; pintarTabla(); imprimirSolucion(); cerrarTabla(); }
             if (capturado) partes.push({ html: capturado, titulo: e.ficha.titulo });
         }
@@ -12289,7 +12451,7 @@ function parsearGcode3D(texto) {
     let ultimoGMocion = null;
     let comp = 40;        // G40 / G41 / G42 (modal)
     let husillo = false;  // M3/M4 en marcha, M5 parado
-    const meta = { lineaComp: null, compFinal: 40, fin: false, comaDecimal: [], noSoportados: [], ciclosIncr: null, cambios: [], g28: null };
+    const meta = { lineaComp: null, compFinal: 40, fin: false, comaDecimal: [], noSoportados: [], ciclosIncr: null, cambios: [], g28: null, numeros: [], arranque: null };
     // Herramienta: con M06 en el programa, la T se cambia en el M06 (T102 M06); sin M06, vale la T escrita
     const usaM06 = /(^|[^A-Z0-9])M0?6(?![0-9])/i.test(texto.replace(/\([^)]*\)/g, ' ').replace(/;.*$/gm, ' '));
     let tSel = null, tAct = null, tras06 = false;
@@ -12308,6 +12470,7 @@ function parsearGcode3D(texto) {
         // Espacios entre la letra y el número ("X 25") → "X25"
         l = l.replace(/([A-Za-z])\s+(?=[-+.\d])/g, '$1').replace(/([-+])\s+(?=[.\d])/g, '$1');
         const palabras = l.match(/[A-Za-z][-+]?(?:[0-9]+\.?[0-9]*|\.[0-9]+)/g) || [];
+        { const nW = palabras.find(p => /^N/i.test(p)); if (nW) meta.numeros.push({ n: parseFloat(nW.slice(1)), linea: idx+1, et: 'N' + nW.slice(1) }); }
         const letras = {};
         palabras.forEach(p => { const v = parseFloat(p.slice(1)); if (isFinite(v)) letras[p[0].toUpperCase()] = v; });
 
@@ -12345,10 +12508,10 @@ function parsearGcode3D(texto) {
         palabras.forEach(pw => {
             if (pw[0].toUpperCase() !== 'M') return;
             const m = Math.round(parseFloat(pw.slice(1)));
-            if (m === 3 || m === 4) { husillo = true; if (m === 4 && !meta.m04) meta.m04 = idx + 1; }
+            if (m === 3 || m === 4) { husillo = true; if (m === 4 && !meta.m04) meta.m04 = idx + 1; if (!meta.fin) meta.arranque = { linea: idx+1, m: m === 4 ? 'M04' : 'M03', nMoves: moves.length }; }
             else if (m === 5) husillo = false;
             else if (m === 6) { meta.cambios.push({ linea: idx+1, T: tSel, z, husillo }); if (tSel !== null) { tAct = tSel; husillo = false; tras06 = true; } }
-            else if (m === 30 || m === 2) { if (!meta.fin) meta.lineaFin = idx+1; meta.fin = true; }
+            else if (m === 30 || m === 2) { if (!meta.fin) { meta.lineaFin = idx+1; meta.mFin = m; meta.husilloFin = husillo; meta.zFin = z; meta.arranqueAntes = meta.arranque; } meta.fin = true; }
         });
         if ('F' in letras) ultimoF = letras.F * unidadFactor;   // modal; en G20 pulg/min → mm/min
 
@@ -12418,7 +12581,7 @@ function parsearGcode3D(texto) {
         moves.push(mov);
         x = nx; y = ny; z = nz;
     });
-    meta.compFinal = comp;
+    meta.compFinal = comp; meta.husilloFinal = husillo; meta.zFinal = z;
     moves.meta = meta;
     return moves;
 }
@@ -12808,6 +12971,30 @@ function tuGenerar() {
 //  Estado modal de una línea (para corregir lo que escribe el alumno)
 // ════════════════════════════════════════════════
 function tuEstado0() { return { abs: true, mot: null, comp: 40, unit: 1, F: null, S: null, T: null, x: 0, y: 0, z: null, ms: [], w: {}, gs: [], mov: null }; }
+// El orden de las palabras en un bloque, el de la norma (y el de los apuntes): N G X Y Z (I J K o R) F S T M (D H).
+// Varias G (G42 G1) o varias M seguidas valen en cualquier orden. Devuelve el motivo o null.
+const TU_ORDEN = 'NGXYZIJKRFSTMDH';
+function tuOrdenLetras(linea) {
+    let l = String(linea).replace(/\([^)]*\)/g, ' ').split(';')[0].trim().toUpperCase();
+    l = l.replace(/(\d),(\d)/g, '$1.$2').replace(/([A-Z])\s+(?=[-+.\d])/g, '$1').replace(/([-+])\s+(?=[.\d])/g, '$1');
+    const pal = l.match(/[A-Z][-+]?(?:\d+\.?\d*|\.\d+)/g) || [], rango = p => TU_ORDEN.indexOf(p[0]);
+    if (pal.some(p => rango(p) < 0)) return null;
+    if (pal.every((p, i) => !i || rango(pal[i - 1]) <= rango(p))) return null;
+    const bien = pal.map((p, i) => [p, i]).sort((a, b) => rango(a[0]) - rango(b[0]) || a[1] - b[1]).map(x => x[0]).join(' ');
+    return `El orden de las letras no es el de la norma: N G X Y Z (I J K o R) F S T M. Escríbelo así: ${bien}.`;
+}
+// Dos G del mismo grupo en una línea se anulan (G0 G1, G1 G2, G90 G91, G41 G42…): la línea no vale. Devuelve el motivo o null.
+const TU_GRUPOS_G = [[[0, 1, 2, 3], 'solo una G de movimiento por línea'], [[90, 91], 'solo una por línea: absolutas o incrementales'],
+    [[40, 41, 42], 'solo una de compensación por línea'], [[20, 21, 70, 71], 'solo una de unidades por línea'], [[17, 18, 19], 'solo una de plano por línea']];
+function tuMismoGrupo(linea) {
+    const l = String(linea).replace(/\([^)]*\)/g, ' ').split(';')[0].toUpperCase().replace(/G\s+(?=\d)/g, 'G');
+    const gs = (l.match(/G\d+(?:\.\d+)?/g) || []).map(g => Math.round(parseFloat(g.slice(1))));
+    for (const [grupo, txt] of TU_GRUPOS_G) {
+        const d = [...new Set(gs.filter(g => grupo.includes(g)))];
+        if (d.length > 1) { const n = d.map(g => 'G' + g); return `${n.slice(0, -1).join(', ')} y ${n[n.length - 1]} son del mismo grupo y se anulan: ${txt}.`; }
+    }
+    return null;
+}
 function tuAplicar(st0, linea) {
     const st = { ...st0, ms: [], w: {}, gs: [], mov: null, error: null };
     let l = String(linea).replace(/\([^)]*\)/g, ' ').split(';')[0].trim().toUpperCase();
@@ -12930,7 +13117,7 @@ function tuTextoActivo() {
     if (!TU.prog) return '';
     if (TU.modo === 'aprender') return TU.prog.texto;
     const p = TU.practica; if (!p) return '';
-    return TU.prog.lineas.slice(0, p.idx).map((l, i) => l.sep || l.titulo ? l.texto : (p.escritas[i] || l.cod)).join('\n') + '\n';
+    return TU.prog.lineas.slice(0, p.idx).map((l, i) => l.sep || l.titulo ? l.texto : p.junto && p.junto[i] !== undefined ? null : (p.escritas[i] || l.cod)).filter(x => x !== null).join('\n') + '\n';
 }
 function tuConstruirSim() {
     const texto = tuTextoActivo();
@@ -13067,7 +13254,8 @@ function tuPintarLista() {
     let h = '';
     for (let i = 0; i < hasta; i++) {
         const l = L[i], ex = TU.explic && TU.explic[i];
-        const cod = l.sep ? '' : l.titulo ? l.cod : (!apr && p.escritas[i] !== undefined ? p.escritas[i] : l.cod);
+        const junto = !apr && p && p.junto && p.junto[i] !== undefined;
+        const cod = l.sep ? '' : l.titulo ? l.cod : junto ? `; (en la línea ${p.junto[i] + 1})` : (!apr && p.escritas[i] !== undefined ? p.escritas[i] : l.cod);
         const abs = TU.verAbs && ex && ex.abs ? `<span class="tu-abs" title="En G91 cada número es lo que se mueve. Aquí la fresa queda, en absolutas, en ${tuEsc(ex.abs)}">→ ${tuEsc(ex.abs)}</span>` : '';
         const marca = !apr && p.estado[i] ? `<span class="tu-ok ${p.estado[i]}" title="${p.estado[i] === 'bien' ? 'Bien a la primera' : p.estado[i] === 'ayuda' ? 'Bien, después de algún fallo' : 'Vista con «Ver la línea»'}">${p.estado[i] === 'bien' ? '✓' : p.estado[i] === 'ayuda' ? '✓' : '👁'}</span>` : '';
         h += `<div class="tu-l${l.sep ? ' sep' : ''}${i === TU.sel ? ' sel' : ''}" data-i="${i}"><span class="tu-n">${i + 1}</span>${marca}<span class="tu-c"${l.sep || l.titulo ? '' : ` style="min-width:${TU.prog.ancho - 1}ch"`}>${l.sep ? '' : (l.titulo ? `<span class="tu-com">${tuEsc(cod)}</span>` : tuColorear(cod))}</span>${abs}${l.com ? `<span class="tu-com">; ${tuEsc(l.com)}</span>` : ''}</div>`;
@@ -13137,17 +13325,19 @@ function tuPestana(t) {
 function tuNuevaPractica(conservar) {
     const L = TU.prog ? TU.prog.lineas : [];
     const ant = conservar && TU.practica ? TU.practica : null;
-    const p = { idx: 0, escritas: {}, estado: {}, fallos: 0, intentos: 0, bien: 0, ayuda: 0, vistas: 0, borrador: '', msg: null, fin: false, esperadas: L.map(l => l.cod), fallosLinea: 0 };
+    const p = { idx: 0, escritas: {}, estado: {}, fallos: 0, intentos: 0, bien: 0, ayuda: 0, vistas: 0, pistas: 0, registro: {}, borrador: '', msg: null, fin: false, esperadas: L.map(l => l.cod), fallosLinea: 0 };
     if (ant) {      // se conserva lo hecho mientras el programa no cambie
         let k = 0; while (k < ant.idx && k < L.length && ant.esperadas[k] === L[k].cod) k++;
-        for (let i = 0; i < k; i++) { if (ant.escritas[i] !== undefined) p.escritas[i] = ant.escritas[i]; if (ant.estado[i]) p.estado[i] = ant.estado[i]; }
+        for (let i = 0; i < k; i++) { if (ant.escritas[i] !== undefined) p.escritas[i] = ant.escritas[i]; if (ant.estado[i]) p.estado[i] = ant.estado[i]; if (ant.registro && ant.registro[i]) p.registro[i] = ant.registro[i]; if (ant.junto && ant.junto[i] !== undefined) (p.junto = p.junto || {})[i] = ant.junto[i]; }
+        for (let i = k; i < L.length; i++) if (ant.junto && ant.junto[i] !== undefined && ant.junto[i] < k && ant.esperadas[i] === L[i].cod) { p.estado[i] = ant.estado[i]; p.escritas[i] = ''; (p.junto = p.junto || {})[i] = ant.junto[i]; }
+        p.pistas = Object.values(p.registro).filter(r => r.pista).length;
         p.idx = k; ['bien', 'ayuda', 'vistas'].forEach(c => p[c] = Object.values(p.estado).filter(v => v === c).length); p.fallos = ant.fallos;
     }
     TU.practica = p; tuSaltarAuto(); TU.enfocar = true;
 }
 function tuSaltarAuto() {
     const p = TU.practica, L = TU.prog.lineas;
-    while (p.idx < L.length && (L[p.idx].sep || L[p.idx].titulo)) p.idx++;
+    while (p.idx < L.length && (L[p.idx].sep || L[p.idx].titulo || p.estado[p.idx])) p.idx++;      // (y las que ya hizo una línea agrupada de la cabecera)
     if (p.idx >= L.length) p.fin = true;
 }
 function tuEstadoTras(i) {
@@ -13162,9 +13352,11 @@ function tuComprobar() {
     if (!txt) { tuMensaje('info', 'Escribe la línea y pulsa Intro (o ✔ Comprobar).'); return; }
     const prev = tuEstadoTras(p.idx - 1), lin = L[p.idx];
     const esp = tuAplicar(prev, lin.cod), alu = tuAplicar(prev, txt);
-    const motivo = tuComparar(prev, esp, alu, lin);
+    let motivo = tuMismoGrupo(txt) || tuComparar(prev, esp, alu, lin) || tuOrdenLetras(txt);
+    // en la cabecera vale también agruparla (la de «La cabecera del programa»): si la línea agrupa bien, se acepta y cubre las que hace
+    if (motivo) { const cab = tuCabeceraAgrupada(txt); if (cab && cab.cubre) { tuAceptarAgrupada(txt, cab.cubre); return; } if (cab && cab.motivo) motivo = cab.motivo; }
     p.intentos++;
-    if (motivo) { p.fallos++; p.fallosLinea++; tuMensaje('mal', '✗ ' + motivo + (p.fallosLinea >= 2 ? ' Si te atascas: 💡 Pista o 👁 Ver la línea.' : '')); TU.enfocar = true; const en = document.getElementById('tuEntrada'); if (en) { en.classList.remove('tiembla'); void en.offsetWidth; en.classList.add('tiembla'); en.focus(); } return; }
+    if (motivo) { p.fallos++; p.fallosLinea++; tuRegistro(p, p.idx).fallos.push({ txt: txt.slice(0, 120), msg: motivo, cat: tuCategoria(motivo) }); tuMensaje('mal', '✗ ' + motivo + (p.fallosLinea >= 2 ? ' Si te atascas: 💡 Pista o 👁 Ver la línea.' : '')); TU.enfocar = true; const en = document.getElementById('tuEntrada'); if (en) { en.classList.remove('tiembla'); void en.offsetWidth; en.classList.add('tiembla'); en.focus(); } return; }
     tuAceptar(txt, p.fallosLinea ? 'ayuda' : 'bien');
     tuMensaje('bien', p.fallosLinea ? '✓ Ahora sí.' : ['✓ ¡Bien!', '✓ Correcto.', '✓ Perfecto.', '✓ ¡Eso es!'][p.idx % 4]);
 }
@@ -13177,6 +13369,7 @@ function tuAceptar(txt, estado) {
 }
 function tuPista() {
     const p = TU.practica; if (!p || p.fin) return; const l = TU.prog.lineas[p.idx];
+    if (!p.pista) { p.pistas = (p.pistas || 0) + 1; tuRegistro(p, p.idx).pista = true; }
     p.pista = true; p.fallosLinea = Math.max(p.fallosLinea, 1);
     tuMensaje('info', '💡 ' + (l.com ? l.com.charAt(0).toUpperCase() + l.com.slice(1) + '.' : 'Mira el tramo marcado en verde en el dibujo.') + (l.seg ? ' En el dibujo, en verde, el tramo que toca.' : ''));
     TU.enfocar = true; tuPintarLista();
@@ -13187,6 +13380,85 @@ function tuVerLinea() {
     tuAceptar(l.cod, 'vistas');
     tuMensaje('info', `👁 La línea era: ${l.cod}` + (l.com ? `  (${l.com})` : ''));
 }
+// ── La cabecera agrupada ──
+// La cabecera: las líneas antes del primer contorno (unidades y coordenadas, cambio de herramienta, husillo y altura de seguridad).
+// Se pueden agrupar como explican los apuntes «La cabecera del programa»: G de grupos distintos juntas, una sola M en cada línea,
+// el cambio de herramienta solo con su T, el husillo después del cambio y la F de corte. Ej.: G71 G90 G40 G0 Z20 · T101 M06 · F1000 S12000 M03
+function tuIndicesCabecera() {
+    const L = TU.prog.lineas, H = [];
+    for (let i = 0; i < L.length; i++) { if (L[i].sep) break; if (!L[i].titulo) H.push(i); }
+    return H;
+}
+function tuTipoCabecera(cod) { return /M0*6\b/i.test(cod) ? 'herr' : /M0*3\b/i.test(cod) ? 'giro' : /\bZ/i.test(cod) ? 'z' : 'prep'; }
+// lo que lleva hecho el alumno en la cabecera, con sus propias líneas (las agrupadas cuentan una vez)
+function tuEstadoCabecera(p, H) {
+    let st = { ...tuEstado0(), cambio: null, giro: false, zCab: null };
+    H.forEach(k => { if (!p.estado[k] || p.junto && p.junto[k] !== undefined) return; const txt = p.escritas[k] !== undefined ? p.escritas[k] : TU.prog.lineas[k].cod;
+        const n = tuAplicar(st, txt); n.cambio = st.cambio; n.giro = st.giro; n.zCab = st.zCab;
+        if (n.ms.includes(6)) n.cambio = n.T; if (n.ms.includes(3) && n.cambio !== null) n.giro = true; if (n.ms.includes(5)) n.giro = false; if (n.mov) n.zCab = n.z; st = n; });
+    return st;
+}
+function tuCabeceraAgrupada(txt) {
+    const p = TU.practica, L = TU.prog.lineas, H = tuIndicesCabecera();
+    if (!p || !H.includes(p.idx)) return null;
+    const st0 = tuEstadoCabecera(p, H), s = tuAplicar(st0, txt);
+    if (s.error) return null;
+    const w = s.w, letras = Object.keys(w);
+    if (letras.some(k => !['N', 'Z', 'F', 'S', 'T'].includes(k)) || s.gs.some(g => ![0, 20, 21, 40, 70, 71, 90, 91].includes(g)) || s.ms.some(m => ![3, 6].includes(m))) return null;   // no es de cabecera
+    const mg = tuMismoGrupo(txt); if (mg) return { motivo: mg };
+    const orden = tuOrdenLetras(txt); if (orden) return { motivo: orden };
+    const grupo = g => g <= 3 ? 'mov' : g === 40 ? 'comp' : g >= 90 ? 'coord' : 'unid';
+    const gr = s.gs.map(grupo); if (new Set(gr).size < gr.length) return { motivo: 'Dos G del mismo grupo en una línea se contradicen (G90 y G91, G0 y G1…): solo una de cada grupo.' };
+    if (s.ms.length > 1) return { motivo: `Una sola función M en cada línea: ${s.ms.map(m => 'M' + String(m).padStart(2, '0')).join(' y ')} van en líneas distintas (no todos los controles admiten dos, y no se sabe cuál hace antes).` };
+    if (s.ms.includes(6) && letras.some(k => k !== 'T' && k !== 'N') || s.ms.includes(6) && s.gs.length) return { motivo: 'El cambio de herramienta va en su propia línea, solo con su T: T… M06.' };
+    if ('Z' in w && !s.gs.includes(0)) return { motivo: 'Para subir a la altura de seguridad, en rápido: G0 Z….' };
+    if (s.ms.includes(3) && st0.cambio === null) return { motivo: 'Primero el cambio de herramienta (T… M06) y después arranca el husillo (S… M03): con el cambio, el husillo se para.' };
+    // los valores, los de ⚙️ Mecanizado (los del programa)
+    const E = k => tuEstadoTras(k), fin = E(H[H.length - 1]);
+    if ('T' in w && normT(w.T) !== fin.T) return { motivo: `La herramienta es la T${fin.T} (mira ⚙️ Mecanizado).` };
+    if ('S' in w && Math.abs(w.S - fin.S) > 1e-6) return { motivo: `El husillo gira a S${tuF(fin.S)} (mira ⚙️ Mecanizado).` };
+    if (s.unit !== fin.unit) return { motivo: 'Las medidas van en milímetros: G71 (o G21).' };
+    if (s.abs !== fin.abs) return { motivo: 'La cabecera deja las coordenadas en G90, absolutas.' };
+    if ('Z' in w) { const zE = H.map(E).find((e, j) => tuTipoCabecera(L[H[j]].cod) === 'z'); if (zE && Math.abs(s.z - zE.z) > 1e-6) return { motivo: `La altura de seguridad es Z${tuF(zE.z)} (mira ⚙️ Mecanizado).` }; }
+    if ('F' in w) { const fc = (L.find(l => !l.sep && !l.titulo && /\bG0*1\b/.test(l.cod) && /[XY]/.test(l.cod) && /F/.test(l.cod)) || {}).cod, fC = fc ? +(/F([\d.]+)/.exec(fc) || [])[1] : null;
+        if (fC !== null && Math.abs(w.F - fC) > 1e-6) return { motivo: `En la cabecera, la F es la de corte: F${tuF(fC)}. La de bajar va en la línea en la que baja.` }; }
+    // qué líneas de la cabecera deja hechas
+    if (s.ms.includes(6)) s.cambio = s.T; if (s.ms.includes(3) && s.cambio !== null) s.giro = true; if (s.mov) s.zCab = s.z;
+    const hecha = k => { const e = E(k); switch (tuTipoCabecera(L[k].cod)) {
+        case 'herr': return s.cambio === e.T; case 'giro': return s.giro && s.S === e.S; case 'z': return s.zCab !== null && Math.abs(s.zCab - e.z) < 1e-6;
+        default: return s.unit === e.unit && s.abs === e.abs; } };
+    const cubre = H.filter(k => k >= p.idx && !p.estado[k] && hecha(k) && (k === p.idx || tuTipoCabecera(L[k].cod) !== tuTipoCabecera(L[p.idx].cod)));
+    if (!cubre.includes(p.idx)) return null;
+    return { cubre };
+}
+function tuAceptarAgrupada(txt, cubre) {
+    const p = TU.practica, i = p.idx, estado = p.fallosLinea ? 'ayuda' : 'bien';
+    p.junto = p.junto || {};
+    const otras = cubre.filter(k => k !== i);
+    otras.forEach(k => { p.estado[k] = estado; p.escritas[k] = ''; p.junto[k] = i; p[estado]++; });
+    tuAceptar(txt, estado);
+    const L = TU.prog.lineas;
+    tuMensaje('bien', (estado === 'bien' ? '✓ ¡Bien!' : '✓ Ahora sí.') + (otras.length ? ` Esta línea hace también ${otras.length > 1 ? 'las líneas' : 'la línea'} ${otras.map(k => `${k + 1} (${L[k].cod})`).join(' y ')}.` : ''));
+}
+function tuRegistro(p, i) { p.registro = p.registro || {}; return p.registro[i] = p.registro[i] || { fallos: [] }; }
+// El tipo de error, a partir del motivo que da el Tutor (para el informe: los errores más repetidos)
+const TU_CATEGORIAS = [
+    ['escritura', 'Escritura (letras y números)', /^No entiendo/],
+    ['orden', 'Orden de las letras (N G X Y Z F S T M)', /orden de las letras/i],
+    ['grupoG', 'G del mismo grupo en una línea (G0 G1, G90 G91…)', /del mismo grupo y se anulan/],
+    ['agrupar', 'Agrupar la cabecera (una M por línea, el cambio de herramienta solo…)', /propia línea|Una sola función M|mismo grupo|Primero el cambio de herramienta|la F es la de corte/],
+    ['centro', 'Centro del arco (I, J o R)', /signo de [IJ]\b|centro|I y J|La [IJ] está bien|radio|R positivo/],
+    ['signo', 'Signo de las coordenadas', /signo/i],
+    ['g90g91', 'G90 / G91 (absolutas o incrementales)', /Estás en G9[01]|va \(o vuelve\) a G90|va en G91|La Z va siempre en G90/],
+    ['sentidoArco', 'Sentido del arco (G2 / G3)', /sentido del arco/i],
+    ['movimiento', 'Tipo de movimiento (G0, G1, G2, G3)', /rápido|G0\)|es una recta|es un arco|se mueve: faltan|no se mueve/i],
+    ['compensacion', 'Compensación (G40, G41, G42)', /compensación/i],
+    ['avance', 'Avance F', /avance/i],
+    ['funciones', 'Funciones M, herramienta T y giro S', /^(Falta|Sobra) M|herramienta|husillo|milímetros/i],
+    ['coordenadas', 'Coordenadas (X, Y, Z)', /La [XYZ] no es correcta|Falta la [XYZ]/],
+];
+function tuCategoria(msg) { const c = TU_CATEGORIAS.find(([, , re]) => re.test(msg)); return c ? c[0] : 'otros'; }
+function tuNombreCategoria(k) { const c = TU_CATEGORIAS.find(x => x[0] === k); return c ? c[1] : 'Otros'; }
 function tuMensaje(tipo, txt) { const p = TU.practica; if (p) p.msg = { tipo, txt }; tuPintarPractica(); }
 function tuPintarPractica() {
     const caja = document.getElementById('tuPractica'); if (!caja) return;
@@ -13198,7 +13470,7 @@ function tuPintarPractica() {
     if (p.fin) {
         const nota = total ? Math.round(10 * (p.bien + 0.5 * p.ayuda) / total * 10) / 10 : 0;
         h += `<div class="tu-msg bien">🎉 ¡Programa terminado! ${p.bien} de ${total} líneas a la primera${p.vistas ? `, ${p.vistas} vistas` : ''}. Nota orientativa: <b>${String(nota).replace('.', ',')}</b> / 10.</div>`;
-        h += `<div class="tu-pr-bot"><button onclick="tuEnviarSimulador()">➜ Probarlo en el Simulador</button><button onclick="tuDescargar(true)">⬇ Mi programa (.nc)</button><button onclick="tuNuevaPractica(); tuPintarTodo()">↺ Otra vez</button></div>`;
+        h += `<div class="tu-pr-bot">${typeof tuAbrirInforme === 'function' ? '<button class="principal" onclick="tuAbrirInforme()" title="Un PDF con tu programa y cómo lo has hecho (líneas a la primera, pistas, errores), con un código de comprobación, para subirlo a Aules">🧾 Informe para Aules</button>' : ''}<button onclick="tuEnviarSimulador()">➜ Probarlo en el Simulador</button><button onclick="tuDescargar(true)">⬇ Mi programa (.nc)</button><button onclick="tuNuevaPractica(); tuPintarTodo()">↺ Otra vez</button></div>`;
     } else {
         h += `<div class="tu-pr-bot"><button class="principal" onclick="tuComprobar()" title="Comprueba la línea (Intro)">✔ Comprobar</button><button onclick="tuPista()" title="El comentario de la línea y, en el dibujo, el tramo que toca">💡 Pista</button><button onclick="tuVerLinea()" title="Escribe la línea por ti (cuenta como vista)">👁 Ver la línea</button></div>`;
         if (p.msg) h += `<div class="tu-msg ${p.msg.tipo}">${tuEsc(p.msg.txt)}</div>`;
@@ -13267,8 +13539,14 @@ function tuPintarEjercicio() {
     b.innerHTML = `🎓 <b>Ejercicio:</b> ${tuEsc(TU.ejercicio.nombre || '')}<br><span>Escribe tú el programa, en ${TU.ejercicio.coord === 'mixta' ? 'mixta (G90 y G91)' : TU.ejercicio.coord}, ${comp}. Las medidas, en las cotas del plano.</span> <button onclick="tuSalirEjercicio()" title="Deja el ejercicio y vuelve a dibujar libremente">✕ Dejar el ejercicio</button>`;
 }
 function tuSalirEjercicio() {
-    if (TU.practica && Object.keys(TU.practica.estado).length && !TU.practica.fin && !confirm('¿Dejar el ejercicio? Se pierde lo que llevas escrito.')) return;
-    TU.ejercicio = null; TU.practica = null; tuGuardarEjercicio(); tuPintarMec(); tuRefrescar(true); tuModo('aprender'); setHerramienta('linea');
+    const escrito = TU.practica && Object.keys(TU.practica.estado).length && !TU.practica.fin;
+    if (!confirm('¿Dejar el ejercicio? Se borra la pieza' + (escrito ? ' y lo que llevas escrito' : '') + ', y el dibujo empieza vacío.')) return;
+    // la pieza no se queda ni se puede recuperar con Deshacer: en 👁 Aprender se vería su programa (la solución)
+    TU.ejercicio = null; TU.practica = null; tuGuardarEjercicio();
+    contornos = []; aux = []; auxPend = null; sel = -1; selSet = new Set(); cotasAjuste = {}; cotasManuales = []; dib = null;
+    undoStack = []; redoStack = [];
+    refrescar(); tuPintarMec(); tuRefrescar(true); tuModo('aprender'); setHerramienta('linea');
+    snack('Has dejado el ejercicio: el dibujo empieza vacío');
 }
 function tuGuardarEjercicio() { try { localStorage.setItem('tutor_ejercicio', JSON.stringify(TU.ejercicio)); } catch (e) {} }
 
@@ -13329,6 +13607,7 @@ function tuRefrescar(forzar) {
 }
 function tuDescargar(mio) {
     if (!TU.prog || TU.prog.vacio) { snack('Aún no hay programa'); return; }
+    if (TU.ejercicio) mio = true;      // en un ejercicio, nunca el programa completo (la solución)
     const txt = mio ? tuTextoActivo() : TU.prog.texto;
     descargar(txt.replace(/\n/g, '\r\n'), (TU.prog.nombre || 'pieza').replace(/[\\/:*?"<>|]/g, '_') + '.nc', 'text/plain');
 }
@@ -13380,7 +13659,7 @@ function tuAlAbrirJSON(d) {
     if (t && t.ejercicio) {
         TU.ejercicio = { coord: ['G90', 'G91', 'mixta'].includes(t.coord) ? t.coord : 'G90', comp: ['G40', 'G41', 'G42', 'auto'].includes(t.comp) ? t.comp : 'G40', nombre: d.nombre || document.getElementById('projectName').value };
         tuGuardarEjercicio(); tuPintarMec(); tuRefrescar(true); tuModo('practicar'); try { encuadrar(); } catch (e) {}
-        setHerramienta('medir');
+        setHerramienta('medir'); undoStack = []; redoStack = [];
         snack('Ejercicio: escribe tú el programa, línea a línea. Las medidas, en las cotas del plano');
     } else {
         TU.ejercicio = null; tuGuardarEjercicio(); tuCasarHerr(false);
@@ -13417,11 +13696,221 @@ function tutorIniciar() {
     if (TU.ejercicio) setHerramienta('medir');
 }
 
+// ── 🧾 Informe de entrega (PDF para Aules): programa, simulación terminada, revisión y código de comprobación ──
+let informeDatos = null, informeImagen = null;
+const INF_CP1252 = { '€':128, '‚':130, 'ƒ':131, '„':132, '…':133, 'ˆ':136, 'Š':138, '‹':139, 'Œ':140, 'Ž':142, '‘':145, '’':146, '“':147, '”':148, '•':149, '–':150, '—':151, '˜':152, '™':153, 'š':154, '›':155, 'œ':156, 'ž':158, 'Ÿ':159 };
+const INF_SUST = { '≤':'<=', '≥':'>=', '→':'->', '←':'<-', '⇒':'=>', 'Δ':'D', '×':'x', '✓':'', '✔':'', '✅':'', '⛔':'', '⚠':'', '❌':'', '️':'', '🧾':'', '⏱':'', '⌀':'Ø', '−':'-', '═':'=', '─':'-', '━':'-', '│':'|', '┃':'|', '\t':'    ' };
+// Texto para un PDF con fuentes estándar (Windows-1252), con los paréntesis y barras escapados
+function pdfCadena(s) {
+    let o = '';
+    for (let ch of String(s)) {
+        if (ch in INF_SUST) { o += pdfCadena(INF_SUST[ch]); continue; }
+        let c = ch.codePointAt(0);
+        if (c > 255) { if (!INF_CP1252[ch]) continue; c = INF_CP1252[ch]; }
+        if (c < 32) { o += ' '; continue; }
+        if (c === 40 || c === 41 || c === 92) o += '\\';
+        o += String.fromCharCode(c);
+    }
+    return o;
+}
+let infMedidor = null;
+function infAncho(s, fuente, tam) {
+    if (fuente === 'F3' || fuente === 'F4') return pdfCadena(s).replace(/\\(.)/g, '$1').length * 0.6 * tam;
+    if (!infMedidor) infMedidor = document.createElement('canvas').getContext('2d');
+    infMedidor.font = `${fuente === 'F2' ? 'bold ' : ''}100px Helvetica, Arial, "Liberation Sans", Arimo, sans-serif`;
+    return infMedidor.measureText(String(s).replace(/[^\u0000-ɏ€‚„…‘’“”•–—]/g, '')).width / 100 * tam * 1.02;
+}
+function infPartir(s, ancho, fuente, tam) {
+    const out = [];
+    String(s).split('\n').forEach(par => {
+        let l = '';
+        par.split(/(\s+)/).forEach(p => {
+            if (!p) return;
+            if (infAncho(l + p, fuente, tam) <= ancho || !l.trim()) { l += p; while (infAncho(l, fuente, tam) > ancho && l.length > 1) { let k = l.length - 1; while (k > 1 && infAncho(l.slice(0, k), fuente, tam) > ancho) k--; out.push(l.slice(0, k)); l = l.slice(k); } }
+            else { out.push(l.trimEnd()); l = p.trimStart(); }
+        });
+        out.push(l.trimEnd());
+    });
+    return out;
+}
+// PDF A4 con las fuentes estándar del lector (sin incrustar) y una imagen JPEG
+// ════════════════════════════════════════════════
+//  🧾 Informe de ✍ Practicar para Aules (solo en el Tutor)
+//  Un PDF con el programa escrito y cómo se ha hecho: líneas a la primera, con fallos y vistas, pistas,
+//  los errores más repetidos y cada intento fallido, con un código de comprobación. El Corrector lo lee
+//  en «Toda la clase» (como el informe del Simulador): corrige el programa y comprueba el código.
+//  Usa pdfCadena, infAncho e infPartir (de informe_entrega.js) y codigoInforme (de entregas_comun.js).
+// ════════════════════════════════════════════════
+let tuInf = null, tuInfImg = null;
+function tuNotaPractica(p, total) { return total ? Math.round(10 * (p.bien + 0.5 * p.ayuda) / total * 10) / 10 : 0; }
+function tuDatosInforme() {
+    const p = TU.practica, L = TU.prog.lineas, ahora = new Date(), dd = v => String(v).padStart(2, '0');
+    const lineas = [];
+    L.forEach((l, i) => {
+        if (l.sep || l.titulo) return;
+        const r = (p.registro && p.registro[i]) || { fallos: [] };
+        lineas.push({ n: i + 1, txt: p.junto && p.junto[i] !== undefined ? `(en la línea ${p.junto[i] + 1})` : p.escritas[i] !== undefined ? p.escritas[i] : l.cod, estado: p.estado[i] || '', pista: !!r.pista, fallos: r.fallos.map(f => ({ txt: f.txt, msg: f.msg, cat: f.cat })) });
+    });
+    const cats = {}; lineas.forEach(x => x.fallos.forEach(f => { cats[f.cat] = (cats[f.cat] || 0) + 1; }));
+    const total = lineas.length, programa = normalizarPrograma(tuTextoActivo());
+    const ver = (document.querySelector('.ver-suite') || {}).textContent || '';
+    const nombre = TU.ejercicio ? (TU.ejercicio.nombre || TU.prog.nombre) : (TU.prog.nombre || document.getElementById('projectName').value);
+    return {
+        v: 1, simulador: 'tutor', version: ver.trim(), alumno: '', grupo: '', ejercicio: String(nombre || '').trim(),
+        archivo: String(nombre || 'programa').replace(/[\\/:*?"<>|]+/g, '_') + '.nc',
+        fecha: `${dd(ahora.getDate())}/${dd(ahora.getMonth() + 1)}/${ahora.getFullYear()} ${dd(ahora.getHours())}:${dd(ahora.getMinutes())}`,
+        programa, lineas: programa.split('\n').length, errores: 0, avisos: 0, plano: null,
+        tutor: { tipo: TU.ejercicio ? 'ejercicio' : 'libre', coord: tuCoord(), comp: tuComp(), total, bien: p.bien, ayuda: p.ayuda, vistas: p.vistas,
+                 pistas: p.pistas || 0, fallos: p.fallos, nota: tuNotaPractica(p, total), cats, lineas } };
+}
+function tuAbrirInforme() {
+    const p = TU.practica; if (!p || !p.fin) { snack('El informe se hace al terminar el programa'); return; }
+    tuInf = tuDatosInforme();
+    let guard = {}; try { guard = JSON.parse(localStorage.getItem('suiteCNC:alumno') || '{}') || {}; } catch (e) {}
+    const g = id => document.getElementById(id);
+    g('tuInfAlumno').value = guard.alumno || ''; g('tuInfGrupo').value = guard.grupo || ''; g('tuInfEjercicio').value = tuInf.ejercicio;
+    tuInfImg = tuCapturaInforme();
+    tuActualizarInforme();
+    g('tuModalInforme').classList.add('visible'); setTimeout(() => g('tuInfAlumno').focus(), 50);
+}
+function tuCerrarInforme() { document.getElementById('tuModalInforme').classList.remove('visible'); }
+// el dibujo con el recorrido del programa escrito, terminado
+function tuCapturaInforme() {
+    try {
+        if (TU.sim) { tuPausa(); tuFin(); }
+        render();
+        const k = Math.min(1, 1400 / Math.max(1, cv.width)), c2 = document.createElement('canvas');
+        c2.width = Math.max(1, Math.round(cv.width * k)); c2.height = Math.max(1, Math.round(cv.height * k));
+        const g = c2.getContext('2d'); g.fillStyle = '#ffffff'; g.fillRect(0, 0, c2.width, c2.height); g.drawImage(cv, 0, 0, c2.width, c2.height);
+        const url = c2.toDataURL('image/jpeg', 0.88), bin = atob(url.split(',')[1]), datos = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) datos[i] = bin.charCodeAt(i);
+        return { url, datos, w: c2.width, h: c2.height };
+    } catch (e) { return null; }
+}
+function tuActualizarInforme() {
+    const d = tuInf; if (!d) return;
+    const g = id => document.getElementById(id), t = d.tutor;
+    d.alumno = g('tuInfAlumno').value.trim().replace(/\s+/g, ' '); d.grupo = g('tuInfGrupo').value.trim(); d.ejercicio = g('tuInfEjercicio').value.trim();
+    d.huella = huellaPrograma(d.programa); d.codigo = codigoInforme(d);
+    const top = Object.entries(t.cats).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([k, n]) => `${tuEsc(tuNombreCategoria(k))} (${n})`).join(', ');
+    g('tuInfResumen').innerHTML = `<div><b>${t.bien}</b> de ${t.total} líneas a la primera · ${t.ayuda} con algún fallo · ${t.vistas} vistas · ${t.pistas} pistas · nota orientativa <b>${String(t.nota).replace('.', ',')}</b></div>`
+        + `<div>${t.fallos ? `Intentos fallidos: <b>${t.fallos}</b>${top ? ' · más repetidos: ' + top : ''}` : 'Ningún intento fallido.'}</div>`
+        + `<div class="tu-gris">${t.tipo === 'ejercicio' ? '🎓 Ejercicio del profesor' : 'Práctica libre'} · ${t.coord === 'mixta' ? 'mixta' : t.coord} · ${tuEsc(d.fecha)}</div>`
+        + `<div class="tu-inf-cod">Código de comprobación <b>${d.codigo}</b></div>`;
+    g('tuInfDescargar').disabled = !d.alumno;
+    g('tuInfDescargar').title = d.alumno ? 'Descarga el PDF para subirlo a Aules' : 'Escribe antes tu nombre';
+}
+function tuDescargarInforme() {
+    tuActualizarInforme(); const d = tuInf; if (!d || !d.alumno) { snack('Escribe tu nombre'); return; }
+    try { localStorage.setItem('suiteCNC:alumno', JSON.stringify({ alumno: d.alumno, grupo: d.grupo })); } catch (e) {}
+    let blob; try { blob = tuPDFInforme(d, tuInfImg); } catch (e) { console.error(e); snack('No se ha podido crear el PDF: ' + e.message); return; }
+    const limpio = t => String(t).replace(/[\\/:*?"<>|]+/g, ' ').replace(/\s+/g, ' ').trim();
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = `Informe del Tutor - ${limpio(d.alumno)} - ${limpio(d.ejercicio || 'programa')}.pdf`;
+    document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 2000);
+    tuCerrarInforme(); snack(`Informe descargado (código ${d.codigo}). Súbelo a Aules`);
+}
+// PDF A4 con las fuentes estándar del lector (sin incrustar) y la imagen del dibujo, como el informe del Simulador
+function tuPDFInforme(d, jpeg) {
+    const W = 595.28, H = 841.89, M = 42, AZUL = '0 0.353 0.612', GRIS = '0.38 0.42 0.48', VERDE = '0.1 0.5 0.27', ROJO = '0.72 0.16 0.12', NARANJA = '0.72 0.42 0.02';
+    const t = d.tutor, paginas = []; let c, y;
+    const nueva = () => { c = []; paginas.push(c); y = H - M; };
+    const txt = (x, yy, s, f = 'F1', tm = 10, col = '0.1 0.12 0.15') => c.push(`BT /${f} ${tm} Tf ${col} rg ${x.toFixed(2)} ${yy.toFixed(2)} Td (${pdfCadena(s)}) Tj ET`);
+    const rect = (x, yy, w, h, rel, borde) => c.push(`${rel ? rel + ' rg ' : ''}${borde ? borde + ' RG 0.8 w ' : ''}${x.toFixed(2)} ${yy.toFixed(2)} ${w.toFixed(2)} ${h.toFixed(2)} re ${rel && borde ? 'B' : rel ? 'f' : 'S'}`);
+    const sitio = h => { if (y - h < M + 24) { nueva(); return true; } return false; };
+    const parrafo = (s, f = 'F1', tm = 9.5, col, sangria = 0, inter = 1.32) => infPartir(s, W - 2 * M - sangria, f, tm).forEach(l => { sitio(tm * inter); y -= tm * inter; txt(M + sangria, y, l, f, tm, col); });
+    const titulo = s => { sitio(40); y -= 22; txt(M, y, s, 'F2', 12, AZUL); y -= 4; };
+    nueva();
+    // cabecera
+    rect(0, H - 64, W, 64, AZUL);
+    txt(M, H - 34, 'Informe de práctica', 'F2', 18, '1 1 1');
+    txt(M, H - 51, `Tutor G-Code ${d.version || ''} · Suite CNC · Practicar`.replace(/\s+·/, ' ·'), 'F1', 9.5, '0.85 0.92 1');
+    txt(W - M - infAncho(d.fecha, 'F2', 11), H - 34, d.fecha, 'F2', 11, '1 1 1');
+    y = H - 64 - 22;
+    const comp = { G40: 'sin compensación (G40)', auto: 'G41/G42 según el trazado', G41: 'G41', G42: 'G42' }[t.comp] || t.comp;
+    [['Alumno/a', d.alumno || '—'], ['Grupo', d.grupo || '—'], ['Ejercicio', (d.ejercicio || '—') + (t.tipo === 'ejercicio' ? '  (ejercicio del profesor)' : '  (práctica libre)')],
+     ['Programación', `${t.coord === 'mixta' ? 'mixta (G90 y G91)' : t.coord} · ${comp}`], ['Programa', `${t.total} líneas que escribir (${d.lineas} con los comentarios)`]]
+        .forEach(([k, v]) => { txt(M, y, k, 'F1', 9.5, GRIS); infPartir(v, W - 2 * M - 110, k === 'Alumno/a' ? 'F2' : 'F1', 10.5).forEach((l, i) => { if (i) y -= 13; txt(M + 110, y, l, k === 'Alumno/a' ? 'F2' : 'F1', 10.5); }); y -= 15.5; });
+    // resultado
+    titulo('Resultado');
+    const pc = n => t.total ? Math.round(100 * n / t.total) + ' %' : '';
+    [[`A la primera`, `${t.bien} líneas (${pc(t.bien)})`, VERDE], [`Con algún fallo`, `${t.ayuda} líneas (${pc(t.ayuda)})`, NARANJA], [`Vistas («Ver la línea»)`, `${t.vistas} líneas (${pc(t.vistas)})`, ROJO],
+     [`Pistas`, `${t.pistas}`, GRIS], [`Intentos fallidos`, `${t.fallos}`, t.fallos ? ROJO : VERDE], [`Nota orientativa`, `${String(t.nota).replace('.', ',')} / 10  (1 por línea a la primera y 0,5 con fallos, sobre 10)`, AZUL]]
+        .forEach(([k, v, col]) => { sitio(16); y -= 15.5; txt(M, y, k, 'F1', 9.5, GRIS); txt(M + 150, y, v, 'F2', 10.5, col); });
+    // dónde se ha equivocado más
+    const cats = Object.entries(t.cats).sort((a, b) => b[1] - a[1]);
+    titulo('Errores más repetidos');
+    if (!cats.length) parrafo('Ningún intento fallido.', 'F2', 10.5, VERDE);
+    cats.forEach(([k, n]) => {
+        const ej = (() => { for (const l of t.lineas) for (const f of l.fallos) if (f.cat === k) return f; return null; })();
+        sitio(30); y -= 15; txt(M, y, `${n} veces`.replace(/^1 veces$/, '1 vez'), 'F2', 10.5, ROJO); txt(M + 52, y, tuNombreCategoria(k), 'F2', 10.5);
+        if (ej) parrafo(`Por ejemplo: «${ej.txt}» · ${ej.msg}`, 'F1', 8.5, GRIS, 52, 1.25);
+    });
+    // la imagen
+    if (jpeg) {
+        const maxW = W - 2 * M, maxH = 250, k = Math.min(maxW / jpeg.w, maxH / jpeg.h), iw = jpeg.w * k, ih = jpeg.h * k, ix = M + (maxW - iw) / 2;
+        sitio(ih + 30); y -= 14 + ih; c.push(`q ${iw.toFixed(2)} 0 0 ${ih.toFixed(2)} ${ix.toFixed(2)} ${y.toFixed(2)} cm /Im1 Do Q`); rect(ix, y, iw, ih, null, '0.75 0.78 0.82');
+        y -= 12; txt(M, y, 'El dibujo con el recorrido del programa escrito', 'F1', 8, GRIS);
+    }
+    // código de comprobación
+    sitio(78); y -= 18;
+    rect(M, y - 52, W - 2 * M, 52, '0.95 0.97 1', '0.55 0.68 0.82');
+    txt(M + 12, y - 17, 'Código de comprobación', 'F1', 9, GRIS);
+    txt(M + 12, y - 40, d.codigo, 'F4', 20, AZUL);
+    infPartir(`Huella del programa: ${d.huella}. El profesor lo comprueba con el Corrector (Toda la clase). Si se cambia el programa o este informe, el código deja de coincidir.`, W - 2 * M - 250, 'F1', 8).forEach((l, i) => txt(M + 236, y - 15 - i * 10, l, 'F1', 8, GRIS));
+    y -= 52;
+    // línea a línea
+    nueva(); txt(M, y - 4, 'Línea a línea', 'F2', 12, AZUL); y -= 12;
+    parrafo('OK: a la primera · OK tras N: después de N intentos fallidos · vista: con «Ver la línea» · pista: con «Pista». Debajo de cada línea, sus intentos fallidos y lo que dijo el Tutor.', 'F1', 8.5, GRIS);
+    y -= 4;
+    const T = 8.6;
+    t.lineas.forEach(l => {
+        sitio(T * 1.4); y -= T * 1.45;
+        const est = l.estado === 'bien' ? ['OK', VERDE] : l.estado === 'ayuda' ? [l.fallos.length ? `OK tras ${l.fallos.length}` : 'OK con pista', NARANJA] : l.estado === 'vistas' ? ['vista', ROJO] : ['—', GRIS];
+        if (l.estado !== 'bien') rect(M - 2, y - 2.4, W - 2 * M + 4, T * 1.45, l.estado === 'vistas' ? '1 0.92 0.9' : '1 0.96 0.86');
+        txt(M, y, String(l.n).padStart(3, ' '), 'F3', T, '0.55 0.58 0.62');
+        txt(M + 24, y, String(l.txt).slice(0, 70), 'F3', T);
+        txt(W - M - 70, y, est[0] + (l.pista && l.fallos.length ? ' · pista' : ''), 'F2', 8, est[1]);
+        l.fallos.slice(0, 5).forEach(f => infPartir(`«${f.txt}» — ${f.msg}`, W - 2 * M - 40, 'F1', 7.8).forEach(s => { sitio(10); y -= 9.6; txt(M + 34, y, s, 'F1', 7.8, ROJO); }));
+        if (l.fallos.length > 5) { sitio(10); y -= 9.6; txt(M + 34, y, `… y ${l.fallos.length - 5} intentos más`, 'F1', 7.8, GRIS); }
+    });
+    // el programa completo (el que se corrige)
+    nueva(); txt(M, y - 4, 'Programa', 'F2', 12, AZUL); txt(M + 64, y - 4, d.archivo || '', 'F1', 9.5, GRIS); y -= 20;
+    const TP = 8.4, maxCar = Math.floor((W - 2 * M - 34) / (0.6 * TP)), prog = d.programa.split('\n'), anchoN = String(prog.length).length;
+    prog.forEach((l, i) => { for (let k = 0; k < Math.max(1, l.length); k += maxCar) { if (sitio(TP * 1.25)) y -= 6; y -= TP * 1.25; if (!k) txt(M, y, String(i + 1).padStart(anchoN, ' '), 'F3', TP, '0.55 0.58 0.62'); txt(M + 34, y, l.slice(k, k + maxCar), 'F3', TP); } });
+    // pie de página
+    paginas.forEach((pg, i) => { c = pg; c.push(`${GRIS} RG 0.5 w ${M} ${M - 4} m ${W - M} ${M - 4} l S`); txt(M, M - 16, `${d.alumno || ''} · ${d.ejercicio || ''}`.replace(/^ · | · $/g, ''), 'F1', 7.5, GRIS);
+        const pie = `Código ${d.codigo} · página ${i + 1} de ${paginas.length}`; txt(W - M - infAncho(pie, 'F1', 7.5), M - 16, pie, 'F1', 7.5, GRIS); });
+    // ensamblado (los datos van dentro, en /SuiteCNC, para que el Corrector los lea)
+    const bytes = s => { const u = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) u[i] = s.charCodeAt(i) & 255; return u; };
+    const objs = [], partes = []; let pos = 0;
+    const meter = u => { partes.push(u); pos += u.length; };
+    const obj = (n, cuerpo, flujo) => { objs[n] = pos; meter(bytes(`${n} 0 obj\n${cuerpo}\n`)); if (flujo) { meter(bytes('stream\n')); meter(flujo); meter(bytes('\nendstream\n')); } meter(bytes('endobj\n')); };
+    const nPag = paginas.length, primera = 9;
+    const b64 = (() => { const u = new TextEncoder().encode(JSON.stringify(d)); let s = ''; for (let i = 0; i < u.length; i += 8192) s += String.fromCharCode.apply(null, u.subarray(i, i + 8192)); return btoa(s); })();
+    meter(bytes('%PDF-1.4\n%\xe2\xe3\xcf\xd3\n'));
+    obj(1, '<< /Type /Catalog /Pages 2 0 R >>');
+    obj(2, `<< /Type /Pages /Count ${nPag} /Kids [${paginas.map((pg, i) => `${primera + 2 * i} 0 R`).join(' ')}] >>`);
+    ['Helvetica', 'Helvetica-Bold', 'Courier', 'Courier-Bold'].forEach((f, i) => obj(3 + i, `<< /Type /Font /Subtype /Type1 /BaseFont /${f} /Encoding /WinAnsiEncoding >>`));
+    if (jpeg) obj(7, `<< /Type /XObject /Subtype /Image /Width ${jpeg.w} /Height ${jpeg.h} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpeg.datos.length} >>`, jpeg.datos);
+    else obj(7, '<< >>');
+    obj(8, `<< /Title (${pdfCadena('Informe de práctica · ' + (d.ejercicio || ''))}) /Author (${pdfCadena(d.alumno || '')}) /Subject (${pdfCadena('Código de comprobación ' + d.codigo)}) /Creator (${pdfCadena('Tutor G-Code · Suite CNC')}) /SuiteCNC (${b64}) >>`);
+    paginas.forEach((pg, i) => {
+        const cont = bytes(pg.join('\n'));
+        obj(primera + 2 * i, `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${W} ${H}] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R /F4 6 0 R >>${jpeg ? ' /XObject << /Im1 7 0 R >>' : ''} >> /Contents ${primera + 2 * i + 1} 0 R >>`);
+        obj(primera + 2 * i + 1, `<< /Length ${cont.length} >>`, cont);
+    });
+    const n = primera + 2 * nPag, xref = pos;
+    let x = `xref\n0 ${n}\n0000000000 65535 f \n`; for (let i = 1; i < n; i++) x += String(objs[i]).padStart(10, '0') + ' 00000 n \n';
+    meter(bytes(x + `trailer\n<< /Size ${n} /Root 1 0 R /Info 8 0 R >>\nstartxref\n${xref}\n%%EOF\n`));
+    return new Blob(partes, { type: 'application/pdf' });
+}
+
 // ── Enganches del Tutor en funciones del Calcador ──
 const _tuAbrirJSONDatos = abrirJSONDatos;
 abrirJSONDatos = function (d) { const r = _tuAbrirJSONDatos.apply(this, arguments); setTimeout(() => tuAlAbrirJSON(d), 0); return r; };
 const _tuNuevo = nuevo;
-nuevo = function () { const r = _tuNuevo.apply(this, arguments); if (!contornos.length && TU.ejercicio) { TU.ejercicio = null; TU.practica = null; tuGuardarEjercicio(); tuPintarMec(); tuRefrescar(true); tuModo('aprender'); } return r; };
+nuevo = function () { if (TU.ejercicio) return tuSalirEjercicio(); return _tuNuevo.apply(this, arguments); };
 const _tuSetHerramienta = setHerramienta;
 setHerramienta = function (h) {
     if (TU.ejercicio && h !== 'medir') { if (h !== 'editar' && h !== herramienta) snack('En un ejercicio el dibujo no se cambia: solo se puede medir. Para dibujar, «✕ Dejar el ejercicio»'); if (herramienta === 'medir') return; h = 'medir'; arguments[0] = 'medir'; }
@@ -14359,8 +14848,26 @@ function generarMec() {
         + (out.herramientas && out.herramientas.length > 1 ? `<div>Herramientas: ${out.herramientas.map(h => `<b>T${String(h.T).padStart(3, '0')}</b> Ø${fmt(+h.d, 2)} (${h.n} contorno${h.n > 1 ? 's' : ''})`).join(' → ')} · un cambio con M06 por herramienta</div>` : '')
         + tz.filter(t => t.herrFalta).map(t => `<div class="mec-aviso">⚠ El contorno C${t.ci + 1} pide la herramienta T${t.herrFalta}, que no está en la base de herramientas: se usa la general (T${String(cfgMec.T).padStart(3, '0')}).</div>`).join('')
         + (out.pasadas.length > 50 ? `<div class="mec-aviso">⚠ ${out.pasadas.length} pasadas en Z: ¿el paso (${fmt(cfgMec.paso, 3)} mm) es correcto?</div>` : '')
-        + out.avisos.map(a => `<div class="mec-aviso">⚠ ${escMec(a)}</div>`).join('');
+        + out.avisos.map(a => `<div class="mec-aviso">⚠ ${escMec(a)}</div>`).join('')
+        + '<div id="mecAvisoLado"></div>';
+    avisoLadoMec(P);
     dibujarMec();
+}
+// Con G41 o G42 en todos los contornos, los que quedan del lado equivocado (según la corrección del Calcador).
+// El lado no depende de las pasadas: se comprueba con el programa de una sola pasada y sin acabado, después de pintar la ventana.
+let tLadoMec = null;
+function avisoLadoMec(P) {
+    clearTimeout(tLadoMec);
+    if (P.comp !== 'G41' && P.comp !== 'G42') return;
+    tLadoMec = setTimeout(() => { const caja = document.getElementById('mecAvisoLado'); if (!caja) return;
+        try { const r = MEC.generar(trazadosParaMecanizar(), Object.assign({}, P, { zStep: Math.abs(P.zTotal), sobre: 0 })); caja.innerHTML = r.error ? '' : textoLadoMec(r.nc, P.comp); } catch (e) { caja.innerHTML = ''; } }, 0);
+}
+function textoLadoMec(nc, comp) {
+    let mal = [];
+    try { mal = corregirPrograma(nc).hallazgos.filter(h => h.cat === 'compensacion').map(h => (h.msg.match(/trazado (C\d+) es (EXTERIOR|INTERIOR)/) || []).slice(1)).filter(x => x.length); } catch (e) { return ''; }
+    const vistos = new Set(); mal = mal.filter(([c]) => !vistos.has(c) && vistos.add(c));
+    if (!mal.length) return '';
+    return `<div class="mec-aviso">⚠ Con ${comp} en todos, ${mal.map(([c, t]) => `el contorno ${c} (${t === 'EXTERIOR' ? 'exterior' : 'interior'})`).join(' y ')} ${mal.length > 1 ? 'quedan' : 'queda'} del lado equivocado: la fresa se come la pieza. Para que cada contorno lleve su lado, elige «G41/G42 según el trazado» (o invierte el sentido de ${mal.length > 1 ? 'esos contornos' : 'ese contorno'}).</div>`;
 }
 function dibujarMec() {
     const cv = document.getElementById('mecLienzo'), W = cv.clientWidth, H = cv.clientHeight; if (!W || !H) return;

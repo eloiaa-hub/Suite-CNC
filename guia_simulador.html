@@ -161,7 +161,12 @@ M30                  ; fin del programa</pre>
 <tr><td>Arco incoherente / radio R demasiado pequeño</td><td>El arco no puede unir esos dos puntos: revisa el punto final, el radio o I y J. Recuerda que I y J van desde el punto de inicio del arco hasta su centro.</td></tr>
 <tr><td>Coma decimal</td><td>Escribe <code>X10.5</code>, no <code>X10,5</code>: la máquina no acepta la coma.</td></tr>
 <tr><td>Compensación sin anular con G40</td><td>Has usado G41 o G42 y el programa termina sin <code>G40</code>. Anúlala en la salida.</td></tr>
-<tr><td>El programa no termina con M30</td><td>Añade <code>M05</code> y <code>M30</code> al final.</td></tr>
+<tr><td>El programa no termina</td><td>Si arranca el husillo (<code>M03</code>), es un error: añade <code>M05</code> y <code>M30</code> (o <code>M02</code>) al final.</td></tr>
+<tr><td>M03 arranca el husillo, y el programa ya ha terminado de cortar</td><td>Para terminar no se escribe <code>M03</code>: se escribe <code>M05</code> (parar el husillo) y <code>M30</code> (fin de programa), o <code>M02</code>.</td></tr>
+<tr><td>M30 con el husillo en marcha</td><td>Es un aviso: escribe <code>M05</code> antes del <code>M30</code>.</td></tr>
+<tr><td>Termina con la fresa dentro del material / abajo</td><td>Antes del fin, sube a la altura de seguridad: <code>G0 Z20</code>. Dentro del material es un error; abajo, sin subir a Z20, un aviso.</td></tr>
+<tr><td>Baja en diagonal</td><td>Es un aviso: entras en el material a la vez que te mueves en X/Y. Primero baja en vertical, con el avance de penetración (<code>G1 Z-3 F300</code>), y después corta en X/Y. Una rampa suave, de pocos grados, sí es una forma de entrar.</td></tr>
+<tr><td>Números de bloque de 1 en 1 / que no van creciendo</td><td>Es un aviso: numera de 10 en 10 (<code>N10</code>, <code>N20</code>…), así puedes intercalar líneas. Sin números de bloque, el programa es correcto.</td></tr>
 </table>
 </section>
 

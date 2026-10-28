@@ -271,7 +271,7 @@
 <body>
 <div id="app">
     <header>
-        <h1><a href="index.html" class="ir-portada" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a>🎥<span class="tit-largo"> Simulador G-Code 3D — Por Eloi A.A.</span><span class="ver-suite" title="Versión del programa" style="font-size:11px;font-weight:600;padding:1px 7px;margin-left:8px;border-radius:9px;background:rgba(0,90,156,.12);color:#005A9C;vertical-align:middle">V44</span></h1>
+        <h1><a href="index.html" class="ir-portada" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a>🎥<span class="tit-largo"> Simulador G-Code 3D — Por Eloi A.A.</span><span class="ver-suite" title="Versión del programa" style="font-size:11px;font-weight:600;padding:1px 7px;margin-left:8px;border-radius:9px;background:rgba(0,90,156,.12);color:#005A9C;vertical-align:middle">V45</span></h1>
         <span class="filename" id="filenameLabel">Sin archivo cargado</span>
         <div class="sep"></div>
         <button class="principal" onclick="document.getElementById('fileInput').click()" title="Un programa G-code (.nc, .txt…) o el plano del ejercicio (.json del Calcador) para comprobar el programa con él">📂 Cargar<span class="lbl2"> G-code / plano</span></button>
@@ -621,7 +621,9 @@
         <li>Movimientos de corte sin avance <code>F</code>.</li>
         <li>Entrar en el material sin arrancar el husillo (<code>M3</code>/<code>M4</code>).</li>
         <li>Herramienta más grande que un arco cóncavo con <code>G41</code>/<code>G42</code>, y compensación sin anular con <code>G40</code>.</li>
-        <li>Programa que no termina con <code>M30</code>.</li>
+        <li>El final del programa: tiene que terminar con <code>M05</code> y <code>M30</code> (o <code>M02</code>) y con la fresa arriba (<code>G0 Z20</code>). No terminar, terminar arrancando el husillo (un <code>M03</code> después del último corte) o con la fresa dentro del material son errores; <code>M30</code> sin <code>M05</code> delante, un aviso.</li>
+        <li>Bajar en diagonal: entrar en el material a la vez que se mueve en X/Y (primero se baja en vertical; una rampa suave, de pocos grados, sí vale).</li>
+        <li>Los números de bloque, si los hay: de 1 en 1 (mejor de 10 en 10: <code>N10</code>, <code>N20</code>…) o que no van creciendo. Sin números de bloque, el programa es correcto.</li>
       </ul>
 
       <h3>Panel de código (izquierda)</h3>
@@ -1872,7 +1874,7 @@ function parsearGcode3D(texto) {
     let ultimoGMocion = null;
     let comp = 40;        // G40 / G41 / G42 (modal)
     let husillo = false;  // M3/M4 en marcha, M5 parado
-    const meta = { lineaComp: null, compFinal: 40, fin: false, comaDecimal: [], noSoportados: [], ciclosIncr: null, cambios: [], g28: null };
+    const meta = { lineaComp: null, compFinal: 40, fin: false, comaDecimal: [], noSoportados: [], ciclosIncr: null, cambios: [], g28: null, numeros: [], arranque: null };
     // Herramienta: con M06 en el programa, la T se cambia en el M06 (T102 M06); sin M06, vale la T escrita
     const usaM06 = /(^|[^A-Z0-9])M0?6(?![0-9])/i.test(texto.replace(/\([^)]*\)/g, ' ').replace(/;.*$/gm, ' '));
     let tSel = null, tAct = null, tras06 = false;
@@ -1891,6 +1893,7 @@ function parsearGcode3D(texto) {
         // Espacios entre la letra y el número ("X 25") → "X25"
         l = l.replace(/([A-Za-z])\s+(?=[-+.\d])/g, '$1').replace(/([-+])\s+(?=[.\d])/g, '$1');
         const palabras = l.match(/[A-Za-z][-+]?(?:[0-9]+\.?[0-9]*|\.[0-9]+)/g) || [];
+        { const nW = palabras.find(p => /^N/i.test(p)); if (nW) meta.numeros.push({ n: parseFloat(nW.slice(1)), linea: idx+1, et: 'N' + nW.slice(1) }); }
         const letras = {};
         palabras.forEach(p => { const v = parseFloat(p.slice(1)); if (isFinite(v)) letras[p[0].toUpperCase()] = v; });
 
@@ -1928,10 +1931,10 @@ function parsearGcode3D(texto) {
         palabras.forEach(pw => {
             if (pw[0].toUpperCase() !== 'M') return;
             const m = Math.round(parseFloat(pw.slice(1)));
-            if (m === 3 || m === 4) { husillo = true; if (m === 4 && !meta.m04) meta.m04 = idx + 1; }
+            if (m === 3 || m === 4) { husillo = true; if (m === 4 && !meta.m04) meta.m04 = idx + 1; if (!meta.fin) meta.arranque = { linea: idx+1, m: m === 4 ? 'M04' : 'M03', nMoves: moves.length }; }
             else if (m === 5) husillo = false;
             else if (m === 6) { meta.cambios.push({ linea: idx+1, T: tSel, z, husillo }); if (tSel !== null) { tAct = tSel; husillo = false; tras06 = true; } }
-            else if (m === 30 || m === 2) { if (!meta.fin) meta.lineaFin = idx+1; meta.fin = true; }
+            else if (m === 30 || m === 2) { if (!meta.fin) { meta.lineaFin = idx+1; meta.mFin = m; meta.husilloFin = husillo; meta.zFin = z; meta.arranqueAntes = meta.arranque; } meta.fin = true; }
         });
         if ('F' in letras) ultimoF = letras.F * unidadFactor;   // modal; en G20 pulg/min → mm/min
 
@@ -2001,7 +2004,7 @@ function parsearGcode3D(texto) {
         moves.push(mov);
         x = nx; y = ny; z = nz;
     });
-    meta.compFinal = comp;
+    meta.compFinal = comp; meta.husilloFinal = husillo; meta.zFinal = z;
     moves.meta = meta;
     return moves;
 }
@@ -3861,8 +3864,29 @@ function revisarPrograma() {
     (meta.noSoportados || []).forEach(n => add(n.linea, 'aviso', n.msg));
     if (meta.ciclosIncr) add(meta.ciclosIncr, 'aviso', 'Ciclo de taladrado en incremental (G91): R se toma desde el plano inicial y Z desde R. Comprueba que es lo que quieres.');
     if (meta.despuesFin) add(meta.despuesFin.linea, 'aviso', 'Hay instrucciones después del fin de programa (M02/M30 en la línea ' + meta.despuesFin.lineaFin + '): la máquina termina ahí y no las ejecuta. El simulador sí las muestra.');
-    // 8) Fin de programa
-    if (!meta.fin) add(gcodeMoves[gcodeMoves.length-1].linea, 'aviso', 'El programa no termina con M30 (o M2).');
+    // 8) Fin de programa: M05 y M30, o M02; la fresa, arriba
+    const ultCorte = gcodeMoves.reduce((k, m, j) => m.tipo === 'corte' ? j : k, -1), arr = meta.fin ? meta.arranqueAntes : meta.arranque;
+    const arrancaAlFinal = ultCorte >= 0 && arr && arr.nMoves > ultCorte && (meta.fin ? meta.husilloFin : meta.husilloFinal);
+    const ultima = gcodeMoves[gcodeMoves.length-1].linea;
+    if (arrancaAlFinal) add(arr.linea, 'error', arr.m + ' arranca el husillo, y el programa ya ha terminado de cortar. Para terminar se escribe M05 (parar el husillo) y M30 (fin de programa), o M02.');
+    else if (!meta.fin && arr) add(ultima, 'error', 'El programa no termina: falta el fin de programa, M05 (parar el husillo) y M30 (o M02).');
+    else if (!meta.fin) add(ultima, 'aviso', 'El programa no termina con M30 (o M2).');
+    if (meta.fin && meta.mFin === 30 && meta.husilloFin && !arrancaAlFinal) add(meta.lineaFin, 'aviso', 'M30 con el husillo en marcha: escribe antes M05 para pararlo (M30 lo para en muchas máquinas, pero conviene escribirlo).');
+    { const zF = meta.fin ? meta.zFin : meta.zFinal, lF = meta.fin ? meta.lineaFin : ultima;
+      if (gcodeMoves.some(m => Math.min(m.fromZ, m.z) < -1e-6) && zF !== undefined && zF !== null) {
+        if (zF < -1e-6) add(lF, 'error', 'El programa termina con la fresa dentro del material (Z' + (+zF.toFixed(3)) + '). Antes del fin, sube a la altura de seguridad (G0 Z20).');
+        else if (zF < 5 - 1e-6) add(lF, 'aviso', 'El programa termina con la fresa abajo (Z' + (+zF.toFixed(3)) + '): antes del fin, sube a la altura de seguridad (G0 Z20).');
+      } }
+    // 9) Bajar en diagonal: entrar en el material moviéndose en X/Y, desde arriba o con mucha pendiente (una rampa suave sí vale)
+    { const diag = gcodeMoves.filter(m => m.tipo === 'corte' && !m.deCiclo && tieneXY(m) && m.z < -1e-6 && m.z < m.fromZ - 1e-6
+          && (m.fromZ > 1e-6 || Math.atan2(m.fromZ - m.z, Math.hypot(m.x - m.fromX, m.y - m.fromY)) > 15 * Math.PI / 180));
+      if (diag.length) add(diag[0].linea, 'aviso', 'Baja en diagonal, de Z' + (+diag[0].fromZ.toFixed(3)) + ' a Z' + (+diag[0].z.toFixed(3)) + ' a la vez que se mueve en X/Y' + (diag.length > 1 ? ' (y ' + (diag.length - 1) + ' más)' : '') + '. La fresa no corta bien de punta en diagonal: primero se baja en vertical, con el avance de penetración (G1 Z… F300), y después se corta en X/Y. (Una rampa suave, de pocos grados, sí es una forma de entrar.)'); }
+    // 10) Números de bloque (si los hay): de 10 en 10 y siempre creciendo
+    if ((meta.numeros || []).length >= 3) {
+        const N = meta.numeros, baja = N.find((x, k) => k && x.n <= N[k - 1].n);
+        if (baja) { const k = N.indexOf(baja); add(baja.linea, 'aviso', baja.et + ': los números de bloque tienen que ir creciendo, y este va después de ' + N[k - 1].et + (baja.n === N[k - 1].n ? ' (repetido).' : '.')); }
+        else if (N.every((x, k) => !k || x.n - N[k - 1].n === 1)) add(N[0].linea, 'aviso', 'Los números de bloque van de 1 en 1 (' + N[0].et + ', ' + N[1].et + ', ' + N[2].et + '…): es mejor de 10 en 10 (N10, N20, N30…), así se pueden intercalar líneas sin renumerar el programa.');
+    }
 
     res.sort((a, b) => a.linea - b.linea || (a.nivel === 'error' ? -1 : 1));
     mostrarRevision(res);

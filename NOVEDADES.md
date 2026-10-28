@@ -4,7 +4,50 @@ La versión de la suite es **año.mes** (por ejemplo, 2026.10). Cada programa co
 
 ## Suite CNC 2026.10
 
-Versiones de los programas: **Calcador v95 · Corrector v42 · Tutor G-Code v1 · Simulador 3D V44 · Calculadora de taller v5 · Anidador de tableros v8**.
+Versiones de los programas: **Calcador v102 · Corrector v48 · Tutor G-Code v4 · Simulador 3D V45 · Calculadora de taller v5 · Anidador de tableros v8**.
+
+### Calcador v102 / Corrector v48 / Simulador 3D V45: la fresa arriba al terminar, bajar en diagonal, y las mismas reglas en el Simulador
+- **La fresa, arriba al terminar**: terminar el programa con la fresa dentro de la pieza (Z por debajo de 0) es un error de seguridad; con la fresa abajo, sin subir a la altura de seguridad (por debajo de Z5), un aviso. Antes del fin: G0 Z20.
+- **Bajar en diagonal**: entrar en el material a la vez que se mueve en X/Y (por ejemplo, de Z20 a Z-30 mientras avanza en X) es un aviso: primero se baja en vertical, con el avance de penetración, y después se corta. Desde la superficie, una rampa suave (hasta 15°) no se avisa, como la entrada en rampa de las cajeras de ⚙️ Mecanizar.
+- **El Simulador 3D** revisa lo mismo que el Corrector: no terminar (si arranca el husillo) o terminar arrancándolo, y la fresa dentro del material al terminar, son errores; M30 sin M05, la fresa abajo al terminar, bajar en diagonal y los números de bloque, avisos.
+
+### Calcador v101 / Corrector v47: el final del programa y los números de bloque
+- **El final del programa**: el Corrector comprueba que el programa termine con **M05 y M30, o M02**. Si no termina, o termina arrancando el husillo (un M03 después del último corte, como «N22 M03»), es un error de seguridad. M30 sin M05 delante y las instrucciones después del fin de programa son avisos. Antes, el Corrector no miraba el final. Se revisa en los programas que arrancan el husillo (M03); un fragmento sin M03, como el programa de la hoja de soluciones de una herramienta, no. La hoja de soluciones con varias herramientas, que sí lo arranca, termina ahora con M05 y M30.
+- **Los números de bloque**: si van de 1 en 1 (N1, N2, N3…), un aviso recomienda de 10 en 10 (N10, N20…), para poder intercalar líneas; si no van creciendo (repetidos o hacia atrás), también un aviso. No bajan la nota. Un programa sin números de bloque es correcto.
+
+### Calcador v100 / Corrector v46: programas entregados en un documento
+- En la **corrección masiva** (y desde el zip de Aules), un programa entregado en un documento de LibreOffice (.odt), de Word (.docx o .doc) o en RTF se corrige igual, sacando su texto, aunque el alumno lo haya renombrado a .nc o .txt. Pero se avisa de que el formato es incorrecto: 📄⚠️ junto al nombre, en el resumen de la clase, en una columna nueva del CSV («Formato del archivo») y en su informe impreso. Antes ese alumno no salía en la lista.
+- Los guiones largos (–, −) y los espacios duros que pone el procesador de textos se cambian por los normales. Del Word antiguo (.doc) el texto se recupera buscándolo dentro del archivo: el aviso pide revisar que esté completo. Una memoria sin programa no cuenta si el alumno entrega también el programa.
+
+### Calcador v99: la hoja de ejercicio, sin tabla de coordenadas, en color y ajustada al papel
+- **🖨 Hoja de ejercicio** ya no tiene la tabla de coordenadas en blanco: solo el enunciado, el plano y el cajetín (y, si se pide, la hoja rayada). Al imprimir varios ejercicios desde la 📚 Biblioteca, una tabla larga no cabía en su página y se montaba sobre el enunciado del ejercicio siguiente. Los ejercicios guardados con la tabla marcada salen ahora sin ella.
+- **El plano en color**, con los colores del Calcador (los de la pantalla y de 💾 SVG en color): casilla «Imprimir el plano en color» en la ventana de la hoja y, al imprimir varios desde la Biblioteca, casilla «En color» junto a «🖨 Imprimir sus hojas de ejercicio». Sin marcar, en negro, como antes.
+- **Si el plano no cabe a 1:1, se ajusta al papel**: llena el hueco del dibujo y en el cajetín pone «Escala: ajustada (las cotas mandan)». Antes saltaba a la escala normalizada siguiente (1:2) y una pieza que no cabía por poco quedaba a la mitad.
+
+### Tutor G-Code v4: dos G del mismo grupo no valen
+- En ✍ Practicar (en el Tutor y en la pestaña Tutor del Calcador), una línea con **dos G del mismo grupo** no vale, estén en el orden que estén: se anulan unas a otras. G0, G1, G2 y G3 nunca van juntas, ni G90 y G91, ni G41/G42/G40, ni G71 y G70. El Tutor dice cuáles son: «G1 y G0 son del mismo grupo y se anulan: solo una G de movimiento por línea». Antes, `G1 G0 X70 Y50` valía (se quedaba con la última) y `G0 G1 X70 Y50` se rechazaba con un motivo equivocado. En el informe para Aules cuenta como «G del mismo grupo en una línea». G de grupos distintos (G42 G1, G71 G90 G40 G0) siguen valiendo.
+- Los apuntes «La cabecera del programa» lo explican en el apartado 5, con ejemplos de líneas que no valen.
+
+### Tutor G-Code v3: la cabecera agrupada, y apuntes nuevos «La cabecera del programa»
+- **Apuntes nuevos** (`cabecera_programa.html` / `.pdf`, 9 páginas, enlazados desde la ficha de los Códigos ISO): qué es la cabecera; **la cabecera comparada con preparar una fresadora de mano** (un dibujo con la escala de profundidad en mm ↔ G71, la fresa en la pinza ↔ T101 M06, la rueda de velocidades ↔ S12000, el interruptor ↔ M03 y el motor arriba ↔ G0 Z20; las medidas desde la esquina o una tras otra ↔ G90 y G91; seguir la línea con el centro de la fresa ↔ G40, y la velocidad a la que se empuja ↔ F1000); la de los apuntes, una instrucción por línea; la agrupada (G71 G90 G40 G0 Z20 · T101 M06 · F1000 S12000 M03) y por qué se agrupa así; el orden de las letras (y las G del mismo grupo, que se anulan: G0, G1, G2 y G3 nunca en la misma línea); qué se puede juntar en una línea y qué no (los grupos de G, una sola M, el cambio de herramienta solo); por qué no todo en una línea; y cómo lo corrige el Tutor.
+- En ✍ Practicar, el Tutor acepta también la **cabecera agrupada** según esas reglas: cuando una línea hace también otra de la cabecera, lo dice y la salta; si no cumple una regla, explica cuál. En el informe, esos errores cuentan como «Agrupar la cabecera».
+
+### Tutor G-Code v2: los ejercicios, sin ver la solución, y el 🧾 informe para Aules
+- **El orden de las letras**: en ✍ Practicar, una línea que hace lo correcto pero con las letras desordenadas (M03 S12000, F300 G1 Z-3, X40 F1500 G1 Y30, J antes que I…) no vale: el Tutor dice cómo va, en el orden de la norma y de los apuntes, N G X Y Z (I J K o R) F S T M (D H). Varias G seguidas (G42 G1) valen en cualquier orden. En el informe cuenta como «Orden de las letras».
+- **Dejar un ejercicio** (✕ Dejar el ejercicio o 🗋 Nuevo) borra la pieza, y Deshacer no la recupera: antes, la pieza se quedaba en pantalla y en 👁 Aprender se veía su programa, la solución. Al abrir un ejercicio, Deshacer tampoco vuelve al dibujo anterior, y ⬇ Guardar .nc nunca guarda el programa completo.
+- **🧾 Informe para Aules**, al terminar un programa en ✍ Practicar: un PDF con las líneas a la primera, con fallos y vistas, las pistas, los intentos fallidos, los errores más repetidos por tipo (escritura, signos, G90/G91, centro del arco I/J/R, sentido G2/G3, tipo de movimiento, compensación, avance, funciones M/T/S, coordenadas), cada intento fallido línea a línea con lo que dijo el Tutor, el dibujo y el programa, con una nota orientativa y un código de comprobación.
+- **Calcador v97 y Corrector v45**: en «Toda la clase», el informe del Tutor se lee como el del Simulador (se corrige su programa y se comprueba el código; si se retoca, deja de valer) y su estado dice cómo lo ha escrito el alumno. Los informes del Simulador siguen igual.
+- Guía del Tutor: capítulo nuevo, «El informe para Aules»; los manuales del Calcador y del Corrector lo mencionan en la corrección de toda la clase.
+
+### Corrector v44: la apariencia del Calcador
+- 🗋 Nuevo, 📂 Abrir, 💾 Guardar y 🗂 Biblioteca en la barra de arriba; a la izquierda, las pestañas ✅ Corregir (un programa o toda la clase) y 🧩 Ejercicios (hoja, soluciones, variantes y Aules) y, debajo, Exportar (DXF y SVG).
+- A la derecha, como en el Calcador, el programa de la pieza (📋 Solución o ⚙️ Máquina) con ⚙️ Mecanizado, el reproductor, la explicación de cada línea, ⬇ Guardar .nc, ➜ Simulador 3D y la Ventana de Mecanizar. Sin la pestaña Contornos: el Corrector sigue sin cambiar la pieza.
+- El manual del Corrector (HTML y PDF), con la pantalla nueva.
+- En el Calcador y el Corrector, los textos de ayuda que hablaban de la sección Fresa o de «Abrir .json» ya dicen dónde están ahora las cosas.
+
+### Calcador v96 y Corrector v43: aviso del lado equivocado en ⚙️ Mecanizar
+- Con «G41 en todos» o «G42 en todos», la ventana ⚙️ Mecanizar avisa de qué contornos quedan del lado equivocado (la fresa se come la pieza) y propone «G41/G42 según el trazado». El panel derecho ya lo avisaba; la ventana, no. El lado lo comprueba la propia corrección del Calcador.
+- La prueba `comp_simulador.js` daba dos fallos desde hace tiempo: no eran errores del programa, sino los casos de «G41 en todos» y «G42 en todos», que en una pieza con el exterior y el agujero dibujados en el mismo sentido dejan uno de los dos del lado equivocado a propósito (sirven para enseñarlo). Ahora la prueba exige que el Calcador lo avise y que solo se meta en la pieza el contorno avisado; con el agujero invertido, «G41 en todos» sale limpio.
 
 ### Calcador v95: la interfaz del Tutor
 - **Barra superior**: 🗋 Nuevo, 📂 Abrir, 💾 Guardar y 🗂 Biblioteca, junto al nombre del proyecto.
