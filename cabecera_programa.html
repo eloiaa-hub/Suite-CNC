@@ -1,0 +1,253 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>La cabecera del programa — Apuntes para el alumnado</title><style>
+@page { size: A4; margin: 16mm 15mm 18mm 15mm; }
+* { box-sizing: border-box; }
+body { font-family: 'Segoe UI', 'DejaVu Sans', Arial, sans-serif; color: #1c2733; font-size: 10.6pt; line-height: 1.5; margin: 0; }
+.portada { height: 255mm; display: flex; flex-direction: column; justify-content: center; page-break-after: always; text-align: left; }
+.portada .sup { color: #C4580C; font-weight: 700; letter-spacing: .14em; font-size: 10pt; text-transform: uppercase; }
+.portada h1 { font-size: 34pt; margin: 6mm 0 2mm; color: #005A9C; line-height: 1.1; }
+.portada h2 { font-size: 15pt; font-weight: 500; margin: 0 0 12mm; color: #3d4b59; }
+.portada .pie { margin-top: auto; font-size: 9.5pt; color: #5d6d7e; border-top: 1px solid #d5dde5; padding-top: 4mm; }
+.portada img { width: 100%; border-radius: 6px; box-shadow: 0 4px 18px rgba(0,0,0,.18); margin-bottom: 10mm; }
+.indice { page-break-after: always; }
+.indice h2 { color: #005A9C; font-size: 18pt; margin: 0 0 6mm; }
+.indice ol { font-size: 11.5pt; line-height: 2; padding-left: 7mm; }
+section { page-break-before: always; }
+section:first-of-type { page-break-before: auto; }
+h2.cap { color: #005A9C; font-size: 18pt; margin: 0 0 4mm; border-bottom: 3px solid #C4580C; padding-bottom: 2mm; }
+h2.cap span { color: #C4580C; margin-right: 3mm; }
+h3 { color: #005A9C; font-size: 12pt; margin: 5mm 0 2mm; }
+figure { margin: 3mm 0 4mm; page-break-inside: avoid; }
+figure img { border: 1px solid #d5dde5; border-radius: 5px; display: block; }
+figcaption { font-size: 8.8pt; color: #5d6d7e; margin-top: 1.5mm; font-style: italic; }
+.par { display: flex; gap: 5mm; align-items: flex-start; }
+.par > div { flex: 1; min-width: 0; }
+.par img { width: 100%; }
+.boton { display: inline-block; border: 1px solid #b9c6d3; background: #f2f6fa; border-radius: 4px; padding: 0 5px; font-size: 9.5pt; white-space: nowrap; }
+code { font-family: Consolas, 'DejaVu Sans Mono', monospace; background: #f4f6f8; border: 1px solid #e3e8ee; border-radius: 3px; padding: 0 3px; font-size: 9.4pt; }
+.nota { border-left: 4px solid #005A9C; background: #eef4fa; padding: 3mm 4mm; margin: 4mm 0; border-radius: 0 5px 5px 0; page-break-inside: avoid; }
+.nota.atencion { border-color: #C4580C; background: #fdf1e8; }
+.nota.clase { border-color: #2e9e52; background: #edf7f0; }
+table { border-collapse: collapse; width: 100%; margin: 3mm 0; page-break-inside: avoid; }
+.tabla th { background: #005A9C; color: #fff; text-align: left; padding: 2mm 3mm; font-size: 9.6pt; }
+.tabla td { border-bottom: 1px solid #e3e8ee; padding: 2mm 3mm; vertical-align: top; font-size: 9.8pt; }
+.zonas td { padding: 1.6mm 2mm; vertical-align: top; border-bottom: 1px solid #eef1f4; }
+.zonas td.n { width: 9mm; } .zonas td.n { color: #fff; font-weight: 700; text-align: center; }
+.zonas td.n { background: #C4580C; border-radius: 50%; display: inline-block; width: 7mm; height: 7mm; line-height: 7mm; padding: 0; margin-top: 1mm; }
+ul, ol { padding-left: 6mm; } li { margin: 1mm 0; }
+.colores { list-style: none; padding-left: 0; } .colores .c { display: inline-block; width: 9mm; height: 3mm; border-radius: 2px; margin-right: 2.5mm; vertical-align: middle; }
+.verde { background: #27ae60; } .rojo { background: #d84343; } .naranja { background: #e67e22; }
+.check { list-style: none; padding-left: 0; } .check li { padding-left: 8mm; position: relative; margin: 2.5mm 0; }
+.check li::before { content: '☐'; position: absolute; left: 0; top: -1px; font-size: 13pt; color: #005A9C; }
+.faq dt { font-weight: 700; color: #005A9C; margin-top: 4mm; } .faq dd { margin: 1mm 0 0 0; }
+
+.verde-t { color:#1e8449; font-weight:700; } .rojo-t { color:#c0392b; font-weight:700; } .naranja-t { color:#d35400; font-weight:700; }
+/* margen-pantalla */
+@media screen {
+  html { background: #e9edf2; }
+  body { max-width: 190mm; margin: 0 auto; padding: 14mm 16mm 20mm; background: #fff; box-shadow: 0 2px 16px rgba(20,40,70,.13); box-sizing: border-box; }
+}
+@media screen and (max-width: 760px) { body { padding: 18px 16px 30px; box-shadow: none; } html { background: #fff; } }
+.junto { break-inside: avoid; page-break-inside: avoid; }
+
+/* margen-pantalla */
+@media screen {
+  html { background: #e9edf2; }
+  body { max-width: 190mm; margin: 0 auto; padding: 14mm 16mm 20mm; background: #fff; box-shadow: 0 2px 16px rgba(20,40,70,.13); box-sizing: border-box; }
+}
+@media screen and (max-width: 760px) { body { padding: 18px 16px 30px; box-shadow: none; } html { background: #fff; } }
+.junto { break-inside: avoid; page-break-inside: avoid; }
+h3 { break-after: avoid-page; page-break-after: avoid; }
+figure { text-align: center; } figure img { margin: 0 auto; } figcaption { text-align: center; }
+.formula { font-family: Consolas, "DejaVu Sans Mono", monospace; background: #f4f6f8; border: 1px solid #e3e8ee; border-radius: 5px; padding: 2mm 3mm; margin: 2mm 0; page-break-inside: avoid; }
+</style></head><body>
+<style>
+section + section { page-break-before: auto; break-before: auto; margin-top: 9mm; } h2.cap { break-after: avoid-page; page-break-after: avoid; break-inside: avoid; }
+pre.prog { font-family: Consolas, 'DejaVu Sans Mono', monospace; font-size: 9.6pt; line-height: 1.5; background: #f4f6f8; border: 1px solid #e3e8ee; border-left: 4px solid #005A9C; border-radius: 0 5px 5px 0; padding: 2.5mm 4mm; margin: 3mm 0; white-space: pre; page-break-inside: avoid; overflow: hidden; }
+pre.prog.b { border-left-color: #d35400; } pre.prog.mal { border-left-color: #c0392b; background: #fdf1f0; border-color: #f2d0cc; }
+pre.prog .c { color: #6b7b8c; } pre.prog .g { color: #005A9C; font-weight: 700; } pre.prog .m { color: #8e44ad; font-weight: 700; } pre.prog .o { color: #d35400; font-weight: 700; } pre.prog .x { color: #c0392b; font-weight: 700; }
+.dos { display: flex; gap: 5mm; page-break-inside: avoid; } .dos > * { flex: 1; margin: 2mm 0; min-width: 0; }
+.dos h3 { margin: 0 0 1mm; font-size: 11pt; }
+.va { color: #005A9C; font-weight: 700; } .vb { color: #d35400; font-weight: 700; }
+.tabla.cod td:first-child { font-family: Consolas, 'DejaVu Sans Mono', monospace; font-weight: 700; white-space: nowrap; }
+.tabla td.si { color: #1e8449; font-weight: 700; white-space: nowrap; } .tabla td.no { color: #c0392b; font-weight: 700; white-space: nowrap; } .tabla td.casi { color: #b9770e; font-weight: 700; white-space: nowrap; }
+.orden { display: flex; gap: 1.5mm; justify-content: center; margin: 3mm 0; flex-wrap: wrap; }
+.orden span { font-family: Consolas, 'DejaVu Sans Mono', monospace; font-weight: 700; font-size: 13pt; border: 1.5px solid #005A9C; color: #005A9C; border-radius: 5px; padding: 1mm 2.6mm; }
+.orden span.k { border-color: #8aa4bd; color: #5d7590; font-size: 11pt; }
+.orden i { align-self: center; color: #8aa4bd; font-style: normal; }
+svg.dib { display: block; margin: 0 auto; max-width: 100%; }
+figure.dib { border: 1px solid #e3e8ee; border-radius: 6px; padding: 2mm 0 1mm; margin: 3mm 0; page-break-inside: avoid; }
+figure.dib figcaption { font-size: 9.5pt; color: #5d6d7e; text-align: center; padding: 1mm 4mm 0; }
+.dos figure.dib { margin: 0; }
+.tabla td.num { text-align: center; } .tabla td.num b { display: inline-block; width: 6mm; height: 6mm; line-height: 6mm; border-radius: 50%; background: #C4580C; color: #fff; font-size: 9.5pt; }
+.tabla.mano td:nth-child(3) { font-family: Consolas, 'DejaVu Sans Mono', monospace; font-weight: 700; color: #005A9C; white-space: nowrap; }
+</style>
+<div class="portada"><div class="sup">Suite CNC · Apuntes para el alumnado</div><h1>La cabecera del programa</h1><h2>Las primeras líneas de un programa ISO preparan la máquina antes de cortar: unidades y coordenadas, herramienta, husillo y altura de seguridad. Cómo se escriben una por línea, como en los apuntes, y cómo se pueden agrupar sin que la máquina haga algo que no esperas.</h2>
+<pre class="prog" style="width:fit-content;margin:12mm auto;font-size:14pt;padding:4mm 8mm">(RESUELTO 8 - ARO)
+<span class="g">G71 G90 G40 G0</span> Z20
+T101 <span class="m">M06</span>
+F1000 S12000 <span class="m">M03</span></pre>
+<div class="pie">La cabecera del programa · Suite CNC 2026.10 · © 2026 Eloi A.A.<br>Apuntes publicados con licencia CC BY-SA 4.0.</div></div>
+
+<section><h2 class="cap"><span>1</span>Qué es la cabecera</h2>
+<p>Antes de cortar, la máquina tiene que saber <strong>cómo leer los números</strong> y tener <strong>la fresa preparada</strong>. Eso lo hacen las primeras líneas del programa, la <strong>cabecera</strong>:</p>
+<ul>
+<li>El <strong>nombre</strong> del programa, en un comentario.</li>
+<li>Las <strong>unidades</strong> (milímetros, <code>G71</code>) y el tipo de <strong>coordenadas</strong> (absolutas, <code>G90</code>).</li>
+<li>El <strong>cambio de herramienta</strong>: qué fresa se usa (<code>T101 M06</code>).</li>
+<li>El <strong>husillo</strong>: a cuántas revoluciones gira y que arranque (<code>S12000 M03</code>).</li>
+<li>La <strong>altura de seguridad</strong>: la fresa sube por encima de la pieza antes de moverse (<code>G0 Z20</code>).</li>
+</ul>
+<p>Casi todo son instrucciones <strong>preparatorias</strong>: la fresa todavía no corta. Después de la cabecera empiezan los contornos.</p>
+</section>
+
+<section><h2 class="cap"><span>2</span>Preparar la máquina, como en la fresadora de mano</h2>
+<p>La cabecera no tiene nada de nuevo: es lo mismo que haces con una <strong>fresadora de mano</strong> antes de empezar a cortar. Allí lo preparas tú con las manos; en la CNC lo escribes, porque nadie va a tocar la máquina.</p>
+<figure class="dib"><svg class="dib" viewBox="0 0 640 420" style="width:78%" xmlns="http://www.w3.org/2000/svg"><defs><marker id="f005A9C" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#005A9C"/></marker><marker id="fC4580C" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#C4580C"/></marker><marker id="f1e8449" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1e8449"/></marker><marker id="f8a97a5" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a97a5"/></marker><marker id="fc0392b" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c0392b"/></marker><marker id="f1c2733" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1c2733"/></marker></defs><rect x="135" y="364" width="330" height="44" fill="#f3e3c3" stroke="#8a97a5" stroke-width="1.2"/><path d="M292,364 L292,382 L306,382 L306,364" fill="#e6cfa3" stroke="#c9a46a" stroke-width="1"/><rect x="205" y="354" width="200" height="10" fill="#b9c3cd" stroke="#1c2733" stroke-width="1.4"/><rect x="211" y="350" width="188" height="4" fill="#dfe5eb" stroke="#8a97a5" stroke-width="1"/><path d="M239,350 L239,236 L359,236 L359,350" fill="#dfe5eb" stroke="#1c2733" stroke-width="1.4"/><path d="M257,346 L257,290 L341,290 L341,346 Z" fill="#fff" stroke="#8a97a5" stroke-width="1.1"/><path d="M239,258 L205,250 L201,258 L239,268 Z" fill="#1c2733" stroke="#1c2733" stroke-width="1"/><rect x="361" y="242" width="18" height="96" fill="#fff" stroke="#1c2733" stroke-width="1.2"/><line x1="361" y1="334.0" x2="370" y2="334.0" stroke="#1c2733" stroke-width="0.9"/><text x="377" y="337.0" fill="#1c2733" font-size="8.5" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="end" font-weight="600">0</text><line x1="361" y1="329.6" x2="366" y2="329.6" stroke="#1c2733" stroke-width="0.9"/><line x1="361" y1="325.2" x2="366" y2="325.2" stroke="#1c2733" stroke-width="0.9"/><line x1="361" y1="320.8" x2="366" y2="320.8" stroke="#1c2733" stroke-width="0.9"/><line x1="361" y1="316.4" x2="366" y2="316.4" stroke="#1c2733" stroke-width="0.9"/><line x1="361" y1="312.0" x2="370" y2="312.0" stroke="#1c2733" stroke-width="0.9"/><text x="377" y="315.0" fill="#1c2733" font-size="8.5" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="end" font-weight="600">10</text><line x1="361" y1="307.6" x2="366" y2="307.6" stroke="#1c2733" stroke-width="0.9"/><line x1="361" y1="303.2" x2="366" y2="303.2" stroke="#1c2733" stroke-width="0.9"/><line x1="361" y1="298.8" x2="366" y2="298.8" stroke="#1c2733" stroke-width="0.9"/><line x1="361" y1="294.4" x2="366" y2="294.4" stroke="#1c2733" stroke-width="0.9"/><line x1="361" y1="290.0" x2="370" y2="290.0" stroke="#1c2733" stroke-width="0.9"/><text x="377" y="293.0" fill="#1c2733" font-size="8.5" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="end" font-weight="600">20</text><line x1="361" y1="285.6" x2="366" y2="285.6" stroke="#1c2733" stroke-width="0.9"/><line x1="361" y1="281.2" x2="366" y2="281.2" stroke="#1c2733" stroke-width="0.9"/><line x1="361" y1="276.8" x2="366" y2="276.8" stroke="#1c2733" stroke-width="0.9"/><line x1="361" y1="272.4" x2="366" y2="272.4" stroke="#1c2733" stroke-width="0.9"/><line x1="361" y1="268.0" x2="370" y2="268.0" stroke="#1c2733" stroke-width="0.9"/><text x="377" y="271.0" fill="#1c2733" font-size="8.5" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="end" font-weight="600">30</text><line x1="361" y1="263.6" x2="366" y2="263.6" stroke="#1c2733" stroke-width="0.9"/><line x1="361" y1="259.2" x2="366" y2="259.2" stroke="#1c2733" stroke-width="0.9"/><line x1="361" y1="254.8" x2="366" y2="254.8" stroke="#1c2733" stroke-width="0.9"/><line x1="361" y1="250.4" x2="366" y2="250.4" stroke="#1c2733" stroke-width="0.9"/><line x1="361" y1="246.0" x2="370" y2="246.0" stroke="#1c2733" stroke-width="0.9"/><text x="377" y="249.0" fill="#1c2733" font-size="8.5" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="end" font-weight="600">40</text><text x="370" y="239" fill="#1c2733" font-size="8.5" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="middle" font-weight="700">mm</text><path d="M253,288 L253,78 L345,78 L345,288 Z" fill="#d6e4f0" stroke="#1c2733" stroke-width="1.5"/><line x1="263" y1="108" x2="335" y2="108" stroke="#9db8d2" stroke-width="2"/><line x1="263" y1="100" x2="335" y2="100" stroke="#9db8d2" stroke-width="2"/><line x1="263" y1="92" x2="335" y2="92" stroke="#9db8d2" stroke-width="2"/><path d="M253,78 L259,64 L339,64 L345,78 Z" fill="#9db8d2" stroke="#1c2733" stroke-width="1.4"/><rect x="285" y="56" width="28" height="8" fill="#fff" stroke="#1c2733" stroke-width="1.2"/><line x1="288" y1="64" x2="288" y2="56" stroke="#1c2733" stroke-width="0.8"/><line x1="292" y1="64" x2="292" y2="56" stroke="#1c2733" stroke-width="0.8"/><line x1="296" y1="64" x2="296" y2="56" stroke="#1c2733" stroke-width="0.8"/><line x1="300" y1="64" x2="300" y2="56" stroke="#1c2733" stroke-width="0.8"/><line x1="304" y1="64" x2="304" y2="56" stroke="#1c2733" stroke-width="0.8"/><line x1="308" y1="64" x2="308" y2="56" stroke="#1c2733" stroke-width="0.8"/><rect x="285" y="138" width="30" height="20" fill="#fff" stroke="#1c2733" stroke-width="1.2"/><rect x="287" y="140" width="13" height="16" fill="#c0392b" stroke="#c0392b" stroke-width="0.8"/><text x="293.5" y="152" fill="#fff" font-size="10" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="middle" font-weight="700">I</text><text x="307.5" y="152" fill="#1c2733" font-size="10" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="middle" font-weight="700">O</text><path d="M345,88 C385,78 405,48 435,36" fill="none" stroke="#1c2733" stroke-width="5" stroke-linecap="round"/><path d="M289,288 L289,304 L294,312 L304,312 L309,304 L309,288 Z" fill="#b9c3cd" stroke="#1c2733" stroke-width="1.2"/><rect x="295" y="312" width="8" height="36" fill="#c8d0d8" stroke="#1c2733" stroke-width="1"/><path d="M293,348 L293,380 L299,384 L305,380 L305,348 Z" fill="#C4580C" stroke="#1c2733" stroke-width="1"/><line x1="425" y1="268" x2="379" y2="288" stroke="#C4580C" stroke-width="1.3"/><circle cx="379" cy="288" r="3" fill="#C4580C"/><circle cx="425" cy="268" r="11" fill="#C4580C" stroke="#fff" stroke-width="2"/><text x="425" y="272.5" fill="#fff" font-size="13" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="middle" font-weight="700">1</text><line x1="425" y1="46" x2="311" y2="56" stroke="#C4580C" stroke-width="1.3"/><circle cx="311" cy="56" r="3" fill="#C4580C"/><circle cx="425" cy="46" r="11" fill="#C4580C" stroke="#fff" stroke-width="2"/><text x="425" y="50.5" fill="#fff" font-size="13" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="middle" font-weight="700">2</text><line x1="425" y1="148" x2="315" y2="148" stroke="#C4580C" stroke-width="1.3"/><circle cx="315" cy="148" r="3" fill="#C4580C"/><circle cx="425" cy="148" r="11" fill="#C4580C" stroke="#fff" stroke-width="2"/><text x="425" y="152.5" fill="#fff" font-size="13" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="middle" font-weight="700">3</text><line x1="175" y1="328" x2="293" y2="368" stroke="#C4580C" stroke-width="1.3"/><circle cx="293" cy="368" r="3" fill="#C4580C"/><circle cx="175" cy="328" r="11" fill="#C4580C" stroke="#fff" stroke-width="2"/><text x="175" y="332.5" fill="#fff" font-size="13" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="middle" font-weight="700">4</text><line x1="175" y1="198" x2="253" y2="198" stroke="#C4580C" stroke-width="1.3"/><circle cx="253" cy="198" r="3" fill="#C4580C"/><circle cx="175" cy="198" r="11" fill="#C4580C" stroke="#fff" stroke-width="2"/><text x="175" y="202.5" fill="#fff" font-size="13" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="middle" font-weight="700">5</text><text x="443" y="272.5" fill="#1c2733" font-size="12.5" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="600">escala de profundidad, en mm</text><text x="443" y="50.5" fill="#1c2733" font-size="12.5" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="600">rueda de velocidades</text><text x="443" y="152.5" fill="#1c2733" font-size="12.5" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="600">interruptor</text><text x="157" y="314" fill="#1c2733" font-size="12.5" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="end" font-weight="600">la fresa</text><text x="157" y="329" fill="#1c2733" font-size="12.5" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="end" font-weight="600">en la pinza</text><text x="157" y="184" fill="#1c2733" font-size="12.5" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="end" font-weight="600">el motor:</text><text x="157" y="199" fill="#1c2733" font-size="12.5" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="end" font-weight="600">lo empujas</text><text x="300" y="402" fill="#8a97a5" font-size="11" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="middle" font-weight="700">la pieza</text></svg><figcaption>Una fresadora de mano (de lado, apoyada en la pieza). Cada número es algo que preparas antes de cortar.</figcaption></figure>
+<table class="tabla mano"><tr><th></th><th>En la fresadora de mano</th><th>En el programa</th><th>Por qué</th></tr>
+<tr><td class="num"><b>1</b></td><td>La <strong>escala de profundidad</strong> está marcada en milímetros: con ella ajustas cuánto baja la fresa.</td><td>G71<br><span style="color:#5d6d7e;font-weight:400">(G70)</span></td><td>La CNC no ve la escala: hay que decirle en qué unidades van los números. <code>G71</code> milímetros, <code>G70</code> pulgadas.</td></tr>
+<tr><td class="num"><b>4</b></td><td>Pones la <strong>fresa en la pinza</strong> y aprietas la tuerca.</td><td>T101 M06</td><td><code>T101</code> dice qué fresa; <code>M06</code> hace el cambio.</td></tr>
+<tr><td class="num"><b>2</b></td><td>Giras la <strong>rueda de velocidades</strong> hasta el número que toca para esa fresa y esa madera.</td><td>S12000</td><td>En lugar de un número de la rueda, las revoluciones por minuto.</td></tr>
+<tr><td class="num"><b>3</b></td><td>Enciendes con el <strong>interruptor</strong>, con la fresa todavía sin tocar la pieza.</td><td>M03</td><td>Arranca el husillo (y <code>M05</code> lo para, como apagar el interruptor).</td></tr>
+<tr><td class="num"><b>5</b></td><td>Antes de encender, el motor está <strong>arriba</strong>, con la fresa fuera de la madera. Para cortar, lo empujas hacia abajo hasta la profundidad.</td><td>G0 Z20<br><span style="color:#5d6d7e;font-weight:400">G1 Z-3 F300</span></td><td>La altura de seguridad. Bajar a cortar ya no es de la cabecera: va al empezar cada contorno, y despacio.</td></tr></table>
+<p>Y luego está lo que hace <strong>tu mano</strong> mientras cortas: seguir el dibujo, a una velocidad. En el programa también se prepara.</p>
+<h3>De dónde se miden las medidas: G90 o G91</h3>
+<p>Con la fresadora de mano, antes de cortar <strong>trazas el dibujo</strong> en la pieza con el lápiz y la regla. Las medidas las puedes tomar de dos formas, y el programa tiene que saber cuál usas:</p>
+<div class="dos"><figure class="dib"><svg class="dib" viewBox="0 0 380 300" style="width:100%" xmlns="http://www.w3.org/2000/svg"><defs><marker id="f005A9C" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#005A9C"/></marker><marker id="fC4580C" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#C4580C"/></marker><marker id="f1e8449" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1e8449"/></marker><marker id="f8a97a5" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a97a5"/></marker><marker id="fc0392b" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c0392b"/></marker><marker id="f1c2733" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1c2733"/></marker></defs><rect x="29.2" y="69.2" width="275.6" height="171.60000000000002" fill="#f3e3c3" stroke="#8a97a5" stroke-width="1"/><polygon points="50.0,220.0 206.0,220.0 206.0,168.0 284.0,168.0 284.0,90.0 50.0,90.0" fill="rgba(0,90,156,.06)" stroke="#005A9C" stroke-width="2.2" stroke-linejoin="round"/><circle cx="50.0" cy="220.0" r="7" fill="#fff" stroke="#1c2733" stroke-width="1.3"/><path d="M50.0,220.0 L57.0,220.0 A7,7 0 0,0 50.0,213.0 Z" fill="#1c2733"/><path d="M50.0,220.0 L43.0,220.0 A7,7 0 0,0 50.0,227.0 Z" fill="#1c2733"/><text x="50.0" y="242.0" fill="#1c2733" font-size="11" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="middle" font-weight="700">P1 X0 Y0</text><line x1="50.0" y1="220.0" x2="206.0" y2="220.0" stroke="#C4580C" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#fC4580C)"/><circle cx="206.0" cy="220.0" r="3.5" fill="#C4580C"/><text x="212.0" y="235.0" fill="#1c2733" font-size="11" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="700">P2 X60 Y0</text><line x1="50.0" y1="220.0" x2="206.0" y2="168.0" stroke="#C4580C" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#fC4580C)"/><circle cx="206.0" cy="168.0" r="3.5" fill="#C4580C"/><text x="212.0" y="183.0" fill="#1c2733" font-size="11" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="700">P3 X60 Y20</text><line x1="50.0" y1="220.0" x2="284.0" y2="168.0" stroke="#C4580C" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#fC4580C)"/><circle cx="284.0" cy="168.0" r="3.5" fill="#C4580C"/><text x="290.0" y="183.0" fill="#1c2733" font-size="11" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="700">P4 X90 Y20</text><line x1="50.0" y1="220.0" x2="284.0" y2="90.0" stroke="#C4580C" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#fC4580C)"/><circle cx="284.0" cy="90.0" r="3.5" fill="#C4580C"/><text x="290.0" y="82.0" fill="#1c2733" font-size="11" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="700">P5 X90 Y50</text><line x1="50.0" y1="220.0" x2="50.0" y2="90.0" stroke="#C4580C" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#fC4580C)"/><circle cx="50.0" cy="90.0" r="3.5" fill="#C4580C"/><text x="50.0" y="82.0" fill="#1c2733" font-size="11" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="middle" font-weight="700">P6 X0 Y50</text><text x="167.0" y="266.8" fill="#C4580C" font-size="13" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="middle" font-weight="700">G90 · ABSOLUTAS</text><text x="167.0" y="282.8" fill="#8a97a5" font-size="11" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="middle" font-weight="400">cada punto, medido desde el cero pieza</text></svg><figcaption>Todas las medidas desde la misma esquina, el <strong>cero pieza</strong>: <code>G90</code>.</figcaption></figure>
+<figure class="dib"><svg class="dib" viewBox="0 0 380 300" style="width:100%" xmlns="http://www.w3.org/2000/svg"><defs><marker id="f005A9C" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#005A9C"/></marker><marker id="fC4580C" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#C4580C"/></marker><marker id="f1e8449" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1e8449"/></marker><marker id="f8a97a5" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a97a5"/></marker><marker id="fc0392b" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c0392b"/></marker><marker id="f1c2733" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1c2733"/></marker></defs><rect x="29.2" y="69.2" width="275.6" height="171.60000000000002" fill="#f3e3c3" stroke="#8a97a5" stroke-width="1"/><polygon points="50.0,220.0 206.0,220.0 206.0,168.0 284.0,168.0 284.0,90.0 50.0,90.0" fill="rgba(0,90,156,.06)" stroke="#005A9C" stroke-width="2.2" stroke-linejoin="round"/><circle cx="50.0" cy="220.0" r="7" fill="#fff" stroke="#1c2733" stroke-width="1.3"/><path d="M50.0,220.0 L57.0,220.0 A7,7 0 0,0 50.0,213.0 Z" fill="#1c2733"/><path d="M50.0,220.0 L43.0,220.0 A7,7 0 0,0 50.0,227.0 Z" fill="#1c2733"/><line x1="50.0" y1="220.0" x2="206.0" y2="220.0" stroke="#C4580C" stroke-width="1.8" marker-end="url(#fC4580C)"/><text x="128.0" y="234.0" fill="#1c2733" font-size="11" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="middle" font-weight="700">X+60</text><line x1="206.0" y1="220.0" x2="206.0" y2="168.0" stroke="#C4580C" stroke-width="1.8" marker-end="url(#fC4580C)"/><text x="220.0" y="198.0" fill="#1c2733" font-size="11" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="middle" font-weight="700">Y+20</text><line x1="206.0" y1="168.0" x2="284.0" y2="168.0" stroke="#C4580C" stroke-width="1.8" marker-end="url(#fC4580C)"/><text x="245.0" y="162.0" fill="#1c2733" font-size="11" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="middle" font-weight="700">X+30</text><line x1="284.0" y1="168.0" x2="284.0" y2="90.0" stroke="#C4580C" stroke-width="1.8" marker-end="url(#fC4580C)"/><text x="298.0" y="133.0" fill="#1c2733" font-size="11" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="middle" font-weight="700">Y+30</text><line x1="284.0" y1="90.0" x2="50.0" y2="90.0" stroke="#C4580C" stroke-width="1.8" marker-end="url(#fC4580C)"/><text x="167.0" y="84.0" fill="#1c2733" font-size="11" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="middle" font-weight="700">X-90</text><line x1="50.0" y1="90.0" x2="50.0" y2="220.0" stroke="#C4580C" stroke-width="1.8" marker-end="url(#fC4580C)"/><text x="34.0" y="159.0" fill="#1c2733" font-size="11" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="middle" font-weight="700">Y-50</text><circle cx="50.0" cy="220.0" r="3.5" fill="#C4580C"/><circle cx="206.0" cy="220.0" r="3.5" fill="#C4580C"/><circle cx="206.0" cy="168.0" r="3.5" fill="#C4580C"/><circle cx="284.0" cy="168.0" r="3.5" fill="#C4580C"/><circle cx="284.0" cy="90.0" r="3.5" fill="#C4580C"/><circle cx="50.0" cy="90.0" r="3.5" fill="#C4580C"/><text x="167.0" y="266.8" fill="#C4580C" font-size="13" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="middle" font-weight="700">G91 · INCREMENTALES</text><text x="167.0" y="282.8" fill="#8a97a5" font-size="11" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="middle" font-weight="400">cada punto, medido desde el anterior</text></svg><figcaption>Cada medida desde el <strong>punto anterior</strong>, una detrás de otra: <code>G91</code>.</figcaption></figure></div>
+<p>Con la regla, medir siempre desde la esquina es más seguro: si te equivocas en una medida, solo falla ese punto. Midiendo una tras otra, el error se va arrastrando a todos los siguientes. Por eso en los apuntes se usa <code>G90</code>.</p>
+<h3>Seguir la línea del dibujo, a una velocidad: G40 y la F</h3>
+<figure class="dib"><svg class="dib" viewBox="0 0 560 275" style="width:88%" xmlns="http://www.w3.org/2000/svg"><defs><marker id="f005A9C" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#005A9C"/></marker><marker id="fC4580C" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#C4580C"/></marker><marker id="f1e8449" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1e8449"/></marker><marker id="f8a97a5" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a97a5"/></marker><marker id="fc0392b" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c0392b"/></marker><marker id="f1c2733" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1c2733"/></marker></defs><rect x="28.8" y="17.8" width="447.2" height="213.2" fill="#f3e3c3" stroke="#8a97a5" stroke-width="1"/><polyline points="60.0,205.0 346.0,205.0 424.0,127.0 424.0,43.8" fill="none" stroke="#005A9C" stroke-width="2.2" stroke-linejoin="round"/><circle cx="216.0" cy="205.0" r="7.8" fill="rgba(196,88,12,.25)" stroke="#C4580C" stroke-width="1.6"/><circle cx="216.0" cy="205.0" r="2.5" fill="#C4580C"/><line x1="242.0" y1="189.4" x2="325.2" y2="189.4" stroke="#C4580C" stroke-width="2.2" marker-end="url(#fC4580C)"/><text x="283.6" y="179.4" fill="#C4580C" font-size="12" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="middle" font-weight="700">F1000: la fresa avanza a 1000 mm/min</text><text x="216.0" y="231.0" fill="#1c2733" font-size="11.5" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="middle" font-weight="600">el centro de la fresa, sobre la línea</text><text x="216.0" y="247.0" fill="#005A9C" font-size="12.5" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="middle" font-weight="700">G40 · sin compensación</text><text x="437.2" y="85.4" fill="#005A9C" font-size="11.5" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="700">la línea</text><text x="437.2" y="99.4" fill="#005A9C" font-size="11.5" font-family="'Segoe UI','DejaVu Sans',Arial,sans-serif" text-anchor="start" font-weight="700">del dibujo</text></svg><figcaption>La fresa va con su centro sobre la línea del dibujo, sin desplazarse a ningún lado, y avanza a una velocidad.</figcaption></figure>
+<ul>
+<li><strong><code>G40</code>, sin compensación:</strong> la fresa sigue la línea del dibujo con su <strong>centro</strong>, como cuando guías la fresadora de mano justo sobre la línea trazada. (Desplazar la fresa a un lado de la línea es la compensación, que se explica en los apuntes de ISO; en la cabecera se deja apagada.)</li>
+<li><strong><code>F1000</code>, el avance:</strong> la velocidad a la que empujas la máquina. Con la de mano lo notas por el ruido y por la fuerza: si vas muy rápido la fresa se frena; si vas muy despacio, quema la madera. En la CNC se escribe: 1000 milímetros por minuto.</li>
+</ul>
+<table class="tabla mano"><tr><th></th><th>Antes de cortar, con la fresadora de mano…</th><th>…y en la cabecera</th></tr>
+<tr><td class="num"><b>1</b></td><td>miras la escala en milímetros</td><td>G71</td></tr>
+<tr><td class="num"></td><td>trazas el dibujo con las medidas desde la esquina</td><td>G90</td></tr>
+<tr><td class="num"></td><td>vas a seguir la línea con el centro de la fresa</td><td>G40</td></tr>
+<tr><td class="num"><b>5</b></td><td>tienes la fresa arriba, fuera de la madera</td><td>G0 Z20</td></tr>
+<tr><td class="num"><b>4</b></td><td>pones la fresa en la pinza</td><td>T101 M06</td></tr>
+<tr><td class="num"></td><td>sabes a qué velocidad la vas a empujar</td><td>F1000</td></tr>
+<tr><td class="num"><b>2</b></td><td>giras la rueda de velocidades</td><td>S12000</td></tr>
+<tr><td class="num"><b>3</b></td><td>enciendes</td><td>M03</td></tr></table>
+<p>Leída de arriba abajo, es la cabecera agrupada del apartado 4: <code>G71 G90 G40 G0 Z20</code> · <code>T101 M06</code> · <code>F1000 S12000 M03</code>.</p>
+</section>
+
+<section><h2 class="cap"><span>3</span>La cabecera de los apuntes: una instrucción por línea</h2>
+<p>Es la que escriben el Tutor, ⚙️ Mecanizar del Calcador y los programas resueltos. Cada cosa va en su línea, con su comentario:</p>
+<pre class="prog">(RESUELTO 8 - ARO)        <span class="c">; nombre del programa</span>
+<span class="g">G71 G90</span>                   <span class="c">; milímetros y coordenadas absolutas</span>
+T101 <span class="m">M06</span>                  <span class="c">; cambio a la fresa T101 (Ø6)</span>
+S12000 <span class="m">M03</span>                <span class="c">; arranca el husillo a 12000 rpm</span>
+<span class="g">G0</span> Z20                    <span class="c">; sube a la altura de seguridad</span></pre>
+<p>Después, en cada contorno, la <strong>F</strong> se escribe donde se usa: la de <strong>bajar</strong> (penetración) en la línea que baja y la de <strong>cortar</strong> en el primer corte:</p>
+<pre class="prog"><span class="g">G1</span> Z-3 F300               <span class="c">; baja despacio a la profundidad</span>
+<span class="g">G41 G1</span> X70 Y50 F1000     <span class="c">; entra en el contorno y corta a F1000</span></pre>
+<p>Es la forma más clara para aprender: cada línea hace una sola cosa y se lee y se corrige fácil.</p>
+</section>
+
+<section><h2 class="cap"><span>4</span>La cabecera agrupada</h2>
+<p>Las mismas instrucciones se pueden juntar: la <strong>preparación</strong> en una línea y los <strong>datos de corte de la fresa</strong> en otra.</p>
+<pre class="prog b">(RESUELTO 8 - ARO)        <span class="c">; nombre del programa</span>
+<span class="g">G71 G90 G40 G0</span> Z20        <span class="c">; mm, absolutas, sin compensación y arriba</span>
+T101 <span class="m">M06</span>                  <span class="c">; cambio de herramienta (en su propia línea)</span>
+F1000 S12000 <span class="m">M03</span>          <span class="c">; avance de corte, revoluciones y arranque del husillo</span></pre>
+<p>Por qué se agrupa así:</p>
+<ul>
+<li><strong>Línea 1, la preparación.</strong> <code>G71</code>, <code>G90</code>, <code>G40</code> y <code>G0</code> son de <strong>grupos distintos</strong> (unidades, coordenadas, compensación y movimiento), así que pueden ir juntas. Poner <code>G40</code> al principio es una buena costumbre: deja la máquina sin compensación aunque el programa anterior terminara con ella. Y subir (<code>G0 Z20</code>) <strong>antes</strong> del cambio de herramienta es lo seguro: el cambio con la fresa dentro de la pieza es un choque.</li>
+<li><strong>Línea 2, el cambio de herramienta, solo.</strong> <code>T101 M06</code> va en su propia línea. Si le añades el <code>M03</code>, serían dos funciones M en un mismo bloque (apartado 6).</li>
+<li><strong>Línea 3, los datos de corte de la fresa.</strong> El avance, las revoluciones y el arranque, en el <strong>orden de la norma</strong> (F S M) y con <strong>una sola M</strong>. La F se puede escribir sin movimiento: se queda guardada para los siguientes <code>G1</code> (es <em>modal</em>).</li>
+</ul>
+<div class="nota atencion"><strong>⚠️ La F de la cabecera es la de cortar.</strong> Al bajar hay que seguir escribiendo la F de penetración (<code>G1 Z-3 F300</code>) y, al empezar a cortar, otra vez la de corte (<code>F1000</code>). Si no, la fresa bajaría a F1000: entraría de golpe en la madera.</div>
+</section>
+
+<section><h2 class="cap"><span>5</span>El orden de las letras</h2>
+<p>Dentro de cada línea, las letras van siempre en el orden de la norma, también cuando agrupas:</p>
+<div class="orden"><span>N</span><span>G</span><span>X</span><span>Y</span><span>Z</span><i>·</i><span class="k">I J K</span><i>o</i><span class="k">R</span><i>·</i><span>F</span><span>S</span><span>T</span><span>M</span></div>
+<div class="dos">
+<div><h3 class="va">Bien</h3>
+<pre class="prog">F1000 S12000 <span class="m">M03</span>
+<span class="g">G71 G90 G40 G0</span> Z20
+T101 <span class="m">M06</span></pre></div>
+<div><h3 class="vb">Mal</h3>
+<pre class="prog mal"><span class="m">M03</span> S12000 F1000  <span class="c">; M, al final</span>
+Z20 <span class="g">G0 G90</span>         <span class="c">; G, delante</span>
+<span class="m">M06</span> T101           <span class="c">; T antes que M</span></pre></div>
+</div>
+<p>Varias G seguidas pueden ir en cualquier orden entre ellas (<code>G42 G1</code> o <code>G1 G42</code>), <strong>siempre que sean de grupos distintos</strong>. Lo que va en un comentario (detrás de <code>;</code> o entre paréntesis) no cuenta.</p>
+<div class="nota atencion"><strong>⚠️ Hay G que no pueden ir juntas.</strong> Las G del <strong>mismo grupo</strong> se anulan unas a otras: cada una dice algo distinto sobre lo mismo, y la máquina solo puede hacer una. Las de movimiento, <code>G0</code>, <code>G1</code>, <code>G2</code> y <code>G3</code>, <strong>nunca van en la misma línea</strong>: un tramo es rápido o en corte, recto o en arco, pero no las dos cosas a la vez.
+<pre class="prog mal"><span class="g">G0 G1</span> X40 Y30            <span class="c">; ✗ ¿en rápido o cortando?</span>
+<span class="g">G1 G2</span> X70 Y50 R20        <span class="c">; ✗ ¿recto o en arco?</span>
+<span class="g">G90 G91</span>                  <span class="c">; ✗ ¿absolutas o incrementales?</span>
+<span class="g">G41 G42</span>                  <span class="c">; ✗ ¿a la izquierda o a la derecha?</span></pre>
+Lo mismo pasa con <code>G90</code> / <code>G91</code>, <code>G71</code> / <code>G70</code> y <code>G40</code> / <code>G41</code> / <code>G42</code>. En el apartado 6 están los grupos.</div>
+</section>
+
+<section><h2 class="cap"><span>6</span>Qué se puede juntar en una línea y qué no</h2>
+<table class="tabla cod"><tr><th>Junto</th><th>¿Vale?</th><th>Por qué</th></tr>
+<tr><td>G71 G90 G40</td><td class="si">Sí</td><td>G de grupos distintos: unidades, coordenadas y compensación.</td></tr>
+<tr><td>G90 G0 Z20</td><td class="si">Sí</td><td>G de grupos distintos, con su movimiento.</td></tr>
+<tr><td>G0 G1 · G1 G2 · G90 G91</td><td class="no">No</td><td>Son del mismo grupo: se anulan. G0, G1, G2 y G3 nunca van en la misma línea. Solo una G de cada grupo.</td></tr>
+<tr><td>T101 M06</td><td class="si">Sí</td><td>Es la forma normal del cambio de herramienta.</td></tr>
+<tr><td>S12000 M03 · F1000 S12000 M03</td><td class="si">Sí</td><td>Una sola función M.</td></tr>
+<tr><td>T101 M06 M03</td><td class="no">Mejor no</td><td>Dos funciones M: depende del control y del orden en que las haga.</td></tr>
+<tr><td>S12000 T101 M06</td><td class="casi">Suele valer</td><td>Una sola M, pero la S antes del cambio puede no conservarse. Mejor la S con el M03, después del cambio.</td></tr>
+<tr><td>G71 G90 T101 M06</td><td class="casi">Mejor no</td><td>El cambio de herramienta, en su propia línea: se lee mejor y se puede reanudar el programa desde ahí.</td></tr></table>
+<p>Los <strong>grupos de G</strong> que usamos en la cabecera:</p>
+<table class="tabla cod"><tr><th>Grupo</th><th>Qué decide</th><th>Solo una de</th></tr>
+<tr><td>Unidades</td><td>Milímetros o pulgadas</td><td>G71 · G70 (o G21 · G20)</td></tr>
+<tr><td>Coordenadas</td><td>Absolutas o incrementales</td><td>G90 · G91</td></tr>
+<tr><td>Compensación</td><td>Sin compensación, a la izquierda o a la derecha</td><td>G40 · G41 · G42</td></tr>
+<tr><td>Movimiento</td><td>Rápido, recta o arco</td><td>G0 · G1 · G2 · G3</td></tr></table>
+</section>
+
+<section><h2 class="cap"><span>7</span>¿Y todo en una línea?</h2>
+<pre class="prog mal"><span class="g">G71 G90</span> S12000 T101 <span class="m">M06 M03</span>   <span class="c">; ¡no!</span></pre>
+<p>El orden de las letras está bien, pero <strong>no es buena idea</strong>, por dos motivos:</p>
+<ol>
+<li><strong>Dos funciones M en un bloque.</strong> Muchos controles solo admiten <strong>una M por línea</strong> (en Fanuc, por ejemplo, admitir varias depende de cómo esté configurada la máquina). Otros, como Siemens o Fagor, sí admiten varias. En unos funcionaría y en otros daría un error.</li>
+<li><strong>El orden en que se hacen.</strong> Dentro de una línea, el control no ejecuta las palabras de izquierda a derecha: lo decide él. Con <code>M06</code> y <code>M03</code> juntas, el husillo podría arrancar antes de acabar el cambio, girar con la fresa vieja o quedarse parado con la nueva. Y una fresa que entra en la madera sin girar se rompe.</li>
+</ol>
+<p>Con <code>T101 M06</code> en una línea y <code>S12000 M03</code> en la siguiente, el orden está garantizado: <strong>primero cambia, después arranca</strong>. Por eso el cambio de herramienta va siempre en su propia línea, y es lo que hacen los manuales de las máquinas y los programas de CAM.</p>
+<div class="nota"><strong>💡 Tu máquina.</strong> Cada control tiene sus reglas. Si vas a agrupar en la máquina del taller, mira su manual o pregunta al profesor qué admite.</div>
+</section>
+
+<section><h2 class="cap"><span>8</span>En el Tutor</h2>
+<p>En ✍ Practicar, el Tutor te propone la cabecera de los apuntes, línea a línea, pero <strong>también acepta la agrupada</strong>, siempre que siga estas reglas:</p>
+<ul>
+<li>Las letras en el <strong>orden de la norma</strong>: N G X Y Z (I J K o R) F S T M.</li>
+<li>Solo <strong>una G de cada grupo</strong> y solo <strong>una función M</strong> en cada línea.</li>
+<li>El <strong>cambio de herramienta</strong> en su propia línea: <code>T… M06</code>.</li>
+<li>El <strong>husillo</strong> (<code>S… M03</code>) <strong>después</strong> del cambio de herramienta.</li>
+<li>Los valores de ⚙️ Mecanizado: la herramienta, las revoluciones, la altura de seguridad y, si pones la F, la <strong>de corte</strong>.</li>
+</ul>
+<p>Y en <strong>todas las líneas</strong> del programa, no solo en la cabecera, el Tutor no acepta dos G del mismo grupo: con <code>G1 G0 X70 Y50</code> te dice «G1 y G0 son del mismo grupo y se anulan: solo una G de movimiento por línea».</p>
+<p>Cuando una línea agrupada hace también otra de la cabecera, el Tutor te lo dice («Esta línea hace también la línea 5 (G0 Z20)») y se salta esa línea. Si no cumple alguna regla, te explica cuál.</p>
+<pre class="prog b"><span class="c">; escribes                      el Tutor</span>
+<span class="g">G71 G90 G40 G0</span> Z20             <span class="c">; ✓ hace también la línea 5 (G0 Z20)</span>
+T101 <span class="m">M06</span>                       <span class="c">; ✓</span>
+F1000 S12000 <span class="m">M03</span>               <span class="c">; ✓ y pasa al primer contorno</span></pre>
+<pre class="prog mal">T101 <span class="m">M06 M03</span>                   <span class="c">; ✗ una sola función M en cada línea</span>
+<span class="g">G71 G90</span> T101 <span class="m">M06</span>               <span class="c">; ✗ el cambio de herramienta va en su propia línea</span>
+<span class="g">G71 G90</span> S12000 <span class="m">M03</span>             <span class="c">; ✗ primero el cambio de herramienta</span>
+<span class="m">M03</span> S12000                     <span class="c">; ✗ el orden de las letras: S12000 M03</span></pre>
+</section>
+
+<section><h2 class="cap"><span>9</span>Resumen</h2>
+<table class="tabla cod"><tr><th>Regla</th><th>Ejemplo</th></tr>
+<tr><td>N G X Y Z F S T M</td><td>El orden de las letras en cada línea, también al agrupar.</td></tr>
+<tr><td>G71 G90 G40 G0 Z20</td><td>G de grupos distintos, juntas. Una de cada grupo: nunca G0, G1, G2 o G3 en la misma línea.</td></tr>
+<tr><td>T101 M06</td><td>El cambio de herramienta, solo, en su línea. Antes, la fresa arriba.</td></tr>
+<tr><td>F1000 S12000 M03</td><td>Una sola M por línea. El husillo, después del cambio.</td></tr>
+<tr><td>G1 Z-3 F300</td><td>Aunque la cabecera tenga la F de corte, al bajar va la de penetración.</td></tr></table>
+</section>
+
+<script>/* titulos-juntos */
+document.querySelectorAll('h2.cap, h3, h4').forEach(h => {
+  if (!h.nextElementSibling || !h.parentNode || h.parentNode.classList.contains('junto')) return;
+  // el título, el párrafo que lo presenta y lo primero que no sea un párrafo (un dibujo, una lista, un programa…)
+  const d = document.createElement('div'); d.className = 'junto'; h.parentNode.insertBefore(d, h); d.appendChild(h);
+  for (let k = 0; k < 3; k++) { const sig = d.nextElementSibling; if (!sig || /^H[1-4]$/.test(sig.tagName)) break; d.appendChild(sig); if (sig.tagName !== 'P') break; }
+});
+</script>
+</body></html>

@@ -9,8 +9,8 @@ sin instalar nada y también sin conexión a internet.
 | Archivo | Herramienta | Versión |
 |---|---|---|
 | `index.html` | Portada con enlaces a todo | — |
-| `calcador.html` | Calcador de contornos: diseñar ejercicios, hojas, soluciones, corrección y biblioteca. Escribe el programa de la pieza mientras se dibuja (el de la solución o el de la máquina, ⚙️ Mecanizar) y prepara ejercicios para el Tutor (🎓) | v95 |
-| `corrector.html` | Corrector: el Calcador sin dibujo, para corregir, simular, imprimir, exportar y generar el G-code con ⚙️ Mecanizar (se genera a partir del Calcador) | v42 |
+| `calcador.html` | Calcador de contornos: diseñar ejercicios, hojas, soluciones, corrección y biblioteca. Escribe el programa de la pieza mientras se dibuja (el de la solución o el de la máquina, ⚙️ Mecanizar) y prepara ejercicios para el Tutor (🎓) | v102 |
+| `corrector.html` | Corrector: el Calcador sin dibujo, para corregir, simular, imprimir, exportar y generar el G-code con ⚙️ Mecanizar (se genera a partir del Calcador) | v48 |
 | `manual_calcador.html` / `.pdf` | Manual del Calcador | — |
 | `manual_corrector.html` / `.pdf` | Manual del Corrector (profesorado) | — |
 | `manual_anidador.html` / `.pdf` | Manual del Anidador de tableros (profesorado) | — |
@@ -18,11 +18,12 @@ sin instalar nada y también sin conexión a internet.
 | `guia_simulador.html` / `.pdf` | Guía del Simulador 3D (alumnado y profesorado) | — |
 | `guia_tutor.html` / `.pdf` | Guía del Tutor G-Code (alumnado) | — |
 | `biblioteca_inicio/` | Biblioteca de inicio (su página es `biblioteca_inicio/index.html`): 40 ejercicios del generador del Calcador en 4 niveles (rectas, inclinadas, arcos sencillos, arcos con I J), en un paquete para 📚 Biblioteca y por carpetas, con las hojas y soluciones en PDF (ver su `LEEME.md`) | — |
+| `cabecera_programa.html` / `.pdf` | La cabecera del programa: comparada con preparar una fresadora de mano, una instrucción por línea o agrupada, el orden de las letras y qué se puede juntar en una línea (alumnado) | — |
 | `apuntes_iso.html` / `.pdf` | Códigos ISO de la Suite CNC: apuntes para el alumnado (orden de las letras y numeración N, G0 a G3 con I J K y R, polares, G90/G91, G70/G71, G40/G41/G42, M03/M05/M06, M30/M02, errores frecuentes, hoja resumen e historia) | — |
 | `anidador.html` | Anidador de tableros: coloca piezas del Calcador (.json) o de un despiece (.csv) en tableros con colocación a mano, giro y escala con el ratón, y los devuelve como proyectos del Calcador o en PNG, SVG y DXF, por rectángulo o por forma real, con cantos y coste (profesorado) | v8 |
-| `simulador3d.html` | Simulador G-Code 3D, con vista 2D en planta, editor de G-code e informe de entrega en PDF, y explicación de cada línea (alumnado y profesorado) | V44 |
+| `simulador3d.html` | Simulador G-Code 3D, con vista 2D en planta, editor de G-code e informe de entrega en PDF, y explicación de cada línea (alumnado y profesorado) | V45 |
 | `simulador3d_profesor.html` | Solo lleva a `simulador3d.html` (para los enlaces antiguos); se puede borrar | — |
-| `tutor.html` | Tutor G-Code: dibujar una pieza y ver cómo se escribe su programa, línea a línea y comentado (👁 Aprender), o escribirlo y que el Tutor corrija cada línea (✍ Practicar); con ejemplos y ejercicios (alumnado; se genera a partir del Calcador) | v1 |
+| `tutor.html` | Tutor G-Code: dibujar una pieza y ver cómo se escribe su programa, línea a línea y comentado (👁 Aprender), o escribirlo y que el Tutor corrija cada línea (✍ Practicar); con ejemplos y ejercicios (alumnado; se genera a partir del Calcador) | v4 |
 | `calculadora.html` | Calculadora de taller: recta inclinada, polares, arcos (centro, I J y R), G90 ↔ G91 y velocidades de corte (alumnado) | v5 |
 | `licencias.html` | Créditos y licencias (fuentes y bibliotecas de terceros) | — |
 | `LICENSE` | Licencia de los programas (EUPL-1.2) | — |
