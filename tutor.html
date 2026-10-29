@@ -578,7 +578,7 @@
 <body>
 <div class="app-window">
     <header class="top-bar">
-        <a href="index.html" class="ir-portada" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a><span class="top-bar-title">🎓 Tutor G-Code — Por Eloi A.A.<span class="ver-suite" title="Versión del programa (hecho a partir del Calcador v102)" style="font-size:11px;font-weight:600;padding:1px 7px;margin-left:8px;border-radius:9px;background:rgba(0,90,156,.12);color:#005A9C;vertical-align:middle">v4</span></span>
+        <a href="index.html" class="ir-portada" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a><span class="top-bar-title">🎓 Tutor G-Code — Por Eloi A.A.<span class="ver-suite" title="Versión del programa (hecho a partir del Calcador v105)" style="font-size:11px;font-weight:600;padding:1px 7px;margin-left:8px;border-radius:9px;background:rgba(0,90,156,.12);color:#005A9C;vertical-align:middle">v4</span></span>
         <div class="top-bar-right">
             <input class="project-name" id="projectName" type="text" value="calco_sin_nombre" placeholder="Nombre del proyecto">
             <div class="c2-archivo"><button class="btn-manual" onclick="nuevo()" title="Empieza un dibujo nuevo (se puede deshacer). Si estás en un ejercicio, lo deja">🗋 Nuevo</button><button class="btn-manual" onclick="document.getElementById('fileJSON').click()" title="Abre un dibujo guardado o un ejercicio que te ha dado el profesor (.json). Si es un ejercicio, se abre en ✍ Practicar">📂 Abrir</button><button class="btn-manual" onclick="exportarJSON()" title="Guarda tu dibujo en un archivo .json, para seguir otro día o abrirlo en el Simulador">💾 Guardar</button><button class="btn-manual" onclick="tuAbrirEjemplos()" title="Piezas para ver su programa (los programas resueltos) y ejercicios para escribirlo tú (la biblioteca de inicio)">📚 Ejemplos</button></div>
@@ -1321,6 +1321,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.</pre>
             <h3>Ranuras y centros de arcos</h3>
             <p>Las ranuras (dos rectas paralelas unidas por dos semicírculos) llevan los ejes de sus dos centros, la línea entre centros y la posición del primer centro desde los bordes de la pieza; con doble clic en esa posición se mueve la ranura entera. Los arcos que no son empalmes (no tangentes a sus dos vecinos) llevan marca de centro y la posición de su centro — cotas de referencia, útiles para calcular I y J; se desactivan con «Centros de arcos». Los ejes que marcan los centros (de arcos, taladros y ranuras) van en rojo oscuro y más gruesos que las cotas, para que no se confundan con ellas; en el SVG y en las hojas en negro, negra y gruesa.</p>
             <h3>Cambiar una medida desde su cota</h3>
+            <p><strong>El centro de un arco, por teclado</strong>: doble clic sobre la cruz de su centro (o sobre la cota de su posición). Se escribe en <strong>X Y</strong> (desde el cero pieza) o en <strong>I J</strong> (desde el inicio del arco, el punto verde), y el arco nuevo se ve en discontinua naranja antes de aplicar. Con los extremos fijos, el centro solo puede estar en su mediatriz (se lleva a ella); con «se mueve el final del arco», el inicio y el centro quedan como los escribes y el final se desliza por la recta siguiente. Un círculo se mueve entero. Intro aplica, Esc cancela, y se puede deshacer.</p>
             <p>Con «Acotar automáticamente» activo, haz <strong>doble clic sobre el número</strong> de una cota (con cualquier herramienta, si no estás a mitad de un trazo), escribe el valor y pulsa <span class="kbd">Intro</span>. Así conviertes medidas calcadas con decimales (14,885) en las del plano (15).</p>
             <table class="help-table">
                 <tr><td>Longitud de recta</td><td>Se conserva la dirección del tramo. Eliges qué extremo se mueve (el otro queda fijo) o ambos, centrado; se resalta en verde el fijo y en naranja el que se mueve. Los tramos vecinos se estiran para seguirlo.</td></tr>
@@ -5152,6 +5153,7 @@ function dibujar() {
     dibujarGruposSel();
     dibujarBloqueados();
     dibujarPrevia(V);
+    dibujarPreviaCentro();
     dibujarCaja();
     if (typeof tutorDibujar === 'function') tutorDibujar();
     dibujarSnap();
@@ -5519,6 +5521,8 @@ cv.addEventListener('contextmenu', e => e.preventDefault());
 cv.addEventListener('dblclick', e => {
     if (VISOR) return;
     const { sx, sy } = posEvento(e);
+    const hc = arcoEnCentro(sx, sy);
+    if (hc) { e.preventDefault(); abrirEditorCentro(hc.ci, hc.si, sx, sy); return; }
     const k = cotaEnPantalla(sx, sy);
     if (k) { e.preventDefault(); abrirEditorCota(k.ref, sx, sy); return; }
     if (herramienta !== 'editar' || arrastre) return;
@@ -5914,7 +5918,7 @@ function fijarOrigen(p) {
 //  PANEL CONTEXTUAL (clic derecho en editar)
 // ════════════════════════════════════════════════
 const ctxPanel = document.getElementById('ctxPanel');
-function cerrarCtx() { ctxPanel.classList.remove('visible'); if (cotaEdit) { cotaEdit = null; render(); } }
+function cerrarCtx() { ctxPanel.classList.remove('visible'); if (cotaEdit) { cotaEdit = null; render(); } if (typeof centroEd !== 'undefined' && centroEd) { centroEd = null; render(); } }
 function colocarCtx(sx, sy) {
     ctxPanel.classList.add('visible');
     const w = ctxPanel.offsetWidth, h = ctxPanel.offsetHeight;
@@ -7688,9 +7692,153 @@ function extremosPorEje(ci, si, eje) {
     const p1esA = eje === 'x' ? t.p1.x <= t.p2.x : t.p1.y <= t.p2.y;
     return { t, iA: p1esA ? t.i : t.j, iB: p1esA ? t.j : t.i, A: p1esA ? t.p1 : t.p2, B: p1esA ? t.p2 : t.p1 };
 }
+// ── Editar el centro de un arco por teclado: doble clic sobre la cruz del centro (o sobre la cota de su posición) ──
+// Se escribe el centro en X Y (desde el cero pieza) o en I J (desde el inicio del arco), con vista previa en discontinua.
+//   «Se mantienen los extremos»: el centro solo puede estar en la mediatriz de los extremos; si no, se lleva a ella.
+//   «Se mueve el final del arco»: el inicio y el centro quedan como se escriben; el final se desliza por la recta siguiente.
+// Un círculo completo se mueve entero.
+let centroEd = null;      // { ci, si, modo, ent:'xy'|'ij', res } mientras la ventana está abierta
+const CENTRO_PX = 11;     // radio de captura de la cruz, en píxeles
+function arcoEnCentro(sx, sy) {
+    let mejor = null;
+    contornos.forEach((c, ci) => { if (c.pts.length < 2 || c.texto || c.deTexto) return;
+        tramos(c).forEach(t => { if (!t.b) return; const a = arcoDeBulge(t.p1, t.p2, t.b); if (!a) return;
+            const s = aPantalla(a.c), d = Math.hypot(s.x - sx, s.y - sy);
+            if (d <= CENTRO_PX && (!mejor || d < mejor.d)) mejor = { d, ci, si: t.i }; }); });
+    return mejor;
+}
+// Un contorno que es un círculo completo: todos sus tramos son arcos del mismo centro
+function esCirculoCompleto(c) {
+    if (!c.cerrado) return null; const ts = tramos(c); if (!ts.length || ts.some(t => !t.b)) return null;
+    const a0 = arcoDeBulge(ts[0].p1, ts[0].p2, ts[0].b); if (!a0) return null;
+    return ts.every(t => { const a = arcoDeBulge(t.p1, t.p2, t.b); return a && dist(a.c, a0.c) < 1e-6 && Math.abs(a.r - a0.r) < 1e-6; }) ? a0 : null;
+}
+// Bulge del arco de p1 a p2 alrededor de c, en el sentido de «ccw»
+function bulgeAlrededor(p1, p2, c, ccw) {
+    const a1 = Math.atan2(p1.y - c.y, p1.x - c.x), a2 = Math.atan2(p2.y - c.y, p2.x - c.x);
+    let sw = a2 - a1; if (ccw) { while (sw <= 1e-9) sw += TAU; } else { while (sw >= -1e-9) sw -= TAU; }
+    return Math.tan(sw / 4);
+}
+// Calcula el resultado sin aplicarlo: { ok, msg, centro, r, pts:[cambios], b, aviso }
+function calcularCentro(ed, C) {
+    const c = contornos[ed.ci]; if (!c) return { ok:false, msg:'El contorno ya no existe' };
+    if (!isFinite(C.x) || !isFinite(C.y)) return { ok:false, msg:'Escribe las dos coordenadas del centro' };
+    const circ = esCirculoCompleto(c);
+    if (circ) { const d = sub(C, circ.c); return { ok:true, circulo:true, centro:C, r:circ.r, mover:d, msg:`Se mueve el círculo entero (R${fmt(circ.r, 3)})` }; }
+    const ts = tramos(c), t = ts.find(x => x.i === ed.si); if (!t || !t.b) return { ok:false, msg:'Ese tramo ya no es un arco' };
+    const ccw = t.b > 0, P1 = t.p1, P2 = t.p2;
+    if (ed.modo === 'extremos') {
+        const M = mulv(add(P1, P2), 0.5), u = norm(sub(P2, P1)), n = { x:-u.y, y:u.x };
+        const Cm = add(M, mulv(n, dot(sub(C, M), n))), movido = dist(Cm, C) > 1e-4;
+        const b = bulgeAlrededor(P1, P2, Cm, ccw);
+        if (!isFinite(b) || Math.abs(b) > 1e6) return { ok:false, msg:'Con ese centro el arco no se puede hacer' };
+        return { ok:true, centro:Cm, r:dist(P1, Cm), b, fin:P2, msg: movido ? `Con los extremos fijos, el centro tiene que estar en la mediatriz: queda en X${fmt(Cm.x, 3)} Y${fmt(Cm.y, 3)}` : '' };
+    }
+    // «final»: el final se desliza por el tramo siguiente (si es una recta); si no, sobre la línea del centro al final de antes
+    const r = dist(P1, C); if (r < 1e-6) return { ok:false, msg:'El centro no puede estar en el inicio del arco' };
+    const nt = ts.length, k = ts.indexOf(t), sig = (c.cerrado || k < nt - 1) ? ts[(k + 1) % nt] : null;
+    let F = null, aviso = '';
+    if (sig && !sig.b && sig.j !== t.i) {
+        const Q = sig.p2, v = norm(sub(P2, Q)), w = sub(Q, C), B = dot(w, v), D = B * B - (dot(w, w) - r * r);
+        if (D < 0) return { ok:false, msg:'Con ese centro, el arco no llega a la recta siguiente' };
+        const cand = [-B - Math.sqrt(D), -B + Math.sqrt(D)].filter(s => s > 1e-6).map(s => add(Q, mulv(v, s)));
+        if (!cand.length) return { ok:false, msg:'Con ese centro, el arco no llega a la recta siguiente' };
+        F = cand.sort((a, b2) => dist(a, P2) - dist(b2, P2))[0];
+    } else {
+        const d = sub(P2, C); F = dist(P2, C) < 1e-9 ? add(C, { x:r, y:0 }) : add(C, mulv(norm(d), r));
+        aviso = sig ? 'El tramo siguiente es un arco: el final se lleva sobre la línea del centro al final anterior' : 'El final se lleva sobre la línea del centro al final anterior';
+    }
+    if (dist(F, P1) < 1e-6) return { ok:false, msg:'Con ese centro el arco se cerraría sobre sí mismo' };
+    const b = bulgeAlrededor(P1, F, C, ccw);
+    return { ok:true, centro:C, r, b, fin:F, finIdx:t.j, msg:aviso };
+}
+function aplicarCentro(ed, res) {
+    const c = contornos[ed.ci]; if (!c || !res.ok) return;
+    guardarUndo();
+    if (res.circulo) c.pts = c.pts.map(q => add(q, res.mover));
+    else {
+        c.b[ed.si] = res.b;
+        if (ed.modo === 'final' && res.finIdx !== undefined) c.pts[res.finIdx] = { ...c.pts[res.finIdx], x:res.fin.x, y:res.fin.y };
+    }
+    if (typeof memoTipos !== 'undefined') memoTipos = null;
+    refrescar(); if (typeof guardarAutoPronto === 'function') guardarAutoPronto();
+}
+function abrirEditorCentro(ci, si, sx, sy) {
+    const c = contornos[ci]; if (!c) return;
+    if (c.bloqueado) { snack('Ese contorno está bloqueado 🔒: desbloquéalo para cambiarlo'); return; }
+    const t = tramos(c).find(x => x.i === si); if (!t || !t.b) return;
+    const a = arcoDeBulge(t.p1, t.p2, t.b), circ = esCirculoCompleto(c);
+    centroEd = { ci, si, modo: centroEd && centroEd.modo || cfgCentroEd.modo, ent: cfgCentroEd.ent, ini: t.p1, c0: a.c, res: null };
+    const f = v => fmt(v, 4);
+    ctxPanel.innerHTML = `
+        <div class="ctx-titulo">${circ ? `Centro del círculo C${ci + 1}` : `Centro del arco ${si + 1} de C${ci + 1}`}</div>
+        <div class="param-line">Escribir <select id="ccEnt"><option value="xy">X Y (desde el cero)</option><option value="ij">I J (desde el inicio)</option></select></div>
+        <div class="param-line"><span id="ccLx">X</span> <input type="number" id="ccA" step="0.01"> <span id="ccLy">Y</span> <input type="number" id="ccB" step="0.01"></div>
+        ${circ ? '' : `<div class="param-line">Al mover el centro <select id="ccModo"><option value="extremos">extremos fijos</option><option value="final">mover el final</option></select></div>`}
+        <div class="ctx-nota" id="ccInfo"></div>
+        <button class="principal" id="ccOk">Aplicar</button>
+        <div class="ctx-nota">Antes: X${f(a.c.x)} Y${f(a.c.y)} · R${f(a.r)} · inicio del arco X${f(t.p1.x)} Y${f(t.p1.y)} · Intro aplica · Esc cancela</div>`;
+    // la ventana, en la esquina de arriba del lado contrario al arco: así no tapa la vista previa
+    colocarCtx(sx, sy); { const w = ctxPanel.offsetWidth; ctxPanel.style.left = (sx > W / 2 ? 8 : Math.max(8, W - w - 8)) + 'px'; ctxPanel.style.top = '48px'; }
+    const g = id => document.getElementById(id), A = g('ccA'), B = g('ccB'), E = g('ccEnt'), Mo = g('ccModo');
+    E.value = centroEd.ent; if (Mo) Mo.value = centroEd.modo;
+    const valores = () => { const ij = centroEd.ent === 'ij'; g('ccLx').textContent = ij ? 'I' : 'X'; g('ccLy').textContent = ij ? 'J' : 'Y';
+        A.value = +(ij ? a.c.x - t.p1.x : a.c.x).toFixed(4); B.value = +(ij ? a.c.y - t.p1.y : a.c.y).toFixed(4); };
+    const leer = () => { const x = numES(A.value), y = numES(B.value); return centroEd.ent === 'ij' ? { x: t.p1.x + x, y: t.p1.y + y } : { x, y }; };
+    const previa = () => {
+        if (!centroEd) return; const res = calcularCentro(centroEd, leer()); centroEd.res = res;
+        const info = g('ccInfo');
+        if (!res.ok) info.innerHTML = `<span style="color:#c0392b">⚠ ${res.msg}</span>`;
+        else { const ij = sub(res.centro, t.p1);
+            info.innerHTML = `Nuevo centro X${f(res.centro.x)} Y${f(res.centro.y)} (I${f(ij.x)} J${f(ij.y)}) · R${f(res.r)}` +
+                (!res.circulo && centroEd.modo === 'final' && res.fin ? `<br>Final del arco: X${f(res.fin.x)} Y${f(res.fin.y)}` : '') +
+                (res.msg ? `<br><span style="color:#b9770e">${res.msg}</span>` : ''); }
+        g('ccOk').disabled = !res.ok; render();
+    };
+    valores(); previa();
+    E.onchange = () => { centroEd.ent = cfgCentroEd.ent = E.value; valores(); previa(); };
+    if (Mo) Mo.onchange = () => { centroEd.modo = cfgCentroEd.modo = Mo.value; previa(); };
+    A.oninput = B.oninput = previa;
+    const aplicar = () => { const ed = centroEd; if (!ed || !ed.res || !ed.res.ok) { A.focus(); return; } const res = ed.res;
+        aplicarCentro(ed, res); cerrarCtx();
+        snack(res.circulo ? `Círculo movido: centro en X${fmt(res.centro.x, 3)} Y${fmt(res.centro.y, 3)}` : `Centro del arco: X${fmt(res.centro.x, 3)} Y${fmt(res.centro.y, 3)} · R${fmt(res.r, 3)}`); };
+    g('ccOk').onclick = aplicar;
+    ctxPanel.querySelectorAll('input, select').forEach(el => el.addEventListener('keydown', ev => {
+        if (ev.key === 'Enter') { ev.preventDefault(); aplicar(); }
+        else if (ev.key === 'Escape') { ev.preventDefault(); cerrarCtx(); }
+    }));
+    setTimeout(() => { A.focus(); A.select(); }, 20);
+}
+// La vista previa: el arco nuevo en discontinua naranja, su centro y, si cambia, el final
+function dibujarPreviaCentro() {
+    if (!centroEd || !centroEd.res) return;
+    const ed = centroEd, res = ed.res, c = contornos[ed.ci]; if (!c) return;
+    ctx.save();
+    const cruz = (p, col, tam) => { const s = aPantalla(p); ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(s.x - tam, s.y); ctx.lineTo(s.x + tam, s.y); ctx.moveTo(s.x, s.y - tam); ctx.lineTo(s.x, s.y + tam); ctx.stroke(); };
+    // el centro de antes, en gris, y el inicio del arco (desde donde se miden I y J), en verde
+    cruz(ed.c0, 'rgba(120,120,120,.8)', 6);
+    if (!res.circulo) { const s = aPantalla(ed.ini); ctx.fillStyle = '#1e8449'; ctx.beginPath(); ctx.arc(s.x, s.y, 4.5, 0, TAU); ctx.fill(); }
+    if (res.ok) {
+        ctx.strokeStyle = '#e67e22'; ctx.lineWidth = 2.2; ctx.setLineDash([7, 5]);
+        if (res.circulo) { const s = aPantalla(res.centro); ctx.beginPath(); ctx.arc(s.x, s.y, res.r * view.z, 0, TAU); ctx.stroke(); }
+        else {
+            const p1 = ed.ini, p2 = res.fin, a = arcoDeBulge(p1, p2, res.b);
+            if (a) { const s = aPantalla(a.c); ctx.beginPath(); ctx.arc(s.x, s.y, a.r * view.z, -a.a1, -(a.a1 + a.theta), a.theta > 0); ctx.stroke(); }
+            // el tramo siguiente, si el final cambia
+            if (ed.modo === 'final' && res.finIdx !== undefined) {
+                const ts = tramos(c), k = ts.findIndex(x => x.i === ed.si), sig = ts[(k + 1) % ts.length];
+                if (sig && sig.i !== ed.si && (c.cerrado || k < ts.length - 1)) { const s1 = aPantalla(res.fin), s2 = aPantalla(sig.p2); ctx.beginPath(); ctx.moveTo(s1.x, s1.y); ctx.lineTo(s2.x, s2.y); ctx.stroke(); }
+                const sf = aPantalla(res.fin); ctx.setLineDash([]); ctx.fillStyle = '#e67e22'; ctx.beginPath(); ctx.arc(sf.x, sf.y, 4.5, 0, TAU); ctx.fill();
+            }
+        }
+        ctx.setLineDash([]); cruz(res.centro, '#e67e22', 9);
+    }
+    ctx.restore();
+}
+const cfgCentroEd = { modo:'extremos', ent:'xy' };
 function abrirEditorCota(ref, sx, sy) {
     if (ref.tipo === 'man') { abrirEditorCotaManual(ref, sx, sy); return; }
-    if (ref.tipo === 'cen') { snack('Cota de referencia: el centro del arco depende de sus extremos y su radio (cámbialos para moverlo)'); return; }
+    if (ref.tipo === 'cen') { abrirEditorCentro(ref.ci, ref.si, sx, sy); return; }
     if (ref.tipo !== 'tot' && ref.tipo !== 'sit' && !contornos[ref.ci]) return;
     cotaEdit = ref;
     const v = fmt(ref.valor, 4);
