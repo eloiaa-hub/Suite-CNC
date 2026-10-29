@@ -216,6 +216,10 @@
     .cmd-bar input:focus { border-color: var(--accent); }
     .cmd-bar .cmd-ej { font-size: 10px; color: var(--text-muted); font-family: Consolas, monospace; }
     .zoom-controls { position: absolute; bottom: 12px; right: 12px; display: flex; gap: 4px; }
+    .vista-controls { position: absolute; top: 10px; right: 12px; display: flex; gap: 4px; z-index: 5; }
+    .btn-vista.oculto { background: var(--accent-light); color: var(--accent); border-color: var(--accent); }
+    #btnVerRejilla.visible { background: var(--accent); color: #fff; border-color: var(--accent); }
+    html.sin-izq .action-panel, html.sin-der .tutor-panel { display: none !important; }
     .zoom-btn { min-width: 26px; height: 26px; padding: 0 6px; background: var(--bg-panel); border: 1px solid var(--border-color);
         border-radius: 4px; display: flex; align-items: center; justify-content: center;
         cursor: pointer; font-size: 13px; color: var(--text-main); transition: all .12s; user-select: none; }
@@ -577,12 +581,29 @@
     .c2-botones[hidden] { display: none !important; }
     .c2-imanes { grid-column: auto; margin-bottom: 4px; }
     .c2-imanes > .params-box { margin-top: 6px; }
+
+    /* ═══ Interfaz ordenada (v105) ═══ */
+    .vista-controls .vsep { width: 8px; }
+    #btnVerNombres.visible, #btnVerCotas.visible { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .tool-strip .tool-acc { border: none; background: transparent; color: var(--text-main); border-radius: 5px; font-size: 16px; padding: 0; cursor: pointer; }
+    .tool-strip .tool-acc:hover:not(:disabled) { background: var(--accent-light); color: var(--accent); }
+    .tool-strip .tool-acc:disabled { opacity: .3; cursor: default; }
+    .c2-cotas > .param-line, .c2-ajuste > .param-line { margin-top: 5px; }
+    .c2-cotas > button, .c2-ajuste > button { margin-top: 7px; width: 100%; }
+    .tu-mec-grid label[for=tuOrden] { grid-column: 1; }
+    #btnHacerArco { position: absolute; z-index: 6; background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 600; box-shadow: 0 3px 10px rgba(0,0,0,.18); }
+    .exp-menu { position: relative; display: inline-flex; }
+    .exp-lista { position: absolute; top: calc(100% + 6px); left: 0; z-index: 200; background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 6px;
+        box-shadow: 0 8px 24px rgba(0,0,0,.18); padding: 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; width: 290px; }
+    .exp-lista[hidden] { display: none; }
+    .exp-lista .c2-opciones { grid-column: 1 / 3; }
+    #c2Tabs3.solo-fondo button { flex: 0 0 100%; cursor: default; }
 </style>
 </head>
 <body>
 <div class="app-window">
     <header class="top-bar">
-        <a href="index.html" class="ir-portada" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a><span class="top-bar-title">⬡ Calcador de contornos — Por Eloi A.A.<span class="ver-suite" title="Versión del programa" style="font-size:11px;font-weight:600;padding:1px 7px;margin-left:8px;border-radius:9px;background:rgba(0,90,156,.12);color:#005A9C;vertical-align:middle">v102</span></span>
+        <a href="index.html" class="ir-portada" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a><span class="top-bar-title">⬡ Calcador de contornos — Por Eloi A.A.<span class="ver-suite" title="Versión del programa" style="font-size:11px;font-weight:600;padding:1px 7px;margin-left:8px;border-radius:9px;background:rgba(0,90,156,.12);color:#005A9C;vertical-align:middle">v105</span></span>
         <div class="top-bar-right">
             <input class="project-name" id="projectName" type="text" value="calco_sin_nombre" placeholder="Nombre del proyecto">
             <div class="c2-archivo"><button class="btn-manual" onclick="nuevo()" title="Empieza de cero (se puede deshacer)">🗋 Nuevo</button><button class="btn-manual" onclick="document.getElementById('fileJSON').click()" title="Abre un proyecto .json del Calcador o del Corrector">📂 Abrir</button><button class="btn-manual" onclick="exportarJSON()" title="Guarda el proyecto en un archivo JSON: lo abren el Calcador, el Corrector, el Tutor y el Simulador (como plano del ejercicio)">💾 Guardar</button><button class="btn-manual" onclick="abrirBiblioteca()" title="Tus ejercicios: buscar, abrir e imprimir sus hojas">🗂 Biblioteca</button></div>
@@ -632,6 +653,7 @@
         <div class="left-area">
             <div class="tool-strip" id="toolStrip">
                 <div class="tool-btn" data-h="editar" data-tip="Editar / seleccionar (V)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M5 3l13 8-6 1.5L9 19z"/></svg></div>
+                <div class="tool-btn" data-h="puntos" data-tip="Seleccionar puntos (I): arrastra una ventana para elegir varios y bórralos con Supr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M3 2.5l10 6.2-4.6 1.2L6.2 15z"/><path d="M10 9.5l10 6.2-4.6 1.2-2.2 5.1z"/></svg></div>
                 <div class="tool-divider"></div>
                 <div class="tool-btn" data-h="linea" data-tip="Línea (L)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 19L10 8l5 7 6-10"/><circle cx="3" cy="19" r="1.6" fill="currentColor"/><circle cx="10" cy="8" r="1.6" fill="currentColor"/><circle cx="15" cy="15" r="1.6" fill="currentColor"/><circle cx="21" cy="5" r="1.6" fill="currentColor"/></svg></div>
                 <div class="tool-btn" data-h="arco3" data-tip="Arco por 3 puntos (A)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 18A10 10 0 0 1 21 18"/><circle cx="3" cy="18" r="1.6" fill="currentColor"/><circle cx="12" cy="8.3" r="1.6" fill="currentColor"/><circle cx="21" cy="18" r="1.6" fill="currentColor"/></svg></div>
@@ -880,6 +902,11 @@
                 <input id="cmd" type="text" autocomplete="off" spellcheck="false" placeholder="x,y">
                 <span class="cmd-ej" id="cmdEj">x,y · @dx,dy · dist&lt;ángulo · &lt;ángulo · G2 X Y I J</span>
             </div>
+            <div class="vista-controls">
+                <div class="zoom-btn btn-vista" id="btnPanelIzq" onclick="alternarPanel('izq')" title="Ocultar el panel izquierdo (opciones) para ver más grande el dibujo · tecla F7">◧</div>
+                <div class="zoom-btn btn-vista" id="btnPanelDer" onclick="alternarPanel('der')" title="Ocultar el panel derecho (mecanizado y programa) para ver más grande el dibujo · tecla F8">◨</div>
+                <div class="zoom-btn btn-vista" id="btnVerRejilla" onclick="alternarVerRejilla()" title="Ver u ocultar la rejilla del dibujo (el imán a la rejilla es el botón ▦ Rejilla)">👁 Rejilla</div>
+            </div>
             <div class="zoom-controls">
                 <div class="zoom-btn" onclick="zoomBoton(1.25)" title="Acercar">+</div>
                 <div class="zoom-btn" onclick="zoomBoton(0.8)" title="Alejar">−</div>
@@ -942,7 +969,7 @@
                     <label title="Velocidad de la reproducción">🐢<input id="tuVel" type="range" min="-2" max="2" step="1" value="0">🐇</label>
                     <span id="tuInfoLinea"></span>
                     <span class="der">
-                        <label title="En las líneas en G91, el punto en el que queda la fresa (en absolutas)"><input id="tuAbs" type="checkbox"> 📍</label>
+                        <label title="En las líneas en G91, el punto en el que queda la fresa (en absolutas)"><input id="tuAbs" type="checkbox"> 📍 Absolutas</label>
                         <button id="tuDescargar" onclick="tuDescargar(false)" title="Guarda el programa en un archivo .nc (con sus comentarios), para abrirlo en el Simulador o llevarlo a la máquina">⬇ Guardar .nc</button>
                         <button onclick="tuEnviarSimulador()" title="Abre el Simulador 3D con el plano y el programa de este panel (la solución o el de la máquina)">➜ Simulador 3D</button>
                     </span>
@@ -1297,6 +1324,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.</pre>
             <h3>Ranuras y centros de arcos</h3>
             <p>Las ranuras (dos rectas paralelas unidas por dos semicírculos) llevan los ejes de sus dos centros, la línea entre centros y la posición del primer centro desde los bordes de la pieza; con doble clic en esa posición se mueve la ranura entera. Los arcos que no son empalmes (no tangentes a sus dos vecinos) llevan marca de centro y la posición de su centro — cotas de referencia, útiles para calcular I y J; se desactivan con «Centros de arcos». Los ejes que marcan los centros (de arcos, taladros y ranuras) van en rojo oscuro y más gruesos que las cotas, para que no se confundan con ellas; en el SVG y en las hojas en negro, negra y gruesa.</p>
             <h3>Cambiar una medida desde su cota</h3>
+            <p><strong>El centro de un arco, por teclado</strong>: doble clic sobre la cruz de su centro (o sobre la cota de su posición). Se escribe en <strong>X Y</strong> (desde el cero pieza) o en <strong>I J</strong> (desde el inicio del arco, el punto verde), y el arco nuevo se ve en discontinua naranja antes de aplicar. Con los extremos fijos, el centro solo puede estar en su mediatriz (se lleva a ella); con «se mueve el final del arco», el inicio y el centro quedan como los escribes y el final se desliza por la recta siguiente. Un círculo se mueve entero. Intro aplica, Esc cancela, y se puede deshacer.</p>
             <p>Con «Acotar automáticamente» activo, haz <strong>doble clic sobre el número</strong> de una cota (con cualquier herramienta, si no estás a mitad de un trazo), escribe el valor y pulsa <span class="kbd">Intro</span>. Así conviertes medidas calcadas con decimales (14,885) en las del plano (15).</p>
             <table class="help-table">
                 <tr><td>Longitud de recta</td><td>Se conserva la dirección del tramo. Eliges qué extremo se mueve (el otro queda fijo) o ambos, centrado; se resalta en verde el fijo y en naranja el que se mueve. Los tramos vecinos se estiran para seguirlo.</td></tr>
@@ -1310,6 +1338,11 @@ OTHER DEALINGS IN THE FONT SOFTWARE.</pre>
             <p>Herramienta <span class="kbd">N</span>. En modo <strong>Automática</strong> (por defecto) basta un clic sobre lo que quieres medir: un lado recto da su longitud real (alineada, también en las inclinadas), un arco su radio, un círculo su diámetro, y un vértice o centro empieza una cota entre dos puntos (al colocarla, perpendicular a los puntos sale alineada; arriba o abajo, horizontal; a un lado, vertical). También puedes elegir el tipo concreto en Formas: <strong>lineal</strong> (dos puntos y la posición: arriba o abajo da una cota horizontal, a un lado una vertical), <strong>alineada</strong>, <strong>ángulo</strong> (vértice, un punto de cada lado y la posición del arco), <strong>radio</strong> o <strong>diámetro</strong> (clic sobre el arco y en la posición del texto). Si marcas vértices, puntos de un lado (el imán «Sobre curva» funciona sobre tus piezas mientras acotas) o arcos de un contorno, la cota queda ligada a ellos y sigue a la pieza al moverla, girarla o modificarla; si borras la pieza, sus cotas manuales se borran con ella. Se ven aunque desactives las automáticas, así que puedes acotar el plano solo a mano. Se arrastran, se ocultan y se borran con clic derecho. <strong>Doble clic sobre su número</strong> cambia la medida: si los puntos son del mismo contorno se mueve el vértice; si son de contornos distintos (p. ej. del borde a un taladro), se desplaza el contorno entero sin deformarlo; los radios y diámetros cambian el arco o escalan el círculo.</p>
             <h3>Imanes entre formas</h3>
             <p>Con el chip <strong>Entre formas</strong> activo, al arrastrar una forma (o varias seleccionadas) se atrae hacia las demás: <strong>centro con centro</strong> (concéntricos), vértice con vértice, punto medio con punto medio; <strong>bordes alineados</strong> en X y en Y por separado (apilar dos rectángulos compartiendo el borde, meter uno dentro de otro ajustado a una esquina o centrado, dejar un círculo tangente a un lado recto); y <strong>lados inclinados paralelos</strong> que se juntan. Unas guías rosas muestran la alineación y la barra de estado la nombra. <span class="kbd">Alt</span> la desactiva mientras la mantienes pulsada. Es la forma rápida de preparar piezas para Fusionar o Restar. Al <strong>escalar con las asas</strong> (doble clic en una forma) el asa también se atrae: a un vértice, centro o punto medio de otra forma, o se alinea con sus bordes; si no hay nada cerca y la rejilla está activa, salta a la rejilla. En la escala proporcional se clava el eje alineado.</p>
+            <h3>Más sitio para dibujar</h3>
+            <p>Arriba a la derecha del dibujo: <strong>◧</strong> oculta o muestra el panel izquierdo (tecla <span class="kbd">F7</span>), <strong>◨</strong> el derecho (tecla <span class="kbd">F8</span>) y <strong>👁 Rejilla</strong> oculta o muestra la rejilla (solo lo que se ve; el imán es ▦ Rejilla). Junto a ellos, <strong>🏷 Nombres</strong> y <strong>📏 Cotas</strong> enseñan u ocultan los nombres de los puntos y las cotas automáticas. La barra de herramientas se ve siempre, con ↶ ↷ (deshacer, rehacer) y ⭘ ✓ (cerrar, terminar) al pie, y el dibujo se encuadra para llenar la zona. En la barra superior, <strong>🖼 Fondo</strong> carga el plano a calcar y <strong>⬇ Exportar ▾</strong> guarda el DXF o el SVG.</p>
+            <h3>Seleccionar puntos</h3>
+            <p>La herramienta de la doble flecha (tecla <span class="kbd">I</span>), junto a la flecha de Editar: arrastra una ventana sobre el dibujo y se eligen todos los puntos que quedan dentro (en naranja). Con <span class="kbd">Mayús</span> se añaden más; un clic sobre un punto elige solo ese. <span class="kbd">Supr</span> los borra todos de una vez (Ctrl+Z lo deshace): el tramo que pierde un extremo queda recto. Muy útil para limpiar los puntos de más de una silueta vectorizada.</p>
+            <p><strong>◠ Hacer arco</strong> (o la tecla <span class="kbd">A</span>), con 3 o más puntos seguidos elegidos: los cambia por un solo arco. <em>Tangente a los tramos de al lado</em> empalma con las rectas anterior y siguiente (que se recortan o alargan); <em>por los puntos</em> deja el primer y el último punto y pasa lo más cerca posible de los demás. El radio puede ser el calculado, redondeado a 0,5 mm o el que escribas. La vista previa, en discontinua naranja, dice el radio, el centro y cuánto se aparta de los puntos; si no forman un arco, no deja aplicarlo.</p>
             <h3>Imán a la rejilla</h3>
             <p>El botón <strong>▦ Rejilla</strong> (junto al zoom) o la tecla <span class="kbd">G</span> activan y desactivan el imán a los nudos de la rejilla, con el paso elegido en Imanes.</p>
             <h3>Ajuste automático de medidas</h3>
@@ -1387,6 +1420,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.</pre>
                 <tr><td><span class="kbd">Ctrl+Z</span> / <span class="kbd">Ctrl+Y</span></td><td>Deshacer / rehacer.</td></tr>
                 <tr><td><span class="kbd">F</span></td><td>Encuadrar todo.</td></tr>
                 <tr><td><span class="kbd">G</span></td><td>Imán a la rejilla: activar o desactivar.</td></tr>
+                <tr><td><span class="kbd">F7</span> · <span class="kbd">F8</span></td><td>Ocultar o mostrar el panel izquierdo · el derecho.</td></tr>
                 <tr><td><span class="kbd">Ctrl</span>+<span class="kbd">C</span> / <span class="kbd">X</span> / <span class="kbd">V</span></td><td>Copiar, cortar y pegar (pega donde está el ratón; con Mayús, en su sitio). Sirve también entre pestañas.</td></tr>
             </table>
             <h3>Exportar</h3>
@@ -5115,7 +5149,7 @@ function dibujar() {
     ctx.setTransform(1,0,0,1,0,0);
     ctx.fillStyle = colores.fondo; ctx.fillRect(0, 0, cv.width, cv.height);
     ctx.setTransform(DPR,0,0,DPR,0,0);
-    dibujarRejilla();
+    if (verRejilla) dibujarRejilla();
     if (fondo) dibujarFondo(V);
     dibujarAux();
     dibujarEjes();
@@ -5127,7 +5161,11 @@ function dibujar() {
     dibujarGruposSel();
     dibujarBloqueados();
     dibujarPrevia(V);
+    dibujarPreviaCentro();
     dibujarCaja();
+    dibujarPuntosSel();
+    dibujarPreviaArco();
+    colocarBotonArco();
     if (typeof tutorDibujar === 'function') tutorDibujar();
     dibujarSnap();
 }
@@ -5147,6 +5185,40 @@ function dibujarGruposSel() {
         ctx.setLineDash([]); ctx.font = '11px system-ui, sans-serif'; const tw = ctx.measureText('🔗 grupo').width; ctx.fillStyle = colores.fondo || '#fff'; ctx.fillRect(b.x + 6.5 - tw - 6, a.y - 6.5 - 16, tw + 6, 15); ctx.fillStyle = colores.acento; ctx.fillText('🔗 grupo', b.x + 6.5 - tw - 3, a.y - 6.5 - 4); ctx.setLineDash([6, 4]); });
     ctx.restore();
 }
+// ── Vista: ocultar los paneles (la barra de herramientas siempre se ve) y la rejilla ──
+const VISTA_CLAVE = 'calcador_vista';
+var verRejilla = true;
+function guardarVista() { try { localStorage.setItem(VISTA_CLAVE, JSON.stringify({ izq: document.documentElement.classList.contains('sin-izq'), der: document.documentElement.classList.contains('sin-der'), rejilla: verRejilla })); } catch (e) {} }
+function pintarBotonesVista() {
+    const h = document.documentElement.classList, b = (id, oculto, t) => { const e = document.getElementById(id); if (e) { e.classList.toggle('oculto', oculto); e.title = t; } };
+    b('btnPanelIzq', h.contains('sin-izq'), h.contains('sin-izq') ? 'Mostrar el panel izquierdo (opciones) · tecla F7' : 'Ocultar el panel izquierdo (opciones) para ver más grande el dibujo · tecla F7');
+    b('btnPanelDer', h.contains('sin-der'), h.contains('sin-der') ? 'Mostrar el panel derecho (mecanizado y programa) · tecla F8' : 'Ocultar el panel derecho (mecanizado y programa) para ver más grande el dibujo · tecla F8');
+    { const e = document.getElementById('btnVerRejilla'); if (e) e.classList.toggle('visible', verRejilla); }
+    b('btnVerRejilla', false, verRejilla ? 'Ocultar la rejilla del dibujo (el imán a la rejilla es el botón ▦ Rejilla)' : 'Ver la rejilla del dibujo (el imán a la rejilla es el botón ▦ Rejilla)');
+}
+function alternarPanel(cual, forzar) {
+    const cls = cual === 'izq' ? 'sin-izq' : 'sin-der', h = document.documentElement.classList;
+    const ocultar = forzar === undefined ? !h.contains(cls) : !!forzar;
+    h.toggle(cls, ocultar);   // (la vista guarda su centro: el dibujo sigue centrado en la zona más ancha)
+    try { redimensionar(); } catch (e) {}
+    // con más (o menos) sitio, el dibujo se encuadra para llenar la zona
+    try { if (contornos.some(c => c.pts.length >= 2)) encuadrar(); else render(); } catch (e) {}
+    pintarBotonesVista(); guardarVista();
+}
+function alternarVerRejilla(forzar) {
+    verRejilla = forzar === undefined ? !verRejilla : !!forzar;
+    pintarBotonesVista(); guardarVista(); try { render(); } catch (e) {}
+}
+(function () {
+    try { const v = JSON.parse(localStorage.getItem(VISTA_CLAVE) || '{}'); if (v && typeof v === 'object') {
+        if (v.izq) document.documentElement.classList.add('sin-izq'); if (v.der) document.documentElement.classList.add('sin-der'); if (v.rejilla === false) verRejilla = false; } } catch (e) {}
+    window.addEventListener('DOMContentLoaded', pintarBotonesVista);
+    document.addEventListener('keydown', e => {
+        if (e.key !== 'F7' && e.key !== 'F8') return;
+        if (document.querySelector('.modal-overlay.visible')) return;
+        e.preventDefault(); alternarPanel(e.key === 'F7' ? 'izq' : 'der');
+    });
+})();
 function dibujarRejilla() {
     let g = snapCfg.paso;
     while (g * view.z < 8) g *= 10;
@@ -5407,6 +5479,7 @@ function dibujarSnap() {
 //  HERRAMIENTAS Y EVENTOS
 // ════════════════════════════════════════════════
 const PISTAS = {
+    puntos:  ['PUNTOS', 'Arrastra una ventana para elegir puntos · Mayús: añadir o quitar · clic en un punto: solo ese · Supr: borrar los elegidos · Esc: ninguno'],
     editar:  ['EDITAR', 'Doble clic en una forma: asas para escalar, estirar y girar · clic en el icono de su herramienta: sus parámetros · clic derecho: medidas, esquinas y empalmes'],
     linea:   ['LÍNEA', 'Clic: añade vértice · clic en el primer punto: cierra · clic en el extremo de otro contorno abierto: los une · Esc: termina · A/T: sigue con arco'],
     arco3:   ['ARCO 3 PUNTOS', 'Clic en un punto cualquiera del arco y después en su final'],
@@ -5440,6 +5513,7 @@ function setHerramienta(h) {
     if ((h === 'calibrar' || h === 'mover') && !fondo) { snack('Carga primero un fondo'); return; }
     if (h === 'vectorizar' && (!fondo || fondo.tipo !== 'imagen')) { snack('Vectorizar necesita una imagen de fondo (PNG, JPG o SVG)'); return; }
     if ((h === 'calibrar' || h === 'mover') && fondo.bloq) { snack('El fondo está bloqueado (desbloquéalo en el panel Fondo)'); return; }
+    if (selPuntos) selPuntos.clear();
     herramienta = h; circ = null; ran = null; medida = null; cal = null; auxPend = null; formaPend = null; cotaPend = null;
     textoEdit = null; mostrarEdicionTexto();
     mostrarCamposFormas();
@@ -5477,6 +5551,7 @@ function actualizarEstado() {
     if (herramienta === 'auxiliar') h = pistaAux();
     if (HERR_FORMAS.includes(herramienta)) h = pistaForma();
     if (herramienta === 'cotaman') h = pistaCotaMan();
+    if (herramienta === 'puntos' && selPuntos.size) h = `${selPuntos.size} punto${selPuntos.size === 1 ? '' : 's'} elegido${selPuntos.size === 1 ? '' : 's'}${selPuntos.size >= 3 ? ' · A: hacer un arco' : ''} · Supr: borrar${selPuntos.size === 1 ? 'lo' : 'los'} · Mayús + ventana: añadir · Esc: ninguno`;
     document.getElementById('stHint').textContent = h;
     document.getElementById('btnCerrar').disabled = !(dib || (sel >= 0 && contornos[sel] && !contornos[sel].cerrado));
     document.getElementById('btnTerminar').disabled = !dib;
@@ -5494,6 +5569,8 @@ cv.addEventListener('contextmenu', e => e.preventDefault());
 cv.addEventListener('dblclick', e => {
     if (VISOR) return;
     const { sx, sy } = posEvento(e);
+    const hc = arcoEnCentro(sx, sy);
+    if (hc) { e.preventDefault(); abrirEditorCentro(hc.ci, hc.si, sx, sy); return; }
     const k = cotaEnPantalla(sx, sy);
     if (k) { e.preventDefault(); abrirEditorCota(k.ref, sx, sy); return; }
     if (herramienta !== 'editar' || arrastre) return;
@@ -5548,6 +5625,11 @@ cv.addEventListener('pointerdown', e => {
         case 'auxiliar': clicAux(p); break;
         case 'vectorizar': vectorizarEn(cursorRaw); break;
         case 'mover': guardarUndo(); arrastre = { tipo:'fondo', ini:cursorRaw, tx:fondo.tx, ty:fondo.ty }; break;
+        case 'puntos': {
+            const vp = verticeEnPantalla(sx, sy), anadir = e.shiftKey || e.ctrlKey || e.metaKey;
+            if (vp) { const k = vp.ci + ':' + vp.vi; if (anadir) { selPuntos.has(k) ? selPuntos.delete(k) : selPuntos.add(k); } else { selPuntos.clear(); selPuntos.add(k); } actualizarEstado(); render(); break; }
+            arrastre = { tipo:'cajaPts', sx, sy, sx2:sx, sy2:sy, anadir }; break;
+        }
         case 'editar': {
             if (trf) { const asa = asaEn(sx, sy); if (asa) { iniciarTransformar(asa, sx, sy); break; } }
             const h = impacto(sx, sy);
@@ -5589,7 +5671,7 @@ cv.addEventListener('pointermove', e => {
         cv.style.cursor = 'grabbing'; render(); return;
     }
     cursorRaw = aMundo(sx, sy);
-    if (arrastre && arrastre.tipo === 'caja') { arrastre.sx2 = sx; arrastre.sy2 = sy; snapAct = null; render(); return; }
+    if (arrastre && (arrastre.tipo === 'caja' || arrastre.tipo === 'cajaPts')) { arrastre.sx2 = sx; arrastre.sy2 = sy; snapAct = null; render(); return; }
     if (!arrastre) {
         const k = cotaEnPantalla(sx, sy), nuevo = k ? k.ref : null;
         if (nuevo !== cotaHover && !(nuevo && cotaHover && mismaCota(nuevo, cotaHover))) cotaHover = nuevo;
@@ -5636,6 +5718,11 @@ cv.addEventListener('pointerup', e => {
         refrescar(); return;
     }
     if (a.tipo === 'cota') { cv.style.cursor = ''; if (a.movido) { guardarAutoPronto(); render(); } return; }
+    if (a.tipo === 'cajaPts') {
+        if (Math.hypot(a.sx2 - a.sx, a.sy2 - a.sy) < 4) { if (!a.anadir) selPuntos.clear(); }
+        else { if (!a.anadir) selPuntos.clear(); puntosEnCaja(a.sx, a.sy, a.sx2, a.sy2).forEach(k => selPuntos.add(k)); }
+        actualizarEstado(); render(); return;
+    }
     if (a.tipo === 'caja') {
         if (Math.hypot(a.sx2 - a.sx, a.sy2 - a.sy) < 4) { if (!a.anadir) seleccionarUno(-1); }
         else seleccionarCaja(aMundo(a.sx, a.sy), aMundo(a.sx2, a.sy2), a.sx2 < a.sx, a.anadir);
@@ -5660,7 +5747,7 @@ cv.addEventListener('wheel', e => {
 // ── Teclado ──
 function enCampo(e) { const t = e.target; return t && (t.tagName === 'INPUT' || t.tagName === 'SELECT' || t.tagName === 'TEXTAREA'); }
 const ATAJO_REJILLA = 'g';
-const ATAJOS = { y:'recortar', h:'alargar', u:'tangente', j:'cortar', v:'editar', l:'linea', a:'arco3', t:'arcoT', c:'circulo', r:'ranura', b:'rectangulo', p:'poligono', s:'estrella', e:'elipse', q:'equidistante', n:'cotaman', k:'calibrar', m:'mover', o:'origen', d:'medir', x:'auxiliar', w:'texto' };
+const ATAJOS = { i:'puntos', y:'recortar', h:'alargar', u:'tangente', j:'cortar', v:'editar', l:'linea', a:'arco3', t:'arcoT', c:'circulo', r:'ranura', b:'rectangulo', p:'poligono', s:'estrella', e:'elipse', q:'equidistante', n:'cotaman', k:'calibrar', m:'mover', o:'origen', d:'medir', x:'auxiliar', w:'texto' };
 document.addEventListener('keydown', e => {
     if (e.key === 'Shift') { teclas.shift = true; refrescarCursor(); }
     if (e.key === 'Alt') { teclas.alt = true; refrescarCursor(); e.preventDefault(); }
@@ -5716,9 +5803,12 @@ document.addEventListener('keydown', e => {
     if (e.ctrlKey || e.metaKey) return;
     if (e.key === 'Escape' && (herramienta === 'recortar' || herramienta === 'alargar')) { setHerramienta('editar'); return; }
     if (e.key === 'Escape' && trf && !enCampo(e)) { trf = null; render(); return; }
+    if (e.key === 'Escape' && herramienta === 'puntos' && selPuntos.size) { selPuntos.clear(); actualizarEstado(); render(); return; }
     if (e.key === 'Escape' && pick) { pick = null; actualizarEstado(); render(); snack('Cancelado'); return; }
     if (e.key === 'Escape') { cerrarCtx(); if (dib || circ || ran || auxPend || formaPend || cotaPend) terminarDibujo(); else { medida = null; cal = null; if (herramienta === 'editar' && seleccionados().length) { seleccionarUno(-1); refrescar(); } render(); } actualizarEstado(); return; }
     if (e.key === 'Enter') { if (dib) terminarDibujo(); actualizarEstado(); return; }
+    if (k === 'a' && herramienta === 'puntos' && selPuntos.size) { e.preventDefault(); abrirHacerArco(); return; }
+    if ((e.key === 'Delete' || e.key === 'Backspace') && herramienta === 'puntos') { e.preventDefault(); borrarPuntosSel(); return; }
     if (e.key === 'Backspace') { e.preventDefault(); if (!quitarUltimoPunto() && herramienta === 'editar') borrarSeleccion(); actualizarEstado(); return; }
     if (e.key === 'Delete') { borrarSeleccion(); return; }
     if (k === 'f') { encuadrar(); return; }
@@ -5889,7 +5979,7 @@ function fijarOrigen(p) {
 //  PANEL CONTEXTUAL (clic derecho en editar)
 // ════════════════════════════════════════════════
 const ctxPanel = document.getElementById('ctxPanel');
-function cerrarCtx() { ctxPanel.classList.remove('visible'); if (cotaEdit) { cotaEdit = null; render(); } }
+function cerrarCtx() { ctxPanel.classList.remove('visible'); if (cotaEdit) { cotaEdit = null; render(); } if (typeof centroEd !== 'undefined' && centroEd) { centroEd = null; render(); } if (typeof arcoEd !== 'undefined' && arcoEd) { arcoEd = null; ctxPanel.style.minWidth = ''; render(); } }
 function colocarCtx(sx, sy) {
     ctxPanel.classList.add('visible');
     const w = ctxPanel.offsetWidth, h = ctxPanel.offsetHeight;
@@ -6152,8 +6242,8 @@ function restaurarUndo(e) {
     if (sel >= contornos.length) sel = -1;
     actualizarPanelFondo(); refrescar();
 }
-function deshacer() { if (!undoStack.length) { snack('Nada que deshacer'); return; } redoStack.push(estadoActualUndo()); restaurarUndo(undoStack.pop()); }
-function rehacer() { if (!redoStack.length) { snack('Nada que rehacer'); return; } undoStack.push(estadoActualUndo()); restaurarUndo(redoStack.pop()); }
+function deshacer() { if (selPuntos) selPuntos.clear(); if (!undoStack.length) { snack('Nada que deshacer'); return; } redoStack.push(estadoActualUndo()); restaurarUndo(undoStack.pop()); }
+function rehacer() { if (selPuntos) selPuntos.clear(); if (!redoStack.length) { snack('Nada que rehacer'); return; } undoStack.push(estadoActualUndo()); restaurarUndo(redoStack.pop()); }
 
 let tAuto = null;
 function guardarAutoPronto() { clearTimeout(tAuto); tAuto = setTimeout(guardarAuto, 500); }
@@ -7425,9 +7515,216 @@ function borrarSeleccion() {
     seleccionarUno(-1); refrescar();
     if (ids.length > 1) snack(`${ids.length} contornos borrados`);
 }
+// ── Seleccionar puntos (herramienta «puntos»): ventana para elegir vértices y borrarlos de una vez ──
+var selPuntos = new Set();          // «ci:vi»
+const puntoEditable = c => c && c.pts.length && !c.texto && !c.deTexto && !c.bloqueado;
+function verticeEnPantalla(sx, sy) {
+    let mejor = null;
+    contornos.forEach((c, ci) => { if (!puntoEditable(c)) return; c.pts.forEach((q, vi) => { const s = aPantalla(q), d = Math.hypot(s.x - sx, s.y - sy); if (d <= 8 && (!mejor || d < mejor.d)) mejor = { d, ci, vi }; }); });
+    return mejor;
+}
+function puntosEnCaja(x1, y1, x2, y2) {
+    const a = Math.min(x1, x2), b = Math.max(x1, x2), c0 = Math.min(y1, y2), d0 = Math.max(y1, y2), out = [];
+    contornos.forEach((c, ci) => { if (!puntoEditable(c)) return; c.pts.forEach((q, vi) => { const s = aPantalla(q); if (s.x >= a && s.x <= b && s.y >= c0 && s.y <= d0) out.push(ci + ':' + vi); }); });
+    return out;
+}
+function dibujarPuntosSel() {
+    if (herramienta !== 'puntos' || !selPuntos.size) return;
+    ctx.save(); ctx.fillStyle = '#e67e22'; ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5;
+    selPuntos.forEach(k => { const [ci, vi] = k.split(':').map(Number), c = contornos[ci], q = c && c.pts[vi]; if (!q) return; const s = aPantalla(q); ctx.beginPath(); ctx.rect(s.x - 5.5, s.y - 5.5, 11, 11); ctx.fill(); ctx.stroke(); ctx.strokeStyle = '#e67e22'; ctx.lineWidth = 1; ctx.strokeRect(s.x - 8, s.y - 8, 16, 16); ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; });
+    ctx.restore();
+}
+// Quita los puntos elegidos de cada contorno de una vez (un solo «deshacer»). Un tramo que pierde un extremo queda recto;
+// un contorno con menos de 2 puntos desaparece; uno cerrado que se queda sin superficie pasa a abierto.
+function borrarPuntosSel() {
+    if (!selPuntos.size) { snack('No hay puntos elegidos: arrastra una ventana sobre ellos'); return; }
+    const porC = new Map(); selPuntos.forEach(k => { const [ci, vi] = k.split(':').map(Number); if (!contornos[ci] || !contornos[ci].pts[vi]) return; if (!porC.has(ci)) porC.set(ci, new Set()); porC.get(ci).add(vi); });
+    if (!porC.size) { selPuntos.clear(); render(); return; }
+    guardarUndo();
+    let nPts = 0, nBorrados = 0, nAbiertos = 0;
+    [...porC.keys()].sort((a, b) => b - a).forEach(ci => {
+        const c = contornos[ci], quitar = porC.get(ci), n = c.pts.length, quedan = [];
+        for (let i = 0; i < n; i++) if (!quitar.has(i)) quedan.push(i);
+        nPts += quitar.size;
+        if (quedan.length < 2) { contornos.splice(ci, 1); nBorrados++; return; }
+        const pts = quedan.map(i => c.pts[i]), b = quedan.map((i, k) => {
+            const j = quedan[(k + 1) % quedan.length], seguido = j === (i + 1) % n && (c.cerrado || k < quedan.length - 1);
+            return seguido ? (c.b[i] || 0) : 0; });
+        c.pts = pts; c.b = b;
+        if (!c.cerrado) c.b[c.pts.length - 1] = 0;
+        if (c.cerrado && (c.pts.length < 3 && !c.b.some(x => x) || !contornoValido(c))) { c.cerrado = false; c.b[c.pts.length - 1] = 0; nAbiertos++; }
+    });
+    selPuntos.clear(); sel = -1; if (typeof selSet !== 'undefined' && selSet.clear) selSet.clear();
+    refrescar(); actualizarEstado();
+    snack(`${nPts} punto${nPts === 1 ? '' : 's'} borrado${nPts === 1 ? '' : 's'}` + (nBorrados ? ` · ${nBorrados} contorno${nBorrados === 1 ? '' : 's'} sin puntos, quitado${nBorrados === 1 ? '' : 's'}` : '') + (nAbiertos ? ` · ${nAbiertos} quedan abiertos` : '') + ' (Ctrl+Z para deshacer)');
+}
+// ── «◠ Hacer arco»: los puntos elegidos con la doble flecha (seguidos, de un contorno) se cambian por un solo arco ──
+// Dos formas: «por los puntos» (los extremos quedan y el arco pasa lo más cerca posible de los demás) y «tangente a los
+// tramos de al lado» (empalme con las rectas anterior y siguiente, que se recortan o alargan). El radio: el calculado,
+// redondeado a 0,5 mm o escrito. Vista previa en discontinua naranja con la desviación máxima.
+var arcoEd = null;
+const cfgArcoEd = { modo:'tangente', radio:'calc' };
+// Los puntos elegidos, si son seguidos y de un solo contorno: { ci, a, b, idx:[a…b] } o { error }
+function tramoElegido() {
+    if (!selPuntos || selPuntos.size < 3) return { error:'Elige al menos 3 puntos seguidos de la curva' };
+    const cis = new Set(), S = new Set();
+    selPuntos.forEach(k => { const [ci, vi] = k.split(':').map(Number); cis.add(ci); S.add(vi); });
+    if (cis.size > 1) return { error:'Los puntos tienen que ser de un solo contorno' };
+    const ci = [...cis][0], c = contornos[ci]; if (!c) return { error:'El contorno ya no existe' };
+    const n = c.pts.length;
+    if (S.size >= n) return { error:'Has elegido todos los puntos del contorno: elige solo los de la curva' };
+    let a, b;
+    if (c.cerrado) {
+        const fins = [...S].filter(i => !S.has((i + 1) % n)), inis = [...S].filter(i => !S.has((i - 1 + n) % n));
+        if (fins.length !== 1 || inis.length !== 1) return { error:'Los puntos elegidos tienen que ir seguidos' };
+        a = inis[0]; b = fins[0];
+    } else {
+        const l = [...S].sort((x, y) => x - y); a = l[0]; b = l[l.length - 1];
+        if (b - a + 1 !== l.length) return { error:'Los puntos elegidos tienen que ir seguidos' };
+    }
+    const idx = []; for (let i = a; ; i = (i + 1) % n) { idx.push(i); if (i === b) break; }
+    return { ci, a, b, idx, n };
+}
+// Muestras de la curva: los vértices y el punto medio de cada tramo (en un arco, el de su curva)
+function muestrasTramo(c, idx) {
+    const ts = tramos(c), out = [];
+    idx.forEach((i, k) => { out.push(c.pts[i]); if (k < idx.length - 1) { const t = ts.find(x => x.i === i); if (!t) return;
+        if (!t.b) out.push(mulv(add(t.p1, t.p2), 0.5)); else { const A = arcoDeBulge(t.p1, t.p2, t.b); if (A) out.push(add(A.c, mulv({ x:Math.cos(A.a1 + A.theta / 2), y:Math.sin(A.a1 + A.theta / 2) }, A.r))); } } });
+    return out;
+}
+// Mínimo de f en [x0, x1]: barrido y sección áurea
+function minimo1D(f, x0, x1, n) {
+    let mejor = x0, fm = Infinity;
+    for (let k = 0; k <= n; k++) { const x = x0 + (x1 - x0) * k / n, v = f(x); if (v < fm) { fm = v; mejor = x; } }
+    let lo = Math.max(x0, mejor - (x1 - x0) / n), hi = Math.min(x1, mejor + (x1 - x0) / n); const g = (Math.sqrt(5) - 1) / 2;
+    for (let it = 0; it < 60; it++) { const m1 = hi - g * (hi - lo), m2 = lo + g * (hi - lo); if (f(m1) < f(m2)) hi = m2; else lo = m1; }
+    return (lo + hi) / 2;
+}
+function desviacion(Q, C, R) { return Q.reduce((m, q) => Math.max(m, Math.abs(dist(q, C) - R)), 0); }
+// Calcula el arco sin aplicarlo
+function calcularArco(ed) {
+    const c = contornos[ed.ci]; if (!c) return { ok:false, msg:'El contorno ya no existe' };
+    const { a, b, idx, n } = ed, P1 = c.pts[a], P2 = c.pts[b], Q = muestrasTramo(c, idx);
+    // «escrito» con la casilla vacía: el calculado
+    const Rpedido = ed.radio === 'escrito' && String(ed.R || '').trim() !== '' ? numES(ed.R) : null;
+    if (Rpedido !== null && !(Rpedido > 0)) return { ok:false, msg:'Escribe un radio mayor que 0' };
+    const redondear = R => Math.max(0.5, Math.round(R * 2) / 2);
+    if (ed.modo === 'tangente') {
+        const ts = tramos(c), tPrev = ts.find(t => t.j === a), tNext = ts.find(t => t.i === b);
+        if (!tPrev || !tNext) return { ok:false, msg:'Para que sea tangente hace falta un tramo antes y otro después: usa «por los puntos»' };
+        if (tPrev.b || tNext.b) return { ok:false, msg:'Los tramos de al lado tienen que ser rectas para que el arco sea tangente: usa «por los puntos»' };
+        const A0 = tPrev.p1, B0 = tNext.p2, u1 = norm(sub(P1, A0)), u2 = norm(sub(B0, P2)), cr = cross(u1, u2);
+        if (Math.abs(cr) < 1e-6) return { ok:false, msg:'Las rectas de al lado son paralelas: usa «por los puntos»' };
+        // corte de las dos rectas
+        const s = cross(sub(P2, A0), u2) / cr, X = add(A0, mulv(u1, s));
+        const fi = Math.acos(Math.max(-1, Math.min(1, dot(mulv(u1, -1), u2))));         // ángulo entre las dos rectas en el corte
+        const t2 = Math.tan(fi / 2), s2 = Math.sin(fi / 2), w = norm(sub(u2, u1));
+        const dMax = Math.min(dot(sub(X, A0), u1), dot(sub(B0, X), u2));
+        if (!(dMax > 1e-6)) return { ok:false, msg:'Las rectas de al lado no se cortan hacia la curva: usa «por los puntos»' };
+        const geo = R => { const d = R / t2; return { C: add(X, mulv(w, R / s2)), T1: add(X, mulv(u1, -d)), T2: add(X, mulv(u2, d)), d }; };
+        const Rmax = dMax * t2 * 0.999;
+        let R = minimo1D(R => { const g = geo(R); return Q.reduce((s3, q) => s3 + (dist(q, g.C) - R) ** 2, 0); }, Rmax * 1e-3, Rmax, 300);
+        const Rcalc = R;
+        if (ed.radio === 'red') R = redondear(R); else if (Rpedido) R = Rpedido;
+        if (R > Rmax / 0.999 + 1e-9) return { ok:false, msg:`Con R${fmt(R, 3)} el arco no cabe entre las rectas de al lado (como mucho R${fmt(Rmax, 3)})`, Rcalc };
+        const g = geo(R), ccw = cr > 0, bul = bulgeAlrededor(g.T1, g.T2, g.C, ccw);
+        return { ok:true, modo:'tangente', C:g.C, R, Rcalc, ini:g.T1, fin:g.T2, b:bul, dev:desviacion(Q, g.C, R) };
+    }
+    // por los puntos: los extremos quedan; el centro, en su mediatriz
+    const L = dist(P1, P2); if (L < 1e-6) return { ok:false, msg:'El primer y el último punto coinciden' };
+    const M = mulv(add(P1, P2), 0.5), u = norm(sub(P2, P1)), nn = { x:-u.y, y:u.x };
+    const Cde = t => add(M, mulv(nn, t)), f = t => { const C = Cde(t), R = dist(P1, C); return Q.reduce((s3, q) => s3 + (dist(q, C) - R) ** 2, 0); };
+    let t = minimo1D(f, -60 * L, 60 * L, 1200);
+    const Rcalc = dist(P1, Cde(t)); let R = Rcalc;
+    if (ed.radio === 'red') R = redondear(R); else if (Rpedido) R = Rpedido;
+    if (R < L / 2 - 1e-9) return { ok:false, msg:`R${fmt(R, 3)} es menor que la mitad de la distancia entre el primer y el último punto (${fmt(L / 2, 3)})`, Rcalc };
+    if (R !== Rcalc) t = Math.sign(t || 1) * Math.sqrt(Math.max(0, R * R - L * L / 4));
+    const C = Cde(t);
+    // el sentido: el del lado donde están los puntos (el punto del medio)
+    const qm = Q[Math.floor(Q.length / 2)];
+    const op = [true, false].map(ccw => { const bb = bulgeAlrededor(P1, P2, C, ccw), A = arcoDeBulge(P1, P2, bb); const m = A ? add(A.c, mulv({ x:Math.cos(A.a1 + A.theta / 2), y:Math.sin(A.a1 + A.theta / 2) }, A.r)) : P1; return { bb, d: dist(m, qm) }; });
+    const bul = op[0].d <= op[1].d ? op[0].bb : op[1].bb;
+    return { ok:true, modo:'puntos', C, R, Rcalc, ini:P1, fin:P2, b:bul, dev:desviacion(Q, C, R) };
+}
+function aplicarArco(ed, res) {
+    const c = contornos[ed.ci]; if (!c || !res.ok) return;
+    guardarUndo();
+    const interior = new Set(ed.idx.slice(1, -1)), pts = [], bs = [];
+    for (let i = 0; i < ed.n; i++) {
+        if (interior.has(i)) continue;
+        if (i === ed.a) { pts.push({ ...c.pts[i], x:res.ini.x, y:res.ini.y }); bs.push(res.b); }
+        else if (i === ed.b) { pts.push({ ...c.pts[i], x:res.fin.x, y:res.fin.y }); bs.push(c.b[i] || 0); }
+        else { pts.push(c.pts[i]); bs.push(c.b[i] || 0); }
+    }
+    c.pts = pts; c.b = bs; if (!c.cerrado) c.b[c.pts.length - 1] = 0;
+    selPuntos.clear(); if (typeof memoTipos !== 'undefined') memoTipos = null;
+    refrescar(); actualizarEstado(); if (typeof guardarAutoPronto === 'function') guardarAutoPronto();
+}
+function abrirHacerArco() {
+    const t = tramoElegido(); if (t.error) { snack(t.error); return; }
+    const c = contornos[t.ci]; if (c.bloqueado || c.texto || c.deTexto) { snack('Ese contorno no se puede cambiar'); return; }
+    const ts = tramos(c), puedeTan = ts.some(x => x.j === t.a && !x.b) && ts.some(x => x.i === t.b && !x.b);
+    arcoEd = { ...t, modo: puedeTan ? cfgArcoEd.modo : 'puntos', radio: cfgArcoEd.radio, R: '', res:null };
+    ctxPanel.innerHTML = `
+        <div class="ctx-titulo">◠ Hacer un arco con ${t.idx.length} puntos de C${t.ci + 1}</div>
+        <div class="param-line">Forma <select id="haModo"><option value="tangente">tangente a los tramos de al lado</option><option value="puntos">por los puntos (los extremos quedan)</option></select></div>
+        <div class="param-line">Radio <select id="haRadio"><option value="calc">el calculado</option><option value="red">redondeado a 0,5 mm</option><option value="escrito">escrito:</option></select> <input type="number" id="haR" step="0.1" min="0.01" style="width:80px" disabled></div>
+        <div class="ctx-nota" id="haInfo"></div>
+        <button class="principal" id="haOk">Aplicar</button>
+        <div class="ctx-nota">Intro aplica · Esc cancela · se puede deshacer</div>`;
+    // la ventana, arriba, en el lado contrario a los puntos elegidos (para no tapar la vista previa)
+    ctxPanel.style.minWidth = '360px'; colocarCtx(0, 0);
+    { let sx = 0, m = 0; selPuntos.forEach(k => { const [ci, vi] = k.split(':').map(Number), q = contornos[ci] && contornos[ci].pts[vi]; if (q) { sx += aPantalla(q).x; m++; } });
+      const w = ctxPanel.offsetWidth; ctxPanel.style.left = (m && sx / m > W / 2 ? 8 : Math.max(8, W - w - 8)) + 'px'; ctxPanel.style.top = '48px'; }
+    const g = id => document.getElementById(id), Mo = g('haModo'), Ra = g('haRadio'), RR = g('haR');
+    Mo.value = arcoEd.modo; Ra.value = arcoEd.radio; RR.disabled = arcoEd.radio !== 'escrito';
+    const previa = () => {
+        if (!arcoEd) return; arcoEd.R = RR.value; const res = calcularArco(arcoEd); arcoEd.res = res;
+        if (res.Rcalc && !RR.value) RR.placeholder = fmt(res.Rcalc, 3);
+        const info = g('haInfo'), f = v => fmt(v, 3);
+        if (!res.ok) info.innerHTML = `<span style="color:#c0392b">⚠ ${res.msg}</span>`;
+        else {
+            const dmax = Math.max(1, 0.1 * res.R), malo = res.dev > dmax, flojo = res.dev > 0.2;
+            info.innerHTML = `R${f(res.R)}${res.R !== res.Rcalc ? ` (calculado R${f(res.Rcalc)})` : ''} · centro X${f(res.C.x)} Y${f(res.C.y)}<br>` +
+                `<span style="color:${malo ? '#c0392b' : flojo ? '#b9770e' : 'inherit'}">desviación máx. ${fmt(res.dev, 2)} mm${malo ? ' — estos puntos no forman un arco' : flojo ? ' — revisa que sea la curva que buscas' : ''}</span>`;
+            if (malo) res.ok = false;
+        }
+        g('haOk').disabled = !res.ok; render();
+    };
+    Mo.onchange = () => { arcoEd.modo = cfgArcoEd.modo = Mo.value; previa(); };
+    Ra.onchange = () => { arcoEd.radio = cfgArcoEd.radio = Ra.value; RR.disabled = Ra.value !== 'escrito'; if (!RR.disabled) { if (!RR.value && arcoEd.res && arcoEd.res.Rcalc) RR.value = +arcoEd.res.Rcalc.toFixed(2); RR.focus(); RR.select(); } previa(); };
+    RR.oninput = previa;
+    const aplicar = () => { const ed = arcoEd; if (!ed || !ed.res || !ed.res.ok) return; const res = ed.res; aplicarArco(ed, res); cerrarCtx();
+        snack(`${ed.idx.length} puntos → un arco R${fmt(res.R, 3)}${res.modo === 'tangente' ? ', tangente a los tramos de al lado' : ''} (desviación máx. ${fmt(res.dev, 2)} mm)`); };
+    g('haOk').onclick = aplicar;
+    ctxPanel.querySelectorAll('input, select').forEach(el => el.addEventListener('keydown', ev => {
+        if (ev.key === 'Enter') { ev.preventDefault(); aplicar(); } else if (ev.key === 'Escape') { ev.preventDefault(); cerrarCtx(); } }));
+    previa(); setTimeout(() => Mo.focus(), 20);
+}
+function dibujarPreviaArco() {
+    if (!arcoEd || !arcoEd.res || !arcoEd.res.C) return;
+    const r = arcoEd.res, c = contornos[arcoEd.ci]; if (!c) return;
+    ctx.save(); ctx.strokeStyle = r.ok ? '#e67e22' : '#c0392b'; ctx.lineWidth = 2.4; ctx.setLineDash([7, 5]);
+    if (r.ini && r.fin && r.b !== undefined) { const A = arcoDeBulge(r.ini, r.fin, r.b); if (A) { const s = aPantalla(A.c); ctx.beginPath(); ctx.arc(s.x, s.y, A.r * view.z, -A.a1, -(A.a1 + A.theta), A.theta > 0); ctx.stroke(); } }
+    if (r.modo === 'tangente') { const ts = tramos(c), tp = ts.find(t => t.j === arcoEd.a), tn = ts.find(t => t.i === arcoEd.b);
+        const seg = (p, q) => { const a1 = aPantalla(p), a2 = aPantalla(q); ctx.beginPath(); ctx.moveTo(a1.x, a1.y); ctx.lineTo(a2.x, a2.y); ctx.stroke(); };
+        if (tp) seg(tp.p1, r.ini); if (tn) seg(r.fin, tn.p2); }
+    ctx.setLineDash([]); const s = aPantalla(r.C); ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(s.x - 8, s.y); ctx.lineTo(s.x + 8, s.y); ctx.moveTo(s.x, s.y - 8); ctx.lineTo(s.x, s.y + 8); ctx.stroke();
+    ctx.restore();
+}
+// El botón «◠ Hacer arco», junto a los puntos elegidos
+function colocarBotonArco() {
+    let bt = document.getElementById('btnHacerArco');
+    if (!bt) { bt = document.createElement('div'); bt.id = 'btnHacerArco'; bt.className = 'zoom-btn'; bt.textContent = '◠ Hacer arco (A)'; bt.title = 'Cambia los puntos elegidos por un solo arco';
+        bt.onclick = e => { e.stopPropagation(); abrirHacerArco(); }; bt.addEventListener('pointerdown', e => e.stopPropagation()); document.getElementById('canvasWrap').appendChild(bt); }
+    const ver = herramienta === 'puntos' && selPuntos && selPuntos.size >= 3 && !arcoEd && !tramoElegido().error;
+    bt.style.display = ver ? '' : 'none'; if (!ver) return;
+    let x = -Infinity, y = Infinity; selPuntos.forEach(k => { const [ci, vi] = k.split(':').map(Number), q = contornos[ci] && contornos[ci].pts[vi]; if (!q) return; const s = aPantalla(q); x = Math.max(x, s.x); y = Math.min(y, s.y); });
+    bt.style.left = Math.min(W - 130, Math.max(4, x + 14)) + 'px'; bt.style.top = Math.max(4, y - 34) + 'px';
+}
 function dibujarCaja() {
-    if (!arrastre || arrastre.tipo !== 'caja') return;
-    const { sx, sy, sx2, sy2 } = arrastre, cruce = sx2 < sx;
+    if (!arrastre || (arrastre.tipo !== 'caja' && arrastre.tipo !== 'cajaPts')) return;
+    const { sx, sy, sx2, sy2 } = arrastre, cruce = arrastre.tipo === 'caja' && sx2 < sx;
     ctx.save();
     ctx.fillStyle = cruce ? 'rgba(39,174,96,0.08)' : 'rgba(0,90,156,0.08)';
     ctx.strokeStyle = cruce ? '#27ae60' : colores.acento; ctx.lineWidth = 1;
@@ -7663,9 +7960,153 @@ function extremosPorEje(ci, si, eje) {
     const p1esA = eje === 'x' ? t.p1.x <= t.p2.x : t.p1.y <= t.p2.y;
     return { t, iA: p1esA ? t.i : t.j, iB: p1esA ? t.j : t.i, A: p1esA ? t.p1 : t.p2, B: p1esA ? t.p2 : t.p1 };
 }
+// ── Editar el centro de un arco por teclado: doble clic sobre la cruz del centro (o sobre la cota de su posición) ──
+// Se escribe el centro en X Y (desde el cero pieza) o en I J (desde el inicio del arco), con vista previa en discontinua.
+//   «Se mantienen los extremos»: el centro solo puede estar en la mediatriz de los extremos; si no, se lleva a ella.
+//   «Se mueve el final del arco»: el inicio y el centro quedan como se escriben; el final se desliza por la recta siguiente.
+// Un círculo completo se mueve entero.
+let centroEd = null;      // { ci, si, modo, ent:'xy'|'ij', res } mientras la ventana está abierta
+const CENTRO_PX = 11;     // radio de captura de la cruz, en píxeles
+function arcoEnCentro(sx, sy) {
+    let mejor = null;
+    contornos.forEach((c, ci) => { if (c.pts.length < 2 || c.texto || c.deTexto) return;
+        tramos(c).forEach(t => { if (!t.b) return; const a = arcoDeBulge(t.p1, t.p2, t.b); if (!a) return;
+            const s = aPantalla(a.c), d = Math.hypot(s.x - sx, s.y - sy);
+            if (d <= CENTRO_PX && (!mejor || d < mejor.d)) mejor = { d, ci, si: t.i }; }); });
+    return mejor;
+}
+// Un contorno que es un círculo completo: todos sus tramos son arcos del mismo centro
+function esCirculoCompleto(c) {
+    if (!c.cerrado) return null; const ts = tramos(c); if (!ts.length || ts.some(t => !t.b)) return null;
+    const a0 = arcoDeBulge(ts[0].p1, ts[0].p2, ts[0].b); if (!a0) return null;
+    return ts.every(t => { const a = arcoDeBulge(t.p1, t.p2, t.b); return a && dist(a.c, a0.c) < 1e-6 && Math.abs(a.r - a0.r) < 1e-6; }) ? a0 : null;
+}
+// Bulge del arco de p1 a p2 alrededor de c, en el sentido de «ccw»
+function bulgeAlrededor(p1, p2, c, ccw) {
+    const a1 = Math.atan2(p1.y - c.y, p1.x - c.x), a2 = Math.atan2(p2.y - c.y, p2.x - c.x);
+    let sw = a2 - a1; if (ccw) { while (sw <= 1e-9) sw += TAU; } else { while (sw >= -1e-9) sw -= TAU; }
+    return Math.tan(sw / 4);
+}
+// Calcula el resultado sin aplicarlo: { ok, msg, centro, r, pts:[cambios], b, aviso }
+function calcularCentro(ed, C) {
+    const c = contornos[ed.ci]; if (!c) return { ok:false, msg:'El contorno ya no existe' };
+    if (!isFinite(C.x) || !isFinite(C.y)) return { ok:false, msg:'Escribe las dos coordenadas del centro' };
+    const circ = esCirculoCompleto(c);
+    if (circ) { const d = sub(C, circ.c); return { ok:true, circulo:true, centro:C, r:circ.r, mover:d, msg:`Se mueve el círculo entero (R${fmt(circ.r, 3)})` }; }
+    const ts = tramos(c), t = ts.find(x => x.i === ed.si); if (!t || !t.b) return { ok:false, msg:'Ese tramo ya no es un arco' };
+    const ccw = t.b > 0, P1 = t.p1, P2 = t.p2;
+    if (ed.modo === 'extremos') {
+        const M = mulv(add(P1, P2), 0.5), u = norm(sub(P2, P1)), n = { x:-u.y, y:u.x };
+        const Cm = add(M, mulv(n, dot(sub(C, M), n))), movido = dist(Cm, C) > 1e-4;
+        const b = bulgeAlrededor(P1, P2, Cm, ccw);
+        if (!isFinite(b) || Math.abs(b) > 1e6) return { ok:false, msg:'Con ese centro el arco no se puede hacer' };
+        return { ok:true, centro:Cm, r:dist(P1, Cm), b, fin:P2, msg: movido ? `Con los extremos fijos, el centro tiene que estar en la mediatriz: queda en X${fmt(Cm.x, 3)} Y${fmt(Cm.y, 3)}` : '' };
+    }
+    // «final»: el final se desliza por el tramo siguiente (si es una recta); si no, sobre la línea del centro al final de antes
+    const r = dist(P1, C); if (r < 1e-6) return { ok:false, msg:'El centro no puede estar en el inicio del arco' };
+    const nt = ts.length, k = ts.indexOf(t), sig = (c.cerrado || k < nt - 1) ? ts[(k + 1) % nt] : null;
+    let F = null, aviso = '';
+    if (sig && !sig.b && sig.j !== t.i) {
+        const Q = sig.p2, v = norm(sub(P2, Q)), w = sub(Q, C), B = dot(w, v), D = B * B - (dot(w, w) - r * r);
+        if (D < 0) return { ok:false, msg:'Con ese centro, el arco no llega a la recta siguiente' };
+        const cand = [-B - Math.sqrt(D), -B + Math.sqrt(D)].filter(s => s > 1e-6).map(s => add(Q, mulv(v, s)));
+        if (!cand.length) return { ok:false, msg:'Con ese centro, el arco no llega a la recta siguiente' };
+        F = cand.sort((a, b2) => dist(a, P2) - dist(b2, P2))[0];
+    } else {
+        const d = sub(P2, C); F = dist(P2, C) < 1e-9 ? add(C, { x:r, y:0 }) : add(C, mulv(norm(d), r));
+        aviso = sig ? 'El tramo siguiente es un arco: el final se lleva sobre la línea del centro al final anterior' : 'El final se lleva sobre la línea del centro al final anterior';
+    }
+    if (dist(F, P1) < 1e-6) return { ok:false, msg:'Con ese centro el arco se cerraría sobre sí mismo' };
+    const b = bulgeAlrededor(P1, F, C, ccw);
+    return { ok:true, centro:C, r, b, fin:F, finIdx:t.j, msg:aviso };
+}
+function aplicarCentro(ed, res) {
+    const c = contornos[ed.ci]; if (!c || !res.ok) return;
+    guardarUndo();
+    if (res.circulo) c.pts = c.pts.map(q => add(q, res.mover));
+    else {
+        c.b[ed.si] = res.b;
+        if (ed.modo === 'final' && res.finIdx !== undefined) c.pts[res.finIdx] = { ...c.pts[res.finIdx], x:res.fin.x, y:res.fin.y };
+    }
+    if (typeof memoTipos !== 'undefined') memoTipos = null;
+    refrescar(); if (typeof guardarAutoPronto === 'function') guardarAutoPronto();
+}
+function abrirEditorCentro(ci, si, sx, sy) {
+    const c = contornos[ci]; if (!c) return;
+    if (c.bloqueado) { snack('Ese contorno está bloqueado 🔒: desbloquéalo para cambiarlo'); return; }
+    const t = tramos(c).find(x => x.i === si); if (!t || !t.b) return;
+    const a = arcoDeBulge(t.p1, t.p2, t.b), circ = esCirculoCompleto(c);
+    centroEd = { ci, si, modo: centroEd && centroEd.modo || cfgCentroEd.modo, ent: cfgCentroEd.ent, ini: t.p1, c0: a.c, res: null };
+    const f = v => fmt(v, 4);
+    ctxPanel.innerHTML = `
+        <div class="ctx-titulo">${circ ? `Centro del círculo C${ci + 1}` : `Centro del arco ${si + 1} de C${ci + 1}`}</div>
+        <div class="param-line">Escribir <select id="ccEnt"><option value="xy">X Y (desde el cero)</option><option value="ij">I J (desde el inicio)</option></select></div>
+        <div class="param-line"><span id="ccLx">X</span> <input type="number" id="ccA" step="0.01"> <span id="ccLy">Y</span> <input type="number" id="ccB" step="0.01"></div>
+        ${circ ? '' : `<div class="param-line">Al mover el centro <select id="ccModo"><option value="extremos">extremos fijos</option><option value="final">mover el final</option></select></div>`}
+        <div class="ctx-nota" id="ccInfo"></div>
+        <button class="principal" id="ccOk">Aplicar</button>
+        <div class="ctx-nota">Antes: X${f(a.c.x)} Y${f(a.c.y)} · R${f(a.r)} · inicio del arco X${f(t.p1.x)} Y${f(t.p1.y)} · Intro aplica · Esc cancela</div>`;
+    // la ventana, en la esquina de arriba del lado contrario al arco: así no tapa la vista previa
+    colocarCtx(sx, sy); { const w = ctxPanel.offsetWidth; ctxPanel.style.left = (sx > W / 2 ? 8 : Math.max(8, W - w - 8)) + 'px'; ctxPanel.style.top = '48px'; }
+    const g = id => document.getElementById(id), A = g('ccA'), B = g('ccB'), E = g('ccEnt'), Mo = g('ccModo');
+    E.value = centroEd.ent; if (Mo) Mo.value = centroEd.modo;
+    const valores = () => { const ij = centroEd.ent === 'ij'; g('ccLx').textContent = ij ? 'I' : 'X'; g('ccLy').textContent = ij ? 'J' : 'Y';
+        A.value = +(ij ? a.c.x - t.p1.x : a.c.x).toFixed(4); B.value = +(ij ? a.c.y - t.p1.y : a.c.y).toFixed(4); };
+    const leer = () => { const x = numES(A.value), y = numES(B.value); return centroEd.ent === 'ij' ? { x: t.p1.x + x, y: t.p1.y + y } : { x, y }; };
+    const previa = () => {
+        if (!centroEd) return; const res = calcularCentro(centroEd, leer()); centroEd.res = res;
+        const info = g('ccInfo');
+        if (!res.ok) info.innerHTML = `<span style="color:#c0392b">⚠ ${res.msg}</span>`;
+        else { const ij = sub(res.centro, t.p1);
+            info.innerHTML = `Nuevo centro X${f(res.centro.x)} Y${f(res.centro.y)} (I${f(ij.x)} J${f(ij.y)}) · R${f(res.r)}` +
+                (!res.circulo && centroEd.modo === 'final' && res.fin ? `<br>Final del arco: X${f(res.fin.x)} Y${f(res.fin.y)}` : '') +
+                (res.msg ? `<br><span style="color:#b9770e">${res.msg}</span>` : ''); }
+        g('ccOk').disabled = !res.ok; render();
+    };
+    valores(); previa();
+    E.onchange = () => { centroEd.ent = cfgCentroEd.ent = E.value; valores(); previa(); };
+    if (Mo) Mo.onchange = () => { centroEd.modo = cfgCentroEd.modo = Mo.value; previa(); };
+    A.oninput = B.oninput = previa;
+    const aplicar = () => { const ed = centroEd; if (!ed || !ed.res || !ed.res.ok) { A.focus(); return; } const res = ed.res;
+        aplicarCentro(ed, res); cerrarCtx();
+        snack(res.circulo ? `Círculo movido: centro en X${fmt(res.centro.x, 3)} Y${fmt(res.centro.y, 3)}` : `Centro del arco: X${fmt(res.centro.x, 3)} Y${fmt(res.centro.y, 3)} · R${fmt(res.r, 3)}`); };
+    g('ccOk').onclick = aplicar;
+    ctxPanel.querySelectorAll('input, select').forEach(el => el.addEventListener('keydown', ev => {
+        if (ev.key === 'Enter') { ev.preventDefault(); aplicar(); }
+        else if (ev.key === 'Escape') { ev.preventDefault(); cerrarCtx(); }
+    }));
+    setTimeout(() => { A.focus(); A.select(); }, 20);
+}
+// La vista previa: el arco nuevo en discontinua naranja, su centro y, si cambia, el final
+function dibujarPreviaCentro() {
+    if (!centroEd || !centroEd.res) return;
+    const ed = centroEd, res = ed.res, c = contornos[ed.ci]; if (!c) return;
+    ctx.save();
+    const cruz = (p, col, tam) => { const s = aPantalla(p); ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(s.x - tam, s.y); ctx.lineTo(s.x + tam, s.y); ctx.moveTo(s.x, s.y - tam); ctx.lineTo(s.x, s.y + tam); ctx.stroke(); };
+    // el centro de antes, en gris, y el inicio del arco (desde donde se miden I y J), en verde
+    cruz(ed.c0, 'rgba(120,120,120,.8)', 6);
+    if (!res.circulo) { const s = aPantalla(ed.ini); ctx.fillStyle = '#1e8449'; ctx.beginPath(); ctx.arc(s.x, s.y, 4.5, 0, TAU); ctx.fill(); }
+    if (res.ok) {
+        ctx.strokeStyle = '#e67e22'; ctx.lineWidth = 2.2; ctx.setLineDash([7, 5]);
+        if (res.circulo) { const s = aPantalla(res.centro); ctx.beginPath(); ctx.arc(s.x, s.y, res.r * view.z, 0, TAU); ctx.stroke(); }
+        else {
+            const p1 = ed.ini, p2 = res.fin, a = arcoDeBulge(p1, p2, res.b);
+            if (a) { const s = aPantalla(a.c); ctx.beginPath(); ctx.arc(s.x, s.y, a.r * view.z, -a.a1, -(a.a1 + a.theta), a.theta > 0); ctx.stroke(); }
+            // el tramo siguiente, si el final cambia
+            if (ed.modo === 'final' && res.finIdx !== undefined) {
+                const ts = tramos(c), k = ts.findIndex(x => x.i === ed.si), sig = ts[(k + 1) % ts.length];
+                if (sig && sig.i !== ed.si && (c.cerrado || k < ts.length - 1)) { const s1 = aPantalla(res.fin), s2 = aPantalla(sig.p2); ctx.beginPath(); ctx.moveTo(s1.x, s1.y); ctx.lineTo(s2.x, s2.y); ctx.stroke(); }
+                const sf = aPantalla(res.fin); ctx.setLineDash([]); ctx.fillStyle = '#e67e22'; ctx.beginPath(); ctx.arc(sf.x, sf.y, 4.5, 0, TAU); ctx.fill();
+            }
+        }
+        ctx.setLineDash([]); cruz(res.centro, '#e67e22', 9);
+    }
+    ctx.restore();
+}
+const cfgCentroEd = { modo:'extremos', ent:'xy' };
 function abrirEditorCota(ref, sx, sy) {
     if (ref.tipo === 'man') { abrirEditorCotaManual(ref, sx, sy); return; }
-    if (ref.tipo === 'cen') { snack('Cota de referencia: el centro del arco depende de sus extremos y su radio (cámbialos para moverlo)'); return; }
+    if (ref.tipo === 'cen') { abrirEditorCentro(ref.ci, ref.si, sx, sy); return; }
     if (ref.tipo !== 'tot' && ref.tipo !== 'sit' && !contornos[ref.ci]) return;
     cotaEdit = ref;
     const v = fmt(ref.valor, 4);
@@ -14692,6 +15133,74 @@ function descargarMec() { if (!ultimoMec) return; descargar(ultimoMec.nc, nombre
 function copiarMec() { if (!ultimoMec) return; navigator.clipboard.writeText(ultimoMec.nc).then(() => snack('G-code copiado'), () => { const t = document.getElementById('mecTexto'); t.select(); document.execCommand('copy'); snack('G-code copiado'); }); }
 function simularMec() { if (!ultimoMec) return; abrirEnSimulador(ultimoMec.nc, nombreProyecto() + ' (mecanizado).nc'); }
 
+</script>
+<script>
+// ═══ Interfaz ordenada (v105), después de que la interfaz del Calcador haya montado las pestañas ═══
+window.addEventListener('load', () => setTimeout(() => {
+    const $ = id => document.getElementById(id), VIS = document.documentElement.dataset.visor === '1';
+    // 1) Vista: 🏷 Nombres y 📏 Cotas, junto a 👁 Rejilla (las casillas de siempre siguen y van a la par)
+    const vc = document.querySelector('.vista-controls');
+    if (vc) {
+        const sep = document.createElement('span'); sep.className = 'vsep'; vc.insertBefore(sep, $('btnVerRejilla'));
+        const boton = (id, txt, chk, tOn, tOff) => { const b = document.createElement('div'); b.className = 'zoom-btn btn-vista'; b.id = id; b.textContent = txt;
+            b.onclick = () => { const c = $(chk); if (c) c.click(); pintar(); }; vc.appendChild(b); return () => { const c = $(chk), on = !!(c && c.checked); b.classList.toggle('visible', on); b.title = on ? tOn : tOff; }; };
+        const p1 = boton('btnVerNombres', '🏷 Nombres', 'tuNombres', 'Ocultar los nombres de los puntos (P1, P2… A1…)', 'Ver los nombres de los puntos (P1, P2… A1…)');
+        const p2 = boton('btnVerCotas', '📏 Cotas', 'chkCotas', 'Ocultar las cotas automáticas («Acotar automáticamente»)', 'Ver las cotas automáticas («Acotar automáticamente»)');
+        function pintar() { p1(); p2(); }
+        ['tuNombres', 'chkCotas'].forEach(id => { const c = $(id); if (c) c.addEventListener('change', pintar); });
+        pintar(); setInterval(pintar, 600);      // también cuando cambian al abrir un ejercicio
+    }
+    // 2) Deshacer, Rehacer, Cerrar y Terminar, al pie de la barra de herramientas
+    const st = $('toolStrip'), dibP = $('c2PaneDib');
+    if (st && dibP && !VIS) {
+        const div = document.createElement('div'); div.className = 'tool-divider'; st.appendChild(div);
+        const mover = (el, ico, tip) => { if (!el) return; el.className = 'tool-btn tool-acc'; el.textContent = ico; el.title = tip; el.dataset.tip = tip; st.appendChild(el); };
+        mover(dibP.querySelector('button[onclick="deshacer()"]'), '↶', 'Deshacer (Ctrl+Z)');
+        mover(dibP.querySelector('button[onclick="rehacer()"]'), '↷', 'Rehacer (Ctrl+Y)');
+        mover($('btnCerrar'), '⭘', 'Cerrar: une el último punto con el primero');
+        mover($('btnTerminar'), '✓', 'Terminar: deja el contorno abierto (Esc)');
+        dibP.querySelectorAll(':scope > .btn-row').forEach(r => { if (!r.children.length) r.remove(); });
+        try { ajustarBarraHerramientas(); } catch (e) {}
+    }
+    // 3) Dibujo: «Cotas y marcas» y «Ajustar medidas» plegados
+    if (dibP && !VIS) {
+        const det = (cls, titulo) => { const d = document.createElement('details'); d.className = 'c2-opciones ' + cls; d.innerHTML = '<summary>' + titulo + '</summary>'; return d; };
+        const cotas = det('c2-cotas', 'Cotas y marcas'), linea = id => { const e = $(id); return e && e.closest('.param-line'); };
+        ['chkCotas', 'selNivelCotas', 'selIncl', 'chkCero', 'chkEntrada', 'chkSentido', 'chkCentros', 'chkCadena', 'chkVerOcultas'].forEach(id => { const l = linea(id); if (l) cotas.appendChild(l); });
+        const rest = dibP.querySelector('button[onclick="restaurarCotas()"]'); if (rest) cotas.appendChild(rest);
+        const aj = dibP.querySelector('.ajuste-box'), ajuste = det('c2-ajuste', 'Ajustar medidas');
+        if (aj) { [...aj.children].forEach(ch => ajuste.appendChild(ch)); aj.remove(); }
+        cotas.open = true; ajuste.open = true;       // abiertos por defecto (se usan mucho); se pueden plegar
+        dibP.appendChild(cotas); dibP.appendChild(ajuste);
+    }
+    // 5) Barra de arriba: 🖼 Fondo (junto a Abrir) y ⬇ Exportar ▾ (junto a Guardar); la pestaña Exportar desaparece
+    const barra = document.querySelector('.c2-archivo');
+    if (barra && !VIS) {
+        const bAbrir = [...barra.children].find(b => /Abrir/.test(b.textContent)), bGuardar = [...barra.children].find(b => /Guardar/.test(b.textContent));
+        const bf = document.createElement('button'); bf.className = 'btn-manual'; bf.textContent = '🖼 Fondo';
+        bf.title = 'Carga el plano a calcar (foto o imagen PNG/JPG, SVG o DXF). Sus ajustes —opacidad, ancho real, calibrar, vectorizar…— están en la pestaña Fondo del panel izquierdo';
+        bf.onclick = () => $('fileFondo').click();
+        if (bAbrir) bAbrir.after(bf);
+        // al cargar el fondo, se enseñan sus ajustes
+        const ff = $('fileFondo'); if (ff) ff.addEventListener('change', () => setTimeout(() => {
+            if (document.documentElement.classList.contains('sin-izq') && typeof alternarPanel === 'function') alternarPanel('izq', false);
+            const t = document.querySelector('button[data-p="c2PaneFondo"]'); if (t) t.click();
+            const pf2 = $('c2PaneFondo'); if (pf2) pf2.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }, 300));
+        const caja = document.createElement('span'); caja.className = 'exp-menu';
+        caja.innerHTML = '<button class="btn-manual" id="btnExportar" title="El dibujo en DXF o SVG (para CAD, corte o grabado), con sus opciones">⬇ Exportar ▾</button><div class="exp-lista" id="expLista" hidden>'
+            + '<button class="btn-action sec" onclick="exportarDXF(); cerrarExpMenu()">⬇ DXF</button><button class="btn-action sec" onclick="exportarSVG(); cerrarExpMenu()">⬇ SVG</button></div>';
+        if (bGuardar) bGuardar.after(caja);
+        const lista = $('expLista'), op = $('c2Opciones'); if (op) lista.appendChild(op);
+        window.cerrarExpMenu = () => { lista.hidden = true; };
+        $('btnExportar').onclick = e => { e.stopPropagation(); lista.hidden = !lista.hidden; };
+        document.addEventListener('pointerdown', e => { if (!lista.hidden && !caja.contains(e.target)) lista.hidden = true; });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') lista.hidden = true; });
+        // abajo, en el panel izquierdo, solo queda Fondo
+        const t3 = $('c2Tabs3'), pf = $('c2PaneFondo'), pe = $('c2PaneExp');
+        if (t3 && pf) { const tf = t3.querySelector('button[data-p="c2PaneFondo"]'); if (tf) tf.click(); const te = t3.querySelector('button[data-p="c2PaneExp"]'); if (te) te.remove(); t3.classList.add('solo-fondo'); }
+        if (pe) pe.hidden = true;
+    }
+}, 60));
 </script>
 </body>
 </html>

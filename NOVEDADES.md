@@ -4,7 +4,27 @@ La versión de la suite es **año.mes** (por ejemplo, 2026.10). Cada programa co
 
 ## Suite CNC 2026.10
 
-Versiones de los programas: **Calcador v102 · Corrector v48 · Tutor G-Code v4 · Simulador 3D V45 · Calculadora de taller v5 · Anidador de tableros v8**.
+Versiones de los programas: **Calcador v105 · Corrector v50 · Tutor G-Code v4 · Simulador 3D V45 · Calculadora de taller v5 · Anidador de tableros v8**.
+
+### Calcador v105 / Corrector v50: la interfaz ordenada, seleccionar puntos y hacer arcos
+- **Botones de vista**, arriba a la derecha del dibujo: ◧ ◨ (paneles), 👁 Rejilla, **🏷 Nombres** (los nombres de los puntos, antes solo dentro de ⚙️ Mecanizado) y **📏 Cotas** (lo mismo que «Acotar automáticamente»). Las casillas de siempre siguen y van a la par. También en el Corrector.
+- **↶ Deshacer, ↷ Rehacer, ⭘ Cerrar y ✓ Terminar**, al pie de la barra de herramientas: se ven aunque se oculte el panel izquierdo.
+- **Pestaña Dibujo** en desplegables: Imanes, Comprobar con la fresa, **Cotas y marcas** y **Ajustar medidas** (estos dos, abiertos de entrada).
+- **Barra superior**: **🖼 Fondo** (carga el plano a calcar y abre la pestaña Fondo) y **⬇ Exportar ▾** (DXF, SVG y sus opciones). La pestaña Exportar del panel izquierdo desaparece; abajo queda solo Fondo.
+- ⚙️ Mecanizado: «Orden» en la misma fila que su desplegable; la casilla 📍 del programa dice «📍 Absolutas».
+- **Seleccionar puntos** (la doble flecha, junto a Editar; tecla I): una ventana elige todos los puntos que quedan dentro (Mayús añade, un clic elige uno) y **Supr los borra de una vez**, con un solo Ctrl+Z para recuperarlos. Para limpiar una silueta vectorizada.
+- **◠ Hacer arco** (o la tecla A), con 3 o más puntos seguidos elegidos: los cambia por un solo arco, **tangente a los tramos de al lado** (las rectas se recortan o alargan) o **por los puntos** (quedan el primero y el último); el radio, el calculado, redondeado a 0,5 mm o escrito. Vista previa con el radio, el centro y la desviación máxima; si los puntos no forman un arco, no deja aplicarlo.
+- Probada antes como «Calcador_Beta.html».
+
+### Calcador v104: el centro de un arco, por teclado
+- **Doble clic sobre la cruz del centro** de un arco (o sobre la cota de su posición) abre una ventana para escribir el centro, en **X Y** (desde el cero pieza) o en **I J** (desde el inicio del arco, marcado con un punto verde).
+- **Vista previa**: mientras se escribe, el arco nuevo se ve en discontinua naranja, con su centro, su radio y, si cambia, el punto final. Intro aplica, Esc cancela, y se puede deshacer.
+- **Dos formas de mover el centro**: con los *extremos fijos* (el centro se lleva a la mediatriz de los extremos y cambia el radio) o *moviendo el final* (el inicio y el centro quedan como se escriben y el final se desliza por la recta siguiente). Un círculo se mueve entero.
+
+### Calcador v103 / Corrector v49: más sitio para dibujar
+- Arriba a la derecha de la zona de dibujo, **◧** oculta o muestra el panel izquierdo (opciones, tecla F7) y **◨** el derecho (mecanizado y programa, tecla F8). La barra de herramientas se ve siempre. Al ocultar o mostrar un panel, el dibujo se encuadra para llenar la zona.
+- **👁 Rejilla** oculta o muestra la rejilla del fondo. Solo cambia lo que se ve: el imán a la rejilla sigue en ▦ Rejilla (tecla G).
+- Se recuerda cómo se deja para la próxima vez.
 
 ### Calcador v102 / Corrector v48 / Simulador 3D V45: la fresa arriba al terminar, bajar en diagonal, y las mismas reglas en el Simulador
 - **La fresa, arriba al terminar**: terminar el programa con la fresa dentro de la pieza (Z por debajo de 0) es un error de seguridad; con la fresa abajo, sin subir a la altura de seguridad (por debajo de Z5), un aviso. Antes del fin: G0 Z20.
