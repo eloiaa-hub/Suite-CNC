@@ -4,7 +4,10 @@ La versión de la suite es **año.mes** (por ejemplo, 2026.10). Cada programa co
 
 ## Suite CNC 2026.10
 
-Versiones de los programas: **Calcador v115 · Corrector v60 · Tutor G-Code v4 · Simulador 3D V45 · Calculadora de taller v5 · Anidador de tableros v8**.
+Versiones de los programas: **Calcador v116 · Corrector v61 · Tutor G-Code v4 · Simulador 3D V45 · Calculadora de taller v5 · Anidador de tableros v8**.
+
+### Calcador v116 / Corrector v61: imprimir toda la batería
+- En la **🗃 Batería**: **🖨 Informes de todas** (de cada tarea, el resumen de la clase y una hoja por alumno) y **🖨 Devoluciones de todas**, en un solo documento: con «Guardar como PDF», un solo PDF. Y 🖨 en cada fila, solo esa tarea.
 
 ### Calcador v115 / Corrector v60: diagnóstico, la nota del profesor y la devolución
 - **Diagnóstico** de dos errores típicos, en el primer error y en la lista: la **pieza en espejo** o girada 180° (los signos de las X o las Y cambiados, con o sin otro cero; y la compensación al otro lado) y **G90 / G91 confundidos** (incrementales con G90, absolutas con G91). La nota no cambia.
