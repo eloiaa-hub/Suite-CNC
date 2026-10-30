@@ -4,7 +4,10 @@ La versión de la suite es **año.mes** (por ejemplo, 2026.10). Cada programa co
 
 ## Suite CNC 2026.10
 
-Versiones de los programas: **Calcador v116 · Corrector v61 · Tutor G-Code v4 · Simulador 3D V45 · Calculadora de taller v5 · Anidador de tableros v8**.
+Versiones de los programas: **Calcador v117 · Corrector v62 · Tutor G-Code v4 · Simulador 3D V45 · Calculadora de taller v5 · Anidador de tableros v8**.
+
+### Calcador v117 / Corrector v62: los parecidos, en el informe
+- Los **programas muy parecidos** salen en los informes (que son para el profesor): las parejas, con su porcentaje y lo que comparten, en el resumen de la clase, y «👥 Muy parecido a…» en la hoja de cada alumno. En las devoluciones para el alumno, no. También en «🖨 Informes de todas» de la batería.
 
 ### Calcador v116 / Corrector v61: imprimir toda la batería
 - En la **🗃 Batería**: **🖨 Informes de todas** (de cada tarea, el resumen de la clase y una hoja por alumno) y **🖨 Devoluciones de todas**, en un solo documento: con «Guardar como PDF», un solo PDF. Y 🖨 en cada fila, solo esa tarea.
