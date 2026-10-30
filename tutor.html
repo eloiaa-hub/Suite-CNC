@@ -37,6 +37,39 @@
     html[data-visor="1"] .params-box.visor-si > button[onclick*="abrirCorregir"] { order: -5; }
     html[data-visor="1"] .params-box.visor-si > button[onclick*="abrirMasiva"] { order: -4; }
     .al-fila { flex-wrap: nowrap; gap: 4px; } .al-fila .al-b { flex: 1; padding: 5px 0; min-width: 0; display: flex; justify-content: center; } .rep-fila { flex-wrap: nowrap; gap: 4px; } .rep-fila .btn-action { flex: 1; min-width: 0; padding: 6px 2px; white-space: nowrap; }
+    .mv-var { display:inline-block; font-size:11px; font-weight:700; padding:0 5px; margin-left:4px; border-radius:4px; background:var(--accent-light); color:var(--accent); cursor:help; }
+    .mv-var.mal { background:#fde3df; color:#b0301f; }
+    #mvBtnVar.activo { background:var(--accent); color:#fff; border-color:var(--accent); }
+    .var-carpeta { border:1px solid var(--border-color); border-radius:8px; padding:6px 10px; margin:6px 0; }
+    .var-tit { display:block; margin-bottom:4px; } .var-item { display:block; margin-left:20px; font-size:13px; }
+    .mv-par { font-size:12px; cursor:pointer; padding:0 3px; border-radius:4px; background:#fff1d6; }
+    .mv-par.alto { background:#fde3df; }
+    #mvBtnPar.activo { background:#b0301f; color:#fff; border-color:#b0301f; }
+    .par-tabla { width:100%; border-collapse:collapse; font-size:13px; margin:6px 0 10px; } .par-tabla th, .par-tabla td { border-bottom:1px solid var(--border-color); padding:4px 6px; text-align:left; vertical-align:middle; }
+    .par-tabla td.n { font-weight:700; color:#b07000; white-space:nowrap; } .par-tabla td.n.alto { color:#b0301f; } .par-tabla .btn-action { width:auto; padding:3px 10px; white-space:nowrap; }
+    .par-ley { font-size:12px; color:var(--text-muted); margin:6px 0; } .par-ley i { display:inline-block; width:12px; height:12px; border-radius:2px; vertical-align:-2px; margin:0 3px 0 10px; }
+    .par-lado { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .par-col { min-width:0; border:1px solid var(--border-color); border-radius:6px; overflow:hidden; } .par-nom { padding:4px 8px; background:var(--accent-light); font-weight:600; font-size:13px; } .par-nom small { font-weight:400; color:var(--text-muted); }
+    .par-prog { font:12px/1.45 ui-monospace, Consolas, monospace; max-height:420px; overflow:auto; padding:4px 0; } .par-prog div { padding:0 8px; white-space:pre; }
+    .par-prog .ex, .par-ley i.ex { background:#f8c9c2; } .par-prog .cm, .par-ley i.cm { background:#f9e2a8; } .par-prog .co, .par-ley i.co { background:#e6e6e6; }
+    .aules-pasos { margin:0 0 10px 18px; padding:0; font-size:13px; line-height:1.5; } .aules-pasos li { margin-bottom:4px; }
+    .aules-op { display:block; font-size:13px; } .aules-mal { color:#b0301f; }
+    .rep-cuerpo { display:grid; grid-template-columns: 300px 1fr; gap:16px; } .rep-cuerpo textarea { width:100%; box-sizing:border-box; font:13px/1.5 inherit; padding:6px 8px; border:1px solid var(--border-color); border-radius:6px; }
+    .rep-der #repTabla { max-height:52vh; overflow:auto; } .rep-tabla select { padding:1px 4px; } .rep-acc .btn-action { width:auto; }
+    @media (max-width: 700px) { .rep-cuerpo { grid-template-columns: 1fr; } }
+    .mv-mini-b { padding:0 5px; font-size:11px; line-height:16px; border:1px solid var(--border-color); border-radius:4px; background:var(--bg-panel, #fff); cursor:pointer; }
+    .mv-rub-b { width:auto !important; padding:2px 10px !important; }
+    .err-tabla td { vertical-align:top; } .err-tabla td.n { white-space:nowrap; font-weight:700; } .err-barra { width:70px; height:5px; background:#eee; border-radius:3px; margin-top:4px; } .err-barra i { display:block; height:100%; border-radius:3px; }
+    .err-tipo { font-size:11px; font-weight:700; padding:0 5px; border-radius:4px; } .err-tipo.error { background:#fde3df; color:#b0301f; } .err-tipo.aviso { background:#fff1d6; color:#a86b00; }
+    .err-tabla details summary { cursor:pointer; font-size:12px; color:var(--text-muted); }
+    .bat-tabla td { vertical-align:top; } .bat-tabla select { max-width:220px; } .bat-acc { white-space:nowrap; } .bat-acc .btn-action { width:auto; padding:3px 8px; margin:0 2px 2px 0; }
+    #batCuerpo.bat-sobre { outline:3px dashed var(--accent); outline-offset:-6px; }
+    .mv-despl { font-size:12px; color:#b0301f; font-weight:600; cursor:help; }
+    .mv-prof { font-size:11px; margin-left:3px; cursor:help; }
+    .cr-alumno { display:flex; align-items:center; gap:8px; padding:6px 14px; background:var(--accent-light); border-bottom:1px solid var(--border-color); flex-wrap:wrap; }
+    .cr-alumno .btn-action { width:auto; padding:3px 10px; flex:0 0 auto; } .cr-al-nom { min-width:160px; } .cr-al-nom small { color:var(--text-muted); margin-left:4px; }
+    .cr-alumno label { display:flex; align-items:center; gap:4px; font-size:13px; } #crNotaProf { width:56px; } #crComProf { flex:1; min-width:200px; padding:4px 6px; }
+    .prof-l { display:block; margin:8px 0; font-size:13px; } .prof-l textarea { margin-top:4px; padding:6px; border:1px solid var(--border-color); border-radius:6px; font:13px/1.4 inherit; }
     .mv-inf { font-size:12px; cursor:help; } .mv-inf.mal { filter:none; } .mv-inf.ok { opacity:.85; }
     html[data-visor="1"] .params-box.visor-si > .btn-row:has(button[onclick*="abrirHoja"]) { order: -3; }
     html[data-visor="1"] .params-box.visor-si > button[onclick*="abrirVariantes"] { order: -2; }
@@ -394,7 +427,7 @@
     .mv-b:hover { background: var(--accent-light); }
     .mv-sinlista { text-align: center; padding: 50px 20px !important; color: var(--text-muted); line-height: 1.7; }
     .mv-resumen { font-size: 13px; color: var(--text-main); }
-    .cr-volver { margin-left: auto; margin-right: 10px; white-space: nowrap; }
+    .cr-volver { margin-left: auto; margin-right: 10px; white-space: nowrap; width: auto !important; flex: 0 0 auto; }
     .cr-cuerpo { flex: 1; display: grid; grid-template-columns: minmax(280px, 34%) 1fr; gap: 14px; padding: 14px 18px; min-height: 0; }
     .cr-izq { display: flex; flex-direction: column; gap: 8px; min-height: 0; }
     .cr-barra { display: flex; gap: 10px; align-items: center; font-size: 12px; color: var(--text-muted); }
@@ -578,7 +611,7 @@
 <body>
 <div class="app-window">
     <header class="top-bar">
-        <a href="index.html" class="ir-portada" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a><span class="top-bar-title">🎓 Tutor G-Code — Por Eloi A.A.<span class="ver-suite" title="Versión del programa (hecho a partir del Calcador v105)" style="font-size:11px;font-weight:600;padding:1px 7px;margin-left:8px;border-radius:9px;background:rgba(0,90,156,.12);color:#005A9C;vertical-align:middle">v4</span></span>
+        <a href="index.html" class="ir-portada" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a><span class="top-bar-title">🎓 Tutor G-Code — Por Eloi A.A.<span class="ver-suite" title="Versión del programa (hecho a partir del Calcador v115)" style="font-size:11px;font-weight:600;padding:1px 7px;margin-left:8px;border-radius:9px;background:rgba(0,90,156,.12);color:#005A9C;vertical-align:middle">v4</span></span>
         <div class="top-bar-right">
             <input class="project-name" id="projectName" type="text" value="calco_sin_nombre" placeholder="Nombre del proyecto">
             <div class="c2-archivo"><button class="btn-manual" onclick="nuevo()" title="Empieza un dibujo nuevo (se puede deshacer). Si estás en un ejercicio, lo deja">🗋 Nuevo</button><button class="btn-manual" onclick="document.getElementById('fileJSON').click()" title="Abre un dibujo guardado o un ejercicio que te ha dado el profesor (.json). Si es un ejercicio, se abre en ✍ Practicar">📂 Abrir</button><button class="btn-manual" onclick="exportarJSON()" title="Guarda tu dibujo en un archivo .json, para seguir otro día o abrirlo en el Simulador">💾 Guardar</button><button class="btn-manual" onclick="tuAbrirEjemplos()" title="Piezas para ver su programa (los programas resueltos) y ejercicios para escribirlo tú (la biblioteca de inicio)">📚 Ejemplos</button></div>
@@ -1017,9 +1050,11 @@
                 <label class="param-line var-chk"><input type="checkbox" id="varGiro" onchange="cambiarVariantes()"> Giro de 180°</label>
                 <label class="param-line var-chk"><input type="checkbox" id="varCero" onchange="cambiarVariantes()"> Cero pieza en otra esquina</label>
                 <label class="param-line var-chk"><input type="checkbox" id="varEsc" onchange="cambiarVariantes()"> Escala (%) <input type="text" id="varFac" value="90, 110" style="width:70px" onchange="cambiarVariantes()"></label>
-                <p class="ctx-nota">Se conservan el sentido de recorrido, el punto de entrada, el mecanizado y los requisitos de corrección. La escala puede dar medidas con decimales.</p>
+                <label class="param-line var-chk" title="Alarga o acorta la pieza (el ancho, el alto o los dos) por donde solo hay rectas: los arcos, los radios y los agujeros no cambian, y las tangencias se conservan. Valores en mm separados por comas: positivos alargan, negativos acortan"><input type="checkbox" id="varMed" onchange="cambiarVariantes()"> Otras medidas (mm) <input type="text" id="varMm" value="10, -10" style="width:70px" onchange="cambiarVariantes()"></label>
+                <p class="ctx-nota">Se conservan el sentido de recorrido, el punto de entrada, el mecanizado y los requisitos de corrección. La escala puede dar medidas con decimales. «Otras medidas» alarga o acorta la pieza por donde solo hay rectas, sin tocar arcos ni agujeros.</p>
                 <p class="ctx-nota var-aviso" id="varAviso"></p>
-                <button class="btn-action" onclick="guardarVariantesBib('hoja')">🖨 Imprimir sus hojas</button>
+                <button class="btn-action" onclick="abrirRepartoExamen()" title="La lista de la clase: a cada alumno su variante, y sus hojas con el nombre. La corrección masiva sabrá qué variante le tocaba a cada uno">👥 Preparar el examen (repartir)…</button>
+                <button class="btn-action sec" onclick="guardarVariantesBib('hoja')">🖨 Imprimir sus hojas</button>
                 <button class="btn-action sec" onclick="guardarVariantesBib('sol')">📋 Imprimir sus soluciones</button>
                 <button class="btn-action sec" onclick="guardarVariantesBib()">📚 Guardar en la biblioteca</button>
             </div>
@@ -1074,13 +1109,14 @@
         <div class="help-header"><h2>📝 Cuestionario para Aules (Moodle XML)</h2><button class="help-close" onclick="cerrarCuestionario()">✕</button></div>
         <div class="var-cuerpo">
             <div class="var-opciones">
-                <p class="ctx-nota">Preguntas sobre este ejercicio, con su plano: el alumno escribe los valores y Aules los corrige solo. Cada pregunta sale en varias <b>variantes</b> de la pieza (las de 🎲 Variantes: simetrías, giro, otro cero pieza, escala), cada una con su plano y su solución.</p>
+                <p class="ctx-nota">Preguntas sobre este ejercicio, con su plano: el alumno escribe los valores y Aules los corrige solo. Cada pregunta sale en varias <b>variantes</b> de la pieza (las de 🎲 Variantes: simetrías, giro, otro cero pieza, escala, otras medidas), cada una con su plano y su solución.</p>
                 <div class="param-line" title="Cuántas versiones de cada pregunta (1: solo el ejercicio original). Las transformaciones son las marcadas en 🎲 Variantes para examen">Variantes <input type="number" id="cuN" min="1" max="8" step="1" value="4" onchange="cambiarCuestionario()"></div>
                 <div class="param-line" title="Margen que se acepta en cada valor numérico (mm). En los ángulos de las polares, cinco veces más (en grados)">Tolerancia (mm) <input type="text" id="cuTol" value="0.01" style="width:60px" onchange="cambiarCuestionario()"></div>
                 <div class="cr-req-t" style="margin-top:6px">Preguntas de cada tipo</div>
                 <div id="cuTipos"></div>
                 <p class="ctx-nota">En Aules: <b>Banco de preguntas → Importar → Formato Moodle XML</b>. Cada pregunta queda en su propia categoría con sus variantes; en el cuestionario, <b>Añadir → una pregunta aleatoria</b> de cada categoría: así cada alumno recibe una variante distinta.</p>
                 <button class="btn-action" id="cuDescargar" onclick="descargarCuestionario()" title="Descarga el archivo .xml para importarlo en el banco de preguntas de Aules">⬇ Descargar el XML de Moodle</button>
+                <button class="btn-action sec" onclick="imprimirHuecos()" title="Para hacerlo en papel: cada variante con el plano y el programa con los huecos numerados, y la hoja de soluciones">🖨 Imprimir «Completar el programa»</button>
             </div>
             <div class="cu-lista" id="cuLista"></div>
         </div>
@@ -1348,8 +1384,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.</pre>
             <p><strong>🔒 Bloquear</strong> (panel del contorno o de la selección): el contorno no se coge en el dibujo (ni con clic, ni con recuadro, ni con Ctrl+A), para que no se mueva por error mientras calcas o acotas encima; los imanes sí lo ven. Se ve con 🔒 en el dibujo y en la lista de contornos; desde la lista se selecciona y se desbloquea.</p>
             <p><strong>Recortar</strong> (<kbd>Y</kbd>): clic en el trozo de un contorno que sobra; se quita lo que hay entre los dos cruces más cercanos con otros contornos o líneas auxiliares (o hasta el extremo del trazo). Antes de hacer clic se ve en rosa lo que se quitará. <strong>Alargar</strong> (<kbd>H</kbd>): clic junto al extremo de un trazo abierto; la recta o el arco se prolonga hasta el primer contorno o auxiliar que encuentra (se ve antes, en verde). Con las dos, <kbd>Esc</kbd> vuelve a Editar.</p>
             <p><strong>Mover con las flechas</strong> (Editar): con algo seleccionado, las flechas lo mueven 1 mm (<kbd>Mayús</kbd>: 10 mm; <kbd>Ctrl</kbd>: 0,1 mm); varias pulsaciones seguidas se deshacen de una vez. Sin nada seleccionado, siguen recorriendo la pieza bloque a bloque. <kbd>Esc</kbd> quita la selección.</p>
-            <p><strong>📝 Cuestionario para Aules</strong> (Exportar): prepara preguntas sobre el ejercicio abierto para un cuestionario de Aules (Moodle XML): coordenadas absolutas, incrementales y polares de un punto, I y J o R de un arco, ¿G2 o G3? y ¿G41 o G42? Cada pregunta lleva el plano con los puntos (P1, P2…), los arcos (A1, A2…), el cero pieza y el sentido de recorrido, y sale en varias variantes de la pieza (las de 🎲 Variantes). Impórtalo en el banco de preguntas y, en el cuestionario, añade una pregunta aleatoria de cada categoría: cada alumno recibe una variante distinta y Aules la corrige solo.</p>
-            <p><strong>📚 Corrección masiva</strong> (Exportar, o «Varios alumnos…» en la ventana de corregir): abre el ejercicio desde la propia ventana (📂 Abrir ejercicio…) y añade o arrastra los programas de toda la clase (cada archivo es un alumno; su nombre se toma del nombre del archivo) o, directamente, el <strong>.zip de Aules</strong> («Descargar todas las entregas»): cada alumno sale del nombre de su carpeta, también con el texto en línea o con un .zip dentro. Si el alumno entrega el <strong>🧾 informe de entrega</strong> del Simulador (.pdf), se comprueba su código y que el programa es el del informe (🧾 junto al nombre; 🧾⚠️ si no coincide); si solo entrega el informe, se corrige el programa que lleva dentro. Si entrega el programa en un <strong>documento</strong> (LibreOffice .odt, Word .docx o .doc, RTF), aunque lo haya renombrado a .nc o .txt, se corrige igual, pero se avisa de que el formato de archivo es incorrecto (📄⚠️ junto al nombre, en el resumen, en el CSV y en su informe). Se corrigen con los mismos requisitos y aparecen en una tabla con veredicto, errores, parte del contorno bien mecanizada y una nota orientativa sobre 10 con criterios ajustables. Pulsa un alumno para ver su corrección detallada. «⬇ CSV» descarga la tabla para Excel o LibreOffice; «🖨 Informes» imprime un resumen de la clase y una hoja por alumno con su recorrido, sus observaciones y pistas, el desglose de la nota y su programa.</p>
+            <p><strong>📝 Cuestionario para Aules</strong> (Exportar): prepara preguntas sobre el ejercicio abierto para un cuestionario de Aules (Moodle XML): coordenadas absolutas, incrementales y polares de un punto, I y J o R de un arco, ¿G2 o G3?, ¿G41 o G42? y «Completar el programa» (el programa de la solución con huecos: G2/G3, G41/G42, I J, X Y; también se imprime para hacerlo en papel). Cada pregunta lleva el plano con los puntos (P1, P2…), los arcos (A1, A2…), el cero pieza y el sentido de recorrido, y sale en varias variantes de la pieza (las de 🎲 Variantes). Impórtalo en el banco de preguntas y, en el cuestionario, añade una pregunta aleatoria de cada categoría: cada alumno recibe una variante distinta y Aules la corrige solo.</p>
+            <p><strong>📚 Corrección masiva</strong> (Exportar, o «Varios alumnos…» en la ventana de corregir): abre el ejercicio desde la propia ventana (📂 Abrir ejercicio…) y añade o arrastra los programas de toda la clase (cada archivo es un alumno; su nombre se toma del nombre del archivo) o, directamente, el <strong>.zip de Aules</strong> («Descargar todas las entregas»): cada alumno sale del nombre de su carpeta, también con el texto en línea o con un .zip dentro. Si el alumno entrega el <strong>🧾 informe de entrega</strong> del Simulador (.pdf), se comprueba su código y que el programa es el del informe (🧾 junto al nombre; 🧾⚠️ si no coincide); si solo entrega el informe, se corrige el programa que lleva dentro. Si entrega el programa en un <strong>documento</strong> (LibreOffice .odt, Word .docx o .doc, RTF), aunque lo haya renombrado a .nc o .txt, se corrige igual, pero se avisa de que el formato de archivo es incorrecto (📄⚠️ junto al nombre, en el resumen, en el CSV y en su informe). Con <strong>🎲 Variantes…</strong> se corrige un examen con variantes (12A, 12B…): marca las variantes (de la carpeta Variantes de la biblioteca, o sus JSON) y cada programa se corrige con todas y se queda la que mejor encaja; la variante sale junto al nombre, en el CSV y en su informe. Si las variantes se repartieron con <strong>👥 Preparar el examen</strong> (en 🎲 Variantes), se sabe la que le tocaba a cada alumno; si no, si el nombre del archivo, la carpeta del alumno o un comentario al principio del programa la dicen («12B», «variante B»), se corrige con esa y se avisa (⚠️) si encaja mejor con otra; también si dos variantes encajan casi igual. <strong>👥 Parecidos</strong> busca programas muy parecidos entre alumnos: como dos programas bien hechos de la misma pieza se parecen sin haberse copiado, solo cuenta lo que tienen esos dos y nadie más en la clase (las mismas líneas escritas igual aunque cambien los números de bloque, trozos de comentario iguales, los mismos errores). Sale 👥 junto al nombre, la ventana con las parejas y su porcentaje, la comparación lado a lado y la columna «Parecido con» del CSV. Es un indicio, no una prueba. <strong>⬆ Notas para Aules</strong> rellena la hoja de calificaciones de la tarea (en Aules: «Descargar hoja de calificaciones») con la nota de cada alumno, sobre la calificación máxima de la tarea, y un comentario con su veredicto y sus errores principales; se descarga y se sube en Aules con «Subir hoja de calificaciones». Cada alumno se reconoce por su número de participante del zip de Aules o por su nombre. <strong>✎</strong> en cada alumno (o en su corrección detallada, que tiene ◀ ▶ y Alt+← Alt+→ para ir al anterior y al siguiente): tu nota, que manda sobre la orientativa, y tu comentario; pasan a la tabla, el CSV, los informes, la devolución y las notas para Aules. <strong>🖨 Devoluciones</strong>: la hoja para cada alumno, con su recorrido, lo que tiene que revisar, tu comentario y la nota. <strong>💾 Guardar corrección</strong> y <strong>📂 Abrir corrección</strong>: la corrección de la tarea (el ejercicio, las variantes, los programas, tus notas y comentarios) en un archivo, para seguir otro día. <strong>🗃 Batería…</strong>: varias tareas de una vez. Eliges (o arrastras) una carpeta con los ejercicios (.json) y los zip de «Descargar todas las entregas» de cada tarea de Aules («curso-ISO GEO 01A-número.zip»); cada zip se casa con su ejercicio por el nombre de la tarea (o con sus variantes: «ISO GEO 01» con «ISO GEO 01A», «01B»…), y se puede cambiar a mano. ▶ Corregir todo, y ⬇ Descargar todo: el resumen, el CSV de cada tarea y, si la hoja de calificaciones de la tarea está en la carpeta, rellenada con las notas. 🔍 Ver abre cada tarea en la corrección masiva. <strong>📊 Errores de la clase</strong>: los errores y avisos que más se repiten (juntando los del mismo tipo aunque sean en otra línea), con quién los tiene; también salen en el resumen de los informes. En los criterios, la <strong>nota por apartados (rúbrica)</strong> es opcional: geometría, compensación, lo pedido, seguridad, final del programa, formato y comentarios, con los puntos que elijas (⚙ Rúbrica…); sale en el informe y en el CSV. <strong>Avisar de códigos no dados en clase</strong> (✎ para cambiar la lista): avisos, sin bajar la nota, de las G y M que no se han dado, de la D, de la herramienta que no es T101 M06 y del husillo escrito M03 S…. Si el recorrido tiene la forma de la pieza pero movido (ha usado otro cero pieza), el primer error es «Trazado desplazado», con cuánto está movido y dónde ha puesto el cero, y en la lista sale «· trazado desplazado». En los dos casos, el trazado puntúa: la geometría se lleva el porcentaje de «Trazado sin cortar o desplazado» (de partida, el 50 %). También se diagnostica la <strong>pieza en espejo</strong> (o girada 180°: los signos de las X o las Y cambiados) y las <strong>coordenadas incrementales con G90</strong> (o absolutas con G91). Si un programa no corta porque la fresa nunca baja de Z0, sale «⛔ Altura de corte incorrecta» y se comprueba igual el recorrido en X Y: «trazado geométrico correcto» o lo que falla. Se corrigen con los mismos requisitos y aparecen en una tabla con veredicto, errores, parte del contorno bien mecanizada y una nota orientativa sobre 10 con criterios ajustables. Pulsa un alumno para ver su corrección detallada. «⬇ CSV» descarga la tabla para Excel o LibreOffice; «🖨 Informes» imprime un resumen de la clase y una hoja por alumno con su recorrido, sus observaciones y pistas, el desglose de la nota y su programa.</p>
             <h3>Hoja de ejercicio</h3>
             <p>Exportar → 🖨 Hoja de ejercicio: A4 con el plano acotado (1:1 si cabe; si no, ajustado al papel), el enunciado y un cajetín con título, número, alumno (en blanco), curso, fecha, material, espesor, herramienta, escala y tipo de programación pedida. Opcionalmente, una tabla de coordenadas en blanco con una fila por movimiento y una hoja rayada para el programa. Su pareja es la hoja de soluciones (📋 Soluciones).</p>
             <h3>Equidistante</h3>
@@ -1481,6 +1517,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.</pre>
                 <input type="file" id="mvJSON" accept=".json" style="display:none" onchange="abrirEjercicioMasiva(this)">
                 <button class="btn-action sec" onclick="abrirBiblioteca({ elegir:true })" title="Elegir el ejercicio de la biblioteca">🗂 De la biblioteca…</button>
                 <button class="btn-action sec" onclick="document.getElementById('mvJSON').click()" title="Abre el JSON del ejercicio: la lista se recorrige con esa pieza y sus requisitos">📂 Abrir ejercicio…</button>
+                <button class="btn-action sec" id="mvBtnVar" onclick="elegirVariantesMasiva()" title="Corregir con las variantes del examen (12A, 12B…): cada programa se corrige con todas y se queda la que mejor encaja; avisa si no es la que le tocaba">🎲 Variantes…</button>
+                <button class="btn-action sec" onclick="abrirBateria()" title="Varias tareas de una vez: una carpeta con los ejercicios (.json) y los zip de las entregas de Aules; cada zip se corrige con su ejercicio">🗃 Batería…</button>
             </div>
             <div class="mv-barra">
                 <input type="file" id="mvArchivos" multiple accept=".nc,.txt,.iso,.cnc,.tap,.gcode,.ngc,.mpf,.h,.zip,.pdf,.odt,.docx,.doc,.rtf" style="display:none" onchange="anadirProgramas(this.files); this.value=''">
@@ -1488,22 +1526,33 @@ OTHER DEALINGS IN THE FONT SOFTWARE.</pre>
                 <button class="btn-action sec" onclick="vaciarMasiva()">🗑 Vaciar</button>
                 <span class="mv-sep"></span>
                 <button class="btn-action sec" onclick="exportarCSVMasiva()" title="Tabla para Excel o LibreOffice">⬇ CSV</button>
+                <button class="btn-action sec" onclick="abrirNotasAules()" title="Rellena la hoja de calificaciones de la tarea de Aules con la nota y un comentario de cada alumno, para subirla de una vez">⬆ Notas para Aules</button>
                 <button class="btn-action sec" onclick="imprimirInformes()" title="Resumen de la clase y una hoja por alumno">🖨 Informes de todos</button>
+                <button class="btn-action sec" id="mvBtnPar" onclick="verParecidos()" title="Programas muy parecidos entre alumnos: las mismas líneas, comentarios o errores que no tiene nadie más en la clase (un indicio de copia, no una prueba)">👥 Parecidos</button>
+                <button class="btn-action sec" onclick="verErroresClase()" title="Los errores y avisos que más se repiten en la clase, con quién los tiene: qué repasar">📊 Errores de la clase</button>
+                <button class="btn-action sec" onclick="imprimirDevoluciones()" title="La hoja de devolución de cada alumno: su recorrido, lo que tiene que revisar, tu comentario y la nota">🖨 Devoluciones</button>
+                <button class="btn-action sec" onclick="guardarCorreccion()" title="Guarda en un archivo la corrección de esta tarea (el ejercicio, las variantes, los programas, tus notas y comentarios) para seguir otro día">💾 Guardar corrección</button>
+                <input type="file" id="mvCorrJSON" accept=".json" style="display:none" onchange="abrirCorreccionArchivo(this)">
+                <button class="btn-action sec" onclick="document.getElementById('mvCorrJSON').click()" title="Abre una corrección guardada con 💾 Guardar corrección">📂 Abrir corrección</button>
             </div>
             <div class="mv-config">
                 <div class="cr-req"><span class="cr-req-t">Lo que se pide</span>
                     <label>Programación <select id="mvProg" onchange="cambiarRequisitosMasiva()"><option value="libre">Cualquiera</option><option value="g90">G90</option><option value="g91">G91</option><option value="mix">Mixta</option><option value="polar">Polares</option></select></label>
                     <label><input type="checkbox" id="mvEntrada" onchange="cambiarRequisitosMasiva()"> Exigir entrada</label>
                     <label><input type="checkbox" id="mvSentido" onchange="cambiarRequisitosMasiva()"> Exigir sentido</label>
+                    <label title="Avisa (sin bajar la nota) de las G y M que no se han dado en clase, de la D, de la herramienta que no es T101 M06 y del husillo escrito M03 S…"><input type="checkbox" id="mvClase" onchange="cambiarAvisoClase(this)"> Avisar de códigos no dados en clase <button type="button" class="mv-mini-b" onclick="event.preventDefault(); editarCodigosClase()" title="La lista de códigos dados en clase">✎</button></label>
 
                     <label>Tolerancia <select id="mvTol" onchange="cambiarRequisitosMasiva()"><option value="0.01">0,01 mm</option><option value="0.02">0,02 mm</option><option value="0.05">0,05 mm</option><option value="0.1">0,1 mm</option></select></label>
                 </div>
                 <div class="cr-req" title="La nota se calcula sobre 10 con estos pesos">
                     <span class="cr-req-t">Criterios de la nota orientativa</span>
-                    <label title="En proporción al contorno bien mecanizado">Geometría <input type="number" id="mvGeo" min="0" step="0.5" onchange="cambiarRequisitosMasiva()"></label>
+                    <label title="La de siempre: geometría, lo pedido y seguridad. Por apartados: la rúbrica, con compensación, final del programa, formato y comentarios">Nota <select id="mvModoNota" onchange="cambiarModoNota(this)"><option value="siempre">Geometría, lo pedido y seguridad</option><option value="apartados">Por apartados (rúbrica)</option></select></label>
+                    <button type="button" class="btn-action sec mv-rub-b" id="mvBtnRub" onclick="editarRubrica()" style="display:none" title="Los puntos de cada apartado">⚙ Rúbrica…</button>
+                    <label class="mv-crit-siempre" title="En proporción al contorno bien mecanizado">Geometría <input type="number" id="mvGeo" min="0" step="0.5" onchange="cambiarRequisitosMasiva()"></label>
                     <label title="Por cada corte que se mete en la pieza (o arco imposible)">− por corte que daña <input type="number" id="mvPen" min="0" step="0.25" onchange="cambiarRequisitosMasiva()"></label>
-                    <label title="Completos si cumple lo pedido">Lo pedido <input type="number" id="mvPed" min="0" step="0.5" onchange="cambiarRequisitosMasiva()"></label>
-                    <label title="Completos si no hay rápidos peligrosos">Seguridad <input type="number" id="mvSeg" min="0" step="0.5" onchange="cambiarRequisitosMasiva()"></label>
+                    <label class="mv-crit-siempre" title="Completos si cumple lo pedido">Lo pedido <input type="number" id="mvPed" min="0" step="0.5" onchange="cambiarRequisitosMasiva()"></label>
+                    <label class="mv-crit-siempre" title="Completos si no hay rápidos peligrosos">Seguridad <input type="number" id="mvSeg" min="0" step="0.5" onchange="cambiarRequisitosMasiva()"></label>
+                    <label title="Si el recorrido es el de la pieza pero no corta (la fresa no baja de Z0) o está desplazado (otro cero pieza): qué parte de los puntos de geometría se lleva, en proporción al contorno bien recorrido. 0: nada">Trazado sin cortar o desplazado <input type="number" id="mvTraz" min="0" max="100" step="5" style="width:56px" onchange="cambiarRequisitosMasiva()"> % de la geometría</label>
                 </div>
             </div>
             <div class="mv-tabla-caja" id="mvCaja">
@@ -1566,6 +1615,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.</pre>
 <div class="modal-overlay" id="modalCorregir" onclick="if(event.target===this)cerrarCorregir()">
     <div class="help-modal cr-modal">
         <div class="help-header"><h2>✅ Corregir programa</h2><button class="btn-action sec cr-volver" id="crVolver" style="display:none" onclick="volverAMasiva()"></button><button class="help-close" onclick="cerrarCorregir()">✕</button></div>
+        <div class="cr-alumno" id="crAlumno" style="display:none"></div>
         <div class="cr-cuerpo">
             <div class="cr-izq">
                 <div class="cr-barra">
@@ -11517,14 +11567,14 @@ function cerrarMasiva() { document.getElementById('modalMasiva').classList.remov
 function sincronizarRequisitosMasiva() {
     const g = id => document.getElementById(id);
     g('mvProg').value = cfgHoja.prog || 'libre'; g('mvEntrada').checked = !!cfgHoja.reqEntrada; g('mvSentido').checked = !!cfgHoja.reqSentido;
-    g('mvTol').value = String(cfgCorr.tol);
+    g('mvTol').value = String(cfgCorr.tol); if (g('mvTraz')) g('mvTraz').value = pctTrazado();
     const N = critNota(); g('mvGeo').value = N.geo; g('mvPed').value = N.pedido; g('mvSeg').value = N.seg; g('mvPen').value = N.pen;
     pintarEjercicioMasiva();
 }
 function cambiarRequisitosMasiva() {
     const g = id => document.getElementById(id), num = (id, d) => { const v = parseFloat(String(g(id).value).replace(',', '.')); return isFinite(v) && v >= 0 ? v : d; };
     cfgHoja.prog = g('mvProg').value; cfgHoja.reqEntrada = g('mvEntrada').checked; cfgHoja.reqSentido = g('mvSentido').checked;
-    cfgCorr.tol = +g('mvTol').value;
+    cfgCorr.tol = +g('mvTol').value; if (g('mvTraz')) cfgCorr.notaTrazado = Math.max(0, Math.min(100, num('mvTraz', TRAZADO_DEF)));
     cfgCorr.nota = { geo:num('mvGeo', NOTA_DEF.geo), pedido:num('mvPed', NOTA_DEF.pedido), seg:num('mvSeg', NOTA_DEF.seg), pen:num('mvPen', NOTA_DEF.pen) };
     guardarAutoPronto(); recorregirMasiva();
 }
@@ -11717,7 +11767,7 @@ function vaciarMasiva() { if (masiva.lista.length && !confirm('¿Quitar todos lo
 const VER_TXT = { pendiente:'⏳ Pendiente', bien:'✅ Bien', nocumple:'⚠️ No cumple lo pedido', mal:'❌ No sale bien', vacio:'⛔ Sin programa válido', error:'⛔ No se puede leer' };
 function ordenarMasiva(col) { const o = masiva.orden; if (o.col === col) o.asc = !o.asc; else { o.col = col; o.asc = col === 'alumno'; } pintarMasiva(); }
 function listaOrdenada() {
-    const o = masiva.orden, rango = { bien:0, nocumple:1, mal:2, vacio:3, error:4, pendiente:5 };
+    const o = masiva.orden, rango = { bien:0, nocumple:1, mal:2, altura:3, vacio:3, error:4, pendiente:5 };
     const clave = it => ({ alumno:it.alumno.toLowerCase(), veredicto:rango[it.v.veredicto], errGeo:it.v.errGeo + it.v.faltas, incumple:it.v.incumple, seguridad:it.v.seguridad, avisos:it.v.avisos, cob:it.v.cob, nota:it.v.nota })[o.col];
     return masiva.lista.map((it, k) => ({ it, k })).sort((a, b) => { const x = clave(a.it), y = clave(b.it); return (x < y ? -1 : x > y ? 1 : 0) * (o.asc ? 1 : -1); });
 }
@@ -11733,16 +11783,17 @@ function pintarMasiva() {
     document.querySelectorAll('#mvCab th[data-c]').forEach(th => th.querySelector('.fl').textContent = flecha(th.dataset.c));
     cuerpo.innerHTML = listaOrdenada().map(({ it, k }) => { const v = it.v;
         return `<tr class="mv-${v.veredicto}" data-k="${k}">
-            <td class="mv-al" title="${esc(it.archivo)}">${esc(it.alumno)}${(e => e ? ` <span class="mv-inf ${e.ok ? 'ok' : 'mal'}" title="${esc(e.txt)}">🧾${e.ok ? '' : '⚠️'}</span>` : '')(estadoInforme(it))}${it.formato ? ` <span class="mv-inf mal" title="${esc(it.formato)}">📄⚠️</span>` : ''}</td>
-            <td>${VER_TXT[v.veredicto]}</td>
-            ${v.veredicto === 'pendiente' ? '<td class="n" colspan="6" style="color:var(--text-muted)">se corregirá al abrir el ejercicio</td>' : v.veredicto === 'vacio' ? '<td class="n" colspan="4" style="color:var(--text-muted)">ningún movimiento de corte</td>' : `<td class="n">${v.errGeo + v.faltas || '·'}</td><td class="n">${v.incumple || '·'}</td><td class="n">${v.seguridad || '·'}</td><td class="n">${v.avisos || '·'}</td>`}
+            <td class="mv-al" title="${esc(it.archivo)}">${esc(it.alumno)}${(e => e ? ` <span class="mv-inf ${e.ok ? 'ok' : 'mal'}" title="${esc(e.txt)}">🧾${e.ok ? '' : '⚠️'}</span>` : '')(estadoInforme(it))}${it.formato ? ` <span class="mv-inf mal" title="${esc(it.formato)}">📄⚠️</span>` : ''}${it.variante ? ` <span class="mv-var${it.varAviso ? ' mal' : ''}" title="${esc(it.varTxt + (it.varAviso ? ' · ⚠️ ' + it.varAviso : ''))}">${esc(it.variante)}${it.varAviso ? ' ⚠️' : ''}</span>` : ''}</td>
+            <td>${VER_TXT[v.veredicto]}${extraVeredicto(it)}</td>
+            ${v.veredicto === 'pendiente' ? '<td class="n" colspan="6" style="color:var(--text-muted)">se corregirá al abrir el ejercicio</td>' : (v.veredicto === 'vacio' || v.veredicto === 'altura') ? `<td class="n" colspan="4" style="color:var(--text-muted)">${textoSinCorte(it)}</td>` : `<td class="n">${v.errGeo + v.faltas || '·'}</td><td class="n">${v.incumple || '·'}</td><td class="n">${v.seguridad || '·'}</td><td class="n">${v.avisos || '·'}</td>`}
             ${v.veredicto === 'pendiente' ? '' : `<td class="n">${pct(v.cob)}</td>
-            <td class="n nota ${v.nota >= 5 ? 'ap' : 'su'}">${nf(v.nota, 1)}</td>`}
-            <td class="acc"><button class="mv-b" data-a="ver" title="Ver su corrección detallada">🔍</button><button class="mv-b" data-a="inf" title="Imprimir su informe">🖨</button><button class="mv-b" data-a="quitar" title="Quitar de la lista">✕</button></td></tr>`; }).join('');
+            <td class="n nota ${v.nota >= 5 ? 'ap' : 'su'}">${nf(v.nota, 1)}${marcaProf(it)}</td>`}
+            <td class="acc"><button class="mv-b" data-a="prof" title="Tu nota y tu comentario para este alumno">✎</button><button class="mv-b" data-a="ver" title="Ver su corrección detallada">🔍</button><button class="mv-b" data-a="inf" title="Imprimir su informe">🖨</button><button class="mv-b" data-a="quitar" title="Quitar de la lista">✕</button></td></tr>`; }).join('');
     cuerpo.querySelectorAll('tr[data-k]').forEach(tr => tr.onclick = ev => {
         const k = +tr.dataset.k, a = ev.target.dataset && ev.target.dataset.a;
         if (a === 'quitar') { ev.stopPropagation(); quitarAlumno(k); }
         else if (a === 'inf') { ev.stopPropagation(); imprimirInformes([k]); }
+        else if (a === 'prof') { ev.stopPropagation(); editarProf(k); }
         else verAlumno(k);
     });
     pintarEjercicioMasiva();
@@ -11772,9 +11823,9 @@ function exportarCSVMasiva() {
     if (!masiva.lista.length) { snack('No hay programas en la lista'); return; }
     if (!hayPieza()) { snack('Abre antes el ejercicio (📂 Abrir ejercicio…)'); return; }
     const c = t => '"' + String(t).replace(/"/g, '""') + '"', d = v => String(v).replace('.', ',');
-    const filas = [['Alumno', 'Archivo', 'Veredicto', 'Errores de geometría', 'Incumplimientos de lo pedido', 'Errores de seguridad', 'Avisos', 'Contorno bien mecanizado (%)', 'Nota', 'Geometría', 'Lo pedido', 'Seguridad', 'Informe de entrega', 'Formato del archivo', 'Observaciones']];
+    const filas = [['Alumno', 'Archivo', 'Veredicto', 'Errores de geometría', 'Incumplimientos de lo pedido', 'Errores de seguridad', 'Avisos', 'Contorno bien mecanizado (%)', 'Nota', 'Geometría', 'Lo pedido', 'Seguridad', 'Informe de entrega', 'Formato del archivo', ...(masiva.variantes.length ? ['Variante', 'Aviso de variante'] : []), ...((masiva.parejas || []).length ? ['Parecido con'] : []), ...(rubricaActiva() ? RUBRICA.map(x => x[1] + ' (rúbrica)') : []), ...(hayProf() ? ['Nota orientativa', 'Comentario del profesor'] : []), 'Observaciones']];
     listaOrdenada().forEach(({ it }) => { const v = it.v, obs = it.r && it.r.hallazgos ? it.r.hallazgos.filter(h => h.tipo === 'error').map(h => h.msg + (h.pista ? ' (Pista: ' + h.pista + ')' : '')).join(' | ') : (it.r && it.r.error) || '';
-        filas.push([it.alumno, it.archivo, VER_TXT[v.veredicto].replace(/^\S+\s/, ''), v.errGeo + v.faltas, v.incumple, v.seguridad, v.avisos, d(Math.round(v.cob * 1000) / 10), d(v.nota), d(v.desglose.geo), d(v.desglose.pedido), d(v.desglose.seg), (e => e ? e.txt : '')(estadoInforme(it)), it.formato || 'Correcto', obs]); });
+        filas.push([it.alumno, it.archivo, VER_TXT[v.veredicto].replace(/^\S+\s/, ''), v.errGeo + v.faltas, v.incumple, v.seguridad, v.avisos, d(Math.round(v.cob * 1000) / 10), d(v.nota), d(v.desglose.geo), d(v.desglose.pedido), d(v.desglose.seg), (e => e ? e.txt : '')(estadoInforme(it)), it.formato || 'Correcto', ...(masiva.variantes.length ? [it.variante || '', it.varAviso || ''] : []), ...((masiva.parejas || []).length ? [(it.parecidos || []).length ? textoParecidos(it) : ''] : []), ...(rubricaActiva() ? RUBRICA.map(x => { const a = (v.rub || []).find(y => y.k === x[0]); return d(a ? a.puntos : 0); }) : []), ...(hayProf() ? [d(v.notaAuto !== undefined ? v.notaAuto : v.nota), it.comProf || ''] : []), obs]); });
     const esNum = x => typeof x === 'number' || /^-?\d+(,\d+)?$/.test(String(x));
     const txt = '\ufeff' + filas.map((f, fi) => f.map(x => fi > 0 && esNum(x) ? String(x) : c(x)).join(';')).join('\r\n');
     descargar(txt, `${nombreProyecto()}_correccion.csv`, 'text/csv;charset=utf-8');
@@ -11818,16 +11869,17 @@ function imprimirInformes(ks) {
         const lineasMal = new Set(H.filter(h => h.tipo === 'error' && h.linea !== null && h.linea !== undefined).map(h => h.linea)), lineasAv = new Set(H.filter(h => h.tipo === 'aviso' && h.linea !== null && h.linea !== undefined).map(h => h.linea));
         const prog = String(it.texto).replace(/\r/g, '').split('\n').map((l, i) => `<div class="${lineasMal.has(i) ? 'lm' : lineasAv.has(i) ? 'la' : ''}">${esc(l) || '&nbsp;'}</div>`).join('');
         return `<section class="inf">
-            <header><div><h1>${esc(titulo)}</h1><div class="sub">Corrección del programa · ${hoy} · Se pide: ${esc(pide)} · tolerancia ${nf(cfgCorr.tol, 2)} mm</div></div>
-                <div class="nota ${v.nota >= 5 ? 'ap' : 'su'}"><span>Nota orientativa</span><b>${nf(v.nota, 1)}</b></div></header>
+            <header><div><h1>${esc(titulo)}</h1><div class="sub">${modoDevol ? 'Devolución de la corrección' : 'Corrección del programa'} · ${hoy} · Se pide: ${esc(pide)} · tolerancia ${nf(cfgCorr.tol, 2)} mm</div></div>
+                <div class="nota ${v.nota >= 5 ? 'ap' : 'su'}"><span>${it.notaProf !== null && it.notaProf !== undefined ? 'Nota del profesor' : modoDevol ? 'Nota' : 'Nota orientativa'}</span><b>${nf(v.nota, 1)}</b></div></header>
             <div class="al"><span>Alumno/a:</span> <b>${esc(it.alumno)}</b> <span class="ar">(${esc(it.archivo)})</span></div>
-            ${(e => e ? `<div class="ar" style="margin:-4px 0 8px;color:${e.ok ? '#1e7a46' : '#b0301f'}">🧾 ${esc(e.txt)}</div>` : '')(estadoInforme(it))}
+            ${it.comProf ? `<div class="com-prof">💬 <b>Comentario del profesor:</b> ${esc(it.comProf)}</div>` : ''}
+            ${modoDevol ? '' : (e => e ? `<div class="ar" style="margin:-4px 0 8px;color:${e.ok ? '#1e7a46' : '#b0301f'}">🧾 ${esc(e.txt)}</div>` : '')(estadoInforme(it))}
             ${it.formato ? `<div class="ar" style="margin:-4px 0 8px;color:#b0301f;font-weight:600">⚠️ ${esc(it.formato)}</div>` : ''}
+            ${it.variante && modoDevol ? `<div class="ar" style="margin:-4px 0 8px">🎲 Tu variante: <b>${esc(it.variante)}</b>${it.varAviso ? ' · ⚠️ ' + esc(it.varAviso) : ''}</div>` : it.variante ? `<div class="ar" style="margin:-4px 0 8px;${it.varAviso ? 'color:#b0301f;font-weight:600' : ''}">🎲 ${esc(it.varTxt)}${it.varAviso ? '<br>⚠️ ' + esc(it.varAviso) : ''}</div>` : ''}
             <div class="ver v-${v.veredicto}">${VER_TXT[v.veredicto]}${r.error ? ' — ' + esc(r.error) : ''}</div>
             <div class="dib">${r.segs ? svgCorreccion(r) : ''}<div class="ley"><i style="background:#1e9e5a"></i>correcto <i style="background:#d83a3a"></i>se mete en la pieza <i style="background:#e08a1e"></i>zona que sobra <i style="background:#f3a6a6"></i>sin mecanizar</div></div>
-            <table class="des"><tr><th>Geometría</th><th>Lo pedido</th><th>Seguridad</th><th>Contorno bien mecanizado</th></tr>
-                <tr><td>${nf(v.desglose.geo, 2)} / ${nf(N.geo, 1)}</td><td>${nf(v.desglose.pedido, 1)} / ${nf(N.pedido, 1)}</td><td>${nf(v.desglose.seg, 1)} / ${nf(N.seg, 1)}</td><td>${pct(v.cob)}</td></tr></table>
-            <h2>Observaciones</h2>
+            ${modoDevol && it.notaProf !== null && it.notaProf !== undefined ? '' : tablaDesglose(v, N)}
+            <h2>${modoDevol ? 'Lo que tienes que revisar' : 'Observaciones'}</h2>
             ${H.length ? `<ol class="obs">${H.map(h => `<li class="${h.tipo}"><span class="c">${h.tipo === 'error' ? (cat[h.cat] || 'Error') : (cat[h.cat] || 'Aviso')}</span> ${esc(h.msg)}${h.pista ? `<div class="pi">Pista: ${esc(h.pista)}</div>` : ''}</li>`).join('')}</ol>` : '<p class="nada">Ninguna: todos los tramos del plano están mecanizados y ningún corte se sale del contorno.</p>'}
             <h2>Programa del alumno <small>(en rojo, bloques con error; en naranja, con aviso)</small></h2>
             <div class="prog">${prog}</div>
@@ -11836,11 +11888,13 @@ function imprimirInformes(ks) {
     const resumen = todos ? `<section class="inf res"><header><div><h1>${esc(titulo)}</h1><div class="sub">Resumen de la corrección · ${hoy} · Se pide: ${esc(pide)}</div></div></header>
         <p>${document.getElementById('mvResumen').innerHTML}</p>
         <table class="tr"><tr><th>Alumno/a</th><th>Veredicto</th><th>Geometría</th><th>Lo pedido</th><th>Seguridad</th><th>Avisos</th><th>Mecanizado</th><th>Nota</th></tr>
-        ${sel.map(k => { const it = masiva.lista[k], v = it.v; return `<tr><td>${esc(it.alumno)}</td><td>${VER_TXT[v.veredicto]}</td>${v.veredicto === 'vacio' ? '<td colspan="4">ningún movimiento de corte</td>' : `<td>${v.errGeo + v.faltas || '·'}</td><td>${v.incumple || '·'}</td><td>${v.seguridad || '·'}</td><td>${v.avisos || '·'}</td>`}<td>${pct(v.cob)}</td><td><b>${nf(v.nota, 1)}</b></td></tr>`; }).join('')}</table>
-        <p class="crit">Nota orientativa sobre 10: geometría ${nf(N.geo, 1)} (en proporción al contorno bien mecanizado, −${nf(N.pen, 2)} por cada corte que se mete en la pieza), lo pedido ${nf(N.pedido, 1)} y seguridad ${nf(N.seg, 1)}.</p></section>` : '';
-    const html = `<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>Corrección — ${esc(titulo)}</title><style>
+        ${sel.map(k => { const it = masiva.lista[k], v = it.v; return `<tr><td>${esc(it.alumno)}</td><td>${VER_TXT[v.veredicto]}${extraVeredicto(it)}</td>${(v.veredicto === 'vacio' || v.veredicto === 'altura') ? `<td colspan="4">${textoSinCorte(it)}</td>` : `<td>${v.errGeo + v.faltas || '·'}</td><td>${v.incumple || '·'}</td><td>${v.seguridad || '·'}</td><td>${v.avisos || '·'}</td>`}<td>${pct(v.cob)}</td><td><b>${nf(v.nota, 1)}</b></td></tr>`; }).join('')}</table>
+        ${tablaErroresClase(sel)}
+        <p class="crit">${textoCriterios(N)}</p></section>` : '';
+    const html = `<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>${modoDevol ? 'Devolución' : 'Corrección'} — ${esc(titulo)}</title><style>
         @page { size: A4 portrait; margin: 12mm; }
         body { font: 10pt/1.35 'Segoe UI', Arial, sans-serif; color: #222; margin: 0; }
+        .com-prof { margin: 2px 0 10px; padding: 6px 10px; border-left: 4px solid #2a6db0; background: #eef4fb; }
         .inf { page-break-after: always; } .inf:last-child { page-break-after: auto; }
         header { display: flex; justify-content: space-between; align-items: flex-start; gap: 10mm; border-bottom: 2px solid #005A9C; padding-bottom: 3mm; margin-bottom: 3mm; }
         h1 { font-size: 15pt; margin: 0 0 1mm; color: #005A9C; } .sub { font-size: 8.5pt; color: #666; }
@@ -11849,7 +11903,7 @@ function imprimirInformes(ks) {
         .nota.ap { border-color: #1e9e5a; color: #1e7a48; } .nota.su { border-color: #d83a3a; color: #b52b2b; }
         .al { font-size: 12pt; margin: 1mm 0 2mm; } .al span { color: #666; } .ar { font-size: 8.5pt; }
         .ver { font-weight: bold; padding: 1.5mm 3mm; border-radius: 1.5mm; margin-bottom: 2mm; }
-        .v-bien { background: #e3f4ea; color: #1e7a48; } .v-nocumple { background: #fbeedd; color: #a3560f; } .v-mal, .v-error, .v-vacio { background: #fbe4e4; color: #b52b2b; }
+        .v-bien { background: #e3f4ea; color: #1e7a48; } .v-nocumple { background: #fbeedd; color: #a3560f; } .v-mal, .v-error, .v-vacio, .v-altura { background: #fbe4e4; color: #b52b2b; }
         .dib { border: 1px solid #ccd; border-radius: 2mm; padding: 2mm; } .dib svg { width: 100%; height: 88mm; display: block; }
         .ley { font-size: 7.5pt; color: #555; text-align: center; } .ley i { display: inline-block; width: 7mm; height: 1.6mm; margin: 0 1mm 0 3mm; vertical-align: middle; }
         table { border-collapse: collapse; width: 100%; margin-top: 2mm; } th, td { border: 1px solid #ccd; padding: 1.2mm 2mm; font-size: 9pt; text-align: center; } th { background: #f0f4f8; font-weight: 600; }
@@ -11858,7 +11912,7 @@ function imprimirInformes(ks) {
         .pi { margin: .6mm 0 0; padding: .8mm 2mm; background: #eef4fb; border-radius: 1mm; font-size: 8.5pt; }
         .nada { font-size: 9pt; color: #1e7a48; }
         .prog { font: 8pt/1.3 Consolas, 'Courier New', monospace; column-count: 2; column-gap: 6mm; border: 1px solid #eee; padding: 2mm; }
-        .prog div { white-space: pre; break-inside: avoid; } .prog .lm { background: #fbe0e0; color: #a01f1f; } .prog .la { background: #fcefdc; }
+        .prog div { white-space: pre-wrap; overflow-wrap: anywhere; break-inside: avoid; } .prog .lm { background: #fbe0e0; color: #a01f1f; } .prog .la { background: #fcefdc; }
         .crit { font-size: 8.5pt; color: #666; }
     </style></head><body>${resumen}${sel.map(pagina).join('')}
 <script>window.onload = () => setTimeout(() => window.print(), 300);<\/script></body></html>`;
@@ -11867,6 +11921,1306 @@ function imprimirInformes(ks) {
     w.document.open(); w.document.write(html); w.document.close();
 }
 
+// ── Corrección masiva con las variantes de un examen (🎲 Variantes…) ──
+// Cada programa se corrige contra todas las variantes elegidas y se queda la que mejor encaja. Si se sabe la variante que
+// le tocaba (por el nombre del archivo, la carpeta del alumno o un comentario del programa: «12B», «variante B»), se corrige
+// con esa y se avisa si el programa encaja mejor con otra; si dos encajan casi igual, se avisa de que no está claro.
+masiva.variantes = [];
+const copiaJ = v => JSON.parse(JSON.stringify(v));
+const CFG_VAR = () => ({ cfgCotas, cfgHoja, cfgMec, cfgCorr, cfgCotaMan, cfgAjuste, cfgExport, cfgTexto });
+function estadoGuardado() {
+    const cfg = {}; Object.entries(CFG_VAR()).forEach(([k, o]) => { cfg[k] = copiaJ(o); });
+    return { contornos, cotasManuales: copiaJ(cotasManuales), cotasAjuste: copiaJ(cotasAjuste), aux: copiaJ(aux), fondo, cfg, nombre: document.getElementById('projectName').value,
+             undo: undoStack.slice(), redo: redoStack.slice(), sel, selSet: new Set(selSet), view: { ...view } };
+}
+function restaurarEstado(a) {
+    contornos = a.contornos; cotasManuales = a.cotasManuales; cotasAjuste = a.cotasAjuste; aux = a.aux; fondo = a.fondo;
+    Object.entries(CFG_VAR()).forEach(([k, o]) => { Object.keys(o).forEach(x => delete o[x]); Object.assign(o, copiaJ(a.cfg[k])); });
+    try { sincronizarControlesCotas(); } catch (e) {}
+    document.getElementById('projectName').value = a.nombre; undoStack = a.undo; redoStack = a.redo;
+    sel = a.sel; selSet = a.selSet; Object.assign(view, a.view); memoTipos = null;
+}
+// Abre la variante (sin el aviso del panel del Tutor), con lo que se pide en la corrección masiva (la del ejercicio abierto)
+function cargarVariante(v, base) {
+    const abrir = typeof _tuAbrirJSONDatos === 'function' ? _tuAbrirJSONDatos : abrirJSONDatos;
+    abrir(copiaJ(v.datos));
+    const h = base.cfg.cfgHoja, c = base.cfg.cfgCorr;
+    Object.assign(cfgHoja, { prog: h.prog, reqEntrada: h.reqEntrada, reqSentido: h.reqSentido });
+    cfgCorr.tol = c.tol; if (c.nota) cfgCorr.nota = copiaJ(c.nota); else delete cfgCorr.nota;
+    memoTipos = null;
+}
+function conVariante(v, fn) {
+    const a = estadoGuardado(), sn = window.snack; window.snack = () => {};
+    try { cargarVariante(v, a); return fn(); }
+    finally { window.snack = sn; restaurarEstado(a); }
+}
+// La variante que le tocaba, si lo dice el nombre del archivo, la carpeta o el principio del programa
+function varianteAsignada(it) {
+    const esc = t => String(t).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const buscar = txt => masiva.variantes.filter(v => new RegExp(`(^|[^0-9A-Za-z])${esc(v.etq)}([^0-9A-Za-z]|$)`, 'i').test(txt) || (v.letra && new RegExp(`[Vv]ariante\\s*${v.letra.toUpperCase()}([^A-Za-z]|$)`).test(txt)));
+    // primero el nombre del archivo y la carpeta; si no lo dicen, el principio del programa
+    for (const txt of [`${it.archivo || ''} ${it.alumno || ''}`, String(it.texto || '').slice(0, 400)]) { const h = buscar(txt); if (h.length === 1) return h[0]; if (h.length > 1) return null; }
+    return null;
+}
+const puntuacion = val => (val.veredicto === 'error' ? -100 : 0) + val.nota * 10 + val.cob * 5 - (val.errGeo || 0) * 0.5 - (val.faltas || 0) * 0.5;
+function corregirConVariantes(items) {
+    if (!items.length || !masiva.variantes.length) return;
+    const res = new Map(items.map(it => [it, []]));
+    masiva.variantes.forEach(v => conVariante(v, () => items.forEach(it => {
+        let r; try { r = corregirPrograma(it.texto); } catch (e) { r = { error: 'No se ha podido interpretar: ' + e.message }; }
+        res.get(it).push({ v, r, val: valorarCorreccion(r) });
+    })));
+    items.forEach(it => {
+        const c = res.get(it).sort((a, b) => puntuacion(b.val) - puntuacion(a.val)), mejor = c[0], seg = c[1];
+        const asig = varianteAsignada(it), usada = asig ? c.find(x => x.v === asig) : mejor;
+        it.r = usada.r; it.v = usada.val; it.variante = usada.v.etq; it.varAsignada = asig ? asig.etq : '';
+        const nota = x => String(Math.round(x.val.nota * 10) / 10).replace('.', ',');
+        it.varTxt = `Corregido con la variante ${usada.v.etq}${asig ? ' (la que le tocaba)' : ' (la que mejor encaja)'} · ` + c.map(x => `${x.v.etq}: ${nota(x)}`).join(' · ');
+        it.varAviso = '';
+        const parecidas = seg && puntuacion(seg.val) >= puntuacion(mejor.val) - 3 && mejor.val.veredicto !== 'vacio' && mejor.val.veredicto !== 'error';
+        if (asig && mejor.v !== asig && puntuacion(mejor.val) > puntuacion(usada.val) + 3) it.varAviso = `Su programa encaja con la variante ${mejor.v.etq} (nota ${nota(mejor)}), pero le tocaba la ${asig.etq}`;
+        else if (!asig && parecidas) it.varAviso = `No está claro qué variante ha hecho: ${mejor.v.etq} y ${seg.v.etq} encajan casi igual`;
+    });
+}
+// corregirAlumno, con variantes: se juntan y se corrigen todos de una vez (una carga de cada variante)
+const colaVariantes = new Set(); let tempVariantes = null;
+const _corregirAlumnoBase = corregirAlumno;
+corregirAlumno = function (it) {
+    if (!masiva.variantes.length) { delete it.variante; delete it.varAviso; delete it.varTxt; delete it.varAsignada; return _corregirAlumnoBase(it); }
+    it.r = null; it.v = { veredicto: 'pendiente', nota: 0, cob: 0, errGeo: 0, faltas: 0, incumple: 0, seguridad: 0, avisos: 0, desglose: { geo: 0, pedido: 0, seg: 0 } };
+    colaVariantes.add(it);
+    if (!tempVariantes) tempVariantes = setTimeout(() => { tempVariantes = null; const l = [...colaVariantes]; colaVariantes.clear(); corregirConVariantes(l); corr = null; pintarMasiva(); }, 0);
+};
+// ver la corrección de un alumno: se abre su variante; al volver, el ejercicio de antes
+const _verAlumnoBase = verAlumno, _volverAMasivaBase = volverAMasiva;
+verAlumno = function (k) {
+    const it = masiva.lista[k], v = it && it.variante && masiva.variantes.find(x => x.etq === it.variante);
+    if (v) { if (!masiva.baseVariantes) masiva.baseVariantes = estadoGuardado(); cargarVariante(v, masiva.baseVariantes); refrescar(); }
+    _verAlumnoBase(k);
+    if (v) setTimeout(() => snack(`Variante ${v.etq} abierta para ver su corrección${it.varAviso ? ' · ⚠️ ' + it.varAviso : ''}`), 450);
+};
+volverAMasiva = function () {
+    // primero el ejercicio de antes; después, si ha cambiado el texto, se recorrige (con todas las variantes)
+    if (masiva.baseVariantes) { const base = masiva.baseVariantes; masiva.baseVariantes = null; restaurarEstado(base); refrescar(); }
+    return _volverAMasivaBase();
+};
+const _abrirMasivaBase = abrirMasiva;
+abrirMasiva = function () {
+    if (masiva.baseVariantes) { const base = masiva.baseVariantes; masiva.baseVariantes = null; restaurarEstado(base); refrescar(); masiva.viendo = null; const b = document.getElementById('crVolver'); if (b) b.style.display = 'none'; }
+    return _abrirMasivaBase.apply(this, arguments);
+};
+const _pintarEjercicioMasivaBase = pintarEjercicioMasiva;
+pintarEjercicioMasiva = function () {
+    _pintarEjercicioMasivaBase();
+    const d = document.getElementById('mvEjDat'), b = document.getElementById('mvBtnVar');
+    if (b) { b.classList.toggle('activo', masiva.variantes.length > 0); b.textContent = masiva.variantes.length ? `🎲 Variantes (${masiva.variantes.length})…` : '🎲 Variantes…'; }
+    if (d && masiva.variantes.length) d.textContent += ` · 🎲 con las variantes ${masiva.variantes.map(v => v.etq).join(', ')}`;
+};
+// los informes impresos: el dibujo de cada alumno, con su variante
+const _imprimirInformesBase = imprimirInformes;
+imprimirInformes = function (ks) {
+    if (!masiva.variantes.length) return _imprimirInformesBase(ks);
+    const mapa = new Map(), sel = ks || masiva.lista.map((_, k) => k);
+    masiva.variantes.forEach(v => { const de = sel.map(k => masiva.lista[k]).filter(it => it && it.variante === v.etq && it.r && it.r.segs); if (de.length) conVariante(v, () => de.forEach(it => mapa.set(it.r, svgCorreccion(it.r)))); });
+    const orig = svgCorreccion; svgCorreccion = r => mapa.has(r) ? mapa.get(r) : orig(r);
+    try { return _imprimirInformesBase(ks); } finally { svgCorreccion = orig; }
+};
+// ── La ventana para elegir las variantes ──
+async function elegirVariantesMasiva() {
+    try { await bibCargar(); } catch (e) {}
+    const lista = (bib.lista || []).filter(e => /^Variantes\//i.test(e.ruta || ''));
+    const carpetas = new Map(); lista.forEach(e => { const f = e.ruta.split('/').slice(0, -1).join('/') || 'Variantes'; if (!carpetas.has(f)) carpetas.set(f, []); carpetas.get(f).push(e); });
+    const etiqueta = e => { const l = (/ - ([A-Z])\.json$/i.exec(e.archivo || '') || [])[1] || ''; const n = e.ficha && e.ficha.num ? String(e.ficha.num) : '';
+        return { etq: n ? (/[A-Z]$/i.test(n) ? n : n + l) : (l || (e.ficha && e.ficha.titulo) || e.archivo), letra: l || (/([A-Z])$/i.exec(n) || [])[1] || '' }; };
+    const ya = new Set(masiva.variantes.map(v => v.id)), nom = (cfgHoja.titulo || nombreProyecto() || '').toLowerCase(), num = String(cfgHoja.num || '').toLowerCase();
+    const pre = f => ya.size ? null : (f.toLowerCase().includes(nom) && nom) || (num && carpetas.get(f).some(e => String(e.ficha.num || '').toLowerCase().startsWith(num)));
+    const esc = t => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+    let ov = document.getElementById('modalVarMasiva');
+    if (!ov) { ov = document.createElement('div'); ov.className = 'modal-overlay'; ov.id = 'modalVarMasiva'; ov.onclick = e => { if (e.target === ov) ov.classList.remove('visible'); }; document.body.appendChild(ov); }
+    ov.innerHTML = `<div class="help-modal" style="width:min(620px,100%)"><div class="help-header"><h2>🎲 Corregir con las variantes del examen</h2><button class="help-close" onclick="document.getElementById('modalVarMasiva').classList.remove('visible')">✕</button></div>
+        <div class="help-content"><p class="ctx-nota" style="margin-top:0">Cada programa se corrige con todas las variantes marcadas y se queda la que mejor encaja. Si el nombre del archivo, la carpeta del alumno o el principio del programa dicen qué variante le tocaba («12B», «variante B»), se corrige con esa y se avisa si encaja mejor con otra.</p>
+        ${carpetas.size ? [...carpetas].map(([f, es]) => `<div class="var-carpeta"><label class="var-tit"><input type="checkbox" data-carpeta="${esc(f)}"> <b>${esc(f.replace(/^Variantes\/?/i, '') || 'Variantes')}</b></label>
+            ${es.sort((a, b) => etiqueta(a).etq.localeCompare(etiqueta(b).etq, 'es', { numeric: true })).map(e => `<label class="var-item"><input type="checkbox" data-id="${esc(e.id)}" ${ya.has(e.id) || pre(f) ? 'checked' : ''}> ${esc(etiqueta(e).etq)} · ${esc(e.ficha.titulo || e.archivo)}</label>`).join('')}</div>`).join('')
+          : '<p>No hay variantes en la biblioteca. Hazlas con <b>🎲 Variantes…</b> (pestaña 🧩 Ejercicios) y guárdalas en la biblioteca, o añade aquí sus archivos JSON.</p>'}
+        <input type="file" id="varMasivaJSON" accept=".json" multiple style="display:none">
+        <div class="btn-row" style="margin-top:12px"><button class="btn-action sec" id="varMasivaArch">📂 Añadir JSON de variantes…</button><button class="btn-action sec" id="varMasivaNo">Sin variantes</button><button class="btn-action" id="varMasivaSi">Corregir con las marcadas</button></div></div></div>`;
+    ov.querySelectorAll('input[data-carpeta]').forEach(c => { const its = [...c.closest('.var-carpeta').querySelectorAll('input[data-id]')]; c.checked = its.length && its.every(x => x.checked); c.onchange = () => its.forEach(x => { x.checked = c.checked; }); });
+    const aplicar = vs => { masiva.variantes = vs; ov.classList.remove('visible');
+        if (vs.length && !hayPieza()) { try { abrirJSONDatos(copiaJ(vs[0].datos)); sincronizarRequisitosMasiva(); } catch (e) {} }   // sin ejercicio abierto: se abre la primera
+        pintarEjercicioMasiva(); recorregirMasiva();
+        snack(vs.length ? `Corrección con ${vs.length} variantes: ${vs.map(v => v.etq).join(', ')}` : 'Corrección sin variantes: con el ejercicio abierto'); };
+    ov.querySelector('#varMasivaNo').onclick = () => aplicar([]);
+    ov.querySelector('#varMasivaSi').onclick = () => { const ids = [...ov.querySelectorAll('input[data-id]:checked')].map(x => x.dataset.id);
+        const vs = lista.filter(e => ids.includes(e.id)).map(e => ({ id: e.id, ...etiqueta(e), datos: e.datos })).concat(masiva.variantes.filter(v => v.deArchivo));
+        if (vs.length === 1) { snack('Marca al menos dos variantes (con una sola, abre ese ejercicio)'); return; }
+        aplicar(vs); };
+    ov.querySelector('#varMasivaArch').onclick = () => ov.querySelector('#varMasivaJSON').click();
+    ov.querySelector('#varMasivaJSON').onchange = async ev => { const fs = [...ev.target.files]; const nuevas = [];
+        for (const f of fs) { try { const d = JSON.parse(await f.text()); if (!d || !d.calcador) continue; const fi = fichaDe(d), l = (/[ _-]([A-Z])\.json$/i.exec(f.name) || [])[1] || '';
+            const n = fi.num ? String(fi.num) : ''; nuevas.push({ id: 'archivo:' + f.name, etq: n ? (/[A-Z]$/i.test(n) ? n : n + l) : (l || f.name.replace(/\.json$/i, '')), letra: l || (/([A-Z])$/i.exec(n) || [])[1] || '', datos: d, deArchivo: true }); } catch (e) {} }
+        if (!nuevas.length) { snack('Esos archivos no son ejercicios del Calcador'); return; }
+        masiva.variantes = masiva.variantes.filter(v => !v.deArchivo).concat(nuevas); snack(`${nuevas.length} variante(s) añadida(s) desde archivos: ${nuevas.map(v => v.etq).join(', ')}`); };
+    ov.classList.add('visible');
+}
+// ── 👥 Programas parecidos entre alumnos (corrección masiva) ──
+// Dos programas bien hechos de la misma pieza se parecen mucho sin haberse copiado: lo que cuenta es lo que SOLO tienen
+// esos dos (o muy pocos) en la clase: las mismas líneas escritas igual (sin contar los números de bloque, que se cambian
+// fácilmente), los mismos comentarios (por trozos de 3 palabras, aunque cambien alguna) y los mismos errores.
+// Cada coincidencia pesa más cuanto más rara es en la clase. Es un indicio, no una prueba.
+const PARECIDO = { umbral: 0.5, alto: 0.75, minComun: 2 };
+const normComPar = c => c.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9ñ]+/g, ' ').trim();
+const lineaPar = l => l.toUpperCase().replace(/^\s*N\s*\d+\s*/, '').replace(/\s+/g, ' ').trim();
+// lo que dice la línea, escrito como sea (G01 = G1, X80.000 = X80, Z+20 = Z20, sin espacios ni avance)
+const contenidoPar = k => k.replace(/\s+/g, '').replace(/F[-+]?[\d.]+/g, '').replace(/([A-Z])([-+]?(?:\d+\.?\d*|\.\d+))/g, (m, c, v) => c + String(+v));
+function rasgosPrograma(texto) {
+    const lin = [], com = [], sec = [], lineas = String(texto || '').replace(/\r/g, '').split('\n');
+    lineas.forEach((l, i) => {
+        const cs = []; let cod = l.replace(/\(([^)]*)\)/g, (m, c) => { cs.push(c); return ' '; });
+        const pc = cod.indexOf(';'); if (pc >= 0) { cs.push(cod.slice(pc + 1)); cod = cod.slice(0, pc); }
+        const k = lineaPar(cod); if (k && !/^%$/.test(k)) lin.push({ k, c: contenidoPar(k), i });
+        { const t = normComPar(cs.join(' ')); if (t.length >= 3) sec.push({ t: contenidoPar(k || '') + '|' + t, i }); }
+        cs.forEach(c => { const p = normComPar(c).split(' ').filter(Boolean); if (p.join('').length < 4) return;
+            if (p.length < 3) com.push({ k: p.join(' '), i }); else for (let j = 0; j + 3 <= p.length; j++) com.push({ k: p.slice(j, j + 3).join(' '), i }); });
+    });
+    // la secuencia de los comentarios: cada uno con su línea y los dos siguientes (dos alumnos pueden poner «arriba» en la
+    // misma línea; que coincidan tres seguidos, en las mismas líneas, ya es raro)
+    const cs = []; for (let j = 0; j + 2 < sec.length; j++) cs.push({ k: sec[j].t + '>' + sec[j + 1].t + '>' + sec[j + 2].t, i: sec[j + 2].i });
+    return { lin, com, cs, n: lin.length };
+}
+const errPar = it => it.r && it.r.hallazgos ? [...new Set(it.r.hallazgos.filter(h => h.tipo === 'error' || h.tipo === 'aviso').map(h => String(h.msg).replace(/\bN\d+\b|l[ií]nea \d+/gi, '#')))] : [];
+function rasgosDe(it) { if (!it._par || it._par.t !== it.texto) it._par = { t: it.texto, f: rasgosPrograma(it.texto) }; return it._par.f; }
+// Cuántos alumnos tienen cada cosa (para ver lo raro que es)
+function cuentasClase(items) {
+    const df = { lit: new Map(), con: new Map(), com: new Map(), cs: new Map(), err: new Map() }, sube = (m, s) => s.forEach(x => m.set(x, (m.get(x) || 0) + 1));
+    items.forEach(it => { const f = rasgosDe(it); sube(df.lit, new Set(f.lin.map(x => x.k))); sube(df.con, new Set(f.lin.map(x => x.c))); sube(df.com, new Set(f.com.map(x => x.k))); sube(df.cs, new Set(f.cs.map(x => x.k))); sube(df.err, new Set(errPar(it))); });
+    return df;
+}
+// Una línea igual cuenta por lo rara que es lo que dice (una línea bien hecha la tienen casi todos, escrita de una forma u otra)
+// y por lo pocos que la escriben exactamente así
+function compararDos(A, B, df, N) {
+    const fa = rasgosDe(A), fb = rasgosDe(B), idf = (m, x) => Math.log((N + 1) / (m.get(x) || 1)), pocos = d => d <= 2 ? 1 : 2 / d;
+    const solo = { lin: 0, com: 0, err: 0 }, parte = { lin: 0, com: 0, cs: 0, err: 0 }; let nSec = 0;
+    const litB = new Set(fb.lin.map(x => x.k)), vistos = new Set();
+    fa.lin.forEach(x => { if (!litB.has(x.k) || vistos.has(x.k)) return; vistos.add(x.k);
+        const dl = df.lit.get(x.k), dc = df.con.get(x.c); parte.lin += idf(df.con, x.c) * pocos(dl); if (dl <= 2 && dc <= 3) solo.lin++; });
+    const comB = new Set(fb.com.map(x => x.k)); new Set(fa.com.map(x => x.k)).forEach(x => { if (!comB.has(x)) return; const d = df.com.get(x); parte.com += 0.5 * idf(df.com, x) * pocos(d); if (d <= 2) solo.com++; });
+    const csB = new Set(fb.cs.map(x => x.k)); new Set(fa.cs.map(x => x.k)).forEach(x => { if (!csB.has(x)) return; const d = df.cs.get(x); parte.cs += 0.5 * idf(df.cs, x) * pocos(d); nSec++; if (d <= 2) solo.com++; });
+    const errB = new Set(errPar(B)); errPar(A).forEach(x => { if (!errB.has(x)) return; const d = df.err.get(x); parte.err += 0.5 * idf(df.err, x) * pocos(d); if (d <= 2) solo.err++; });
+    // los comentarios: alguno igual puede ser casualidad (todos escriben «cambio de herramienta»); cinco o más seguidos, en las mismas líneas, no
+    const fCom = nSec >= 5 ? 1 : nSec >= 3 ? 0.4 : 0.2;
+    const E = parte.lin + fCom * (Math.min(parte.com, 3) + parte.cs) + parte.err;
+    const p = 1 - Math.exp(-E / (2 * Math.log(N + 1)));
+    return { p, E, solo, parte };
+}
+function calcularParecidos() {
+    const L = masiva.lista; L.forEach(it => { it.parecidos = []; }); masiva.parejas = [];
+    const cand = L.map((it, k) => ({ it, k })).filter(({ it }) => it.texto && it.v && it.v.veredicto !== 'vacio' && rasgosDe(it).n >= 4);
+    const N = cand.length; if (N < 3) return;
+    const df = cuentasClase(cand.map(c => c.it));
+    for (let a = 0; a < N; a++) for (let b = a + 1; b < N; b++) {
+        const A = cand[a], B = cand[b], r = compararDos(A.it, B.it, df, N);
+        if (r.p >= PARECIDO.umbral && r.solo.lin + r.solo.com + r.solo.err >= PARECIDO.minComun) {
+            const par = { a: A.k, b: B.k, p: r.p, solo: r.solo };
+            masiva.parejas.push(par); A.it.parecidos.push({ k: B.k, p: r.p }); B.it.parecidos.push({ k: A.k, p: r.p });
+        }
+    }
+    masiva.parejas.sort((x, y) => y.p - x.p); L.forEach(it => it.parecidos.sort((x, y) => y.p - x.p));
+}
+const pctPar = p => Math.round(p * 100) + ' %';
+function textoParecidos(it) { return it.parecidos.map(x => `${masiva.lista[x.k].alumno} (${pctPar(x.p)})`).join(', '); }
+function razonesPareja(par) {
+    const r = [], n = (x, s, p) => `${x} ${x === 1 ? s : p}`;
+    if (par.solo.lin) r.push(n(par.solo.lin, 'línea rara igual (no la tiene nadie más)', 'líneas raras iguales (no las tiene nadie más)'));
+    if (par.solo.com) r.push(n(par.solo.com, 'trozo de comentario igual', 'trozos de comentario iguales'));
+    if (par.solo.err) r.push(n(par.solo.err, 'error o aviso igual', 'errores o avisos iguales'));
+    return r.join(' · ');
+}
+// la marca 👥 junto al nombre y el resumen de la clase
+const _pintarMasivaPar = pintarMasiva;
+pintarMasiva = function () {
+    try { calcularParecidos(); } catch (e) { console.warn(e); masiva.parejas = []; }
+    _pintarMasivaPar.apply(this, arguments);
+    const cuerpo = document.getElementById('mvTabla'), res = document.getElementById('mvResumen'), b = document.getElementById('mvBtnPar');
+    if (b) { b.textContent = masiva.parejas && masiva.parejas.length ? `👥 Parecidos (${masiva.parejas.length})` : '👥 Parecidos'; b.classList.toggle('activo', !!(masiva.parejas && masiva.parejas.length)); }
+    if (!cuerpo || !masiva.parejas || !masiva.parejas.length) return;
+    cuerpo.querySelectorAll('tr[data-k]').forEach(tr => { const it = masiva.lista[+tr.dataset.k]; if (!it || !it.parecidos.length) return;
+        const td = tr.querySelector('td.mv-al'), s = document.createElement('span'), max = it.parecidos[0].p;
+        s.className = 'mv-par' + (max >= PARECIDO.alto ? ' alto' : ''); s.textContent = '👥'; s.title = 'Muy parecido a: ' + textoParecidos(it) + ' · pulsa para compararlos';
+        s.onclick = ev => { ev.stopPropagation(); verParecidos(+tr.dataset.k); }; td.appendChild(document.createTextNode(' ')); td.appendChild(s); });
+    if (res) res.insertAdjacentHTML('beforeend', ` · <span style="color:#b0301f;cursor:pointer" onclick="verParecidos()" title="Programas con líneas, comentarios o errores iguales que no tiene nadie más">👥 ${masiva.parejas.length} pareja${masiva.parejas.length === 1 ? '' : 's'} muy parecida${masiva.parejas.length === 1 ? '' : 's'}</span>`);
+};
+// La ventana: las parejas y la comparación lado a lado
+function verParecidos(k) {
+    calcularParecidos();
+    const esc = t => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+    let ov = document.getElementById('modalParMasiva');
+    if (!ov) { ov = document.createElement('div'); ov.className = 'modal-overlay'; ov.id = 'modalParMasiva'; ov.onclick = e => { if (e.target === ov) ov.classList.remove('visible'); }; document.body.appendChild(ov); }
+    const P = (masiva.parejas || []).filter(p => k === undefined || p.a === k || p.b === k);
+    ov.innerHTML = `<div class="help-modal" style="width:min(760px,100%)"><div class="help-header"><h2>👥 Programas muy parecidos${k !== undefined ? ' · ' + esc(masiva.lista[k].alumno) : ''}</h2><button class="help-close" onclick="document.getElementById('modalParMasiva').classList.remove('visible')">✕</button></div>
+        <div class="help-content"><p class="ctx-nota" style="margin-top:0">Dos programas bien hechos de la misma pieza se parecen mucho sin haberse copiado. Aquí cuenta lo que <b>solo tienen esos dos</b> en la clase: las mismas líneas escritas igual (aunque cambien los números de bloque), los mismos comentarios y los mismos errores. Es un <b>indicio, no una prueba</b>: compáralos y pregúntales.</p>
+        ${P.length ? `<table class="par-tabla"><tr><th>Alumnos</th><th>Parecido</th><th>Qué comparten solo ellos</th><th></th></tr>${P.map(p => `<tr><td><b>${esc(masiva.lista[p.a].alumno)}</b> ↔ <b>${esc(masiva.lista[p.b].alumno)}</b></td><td class="n ${p.p >= PARECIDO.alto ? 'alto' : ''}">${pctPar(p.p)}</td><td>${esc(razonesPareja(p))}</td><td><button class="btn-action sec" data-a="${p.a}" data-b="${p.b}">⇆ Comparar</button></td></tr>`).join('')}</table>`
+          : `<p>${masiva.lista.length < 3 ? 'Hacen falta al menos tres programas para comparar.' : 'No hay programas muy parecidos: ninguna pareja comparte líneas, comentarios o errores que no tenga el resto.'}</p>`}
+        <div id="parCompara"></div></div></div>`;
+    ov.querySelectorAll('button[data-a]').forEach(bt => bt.onclick = () => compararPareja(+bt.dataset.a, +bt.dataset.b));
+    ov.classList.add('visible');
+    if (P.length === 1 || (k !== undefined && P.length)) compararPareja(P[0].a, P[0].b);
+}
+function compararPareja(a, b) {
+    const A = masiva.lista[a], B = masiva.lista[b], esc = t => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+    const fa = rasgosDe(A), fb = rasgosDe(B), df = cuentasClase(masiva.lista.filter(it => it.texto));
+    const comA = new Set(fa.com.map(x => x.k)), comB = new Set(fb.com.map(x => x.k));
+    const col = (it, f, otro, comOtro) => { const marca = new Map(); f.lin.forEach(x => { if (otro.has(x.k)) marca.set(x.i, df.lit.get(x.k) <= 2 && df.con.get(x.c) <= 3 ? 'ex' : 'co'); });
+        f.com.forEach(x => { if (comOtro.has(x.k) && (!marca.has(x.i) || marca.get(x.i) === 'co')) marca.set(x.i, 'cm'); });
+        return `<div class="par-col"><div class="par-nom">${esc(it.alumno)} <small>${esc(it.archivo)}</small></div><div class="par-prog">${String(it.texto).replace(/\r/g, '').split('\n').map((l, i) => `<div class="${marca.get(i) || ''}">${esc(l) || '&nbsp;'}</div>`).join('')}</div></div>`; };
+    const sa = new Set(fa.lin.map(x => x.k)), sb = new Set(fb.lin.map(x => x.k));
+    const d = document.getElementById('parCompara'); if (!d) return;
+    d.innerHTML = `<div class="par-ley"><i class="ex"></i>línea rara igual (nadie más la tiene) <i class="cm"></i>comentario igual <i class="co"></i>igual, pero es normal (bien hecha, o la tienen más)</div><div class="par-lado">${col(A, fa, sb, comB)}${col(B, fb, sa, comA)}</div>`;
+    d.scrollIntoView({ block: 'nearest' });
+}
+// ── ⬆ Notas para Aules: rellenar la «hoja de calificaciones» de la tarea con la nota y un comentario ──
+// En Aules (Moodle), en la tarea: Calificaciones → «Descargar hoja de calificaciones». Se abre aquí, se rellena la columna
+// de la calificación (escalada a la calificación máxima de la tarea) y la de los comentarios de retroalimentación (si la
+// tarea los tiene), y se descarga el mismo archivo para «Subir hoja de calificaciones». Cada alumno se casa por su número
+// de participante (el del zip de Aules: «Nombre_123456_assignsubmission_file_») o, si no, por su nombre.
+masiva.ids = masiva.ids || {};
+const _alumnoDeRutaAules = alumnoDeRuta;
+alumnoDeRuta = function (ruta) {
+    const n = _alumnoDeRutaAules(ruta);
+    if (n) { const m = /(?:^|\/)([^/]*?)_(\d+)_assign(?:submission|feedback)_/i.exec(ruta); if (m) masiva.ids[n] = m[2]; }
+    return n;
+};
+const normNomAules = t => String(t || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9ñ ]+/g, ' ').split(' ').filter(Boolean).sort().join(' ');
+// CSV: separador, comillas y BOM como en el original
+function leerCSVAules(txt) {
+    const bom = txt.charCodeAt(0) === 0xfeff; if (bom) txt = txt.slice(1);
+    const l1 = txt.split(/\r?\n/)[0], sep = (l1.match(/;/g) || []).length > (l1.match(/,/g) || []).length ? ';' : ',';
+    const filas = []; let f = [], c = '', q = false;
+    for (let i = 0; i < txt.length; i++) {
+        const ch = txt[i];
+        if (q) { if (ch === '"') { if (txt[i + 1] === '"') { c += '"'; i++; } else q = false; } else c += ch; }
+        else if (ch === '"') q = true; else if (ch === sep) { f.push(c); c = ''; }
+        else if (ch === '\n' || ch === '\r') { if (ch === '\r' && txt[i + 1] === '\n') i++; f.push(c); c = ''; if (f.length > 1 || f[0] !== '') filas.push(f); f = []; }
+        else c += ch;
+    }
+    if (c !== '' || f.length) { f.push(c); filas.push(f); }
+    return { filas, sep, bom, crlf: /\r\n/.test(txt), comillas: /^"/.test(l1) };   // (comillas: si el original las pone en todos los campos, como Moodle)
+}
+const escribirCSVAules = h => (h.bom ? '﻿' : '') + h.filas.map(f => f.map(x => h.comillas || /[",;\n\r]/.test(x) || x === '' ? '"' + String(x).replace(/"/g, '""') + '"' : x).join(h.sep)).join(h.crlf ? '\r\n' : '\n') + (h.crlf ? '\r\n' : '\n');
+function columnasAules(cab) {
+    const b = re => cab.findIndex(x => re.test(String(x).normalize('NFD').replace(/[̀-ͯ]/g, '')));
+    return { id: b(/^(identificador|identifier|id)$/i), nombre: b(/nom(bre)? complet|full ?name/i), nota: b(/^(calificacion|qualificacio|grade)$/i),
+             max: b(/(calificacion|qualificacio|grade).*(max)|maxim.*(calificacion|qualificacio|grade)/i), com: b(/retroaliment|feedback|comentari/i) };
+}
+// El resultado de cada alumno (si entrega varios programas, el mejor)
+function resultadosAules() {
+    const por = new Map();
+    masiva.lista.forEach(it => {
+        if (!it.v || it.v.veredicto === 'pendiente') return;
+        const base = Object.keys(masiva.ids).filter(n => it.alumno === n || it.alumno.startsWith(n + ' · ')).sort((a, b) => b.length - a.length)[0] || it.alumno.replace(/ · .*$/, '');
+        const ant = por.get(base); if (!ant || it.v.nota > ant.it.v.nota) por.set(base, { it, id: masiva.ids[base] || ((/^Participante (\d+)$/.exec(base) || [])[1]) || null });
+    });
+    return por;
+}
+function comentarioAules(it) {
+    const v = it.v, r = it.r || {}, nf1 = x => String(Math.round(x * 10) / 10).replace('.', ',');
+    const t = [`Nota orientativa del Corrector: ${nf1(v.nota)} sobre 10. ${VER_TXT[v.veredicto].replace(/^\S+\s/, '')}.`];
+    if (it.variante) t.push(`Corregido con la variante ${it.variante}.`);
+    const err = (r.hallazgos || []).filter(h => h.tipo === 'error'), av = (r.hallazgos || []).filter(h => h.tipo === 'aviso');
+    if (err.length) t.push('Errores: ' + err.slice(0, 4).map(h => h.msg.replace(/\s+/g, ' ')).join(' · ') + (err.length > 4 ? ` (y ${err.length - 4} más)` : ''));
+    if (av.length) t.push(`${av.length} aviso${av.length === 1 ? '' : 's'}: ${av.slice(0, 2).map(h => h.msg.replace(/\s+/g, ' ')).join(' · ')}${av.length > 2 ? '…' : ''}`);
+    if (r.error) t.push(r.error);
+    if (it.formato) t.push(it.formato);
+    return t.join('\n');
+}
+// Rellena la hoja; devuelve el texto y lo que ha casado
+function rellenarHojaAules(txt, opc) {
+    const h = leerCSVAules(txt), cab = h.filas[0] || [], C = columnasAules(cab);
+    if (C.nota < 0 || (C.id < 0 && C.nombre < 0)) return { error: 'No parece la hoja de calificaciones de una tarea de Aules: falta la columna «Calificación» o la del identificador.' };
+    const res = resultadosAules(), usados = new Set(), casados = [], sinEntrega = [];
+    const porId = new Map(), porNom = new Map();
+    res.forEach((x, n) => { if (x.id) porId.set(x.id, n); porNom.set(normNomAules(n), n); });
+    for (let i = 1; i < h.filas.length; i++) {
+        const f = h.filas[i]; while (f.length < cab.length) f.push('');
+        const id = C.id >= 0 ? ((/(\d+)/.exec(f[C.id]) || [])[1] || '') : '', nom = C.nombre >= 0 ? f[C.nombre] : '';
+        const clave = (id && porId.get(id)) || porNom.get(normNomAules(nom));
+        if (!clave || usados.has(clave)) { sinEntrega.push(nom || f[C.id]); continue; }
+        usados.add(clave); const { it } = res.get(clave);
+        const maxTxt = C.max >= 0 ? f[C.max] : '', coma = /,/.test(maxTxt) || (!maxTxt && opc.coma);
+        const max = parseFloat(String(maxTxt).replace(',', '.')) || opc.max || 10;
+        const nota = Math.round(it.v.nota / 10 * max * 100) / 100, notaTxt = nota.toFixed(2);
+        f[C.nota] = coma ? notaTxt.replace('.', ',') : notaTxt;
+        if (C.com >= 0 && opc.comentario) f[C.com] = comentarioAules(it);
+        casados.push({ nombre: nom || clave, alumno: clave, nota, max, por: id && porId.get(id) ? 'número de participante' : 'nombre' });
+    }
+    const sinCasar = [...res.keys()].filter(n => !usados.has(n));
+    return { texto: escribirCSVAules(h), casados, sinEntrega, sinCasar, hayCom: C.com >= 0 };
+}
+function abrirNotasAules() {
+    if (!masiva.lista.length) { snack('No hay programas en la lista'); return; }
+    if (!hayPieza() && !(masiva.variantes || []).length) { snack('Abre antes el ejercicio (📂 Abrir ejercicio…)'); return; }
+    let ov = document.getElementById('modalAules');
+    if (!ov) { ov = document.createElement('div'); ov.className = 'modal-overlay'; ov.id = 'modalAules'; ov.onclick = e => { if (e.target === ov) ov.classList.remove('visible'); }; document.body.appendChild(ov); }
+    ov.innerHTML = `<div class="help-modal" style="width:min(680px,100%)"><div class="help-header"><h2>⬆ Notas para Aules</h2><button class="help-close" onclick="document.getElementById('modalAules').classList.remove('visible')">✕</button></div>
+        <div class="help-content">
+        <ol class="aules-pasos"><li>En la tarea de Aules: <b>Ver todas las entregas</b> → <b>Acción sobre las calificaciones</b> → <b>Descargar hoja de calificaciones</b> (activa antes, en la configuración de la tarea, «Hoja de calificaciones fuera de línea» y, si quieres el comentario, «Comentarios de retroalimentación»).</li>
+        <li>Ábrela aquí: se rellena la calificación de cada alumno (la nota orientativa, sobre la calificación máxima de la tarea) y su comentario.</li>
+        <li>En Aules: <b>Subir hoja de calificaciones</b>, con la casilla «Permitir actualizar registros modificados más recientemente en Moodle» si ya habías puesto alguna nota.</li></ol>
+        <label class="aules-op"><input type="checkbox" id="aulesCom" checked> Poner el comentario (la nota, el veredicto y sus errores principales)</label>
+        <input type="file" id="aulesCSV" accept=".csv,text/csv" style="display:none">
+        <div class="btn-row" style="margin-top:10px"><button class="btn-action" id="aulesAbrir">📂 Abrir la hoja de calificaciones…</button></div>
+        <div id="aulesRes"></div></div></div>`;
+    const esc = t => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+    ov.querySelector('#aulesAbrir').onclick = () => ov.querySelector('#aulesCSV').click();
+    ov.querySelector('#aulesCSV').onchange = async ev => {
+        const f = ev.target.files[0]; ev.target.value = ''; if (!f) return;
+        const r = rellenarHojaAules(await f.text(), { comentario: ov.querySelector('#aulesCom').checked });
+        const d = ov.querySelector('#aulesRes');
+        if (r.error) { d.innerHTML = `<p class="aules-mal">⚠️ ${esc(r.error)}</p>`; return; }
+        const nombre = f.name.replace(/\.csv$/i, '') + ' - con notas.csv';
+        d.innerHTML = `<p><b>${r.casados.length}</b> alumno${r.casados.length === 1 ? '' : 's'} con nota${r.hayCom ? (ov.querySelector('#aulesCom').checked ? ' y comentario' : ' (sin comentario)') : ' (la hoja no tiene la columna de comentarios: actívalos en la tarea si los quieres)'}${r.sinEntrega.length ? ` · ${r.sinEntrega.length} sin entrega en la lista (se dejan como estaban)` : ''}.</p>
+            ${r.sinCasar.length ? `<p class="aules-mal">⚠️ No se han encontrado en la hoja: <b>${r.sinCasar.map(esc).join(', ')}</b>. Ponles la nota a mano o cambia su nombre en la lista para que coincida con Aules.</p>` : ''}
+            <table class="par-tabla"><tr><th>Alumno/a</th><th>Calificación</th><th>Casado por</th></tr>${r.casados.map(c => `<tr><td>${esc(c.nombre)}</td><td class="n">${String(c.nota).replace('.', ',')} / ${String(c.max).replace('.', ',')}</td><td>${c.por}</td></tr>`).join('')}</table>
+            <div class="btn-row"><button class="btn-action" id="aulesBajar">⬇ Descargar «${esc(nombre)}»</button></div>`;
+        d.querySelector('#aulesBajar').onclick = () => { descargar(r.texto, nombre, 'text/csv;charset=utf-8'); snack('Hoja descargada: súbela en la tarea de Aules con «Subir hoja de calificaciones»'); };
+    };
+    ov.classList.add('visible');
+}
+// ── 👥 Preparar el examen: repartir las variantes a la clase ──
+// Desde 🎲 Variantes: la lista de alumnos (pegada, o el CSV de participantes / la hoja de calificaciones de Aules), el reparto
+// (en el orden de la lista o al azar, y se puede cambiar a mano), las hojas con el nombre de cada alumno, las soluciones de
+// cada variante y la lista del reparto. Las variantes se guardan en la biblioteca (Variantes/<ejercicio>) y el reparto queda
+// guardado en el navegador: la corrección masiva lo usa para saber qué variante le tocaba a cada uno.
+const REPARTO_CLAVE = 'calcador_repartos';
+function repartosGuardados() { try { return JSON.parse(localStorage.getItem(REPARTO_CLAVE) || '{}') || {}; } catch (e) { return {}; } }
+function guardarReparto(carpeta, rep) { const t = repartosGuardados(); t[carpeta] = rep; try { localStorage.setItem(REPARTO_CLAVE, JSON.stringify(t)); } catch (e) {} }
+let repEx = { alumnos: [], modo: 'orden' };     // alumnos: [{ n, id, v }]  (v = letra de la variante)
+// La lista de alumnos: un nombre por línea, o un CSV de Aules (participantes u hoja de calificaciones)
+function alumnosDeTexto(txt) {
+    const l1 = txt.split(/\r?\n/).find(l => l.trim()) || '';
+    if (/[;,]/.test(l1) && /nombre|nom\b|apellido|cognom|identificador|first ?name|surname/i.test(l1)) {
+        const h = leerCSVAules(txt), cab = h.filas[0].map(x => String(x).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim());
+        const b = re => cab.findIndex(x => re.test(x));
+        const iCom = b(/^(nombre completo|nom complet|full ?name)$/), iNom = b(/^(nombre|nom|first ?name)$/), iApe = b(/^(apellidos?|apellido\(s\)|cognoms?|surname|last ?name)$/), iId = b(/^(identificador|identifier)$/);
+        return h.filas.slice(1).map(f => ({ n: (iCom >= 0 ? f[iCom] : [iNom >= 0 ? f[iNom] : '', iApe >= 0 ? f[iApe] : ''].join(' ')).replace(/\s+/g, ' ').trim(), id: iId >= 0 ? ((/(\d+)/.exec(f[iId]) || [])[1] || '') : '' })).filter(a => a.n);
+    }
+    return txt.split(/\r?\n/).map(l => l.replace(/^\s*\d+[.)-]?\s+/, '').replace(/\t+/g, ' ').trim()).filter(Boolean).map(n => ({ n, id: '' }));
+}
+function repartirVariantes(alumnos, letras, modo) {
+    const orden = alumnos.map((a, k) => k);
+    if (modo === 'azar') for (let i = orden.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [orden[i], orden[j]] = [orden[j], orden[i]]; }
+    orden.forEach((k, i) => { alumnos[k].v = letras[i % letras.length]; });
+    return alumnos;
+}
+function carpetaVariantes() { return `Variantes/${nombreProyecto()}`; }
+const etqVar = v => { const h = v.datos && v.datos.calcador && v.datos.calcador.cfgHoja; return (h && h.num) || v.letra; };
+function abrirRepartoExamen() {
+    if (!varGen.length) { snack('Primero, las variantes'); return; }
+    const guardado = repartosGuardados()[carpetaVariantes()];
+    if (guardado && !repEx.alumnos.length) repEx.alumnos = guardado.alumnos.map(a => ({ ...a }));
+    let ov = document.getElementById('modalReparto');
+    if (!ov) { ov = document.createElement('div'); ov.className = 'modal-overlay'; ov.id = 'modalReparto'; ov.onclick = e => { if (e.target === ov) ov.classList.remove('visible'); }; document.body.appendChild(ov); }
+    ov.innerHTML = `<div class="help-modal" style="width:min(820px,100%)"><div class="help-header"><h2>👥 Preparar el examen: repartir las variantes</h2><button class="help-close" onclick="document.getElementById('modalReparto').classList.remove('visible')">✕</button></div>
+        <div class="help-content rep-cuerpo">
+        <div class="rep-izq">
+            <div class="cr-req-t">La clase</div>
+            <textarea id="repLista" rows="12" placeholder="Un alumno por línea (en el orden en que se sientan, si quieres que los de al lado tengan variantes distintas), o abre la lista de Aules"></textarea>
+            <input type="file" id="repCSV" accept=".csv,.txt" style="display:none">
+            <div class="btn-row"><button class="btn-action sec" id="repAbrir" title="El CSV de participantes del curso (Participantes → descargar) o la hoja de calificaciones de la tarea (con el número de participante, para casar después las entregas)">📂 Lista de Aules (CSV)…</button></div>
+            <div class="cr-req-t" style="margin-top:8px">Reparto</div>
+            <label class="aules-op"><input type="radio" name="repModo" value="orden" ${repEx.modo !== 'azar' ? 'checked' : ''}> En el orden de la lista (A, B, C… y vuelta a empezar)</label>
+            <label class="aules-op"><input type="radio" name="repModo" value="azar" ${repEx.modo === 'azar' ? 'checked' : ''}> Al azar (las mismas veces cada variante)</label>
+            <div class="btn-row" style="margin-top:6px"><button class="btn-action" id="repRepartir">🎲 Repartir</button></div>
+            <p class="ctx-nota">Variantes: ${varGen.map(v => `<b>${etqVar(v)}</b> (${v.desc})`).join(' · ')}</p>
+        </div>
+        <div class="rep-der">
+            <div id="repTabla"></div>
+            <div class="btn-row rep-acc"><button class="btn-action" id="repHojas">🖨 Hojas con el nombre</button><button class="btn-action sec" id="repSol">📋 Soluciones de las variantes</button><button class="btn-action sec" id="repCSVbajar">⬇ Lista del reparto (CSV)</button></div>
+            <p class="ctx-nota">Al imprimir, las variantes se guardan en la biblioteca (carpeta <i>${carpetaVariantes()}</i>) y el reparto queda guardado: en la corrección masiva, al elegir estas variantes, cada programa se corrige con la que le tocaba y avisa si ha hecho otra.</p>
+        </div></div></div>`;
+    const g = id => ov.querySelector('#' + id), letras = varGen.map(v => v.letra);
+    g('repLista').value = repEx.alumnos.map(a => a.n).join('\n');
+    const pintar = () => {
+        const esc = t => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+        const cuenta = letras.map(l => repEx.alumnos.filter(a => a.v === l).length);
+        g('repTabla').innerHTML = repEx.alumnos.length ? `<table class="par-tabla rep-tabla"><tr><th>#</th><th>Alumno/a</th><th>Variante</th></tr>${repEx.alumnos.map((a, k) => `<tr><td class="n">${k + 1}</td><td>${esc(a.n)}${a.id ? ` <small>(${a.id})</small>` : ''}</td><td><select data-k="${k}">${varGen.map(v => `<option value="${v.letra}" ${a.v === v.letra ? 'selected' : ''}>${esc(etqVar(v))}</option>`).join('')}</select></td></tr>`).join('')}</table>
+            <p class="ctx-nota">${letras.map((l, i) => `${etqVar(varGen[i])}: ${cuenta[i]}`).join(' · ')}</p>` : '<p class="ctx-nota">Escribe o abre la lista de la clase y pulsa 🎲 Repartir.</p>';
+        g('repTabla').querySelectorAll('select').forEach(s => s.onchange = () => { repEx.alumnos[+s.dataset.k].v = s.value; guardarRepartoActual(); pintar(); });
+    };
+    const leerLista = () => { const nuevos = alumnosDeTexto(g('repLista').value), prev = new Map(repEx.alumnos.map(a => [a.n, a]));
+        repEx.alumnos = nuevos.map(a => ({ ...a, id: a.id || (prev.get(a.n) || {}).id || '', v: (prev.get(a.n) || {}).v })); };
+    g('repAbrir').onclick = () => g('repCSV').click();
+    g('repCSV').onchange = async ev => { const f = ev.target.files[0]; ev.target.value = ''; if (!f) return; repEx.alumnos = alumnosDeTexto(await f.text());
+        g('repLista').value = repEx.alumnos.map(a => a.n).join('\n'); repartirVariantes(repEx.alumnos, letras, repEx.modo); guardarRepartoActual(); pintar();
+        snack(`${repEx.alumnos.length} alumnos leídos de «${f.name}»${repEx.alumnos.some(a => a.id) ? ', con su número de participante' : ''}`); };
+    ov.querySelectorAll('input[name="repModo"]').forEach(r => r.onchange = () => { repEx.modo = r.value; });
+    g('repRepartir').onclick = () => { leerLista(); if (!repEx.alumnos.length) { snack('Escribe antes la lista de la clase'); return; } repartirVariantes(repEx.alumnos, letras, repEx.modo); guardarRepartoActual(); pintar(); };
+    const listo = () => { leerLista(); if (!repEx.alumnos.length) { snack('Escribe antes la lista de la clase'); return false; } if (repEx.alumnos.some(a => !letras.includes(a.v))) repartirVariantes(repEx.alumnos.filter(a => !letras.includes(a.v)), letras, repEx.modo); guardarRepartoActual(); pintar(); return true; };
+    g('repHojas').onclick = async () => { if (listo()) { await guardarVariantesExamen(); await imprimirHojasReparto(); } };
+    g('repSol').onclick = async () => { if (listo()) { const ids = await guardarVariantesExamen(); cerrarVariantes(); ov.classList.remove('visible'); await imprimirLoteBib(ids, 'sol'); } };
+    g('repCSVbajar').onclick = () => { if (!listo()) return; const c = t => '"' + String(t).replace(/"/g, '""') + '"';
+        descargar('﻿' + [['Alumno', 'Variante', 'Identificador'], ...repEx.alumnos.map(a => [a.n, etqVar(varGen.find(v => v.letra === a.v)), a.id ? 'Participante ' + a.id : ''])].map(f => f.map(c).join(';')).join('\r\n'), `${nombreProyecto()} - reparto de variantes.csv`, 'text/csv;charset=utf-8'); };
+    pintar(); ov.classList.add('visible');
+}
+function guardarRepartoActual() {
+    guardarReparto(carpetaVariantes(), { fecha: new Date().toISOString(), titulo: cfgHoja.titulo || nombreProyecto(),
+        alumnos: repEx.alumnos.map(a => ({ n: a.n, id: a.id || '', v: a.v, etq: (() => { const v = varGen.find(x => x.letra === a.v); return v ? etqVar(v) : ''; })() })) });
+}
+// Las variantes, a la biblioteca (como «📚 Guardar en la biblioteca»)
+async function guardarVariantesExamen() {
+    await bibCargar();
+    const nombre = nombreProyecto(), ids = [];
+    for (const v of varGen) { const ruta = `Variantes/${nombre}/${nombre} - ${v.letra}.json`; const e = entradaDe(v.datos, ruta, `${nombre} - ${v.letra}.json`); await bibGuardarEntrada(e); ids.push(e.id); }
+    await bibCargar(); return ids;
+}
+// Las hojas: la de cada variante, una vez; después, una por alumno con su nombre en el cajetín
+async function imprimirHojasReparto() {
+    const htmlDe = new Map(), a = estadoGuardado(), sn = window.snack, op = window.open, color = !!cfgHoja.color;
+    let capt = null; window.snack = () => {}; window.open = () => ({ document: { open() {}, write(h) { capt = (capt || '') + h; }, close() {} } });
+    try { for (const v of varGen) { capt = null; (typeof _tuAbrirJSONDatos === 'function' ? _tuAbrirJSONDatos : abrirJSONDatos)(JSON.parse(JSON.stringify(v.datos))); cfgHoja.color = color; abrirHoja(); imprimirHoja(); cerrarHoja(); if (capt) htmlDe.set(v.letra, capt); } }
+    catch (e) { console.warn(e); sn('Error al preparar las hojas: ' + e.message); }
+    finally { window.snack = sn; window.open = op; restaurarEstado(a); refrescar(); }
+    const esc = t => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+    const partes = repEx.alumnos.filter(x => htmlDe.has(x.v)).map(x => htmlDe.get(x.v)
+        .replace('<span class="et">Alumno/a</span>&nbsp;', `<span class="et">Alumno/a</span><span class="v">${esc(x.n)}</span>`)
+        .replace('<span>Alumno/a: ______________________</span>', `<span>Alumno/a: ${esc(x.n)}</span>`));
+    if (!partes.length) { snack('No se ha podido generar ninguna hoja'); return; }
+    let estilos = '', cuerpos = '';
+    partes.forEach((h, k) => {
+        const css = (h.match(/<style>([\s\S]*?)<\/style>/) || [])[1] || '', cuerpo = ((h.match(/<body>([\s\S]*)<\/body>/) || [])[1] || '').replace(/<script[\s\S]*?<\/script>/g, '');
+        estilos += prefijarCSS(css, 'ej' + k, 'pag' + k);
+        cuerpos += `<div class="ej${k}">${cuerpo}</div>\n`;
+    });
+    const html = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Examen ${esc(cfgHoja.titulo || nombreProyecto())}: hojas de ${partes.length} alumnos</title>
+<style>body { margin: 0; } ${estilos}</style></head><body>${cuerpos}
+<script>window.onload = () => setTimeout(() => window.print(), 300);<\/script></body></html>`;
+    const w = window.open('', '_blank');
+    if (!w) { snack('El navegador ha bloqueado la ventana de impresión: permite las ventanas emergentes para este archivo'); return; }
+    w.document.open(); w.document.write(html); w.document.close();
+    snack(`${partes.length} hojas, cada una con el nombre del alumno y su variante`);
+}
+// ── En la corrección masiva: la variante que le tocaba, según el reparto guardado ──
+masiva.reparto = null;
+function repartoParaVariantes(vs) {
+    const T = repartosGuardados(), carpetas = new Set(vs.map(v => { const e = (bib.lista || []).find(x => x.id === v.id); return e ? e.ruta.split('/').slice(0, -1).join('/') : ''; }).filter(Boolean));
+    for (const c of carpetas) if (T[c]) return { ...T[c], carpeta: c };
+    // (variantes abiertas desde archivos: el reparto cuyas etiquetas coinciden)
+    const etqs = new Set(vs.map(v => v.etq));
+    return Object.entries(T).map(([c, r]) => ({ ...r, carpeta: c })).find(r => r.alumnos.length && r.alumnos.every(a => etqs.has(a.etq))) || null;
+}
+const _varianteAsignadaRep = varianteAsignada;
+varianteAsignada = function (it) {
+    const R = masiva.reparto;
+    if (R && R.alumnos && R.alumnos.length) {
+        const base = Object.keys(masiva.ids || {}).filter(n => it.alumno === n || it.alumno.startsWith(n + ' · ')).sort((a, b) => b.length - a.length)[0] || it.alumno.replace(/ · .*$/, '');
+        const id = (masiva.ids || {})[base], nb = normNomAules(base);
+        const a = (id && R.alumnos.find(x => x.id && x.id === id)) || R.alumnos.find(x => normNomAules(x.n) === nb)
+            || R.alumnos.find(x => { const p = normNomAules(x.n).split(' '), q = nb.split(' '); return p.length >= 2 && q.length >= 2 && (p.every(w => q.includes(w)) || q.every(w => p.includes(w))); });
+        if (a) { const v = masiva.variantes.find(x => x.etq === a.etq) || masiva.variantes.find(x => x.letra && x.letra === a.v); if (v) return v; }
+    }
+    return _varianteAsignadaRep(it);
+};
+// al elegir las variantes, se busca su reparto; y se puede abrir el CSV de un reparto
+const _elegirVariantesMasivaRep = elegirVariantesMasiva;
+elegirVariantesMasiva = async function () {
+    await _elegirVariantesMasivaRep.apply(this, arguments);
+    const ov = document.getElementById('modalVarMasiva'); if (!ov) return;
+    const si = ov.querySelector('#varMasivaSi'), fila = si && si.parentNode; if (!fila) return;
+    const nota = document.createElement('p'); nota.className = 'ctx-nota'; nota.id = 'varMasivaRep';
+    const T = repartosGuardados(), conRep = [...ov.querySelectorAll('input[data-carpeta]')].map(c => c.dataset.carpeta).filter(c => T[c]);
+    nota.textContent = conRep.length ? `👥 Con reparto guardado (la variante que le tocaba a cada alumno): ${conRep.map(c => `${c.replace(/^Variantes\//, '')} (${T[c].alumnos.length} alumnos)`).join(', ')}.`
+        : 'Sin reparto guardado: la variante que le tocaba sale del nombre del archivo, de su carpeta o de un comentario («12B»), o abre la lista del reparto.';
+    fila.parentNode.insertBefore(nota, fila);
+    const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.csv'; inp.style.display = 'none';
+    const b = document.createElement('button'); b.className = 'btn-action sec'; b.textContent = '📂 Reparto (CSV)…'; b.title = 'La lista del reparto de variantes (Alumno; Variante), la que descarga 👥 Preparar el examen';
+    b.onclick = () => inp.click(); fila.insertBefore(b, si); fila.appendChild(inp);
+    inp.onchange = async ev => { const f = ev.target.files[0]; ev.target.value = ''; if (!f) return;
+        const h = leerCSVAules(await f.text()), cab = h.filas[0].map(x => String(x).toLowerCase()), iA = cab.findIndex(x => /alumn|nombre|nom/.test(x)), iV = cab.findIndex(x => /variant/.test(x)), iI = cab.findIndex(x => /identif/.test(x));
+        if (iA < 0 || iV < 0) { snack('El CSV tiene que tener las columnas «Alumno» y «Variante»'); return; }
+        masiva.repartoArchivo = { titulo: f.name.replace(/\.csv$/i, ''), alumnos: h.filas.slice(1).filter(x => x[iA]).map(x => ({ n: x[iA], etq: x[iV], v: (/([A-Z])$/i.exec(x[iV]) || [])[1] || '', id: iI >= 0 ? ((/(\d+)/.exec(x[iI]) || [])[1] || '') : '' })) };
+        nota.textContent = `Reparto: ${masiva.repartoArchivo.titulo} (${masiva.repartoArchivo.alumnos.length} alumnos, del archivo)`; };
+    const siOrig = si.onclick, no = ov.querySelector('#varMasivaNo'), noOrig = no.onclick;
+    no.onclick = () => { masiva.reparto = null; noOrig(); };
+    si.onclick = () => { const vsAntes = masiva.variantes; siOrig();
+        if (masiva.variantes !== vsAntes || masiva.variantes.length) { masiva.reparto = masiva.repartoArchivo || repartoParaVariantes(masiva.variantes); masiva.repartoArchivo = null; if (masiva.reparto) recorregirMasiva(); } };
+};
+// ── Avisar de los códigos que no se han dado en clase (no baja la nota) ──
+// G y M que no están en la lista de clase (configurable, se guarda en el navegador), el número de programa (O1000) y «%»,
+// la D (en clase no se escribe), la herramienta con otro formato (T1, T1 M6 → T101 M06) y el husillo al revés (M03 S12000 → S12000 M03).
+const CODIGOS_CLASE_DEF = 'G0 G1 G2 G3 G15 G16 G17 G18 G19 G40 G41 G42 G70 G71 G73 G80 G81 G82 G83 G90 G91 G98 G99 M2 M3 M4 M5 M6 M30';
+const CODIGOS_CLASE_CLAVE = 'calcador_codigos_clase';
+const cfgClase = (() => { try { const v = JSON.parse(localStorage.getItem(CODIGOS_CLASE_CLAVE) || 'null'); if (v && typeof v === 'object') return { activo: v.activo !== false, codigos: String(v.codigos || CODIGOS_CLASE_DEF) }; } catch (e) {} return { activo: true, codigos: CODIGOS_CLASE_DEF }; })();
+function guardarCfgClase() { try { localStorage.setItem(CODIGOS_CLASE_CLAVE, JSON.stringify(cfgClase)); } catch (e) {} }
+const normCod = w => { const m = /^([GM])0*(\d+)(?:\.(\d+))?$/i.exec(w); return m ? m[1].toUpperCase() + m[2] + (m[3] && +m[3] ? '.' + m[3] : '') : w.toUpperCase(); };
+const codigosClase = () => new Set(String(cfgClase.codigos).split(/[\s,;]+/).filter(Boolean).map(normCod));
+const QUE_ES = { G4: 'pausa', G20: 'pulgadas (en clase, G70)', G21: 'milímetros (en clase, G71)', G28: 'volver al punto de referencia', G43: 'compensación de longitud de la herramienta', G44: 'compensación de longitud',
+    G49: 'anular la compensación de longitud', G53: 'coordenadas de máquina', G54: 'origen de pieza (en clase, el cero pieza del plano)', G55: 'origen de pieza', G56: 'origen de pieza', G57: 'origen de pieza', G92: 'cambiar el origen',
+    G94: 'avance por minuto', G95: 'avance por vuelta', G61: 'parada exacta', G64: 'modo continuo', G68: 'giro de coordenadas', G69: 'anular el giro', M0: 'parada', M1: 'parada opcional', M7: 'refrigerante', M8: 'refrigerante', M9: 'parar el refrigerante', M19: 'orientar el husillo', M98: 'llamada a subprograma', M99: 'fin de subprograma' };
+function avisosClase(texto) {
+    const lineas = String(texto || '').replace(/\r/g, '').split('\n'), set = codigosClase(), porCod = new Map(), otros = [];
+    const apunta = (clave, li, et, msg) => { if (!porCod.has(clave)) porCod.set(clave, { li, et, msg, n: 0 }); porCod.get(clave).n++; };
+    lineas.forEach((l0, li) => {
+        const l = l0.replace(/\([^)]*\)/g, ' ').replace(/;.*$/, '').trim().toUpperCase(); if (!l) return;
+        const nW = /^N\s*(\d+)/.exec(l), et = nW ? 'N' + nW[1] : 'línea ' + (li + 1);
+        if (/^%/.test(l)) { apunta('%', li, et, '«%» al principio o al final del programa no se ha dado en clase (es de otras máquinas).'); return; }
+        if (/^O\d+/.test(l)) apunta('O', li, et, `${/^O\d+/.exec(l)[0]}: el número de programa no se ha dado en clase (el programa empieza con su nombre entre paréntesis).`);
+        const W = l.match(/[A-Z][-+]?\d*\.?\d*/g) || [];
+        W.forEach(w => {
+            if (/^[GM]\d/.test(w)) { const c = normCod(w); if (!set.has(c)) apunta(c, li, et, `${w}${QUE_ES[c] ? ` (${QUE_ES[c]})` : ''}: no está entre los códigos dados en clase.`); }
+            else if (/^D\d/.test(w)) apunta('D', li, et, `${w}: en clase no se escribe D (el radio de la fresa lo sabe la máquina por la herramienta T…).`);
+        });
+        const T = W.find(w => /^T\d/.test(w)), M6 = W.some(w => /^M0*6$/.test(w));
+        if (T && (!/^T\d{3,}$/.test(T) || !M6)) apunta('T', li, et, `${W.filter(w => /^T\d|^M0*6$/.test(w)).join(' ')}: en clase, el cambio de herramienta se escribe así: T101 M06 (la T con tres cifras y M06 en la misma línea).`);
+        const iS = W.findIndex(w => /^S\d/.test(w)), iM = W.findIndex(w => /^M0*[34]$/.test(w));
+        if (iS >= 0 && iM >= 0 && iM < iS) apunta('S', li, et, `${W[iM]} ${W[iS]}: en clase se escribe primero la velocidad y después el giro: ${W[iS]} M0${W[iM].replace(/^M0*/, '')}.`);
+    });
+    return [...porCod.values()].map(x => ({ tipo: 'aviso', cat: 'clase', linea: x.li, msg: `${x.et}: ${x.msg}${x.n > 1 ? ` (y ${x.n - 1} vez${x.n - 1 === 1 ? '' : 'es'} más)` : ''}` }));
+}
+const _corregirProgramaClase = corregirPrograma;
+corregirPrograma = function (texto) {
+    const r = _corregirProgramaClase.apply(this, arguments);
+    if (cfgClase.activo && r && !r.error && Array.isArray(r.hallazgos)) {
+        const A = avisosClase(texto); if (A.length) { r.hallazgos.push(...A); if (typeof r.avisos === 'number') r.avisos += A.length; }
+    }
+    return r;
+};
+function editarCodigosClase() {
+    let ov = document.getElementById('modalCodClase');
+    if (!ov) { ov = document.createElement('div'); ov.className = 'modal-overlay'; ov.id = 'modalCodClase'; ov.onclick = e => { if (e.target === ov) ov.classList.remove('visible'); }; document.body.appendChild(ov); }
+    ov.innerHTML = `<div class="help-modal" style="width:min(560px,100%)"><div class="help-header"><h2>✎ Códigos dados en clase</h2><button class="help-close" onclick="document.getElementById('modalCodClase').classList.remove('visible')">✕</button></div>
+        <div class="help-content"><p class="ctx-nota" style="margin-top:0">El Corrector avisa (sin bajar la nota) de las G y M que no están en esta lista, del número de programa (O1000) y «%», de la D, de la herramienta escrita de otra forma que <b>T101 M06</b> y del husillo escrito <b>M03 S12000</b> en lugar de <b>S12000 M03</b>.</p>
+        <label class="aules-op"><input type="checkbox" id="ccActivo" ${cfgClase.activo ? 'checked' : ''}> Avisar de los códigos no dados en clase</label>
+        <textarea id="ccLista" rows="4" style="width:100%;box-sizing:border-box;margin-top:8px;font:13px/1.5 Consolas,monospace;padding:6px 8px;border:1px solid var(--border-color);border-radius:6px">${cfgClase.codigos}</textarea>
+        <p class="ctx-nota">Separados por espacios. G01 y G1 son el mismo código. Se guarda en este navegador, para todos los ejercicios.</p>
+        <div class="btn-row"><button class="btn-action sec" id="ccDef">Volver a la lista de partida</button><button class="btn-action" id="ccOk">Guardar y recorregir</button></div></div></div>`;
+    ov.querySelector('#ccDef').onclick = () => { ov.querySelector('#ccLista').value = CODIGOS_CLASE_DEF; };
+    ov.querySelector('#ccOk').onclick = () => { cfgClase.activo = ov.querySelector('#ccActivo').checked; cfgClase.codigos = ov.querySelector('#ccLista').value.trim() || CODIGOS_CLASE_DEF; guardarCfgClase();
+        const c = document.getElementById('mvClase'); if (c) c.checked = cfgClase.activo; ov.classList.remove('visible');
+        if (typeof recorregirMasiva === 'function' && masiva.lista.length) recorregirMasiva(); if (document.getElementById('crTexto') && document.getElementById('crTexto').value.trim() && typeof ejecutarCorreccion === 'function') try { ejecutarCorreccion(); } catch (e) {}
+        snack(cfgClase.activo ? 'Códigos de clase guardados' : 'Sin avisos de códigos no dados en clase'); };
+    ov.classList.add('visible');
+}
+function cambiarAvisoClase(chk) { cfgClase.activo = chk.checked; guardarCfgClase(); if (masiva.lista.length) recorregirMasiva(); }
+// ── Rúbrica: la nota por apartados (opcional; por defecto, la nota de siempre) ──
+// Geometría (la pieza: en proporción al contorno bien mecanizado, menos lo de cada corte que daña), compensación, lo pedido,
+// seguridad, el final del programa, el formato (números de bloque, códigos de clase…) y los comentarios, con los pesos que
+// se elijan. Se guarda con el ejercicio (cfgCorr.rubrica), como los criterios de siempre.
+const RUBRICA = [
+    ['geo', 'Geometría', 4, 'La pieza: en proporción al contorno bien mecanizado, menos lo de cada corte que se mete en la pieza'],
+    ['comp', 'Compensación', 1.5, 'G41/G42 en el lado bueno, con su entrada y su salida (con un aviso, la mitad)'],
+    ['pedido', 'Lo pedido', 1.5, 'Programación, entrada, sentido y herramienta pedidos'],
+    ['seg', 'Seguridad', 1, 'Sin rápidos peligrosos (con un aviso, como bajar en diagonal, la mitad)'],
+    ['fin', 'Final del programa', 1, 'La fresa arriba, M05 y M30 (o M02) (con un aviso, la mitad)'],
+    ['formato', 'Formato', 0.5, 'Números de bloque, códigos dados en clase, T101 M06, S… M03 (cada aviso resta un cuarto)'],
+    ['coment', 'Comentarios', 0.5, 'Al menos la mitad de las líneas comentadas (menos, en proporción)']];
+const rubricaActiva = () => esObj(cfgCorr.rubrica) && cfgCorr.rubrica.modo === 'apartados';
+function pesosRubrica() { const p = esObj(cfgCorr.rubrica) && esObj(cfgCorr.rubrica.pesos) ? cfgCorr.rubrica.pesos : {}; const o = {}; RUBRICA.forEach(([k, , d]) => { const v = +p[k]; o[k] = isFinite(v) && v >= 0 ? Math.min(100, v) : d; }); return o; }
+const esFinal = h => (h.pista && /al final/.test(h.pista)) || /fin de programa|M30|M02|termina con la fresa|programa no termina|el programa ya ha terminado/.test(h.msg);
+const esFormato = h => h.cat === 'clase' || /números de bloque|coma decimal/.test(h.msg);
+const esComp = h => h.cat === 'compensacion' || (h.tipo === 'aviso' && /G4[12]|compensaci/.test(h.msg));
+function apartadosRubrica(r, v) {
+    const P = pesosRubrica(), N = critNota(), H = (r && r.hallazgos) || [], esLinea = h => h.linea !== null && h.linea !== undefined;
+    const sin = v.veredicto === 'vacio' || v.veredicto === 'error';
+    const parte = (err, av) => err ? 0 : av ? 0.5 : 1;
+    const E = f => H.filter(h => h.tipo === 'error' && f(h)), A = f => H.filter(h => h.tipo === 'aviso' && f(h));
+    const errGeo = H.filter(h => h.tipo === 'error' && h.cat === 'geometria' && (esLinea(h) || h.resumen)).reduce((n, h) => n + (h.resumen || 1), 0);
+    const f = {};
+    f.geo = sin || !P.geo ? 0 : Math.max(0, v.cob * P.geo - N.pen * errGeo) / P.geo;
+    f.comp = parte(E(esComp).length, A(esComp).length);
+    f.pedido = v.incumple ? 0 : 1;
+    f.seg = parte(E(h => h.cat === 'seguridad' && !esFinal(h)).length, A(h => /diagonal|rápido/.test(h.msg) && !esFinal(h)).length);
+    f.fin = parte(E(esFinal).length, A(esFinal).length);
+    f.formato = Math.max(0, 1 - 0.25 * A(esFormato).length);
+    { const L = (r && r.prog && r.prog.lineas) || [], cod = L.filter(l => l.replace(/\([^)]*\)/g, '').replace(/;.*$/, '').trim()), con = cod.filter(l => /\(|;/.test(l));
+      f.coment = cod.length ? Math.min(1, (con.length / cod.length) / 0.5) : 0; }
+    return RUBRICA.map(([k, nom]) => ({ k, nom, peso: P[k], frac: sin ? 0 : f[k], puntos: sin ? 0 : Math.round(P[k] * f[k] * 100) / 100 }));
+}
+const _valorarCorreccionRub = valorarCorreccion;
+valorarCorreccion = function (r) {
+    const v = _valorarCorreccionRub.apply(this, arguments);
+    if (!rubricaActiva()) return v;
+    const ap = apartadosRubrica(r, v), max = ap.reduce((a, x) => a + x.peso, 0) || 1;
+    v.rub = ap; v.notaSiempre = v.nota;
+    v.nota = Math.round(ap.reduce((a, x) => a + x.puntos, 0) / max * 100) / 10;
+    return v;
+};
+// El desglose del informe y los criterios del resumen, según el modo
+function tablaDesglose(v, N) {
+    if (v.rub) return `<table class="des"><tr>${v.rub.map(x => `<th>${x.nom}</th>`).join('')}<th>Contorno bien mecanizado</th></tr>
+                <tr>${v.rub.map(x => `<td>${nf(x.puntos, 2)} / ${nf(x.peso, 1)}</td>`).join('')}<td>${pct(v.cob)}</td></tr></table>`;
+    return `<table class="des"><tr><th>Geometría</th><th>Lo pedido</th><th>Seguridad</th><th>Contorno bien mecanizado</th></tr>
+                <tr><td>${nf(v.desglose.geo, 2)} / ${nf(N.geo, 1)}</td><td>${nf(v.desglose.pedido, 1)} / ${nf(N.pedido, 1)}</td><td>${nf(v.desglose.seg, 1)} / ${nf(N.seg, 1)}</td><td>${pct(v.cob)}</td></tr></table>`;
+}
+function textoCriterios(N) {
+    if (rubricaActiva()) { const P = pesosRubrica(), tot = RUBRICA.reduce((a, [k]) => a + P[k], 0);
+        return `Nota orientativa sobre 10, por apartados (rúbrica, ${nf(tot, 1)} puntos en total): ${RUBRICA.map(([k, nom]) => `${nom.toLowerCase()} ${nf(P[k], 1)}`).join(', ')}. En la geometría, −${nf(N.pen, 2)} por cada corte que se mete en la pieza${pctTrazado() ? `; con el trazado de la pieza sin cortar o desplazado, el ${pctTrazado()} %` : ''}.`; }
+    return `Nota orientativa sobre 10: geometría ${nf(N.geo, 1)} (en proporción al contorno bien mecanizado, −${nf(N.pen, 2)} por cada corte que se mete en la pieza), lo pedido ${nf(N.pedido, 1)} y seguridad ${nf(N.seg, 1)}.${pctTrazado() ? ` Si el trazado es el de la pieza pero no corta o está desplazado, el ${pctTrazado()} % de la geometría.` : ''}`;
+}
+// La ventana de la rúbrica
+function editarRubrica() {
+    let ov = document.getElementById('modalRubrica');
+    if (!ov) { ov = document.createElement('div'); ov.className = 'modal-overlay'; ov.id = 'modalRubrica'; ov.onclick = e => { if (e.target === ov) ov.classList.remove('visible'); }; document.body.appendChild(ov); }
+    const P = pesosRubrica();
+    ov.innerHTML = `<div class="help-modal" style="width:min(640px,100%)"><div class="help-header"><h2>⚙ Rúbrica: la nota por apartados</h2><button class="help-close" onclick="document.getElementById('modalRubrica').classList.remove('visible')">✕</button></div>
+        <div class="help-content"><p class="ctx-nota" style="margin-top:0">Los puntos de cada apartado. La nota se pasa a 10 aunque no sumen 10; con 0, el apartado no cuenta. El descuento por cada corte que se mete en la pieza es el de «− por corte que daña».</p>
+        <table class="par-tabla rub-tabla">${RUBRICA.map(([k, nom, d, t]) => `<tr><td><b>${nom}</b><div class="ctx-nota" style="margin:0">${t}</div></td><td class="n"><input type="number" min="0" max="100" step="0.25" data-k="${k}" value="${P[k]}" style="width:64px"></td></tr>`).join('')}
+        <tr><td style="text-align:right">Total</td><td class="n" id="rubTotal"></td></tr></table>
+        <div class="btn-row" style="margin-top:10px"><button class="btn-action sec" id="rubDef">Los pesos de partida</button><button class="btn-action" id="rubOk">Usar la rúbrica y recorregir</button></div></div></div>`;
+    const tot = () => { ov.querySelector('#rubTotal').textContent = nf([...ov.querySelectorAll('input[data-k]')].reduce((a, i) => a + (+i.value || 0), 0), 2); };
+    ov.querySelectorAll('input[data-k]').forEach(i => i.oninput = tot); tot();
+    ov.querySelector('#rubDef').onclick = () => { ov.querySelectorAll('input[data-k]').forEach(i => { i.value = RUBRICA.find(x => x[0] === i.dataset.k)[2]; }); tot(); };
+    ov.querySelector('#rubOk').onclick = () => { const p = {}; ov.querySelectorAll('input[data-k]').forEach(i => { p[i.dataset.k] = Math.max(0, +String(i.value).replace(',', '.') || 0); });
+        cfgCorr.rubrica = { modo: 'apartados', pesos: p }; ov.classList.remove('visible'); sincronizarModoNota(); guardarAutoPronto(); recorregirMasiva(); snack('Nota por apartados (rúbrica)'); };
+    ov.classList.add('visible');
+}
+function cambiarModoNota(sel) {
+    if (sel.value === 'apartados') { cfgCorr.rubrica = { modo: 'apartados', pesos: pesosRubrica() }; } else if (esObj(cfgCorr.rubrica)) cfgCorr.rubrica.modo = 'siempre';
+    sincronizarModoNota(); guardarAutoPronto(); recorregirMasiva();
+}
+function sincronizarModoNota() {
+    const s = document.getElementById('mvModoNota'); if (!s) return;
+    s.value = rubricaActiva() ? 'apartados' : 'siempre';
+    document.querySelectorAll('.mv-crit-siempre').forEach(e => { e.style.display = rubricaActiva() ? 'none' : ''; });
+    const b = document.getElementById('mvBtnRub'); if (b) b.style.display = rubricaActiva() ? '' : 'none';
+    const c = document.getElementById('mvClase'); if (c) c.checked = cfgClase.activo;
+}
+const _sincronizarRequisitosMasivaRub = sincronizarRequisitosMasiva;
+sincronizarRequisitosMasiva = function () { const r = _sincronizarRequisitosMasivaRub.apply(this, arguments); sincronizarModoNota(); return r; };
+// ── 📊 Los errores más repetidos de la clase ──
+// Los errores y avisos de toda la corrección masiva, juntando los del mismo tipo (sin las coordenadas, los números de
+// bloque ni el código citado), ordenados por cuántos alumnos los tienen: qué repasar en la próxima clase.
+function claveError(h) {
+    return String(h.msg).replace(/«[^»]*»/g, '').replace(/^\s*(N\d+|l[ií]nea \d+|Al final)\s*:\s*/i, '').replace(/\b(N\d+|l[ií]nea \d+)\b/gi, '#')
+        .replace(/\b[A-Z]-?\d+(\.\d+)?\b/g, m => /^[GMT]\d/.test(m) ? m.replace(/^([GM])0*(\d)/, '$1$2') : '#').replace(/-?\d+([.,]\d+)?/g, '#')
+        .replace(/\(y # (vez|veces|bloques?) más\)/g, '').replace(/\s+/g, ' ').replace(/\s+([.,:;])/g, '$1').trim();
+}
+function erroresClase(items) {
+    const G = new Map();
+    (items || masiva.lista).forEach(it => {
+        if (!it.r || !it.r.hallazgos || !it.v || it.v.veredicto === 'pendiente') return;
+        const vistos = new Set();
+        it.r.hallazgos.forEach(h => {
+            if (h.resumen || (h.tipo !== 'error' && h.tipo !== 'aviso')) return;
+            const k = h.tipo + '|' + claveError(h); if (vistos.has(k)) return; vistos.add(k);
+            if (!G.has(k)) G.set(k, { tipo: h.tipo, cat: h.cat || '', titulo: String(h.msg).replace(/^\s*(N\d+|l[ií]nea \d+)\s*:\s*/i, '').replace(/\s*\(y \d+ (vez|veces) más\)/, ''), ejemplo: h.msg, pista: h.pista || '', alumnos: [] });
+            G.get(k).alumnos.push(it.alumno);
+        });
+    });
+    return [...G.values()].sort((a, b) => b.alumnos.length - a.alumnos.length || (a.tipo === 'error' ? -1 : 1) - (b.tipo === 'error' ? -1 : 1));
+}
+const CAT_ERR = { geometria: 'Geometría', compensacion: 'Compensación', requisito: 'Lo pedido', herramienta: 'Herramienta', seguridad: 'Seguridad', clase: 'Códigos de clase' };
+function tablaErroresClase(sel, max) {
+    const its = (sel || masiva.lista.map((_, k) => k)).map(k => masiva.lista[k]).filter(Boolean), E = erroresClase(its).filter(e => e.alumnos.length >= 2).slice(0, max || 12);
+    if (!E.length) return '';
+    const esc = t => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+    return `<h2>Los errores más repetidos</h2><table class="tr err-clase"><tr><th>Alumnos</th><th>Error o aviso</th><th>Quiénes</th></tr>${E.map(e => `<tr><td class="n"><b>${e.alumnos.length}</b> de ${its.length}</td><td><span style="color:${e.tipo === 'error' ? '#b0301f' : '#a86b00'}">${e.tipo === 'error' ? 'Error' : 'Aviso'}${CAT_ERR[e.cat] ? ' · ' + CAT_ERR[e.cat] : ''}</span> — ${esc(e.titulo)}${e.pista ? `<br><i>Pista: ${esc(e.pista)}</i>` : ''}</td><td style="font-size:85%">${esc(e.alumnos.join(', '))}</td></tr>`).join('')}</table>`;
+}
+function verErroresClase() {
+    if (!masiva.lista.length) { snack('No hay programas en la lista'); return; }
+    let ov = document.getElementById('modalErrClase');
+    if (!ov) { ov = document.createElement('div'); ov.className = 'modal-overlay'; ov.id = 'modalErrClase'; ov.onclick = e => { if (e.target === ov) ov.classList.remove('visible'); }; document.body.appendChild(ov); }
+    const E = erroresClase(), n = masiva.lista.filter(it => it.r && it.v && it.v.veredicto !== 'pendiente').length, esc = t => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+    let filtro = 'todos';
+    const pintar = () => {
+        const L = E.filter(e => filtro === 'todos' || e.tipo === filtro);
+        ov.querySelector('#errLista').innerHTML = L.length ? `<table class="par-tabla err-tabla"><tr><th>Alumnos</th><th>Error o aviso</th></tr>${L.map((e, i) => `<tr><td class="n">${e.alumnos.length}<small> de ${n}</small><div class="err-barra"><i style="width:${Math.round(e.alumnos.length / n * 100)}%;background:${e.tipo === 'error' ? '#d83a3a' : '#e0a21e'}"></i></div></td>
+            <td><span class="err-tipo ${e.tipo}">${e.tipo === 'error' ? 'Error' : 'Aviso'}${CAT_ERR[e.cat] ? ' · ' + CAT_ERR[e.cat] : ''}</span> ${esc(e.titulo)}${e.pista ? `<div class="ctx-nota" style="margin:2px 0 0">💡 ${esc(e.pista)}</div>` : ''}
+            <details><summary>${e.alumnos.length === 1 ? '1 alumno' : e.alumnos.length + ' alumnos'}</summary><div class="ctx-nota" style="margin:2px 0">${esc(e.alumnos.join(', '))}</div><div class="ctx-nota" style="margin:2px 0">(El texto es el del primero; en los demás puede ser en otra línea o con otros valores.)</div></details></td></tr>`).join('')}</table>`
+            : '<p>Ningún error ni aviso. 🎉</p>';
+    };
+    ov.innerHTML = `<div class="help-modal" style="width:min(820px,100%)"><div class="help-header"><h2>📊 Los errores más repetidos de la clase</h2><button class="help-close" onclick="document.getElementById('modalErrClase').classList.remove('visible')">✕</button></div>
+        <div class="help-content"><p class="ctx-nota" style="margin-top:0">${n} programas corregidos. Se juntan los errores del mismo tipo aunque sean en otra línea o con otras coordenadas: lo que más se repite es lo que conviene repasar en clase.</p>
+        <div class="btn-row"><label class="aules-op" style="display:inline"><input type="radio" name="errF" value="todos" checked> Todos</label> <label class="aules-op" style="display:inline"><input type="radio" name="errF" value="error"> Solo errores</label> <label class="aules-op" style="display:inline"><input type="radio" name="errF" value="aviso"> Solo avisos</label>
+        <button class="btn-action sec" id="errImp" style="margin-left:auto;width:auto">🖨 Imprimir</button></div>
+        <div id="errLista"></div></div></div>`;
+    ov.querySelectorAll('input[name="errF"]').forEach(r => r.onchange = () => { filtro = r.value; pintar(); });
+    ov.querySelector('#errImp').onclick = () => {
+        const w = window.open('', '_blank'); if (!w) { snack('El navegador ha bloqueado la ventana de impresión: permite las ventanas emergentes para este archivo'); return; }
+        const L = E.filter(e => filtro === 'todos' || e.tipo === filtro);
+        w.document.open(); w.document.write(`<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>Errores más repetidos — ${esc(cfgHoja.titulo || nombreProyecto())}</title><style>
+            @page { size: A4; margin: 12mm; } body { font: 10pt/1.35 Arial, sans-serif; color: #222; } h1 { font-size: 15pt; margin: 0 0 4px; } table { width: 100%; border-collapse: collapse; }
+            th, td { border-bottom: 1px solid #ccc; padding: 4px 6px; text-align: left; vertical-align: top; } td.n { white-space: nowrap; font-weight: bold; } .e { color: #b0301f; } .a { color: #a86b00; } .q { font-size: 85%; color: #555; }</style></head><body>
+            <h1>Los errores más repetidos · ${esc(cfgHoja.titulo || nombreProyecto())}</h1><p>${n} programas corregidos · ${new Date().toLocaleDateString('es-ES')}</p>
+            <table><tr><th>Alumnos</th><th>Error o aviso</th></tr>${L.map(e => `<tr><td class="n">${e.alumnos.length} de ${n}</td><td><span class="${e.tipo === 'error' ? 'e' : 'a'}">${e.tipo === 'error' ? 'Error' : 'Aviso'}${CAT_ERR[e.cat] ? ' · ' + CAT_ERR[e.cat] : ''}</span> — ${esc(e.titulo)}${e.pista ? `<br><i>Pista: ${esc(e.pista)}</i>` : ''}<div class="q">${esc(e.alumnos.join(', '))}</div></td></tr>`).join('')}</table>
+            <script>window.onload = () => setTimeout(() => window.print(), 250);<\/script></body></html>`); w.document.close(); };
+    pintar(); ov.classList.add('visible');
+}
+// ── 🗃 Batería de corrección: una carpeta con los ejercicios (.json) y las entregas de Aules (.zip) ──
+// Cada zip («<curso>-<tarea>-<número>.zip», el de «Descargar todas las entregas») se casa con su ejercicio por el nombre de la
+// tarea («ISO GEO 01A» ↔ «ISO GEO 01A.json», «Tarea_ISO_09.zip» ↔ «ISO_09.json»); si la tarea es de un examen con variantes
+// (ISO GEO 01 ↔ ISO GEO 01A, 01B…), se corrige con las variantes. La hoja de calificaciones de cada tarea
+// («Calificaciones-…-<número>.csv»), si está en la carpeta, se rellena. Todo se corrige de una vez y se descarga en un zip.
+let bat = { ejercicios: [], tareas: [], hojas: [] };
+const normBat = t => String(t || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9ñ]+/g, ' ')
+    .replace(/\b0+(\d)/g, '$1').replace(/\b(\d+)([a-h])\b/g, '$1 $2').trim();
+const tokBat = t => normBat(t).split(' ').filter(Boolean);
+// ¿Están los tokens de la clave seguidos dentro del nombre? (el mejor, el que llega más al final)
+function encajeBat(nombre, clave) {
+    if (!clave.length) return -1;
+    for (let i = nombre.length - clave.length; i >= 0; i--) if (clave.every((t, k) => nombre[i + k] === t)) return i + clave.length;
+    return -1;
+}
+function partesZipBat(nombre) {
+    const base = nombre.replace(/^.*[\\/]/, '').replace(/\.zip$/i, ''), m = /^(.*?)-(\d{3,})$/.exec(base);
+    const resto = m ? m[1] : base, cmid = m ? m[2] : '';
+    // la tarea: lo que va después del último guion del curso, si lo hay (el curso puede llevar guiones; la tarea se casa en todo el nombre)
+    const tarea = resto.replace(/^.*-(?=[^-]*$)/, '').trim() || resto;
+    return { base, resto, cmid, tarea };
+}
+function claveEjercicio(e) { return tokBat(e.archivo.replace(/\.json$/i, '')); }
+// Los nombres con los que se puede casar un ejercicio: el de su archivo y, si son bastante concretos, el número y el título de su ficha
+function clavesEjercicio(e) {
+    const out = [claveEjercicio(e)], f = e.ficha || {};
+    const num = tokBat(f.num || ''); if (num.join('').length >= 3) out.push(num);
+    const tit = tokBat(String(f.titulo || '').replace(/\(variante ([A-H])\)/i, '$1')); if (tit.length >= 2) out.push(tit);
+    return out.filter((k, i) => k.length && out.findIndex(x => x.join(' ') === k.join(' ')) === i);
+}
+// Casar: primero el ejercicio cuyo nombre está entero en el nombre de la tarea (el más largo); si no, un grupo de variantes
+function casarTarea(t) {
+    const nom = tokBat(t.resto);
+    let mejor = null;
+    bat.ejercicios.forEach((e, i) => clavesEjercicio(e).forEach(k => { const p = encajeBat(nom, k); if (p >= 0 && (!mejor || k.length > mejor.len || (k.length === mejor.len && p > mejor.p))) mejor = { i, len: k.length, p }; }));
+    // variantes: «…01» en la tarea, y ejercicios «…01A», «…01B» (o «… - A»)
+    const grupos = new Map();
+    bat.ejercicios.forEach((e, i) => clavesEjercicio(e).forEach(k => { if (k.length >= 2 && /^[a-h]$/.test(k[k.length - 1])) { const b = k.slice(0, -1).join(' '); if (!grupos.has(b)) grupos.set(b, new Map()); grupos.get(b).set(i, k[k.length - 1].toUpperCase()); } }));
+    let grupo = null;
+    grupos.forEach((m, b) => { if (m.size < 2) return; const k = b.split(' '), p = encajeBat(nom, k); if (p >= 0 && (!grupo || k.length > grupo.len)) grupo = { is: [...m.keys()].sort((x, y) => m.get(x).localeCompare(m.get(y))), letras: [...m.keys()].sort((x, y) => m.get(x).localeCompare(m.get(y))).map(i => m.get(i)), len: k.length, p }; });
+    if (grupo && (!mejor || grupo.len >= mejor.len)) return { tipo: 'variantes', is: grupo.is, letras: grupo.letras };   // «…01» con «…01A», «…01B»: las variantes (aunque esté también «…01.json»)
+    return mejor ? { tipo: 'uno', is: [mejor.i] } : null;
+}
+// Los ejercicios de un archivo de biblioteca (⬇ Exportar biblioteca) o de la biblioteca de este navegador
+function anadirEjerciciosBib(lista, origen) {
+    let n = 0;
+    lista.forEach(e => { if (!e || !esObj(e.datos) || !esObj(e.datos.calcador)) return; const ruta = origen + '/' + (e.ruta || e.archivo);
+        if (bat.ejercicios.some(x => x.ruta === ruta)) return; bat.ejercicios.push({ archivo: e.archivo || (e.ruta || 'ejercicio.json').split('/').pop(), ruta, datos: e.datos, ficha: fichaDe(e.datos), origen }); n++; });
+    return n;
+}
+async function usarBibliotecaBat() {
+    try { await bibCargar(); } catch (e) {}
+    if (!bib.lista || !bib.lista.length) { snack('La biblioteca de este navegador está vacía'); return; }
+    const n = anadirEjerciciosBib(bib.lista, '🗂 Biblioteca');
+    bat.tareas.forEach(t => { if (!t.manual) t.casa = casarTarea(t); });
+    pintarBateria(); snack(`${n} ejercicio(s) de la biblioteca${n < bib.lista.length ? ` (${bib.lista.length - n} ya estaban)` : ''}`);
+}
+function casarHoja(t) {
+    const nom = tokBat(t.resto);
+    return bat.hojas.find(h => t.cmid && h.cmid === t.cmid) || bat.hojas.find(h => { const k = tokBat(h.resto); return encajeBat(k, tokBat(t.tarea)) >= 0; }) || null;
+}
+async function leerArchivosBat(files) {
+    const nuevos = { ej: 0, zip: 0, csv: 0 }, raros = [];
+    for (const f of [...files]) {
+        const ruta = f.webkitRelativePath || f.name;
+        if (/\.json$/i.test(f.name)) {
+            try { const d = JSON.parse(await f.text());
+                if (esObj(d) && d.tipo === 'biblioteca-calcador' && Array.isArray(d.ejercicios)) { nuevos.ej += anadirEjerciciosBib(d.ejercicios, '📚 ' + f.name); nuevos.bib = (nuevos.bib || 0) + 1; continue; }
+                if (!esObj(d) || !esObj(d.calcador)) { raros.push(f.name); continue; }
+                if (!bat.ejercicios.some(e => e.ruta === ruta)) { bat.ejercicios.push({ archivo: f.name, ruta, datos: d, ficha: fichaDe(d) }); nuevos.ej++; } } catch (e) { raros.push(f.name); }
+        } else if (/\.zip$/i.test(f.name)) {
+            if (!bat.tareas.some(t => t.ruta === ruta)) { bat.tareas.push({ archivo: f.name, ruta, file: f, ...partesZipBat(f.name), casa: null, hoja: null, res: null }); nuevos.zip++; }
+        } else if (/\.csv$/i.test(f.name)) {
+            const txt = await f.text();
+            if (/identificador|identifier/i.test(txt.split(/\r?\n/)[0])) { const base = f.name.replace(/\.csv$/i, ''), m = /^(.*?)-(\d{3,})$/.exec(base);
+                bat.hojas.push({ archivo: f.name, texto: txt, resto: m ? m[1] : base, cmid: m ? m[2] : '' }); nuevos.csv++; }
+        }
+    }
+    bat.tareas.forEach(t => { if (!t.manual) t.casa = casarTarea(t); t.hoja = casarHoja(t); });
+    bat.tareas.sort((a, b) => a.tarea.localeCompare(b.tarea, 'es', { numeric: true }));
+    return { nuevos, raros };
+}
+const etqBat = e => (e.ficha && e.ficha.num) || e.archivo.replace(/\.json$/i, '');
+// Corregir una tarea: se abre su ejercicio (o sus variantes), se leen las entregas del zip y se corrigen
+async function corregirTareaBat(t) {
+    if (!t.casa) { t.res = { error: 'Sin ejercicio' }; return; }
+    const es = t.casa.is.map(i => bat.ejercicios[i]);
+    const antes = { lista: masiva.lista, ids: masiva.ids, variantes: masiva.variantes, reparto: masiva.reparto }, est = estadoGuardado(), sn = window.snack, al = window.alert;
+    window.snack = () => {}; window.alert = () => {};
+    try {
+        (typeof _tuAbrirJSONDatos === 'function' ? _tuAbrirJSONDatos : abrirJSONDatos)(JSON.parse(JSON.stringify(es[0].datos)));
+        masiva.lista = []; masiva.ids = {};
+        masiva.variantes = t.casa.tipo === 'variantes' ? es.map((e, j) => { const k = claveEjercicio(e); return { id: 'bat:' + e.ruta, etq: etqBat(e), letra: (t.casa.letras && t.casa.letras[j]) || k[k.length - 1].toUpperCase(), datos: e.datos }; }) : [];
+        masiva.reparto = masiva.variantes.length ? repartoParaVariantes(masiva.variantes) : null;
+        await anadirProgramas([t.file]);
+        if (masiva.variantes.length) { clearTimeout(tempVariantes); tempVariantes = null; colaVariantes.clear(); corregirConVariantes(masiva.lista); }
+        calcularParecidos();
+        const L = masiva.lista, val = L.filter(it => it.v && it.v.veredicto !== 'pendiente');
+        const E = erroresClase(L).filter(e => e.alumnos.length >= 2);
+        t.res = { lista: L, ids: masiva.ids, variantes: masiva.variantes, reparto: masiva.reparto, ejercicio: es[0], n: L.length,
+                  media: val.length ? val.reduce((a, it) => a + it.v.nota, 0) / val.length : 0, aprueban: val.filter(it => it.v.nota >= 5).length,
+                  bien: val.filter(it => it.v.veredicto === 'bien').length, parejas: (masiva.parejas || []).length, error: E[0] ? `${E[0].alumnos.length}: ${E[0].titulo}` : '' };
+    } catch (e) { console.warn(e); t.res = { error: e.message }; }
+    finally { masiva.lista = antes.lista; masiva.ids = antes.ids; masiva.variantes = antes.variantes; masiva.reparto = antes.reparto; restaurarEstado(est); window.snack = sn; window.alert = al; try { refrescar(); pintarMasiva(); } catch (e) {} }
+}
+// Trabajar con una tarea ya corregida como si estuviera abierta en la corrección masiva (sin tocar la pantalla)
+function conTareaBat(t, fn) {
+    const antes = { lista: masiva.lista, ids: masiva.ids, variantes: masiva.variantes, reparto: masiva.reparto, parejas: masiva.parejas }, est = estadoGuardado(), sn = window.snack;
+    window.snack = () => {};
+    try { (typeof _tuAbrirJSONDatos === 'function' ? _tuAbrirJSONDatos : abrirJSONDatos)(JSON.parse(JSON.stringify(t.res.ejercicio.datos)));
+        Object.assign(masiva, { lista: t.res.lista, ids: t.res.ids, variantes: t.res.variantes, reparto: t.res.reparto }); calcularParecidos(); return fn(); }
+    finally { Object.assign(masiva, antes); restaurarEstado(est); window.snack = sn; }
+}
+function csvTareaBat(t) { let txt = ''; const d0 = window.descargar; window.descargar = x => { txt = x; }; try { conTareaBat(t, () => exportarCSVMasiva()); } finally { window.descargar = d0; } return txt; }
+function hojaTareaBat(t) { return t.hoja ? conTareaBat(t, () => rellenarHojaAules(t.hoja.texto, { comentario: true })) : null; }
+function verTareaBat(k) {
+    const t = bat.tareas[k]; if (!t || !t.res || !t.res.lista) return;
+    document.getElementById('modalBateria').classList.remove('visible');
+    abrirJSONDatos(JSON.parse(JSON.stringify(t.res.ejercicio.datos)));
+    Object.assign(masiva, { lista: t.res.lista, ids: t.res.ids, variantes: t.res.variantes, reparto: t.res.reparto });
+    abrirMasiva(); sincronizarRequisitosMasiva(); pintarMasiva();
+    snack(`Tarea «${t.tarea}»: ${t.res.n} programas, corregidos con «${etqBat(t.res.ejercicio)}»${t.res.variantes.length ? ' y sus variantes' : ''}`);
+}
+// Un zip sin comprimir (para descargar todo de una vez)
+function zipBat(archivos) {
+    const crcT = zipBat.t || (zipBat.t = Array.from({ length: 256 }, (_, n) => { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1; return c >>> 0; }));
+    const crc = b => { let x = 0xffffffff; for (let i = 0; i < b.length; i++) x = crcT[(x ^ b[i]) & 255] ^ (x >>> 8); return (x ^ 0xffffffff) >>> 0; };
+    const enc = new TextEncoder(), loc = [], cen = []; let off = 0;
+    archivos.forEach(([nombre, txt]) => {
+        const n = enc.encode(nombre), d = typeof txt === 'string' ? enc.encode(txt) : txt, c = crc(d);
+        const h = new DataView(new ArrayBuffer(30)); h.setUint32(0, 0x04034b50, true); h.setUint16(4, 20, true); h.setUint16(6, 0x800, true); h.setUint32(14, c, true); h.setUint32(18, d.length, true); h.setUint32(22, d.length, true); h.setUint16(26, n.length, true);
+        const e = new DataView(new ArrayBuffer(46)); e.setUint32(0, 0x02014b50, true); e.setUint16(4, 20, true); e.setUint16(6, 20, true); e.setUint16(8, 0x800, true); e.setUint32(16, c, true); e.setUint32(20, d.length, true); e.setUint32(24, d.length, true); e.setUint16(28, n.length, true); e.setUint32(42, off, true);
+        loc.push(new Uint8Array(h.buffer), n, d); cen.push(new Uint8Array(e.buffer), n); off += 30 + n.length + d.length;
+    });
+    const tamC = cen.reduce((a, b) => a + b.length, 0), f = new DataView(new ArrayBuffer(22));
+    f.setUint32(0, 0x06054b50, true); f.setUint16(8, archivos.length, true); f.setUint16(10, archivos.length, true); f.setUint32(12, tamC, true); f.setUint32(16, off, true);
+    return new Blob([...loc, ...cen, new Uint8Array(f.buffer)], { type: 'application/zip' });
+}
+function archivosTodoBat() {
+    const lim = t => String(t).replace(/[\\/:*?"<>|]/g, '_').trim(), out = [], c = t => '"' + String(t).replace(/"/g, '""') + '"', d = x => String(Math.round(x * 10) / 10).replace('.', ',');
+    const res = [['Tarea', 'Archivo', 'Ejercicio', 'Variantes', 'Alumnos', 'Nota media', 'Aprueban', 'La pieza sale bien', 'Parejas muy parecidas', 'Error más repetido', 'Hoja de calificaciones']];
+    bat.tareas.forEach(t => {
+        if (!t.res || !t.res.lista) { res.push([t.tarea, t.archivo, t.casa ? '' : 'sin ejercicio', '', '', '', '', '', '', t.res && t.res.error || '', '']); return; }
+        const dir = lim(t.tarea) + '/';
+        out.push([dir + lim(t.tarea) + ' - corrección.csv', csvTareaBat(t)]);
+        const h = hojaTareaBat(t); if (h && !h.error) out.push([dir + t.hoja.archivo.replace(/\.csv$/i, '') + ' - con notas.csv', h.texto]);
+        res.push([t.tarea, t.archivo, etqBat(t.res.ejercicio), t.res.variantes.map(v => v.etq).join(' '), t.res.n, d(t.res.media), t.res.aprueban, t.res.bien, t.res.parejas, t.res.error, h ? (h.error ? h.error : `rellenada: ${h.casados.length} alumnos`) : 'no está en la carpeta']);
+    });
+    out.unshift(['Resumen de la batería.csv', '﻿' + res.map(f => f.map(c).join(';')).join('\r\n')]);
+    return out;
+}
+// ── La ventana ──
+function abrirBateria() {
+    let ov = document.getElementById('modalBateria');
+    if (!ov) { ov = document.createElement('div'); ov.className = 'modal-overlay'; ov.id = 'modalBateria'; ov.onclick = e => { if (e.target === ov) ov.classList.remove('visible'); }; document.body.appendChild(ov);
+        ov.innerHTML = `<div class="help-modal" style="width:min(1100px,100%)"><div class="help-header"><h2>🗃 Batería de corrección</h2><button class="help-close" onclick="document.getElementById('modalBateria').classList.remove('visible')">✕</button></div>
+        <div class="help-content" id="batCuerpo">
+        <p class="ctx-nota" style="margin-top:0">Una carpeta con los <b>ejercicios</b> (.json) y las <b>entregas de Aules</b> (el .zip de «Descargar todas las entregas» de cada tarea, por ejemplo «Automatització en fusteria i moble-2CFS7 1788982647-ISO GEO 01A-11829876.zip»). Cada zip se casa con su ejercicio por el nombre de la tarea (ISO GEO 01A ↔ «ISO GEO 01A.json»; si la tarea es «ISO GEO 01» y hay «…01A», «…01B»…, se corrige con las variantes). Los ejercicios también pueden venir de un <b>archivo de biblioteca</b> (el de ⬇ Exportar biblioteca) o de <b>🗂 la biblioteca</b> de este navegador; se casan por el nombre del archivo, el número o el título. Si en la carpeta está la <b>hoja de calificaciones</b> de la tarea (Calificaciones-…-número.csv), se rellena con las notas. Arrastra aquí la carpeta o los archivos.</p>
+        <input type="file" id="batCarpeta" webkitdirectory directory multiple style="display:none"><input type="file" id="batArchivos" multiple accept=".json,.zip,.csv" style="display:none">
+        <div class="btn-row"><button class="btn-action" id="batBCarpeta">📂 Elegir la carpeta…</button><button class="btn-action sec" id="batBArch">📄 Añadir archivos…</button><button class="btn-action sec" id="batBib" title="Usar como ejercicios los de la biblioteca de este navegador (así, en la carpeta solo hacen falta los zip de las entregas)">🗂 Usar la biblioteca</button><button class="btn-action sec" id="batVaciar">🗑 Vaciar</button>
+            <span style="flex:1"></span><button class="btn-action" id="batCorregir">▶ Corregir todo</button><button class="btn-action sec" id="batTodo">⬇ Descargar todo (.zip)</button></div>
+        <div id="batTabla"></div></div></div>`;
+        const g = id => ov.querySelector('#' + id);
+        g('batBCarpeta').onclick = () => g('batCarpeta').click(); g('batBArch').onclick = () => g('batArchivos').click();
+        const leer = async files => { const r = await leerArchivosBat(files); pintarBateria(); snack(`${r.nuevos.ej} ejercicio(s)${r.nuevos.bib ? ` (con ${r.nuevos.bib} archivo(s) de biblioteca)` : ''}, ${r.nuevos.zip} zip de entregas y ${r.nuevos.csv} hoja(s) de calificaciones${r.raros.length ? ` · ${r.raros.length} .json que no son ejercicios del Calcador` : ''}`); };
+        g('batCarpeta').onchange = ev => { const f = [...ev.target.files]; ev.target.value = ''; leer(f); };
+        g('batArchivos').onchange = ev => { const f = [...ev.target.files]; ev.target.value = ''; leer(f); };
+        g('batBib').onclick = () => usarBibliotecaBat();
+        g('batVaciar').onclick = () => { bat = { ejercicios: [], tareas: [], hojas: [] }; pintarBateria(); };
+        g('batCorregir').onclick = () => corregirTodoBat();
+        g('batTodo').onclick = () => { if (!bat.tareas.some(t => t.res && t.res.lista)) { snack('Corrige antes las tareas (▶ Corregir todo)'); return; }
+            const url = URL.createObjectURL(zipBat(archivosTodoBat())), a = document.createElement('a'); a.href = url; a.download = `Batería de corrección ${new Date().toLocaleDateString('es-ES').replace(/\//g, '-')}.zip`; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 500);
+            snack('Descargado: el resumen, el CSV de cada tarea y sus hojas de calificaciones rellenadas'); };
+        const caja = g('batCuerpo');
+        caja.addEventListener('dragover', e => { e.preventDefault(); caja.classList.add('bat-sobre'); }); caja.addEventListener('dragleave', () => caja.classList.remove('bat-sobre'));
+        caja.addEventListener('drop', async e => { e.preventDefault(); caja.classList.remove('bat-sobre'); leer(await archivosDeArrastre(e.dataTransfer)); });
+    }
+    pintarBateria(); ov.classList.add('visible');
+}
+// Lo arrastrado: archivos y carpetas (con sus subcarpetas)
+async function archivosDeArrastre(dt) {
+    const out = [], items = [...(dt.items || [])].map(i => i.webkitGetAsEntry && i.webkitGetAsEntry()).filter(Boolean);
+    if (!items.length) return [...dt.files];
+    const rec = ent => new Promise(res => {
+        if (ent.isFile) ent.file(f => { try { Object.defineProperty(f, 'webkitRelativePath', { value: ent.fullPath.replace(/^\//, '') }); } catch (e) {} out.push(f); res(); }, () => res());
+        else { const r = ent.createReader(), todos = []; const leer = () => r.readEntries(async es => { if (!es.length) { for (const x of todos) await rec(x); res(); } else { todos.push(...es); leer(); } }, () => res()); leer(); }
+    });
+    for (const e of items) await rec(e);
+    return out;
+}
+function pintarBateria() {
+    const d = document.getElementById('batTabla'); if (!d) return;
+    const esc = t => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;'), nf1 = x => String(Math.round(x * 10) / 10).replace('.', ',');
+    if (!bat.tareas.length) { d.innerHTML = `<p class="ctx-nota">${bat.ejercicios.length ? `${bat.ejercicios.length} ejercicio(s) leído(s); faltan los zip de las entregas.` : 'Todavía no hay nada: elige la carpeta o arrastra aquí los archivos.'}</p>`; return; }
+    const opts = sel => `<option value="">— sin ejercicio —</option>` + bat.ejercicios.map((e, i) => `<option value="${i}" ${sel && sel.tipo === 'uno' && sel.is[0] === i ? 'selected' : ''}>${esc(e.archivo)}${e.ficha && e.ficha.num && !e.archivo.includes(e.ficha.num) ? ' · ' + esc(e.ficha.num) : ''}${e.origen ? ' 🗂' : ''}</option>`).join('')
+        + (sel && sel.tipo === 'variantes' ? `<option value="var" selected>Variantes: ${esc(sel.is.map(i => etqBat(bat.ejercicios[i])).join(', '))}</option>` : '');
+    d.innerHTML = `<table class="par-tabla bat-tabla"><tr><th>Tarea (zip de Aules)</th><th>Ejercicio</th><th>Hoja de calificaciones</th><th>Alumnos</th><th>Media</th><th>Aprueban</th><th>Lo más repetido</th><th></th></tr>
+        ${bat.tareas.map((t, k) => { const r = t.res;
+            return `<tr><td><b>${esc(t.tarea)}</b><div class="ctx-nota" style="margin:0" title="${esc(t.archivo)}">${esc(t.archivo.length > 60 ? t.archivo.slice(0, 57) + '…' : t.archivo)}</div></td>
+            <td><select data-k="${k}" class="bat-ej">${opts(t.casa)}</select></td>
+            <td>${t.hoja ? `<span title="${esc(t.hoja.archivo)}">✔ ${t.cmid && t.hoja.cmid === t.cmid ? 'nº ' + esc(t.cmid) : 'por el nombre'}</span>` : '<span class="ctx-nota">—</span>'}</td>
+            ${r && r.lista ? `<td class="n">${r.n}</td><td class="n"><b>${nf1(r.media)}</b></td><td class="n">${r.aprueban} de ${r.n}</td><td style="font-size:12px">${esc(r.error.slice(0, 90))}${r.error.length > 90 ? '…' : ''}${r.parejas ? `<div style="color:#b0301f">👥 ${r.parejas} pareja(s) muy parecida(s)</div>` : ''}</td>
+                <td class="bat-acc"><button class="btn-action sec" data-a="ver" data-k="${k}" title="Abrirla en la corrección masiva: la lista, cada alumno, los informes…">🔍 Ver</button><button class="btn-action sec" data-a="csv" data-k="${k}" title="La tabla para Excel o LibreOffice">⬇ CSV</button>${t.hoja ? `<button class="btn-action sec" data-a="hoja" data-k="${k}" title="La hoja de calificaciones con las notas, para subirla a Aules">⬆ Aules</button>` : ''}</td>`
+              : `<td colspan="5" class="ctx-nota">${r && r.error ? '⚠️ ' + esc(r.error) : t.casa ? 'sin corregir' : '⚠️ elige su ejercicio'}</td>`}</tr>`; }).join('')}</table>
+        ${bat.ejercicios.length ? `<p class="ctx-nota">${bat.ejercicios.length} ejercicio(s): ${esc(bat.ejercicios.slice(0, 40).map(e => e.archivo + (e.ficha && e.ficha.num && !e.archivo.includes(e.ficha.num) ? ` (${e.ficha.num})` : '')).join(', '))}${bat.ejercicios.length > 40 ? '…' : ''}${bat.ejercicios.some(e => e.origen) ? ` · de la biblioteca: ${bat.ejercicios.filter(e => e.origen).length}` : ''}</p>` : ''}`;
+    d.querySelectorAll('select.bat-ej').forEach(s => s.onchange = () => { const t = bat.tareas[+s.dataset.k]; t.manual = true; t.res = null;
+        t.casa = s.value === '' ? null : s.value === 'var' ? t.casa : { tipo: 'uno', is: [+s.value] }; pintarBateria(); });
+    d.querySelectorAll('button[data-a]').forEach(b => b.onclick = () => { const k = +b.dataset.k, t = bat.tareas[k];
+        if (b.dataset.a === 'ver') verTareaBat(k);
+        else if (b.dataset.a === 'csv') descargar(csvTareaBat(t), `${t.tarea} - corrección.csv`, 'text/csv;charset=utf-8');
+        else if (b.dataset.a === 'hoja') { const h = hojaTareaBat(t); if (h.error) snack(h.error); else { descargar(h.texto, t.hoja.archivo.replace(/\.csv$/i, '') + ' - con notas.csv', 'text/csv;charset=utf-8'); snack(`${h.casados.length} alumnos con nota${h.sinCasar.length ? ` · ⚠️ sin casar: ${h.sinCasar.join(', ')}` : ''}`); } } });
+}
+async function corregirTodoBat() {
+    const T = bat.tareas.filter(t => t.casa); if (!T.length) { snack(bat.tareas.length ? 'Ninguna tarea tiene ejercicio: elígelo en su fila' : 'Elige antes la carpeta'); return; }
+    const b = document.getElementById('batCorregir'); b.disabled = true;
+    for (let i = 0; i < T.length; i++) { b.textContent = `⏳ ${i + 1} de ${T.length}…`; await new Promise(r => setTimeout(r, 20)); await corregirTareaBat(T[i]); pintarBateria(); }
+    b.disabled = false; b.textContent = '▶ Corregir todo';
+    const n = T.reduce((a, t) => a + (t.res && t.res.n || 0), 0);
+    snack(`${T.length} tarea(s) corregida(s): ${n} programas`);
+}
+// ── Altura de corte incorrecta: el programa no baja de Z0, pero ¿el recorrido es el de la pieza? ──
+// Si no hay ningún corte porque la fresa nunca baja de Z0, se vuelve a corregir el recorrido sin las Z (como si la fresa
+// estuviera abajo): «Trazado geométrico correcto · Altura de corte incorrecta», o lo que falla del trazado. La nota no cambia
+// (la pieza no se corta), y el veredicto pasa de «Sin programa válido» a «Altura de corte incorrecta».
+VER_TXT.altura = '⛔ Altura de corte incorrecta';
+const _corregirProgramaAltura = corregirPrograma, _corregirBaseAltura = typeof _corregirProgramaClase === 'function' ? _corregirProgramaClase : corregirPrograma;
+corregirPrograma = function (texto) {
+    const r = _corregirProgramaAltura.apply(this, arguments);
+    if (!r || r.error || !r.prog || !r.prog.hayZ || !r.resumen || r.resumen.cortes || !r.prog.segs.some(s => !s.rapido)) return r;
+    const sinZ = String(texto).replace(/\r/g, '').split('\n').map(l => { const i = l.search(/[(;]/); const c = i >= 0 ? l.slice(0, i) : l, com = i >= 0 ? l.slice(i) : '';
+        return c.replace(/Z\s*[-+]?(\d+\.?\d*|\.\d+)/gi, '') + com; }).join('\n');
+    r._textoSinZ = sinZ;   // (para buscar si el trazado está desplazado)
+    let r2; try { r2 = _corregirBaseAltura(sinZ); } catch (e) { r2 = null; } finally { corr = r; }
+    if (!r2 || r2.error || !r2.resumen || !r2.resumen.cortes) return r;
+    const zs = r.prog.segs.filter(s => !s.rapido).map(s => Math.min(s.z0 === null || s.z0 === undefined ? Infinity : s.z0, s.z1 === null || s.z1 === undefined ? Infinity : s.z1)).filter(isFinite);
+    const zMin = zs.length ? Math.min(...zs) : null, cob = Math.max(0, Math.min(1, r2.cobertura === undefined ? 1 : r2.cobertura));
+    const geoErr = r2.hallazgos.filter(h => h.tipo === 'error' && (h.cat === 'geometria' || h.cat === 'compensacion') && !/^Falta mecanizar/.test(h.msg));
+    // el trazado es correcto si recorre todo el contorno; los cortes que se meterían en la pieza (como llegar al inicio con G1), aparte
+    const ok = cob >= 0.995, nE = geoErr.length, cortes = n => `${n} movimiento${n === 1 ? '' : 's'} se meter${n === 1 ? 'ía' : 'ían'} en la pieza`;
+    r.trazado = { ok, cob, errores: nE, primero: nE ? (/^(N\d+|l[ií]nea \d+)/i.exec(geoErr[0].msg) || [''])[0] : '' };
+    const dondeZ = zMin === null ? 'la fresa no baja nunca (no hay ninguna Z de corte)' : `la fresa corta a Z${fmt(zMin, 3)}, por encima de la pieza`;
+    const h0 = r.hallazgos.find(h => /^El programa no tiene ningún movimiento de corte/.test(h.msg));
+    const msg = `Altura de corte incorrecta: ${dondeZ}, así que no corta nada. `
+        + (ok ? `Trazado geométrico correcto: el recorrido en X Y es el de la pieza.${nE ? ` Pero, con la fresa abajo, ${cortes(nE)} (abajo, «Si bajara la fresa…»): por ejemplo, llegar al punto de inicio con G1 en lugar de G0.` : ''}`
+              : `El trazado geométrico tampoco está bien: con la fresa abajo, mecanizaría el ${Math.round(cob * 100)} % del contorno${nE ? ` y ${cortes(nE)}` : ''} (abajo, «Si bajara la fresa…»).`);
+    const nuevo = { tipo: 'error', linea: null, cat: 'altura', msg, pista: 'antes de recorrer el contorno, baja a la profundidad de corte: G1 Z-3 F300 (y al terminar, G0 Z20)' };
+    if (h0) Object.assign(h0, nuevo); else r.hallazgos.unshift(nuevo);
+    geoErr.slice(0, 6).forEach(h => r.hallazgos.push({ tipo: 'aviso', cat: 'altura', linea: h.linea, msg: 'Si bajara la fresa: ' + h.msg }));
+    // los «Falta mecanizar…» de todo el contorno sobran: ya lo dice la altura
+    r.hallazgos = r.hallazgos.filter(h => !(h.tipo === 'error' && h.cat === 'geometria' && /^Falta mecanizar/.test(h.msg)));
+    r.errores = r.hallazgos.filter(h => h.tipo === 'error').length; r.avisos = r.hallazgos.filter(h => h.tipo === 'aviso').length;
+    return r;
+};
+const _valorarCorreccionAltura = valorarCorreccion;
+valorarCorreccion = function (r) {
+    const v = _valorarCorreccionAltura.apply(this, arguments);
+    if (r && r.trazado && v.veredicto === 'vacio') { v.veredicto = 'altura'; v.trazado = r.trazado; }
+    return v;
+};
+function textoSinCorte(it) {
+    const t = it && it.r && it.r.trazado;
+    if (!t) return 'ningún movimiento de corte';
+    return t.ok ? `trazado geométrico correcto · altura de corte incorrecta (no baja de Z0)${t.errores ? ` · ojo: con la fresa abajo, ${t.primero || 'un movimiento'} se metería en la pieza` : ''}`
+                : `altura de corte incorrecta · el trazado tampoco está bien (${Math.round(t.cob * 100)} % del contorno${t.errores ? `, ${t.errores} movimiento${t.errores === 1 ? '' : 's'} en la pieza` : ''})`;
+}
+// ── Trazado desplazado: la forma de la pieza, pero con otro cero pieza ──
+// Si el programa no encaja con la pieza, se busca un desplazamiento X Y con el que sus vértices caigan sobre los del plano
+// (votando entre las diferencias de vértices) y se corrige otra vez con la pieza movida. Si así sale bien, el primer error es
+// «Trazado desplazado: … el cero pieza que ha usado no es el del plano…». Los demás errores y la nota no cambian.
+function verticesCorte(r) {
+    const V = [], ya = new Set(), mete = p => { const k = p.x.toFixed(3) + ',' + p.y.toFixed(3); if (!ya.has(k)) { ya.add(k); V.push(p); } };
+    ((r.prog && r.prog.segs) || []).filter(s => s.corte || (r._sinZ && !s.rapido)).forEach(s => { mete(s.p1); mete(s.p2); });
+    return V;
+}
+// ¿Está el punto sobre el contorno de alguna pieza? (sobre la línea, no solo en un vértice: las entradas van a mitad de lado)
+function tramosPlano() { const S = []; contornos.filter(c => c.pts.length >= 2 && !c.texto && !c.deTexto && !soloFabricar(c)).forEach(c => { const m = muestrearContorno(c); for (let i = 0; i + 1 < m.length; i++) S.push([m[i], m[i + 1]]); if (c.cerrado && m.length > 2) S.push([m[m.length - 1], m[0]]); }); return S; }
+function sobreContorno(p, S, tol) {
+    return S.some(([a, b]) => { const dx = b.x - a.x, dy = b.y - a.y, L = dx * dx + dy * dy; let t = L ? ((p.x - a.x) * dx + (p.y - a.y) * dy) / L : 0; t = Math.max(0, Math.min(1, t));
+        return Math.hypot(a.x + t * dx - p.x, a.y + t * dy - p.y) <= tol; });
+}
+function buscarDesplazamiento(r) {
+    const piezas = contornos.filter(c => c.pts.length >= 2 && !c.texto && !c.deTexto && !soloFabricar(c)), Q = [].concat(...piezas.map(c => c.pts));
+    const V = verticesCorte(r); if (V.length < 3 || !Q.length) return null;
+    const tol = Math.max(0.05, +cfgCorr.tol || 0.02), votos = new Map();
+    V.forEach(p => Q.forEach(q => { const k = (Math.round((q.x - p.x) * 100) / 100) + ',' + (Math.round((q.y - p.y) * 100) / 100); votos.set(k, (votos.get(k) || 0) + 1); }));
+    const cand = [...votos.entries()].sort((a, b) => b[1] - a[1]).slice(0, 12).map(([k]) => { const [x, y] = k.split(',').map(Number); return { x, y }; });
+    let mejor = null;
+    const S = tramosPlano(), tolS = Math.max(0.1, tol * 2);
+    cand.forEach(d => { if (Math.hypot(d.x, d.y) < 0.05) return;
+        const n = V.filter(p => sobreContorno({ x: p.x + d.x, y: p.y + d.y }, S, tolS)).length;
+        if (!mejor || n > mejor.n) mejor = { ...d, n }; });
+    // casi todos los vértices del programa caen sobre vértices del plano, y casi todos los del plano tienen el suyo
+    if (!mejor || mejor.n < Math.max(3, 0.6 * V.length)) return null;
+    const usados = Q.filter(q => V.some(p => Math.abs(p.x + mejor.x - q.x) <= tol && Math.abs(p.y + mejor.y - q.y) <= tol)).length;
+    if (usados < 0.7 * Q.length) return null;
+    return mejor;
+}
+// Corregir con la pieza movida (el programa no se toca): ¿sale bien?
+function corregirDesplazado(texto, d) {
+    const antes = contornos, c0 = corr, base = typeof _corregirProgramaClase === 'function' ? _corregirProgramaClase : corregirPrograma;
+    try { contornos = contornos.map(c => ({ ...c, pts: c.pts.map(p => ({ x: p.x - d.x, y: p.y - d.y })) })); memoTipos = null; return base(texto); }
+    catch (e) { return null; } finally { contornos = antes; memoTipos = null; corr = c0; }
+}
+function dondeCero(d) {
+    const P = [].concat(...contornos.filter(c => c.pts.length >= 2 && !c.texto && !c.deTexto).map(c => muestrearContorno(c))), b = bboxPts(P), t = 0.05;
+    const h = Math.abs(d.x - b.x0) < t ? 'izquierda' : Math.abs(d.x - b.x1) < t ? 'derecha' : null, v = Math.abs(d.y - b.y0) < t ? 'abajo' : Math.abs(d.y - b.y1) < t ? 'arriba' : null;
+    const enPlano = `X${fmt(d.x, 3)} Y${fmt(d.y, 3)} en el plano`;
+    if (h && v) return `en la esquina de ${v} a la ${h} de la pieza (${enPlano})`;
+    const esVertice = contornos.some(c => c.pts.some(p => Math.abs(p.x - d.x) < t && Math.abs(p.y - d.y) < t));
+    return esVertice ? `en un vértice de la pieza (${enPlano})` : `en ${enPlano}`;
+}
+const _corregirProgramaDespl = corregirPrograma;
+corregirPrograma = function (texto) {
+    const r = _corregirProgramaDespl.apply(this, arguments);
+    try {
+        if (!r || r.error || r.piezaOk) return r;
+        const altura = r.trazado && !r.trazado.ok, conCortes = r.resumen && r.resumen.cortes;
+        if (!altura && !conCortes) return r;
+        const txt = altura ? r._textoSinZ : texto; if (!txt) return r;
+        const rv = altura ? Object.assign({}, r, { prog: interpretarISO(txt), _sinZ: true }) : r;
+        const d = buscarDesplazamiento(rv); if (!d) return r;
+        const r2 = corregirDesplazado(txt, d);
+        if (!r2 || r2.error || (r2.cobertura || 0) < 0.95) return r;
+        // el trazado (solo la geometría: los errores de seguridad o de lo pedido, aparte)
+        const geoMal = r2.hallazgos.filter(h => h.tipo === 'error' && (h.cat === 'geometria' || h.cat === 'compensacion')).length, entero = (r2.cobertura || 0) >= 0.995 && !geoMal;
+        const sg = v => (v > 0 ? '+' : '') + fmt(v, 3), mov = { x: -d.x, y: -d.y };
+        const p0 = verticesCorte(rv)[0], ej = p0 ? ` Por ejemplo, el punto que ha programado como X${fmt(p0.x, 3)} Y${fmt(p0.y, 3)} es, con el cero del plano, X${fmt(p0.x + d.x, 3)} Y${fmt(p0.y + d.y, 3)}.` : '';
+        r.desplazado = { x: mov.x, y: mov.y, ok: entero, cob: Math.max(0, Math.min(1, r2.cobertura || 0)) };
+        r.hallazgos.unshift({ tipo: 'error', cat: 'desplazado', linea: null,
+            msg: `Trazado desplazado: el recorrido tiene la forma de la pieza${entero ? '' : ' (casi entera)'}, pero movido X${sg(mov.x)} Y${sg(mov.y)}: el cero pieza que ha usado no es el del plano, lo ha puesto ${dondeCero(d)}.${ej} Los errores de debajo son, sobre todo, consecuencia de esto.`,
+            pista: 'toma las coordenadas desde el cero pieza X0 Y0 que marca el plano' });
+        if (altura) r.trazado.desplazado = r.desplazado;
+        r.errores = r.hallazgos.filter(h => h.tipo === 'error').length;
+    } catch (e) { console.warn(e); }
+    return r;
+};
+function extraVeredicto(it) { const dz = it && it.r && it.r.desplazado; return dz ? ` <span class="mv-despl" title="El recorrido tiene la forma de la pieza, movido X${dz.x > 0 ? '+' : ''}${fmt(dz.x, 3)} Y${dz.y > 0 ? '+' : ''}${fmt(dz.y, 3)}: otro cero pieza">· trazado desplazado</span>` : ''; }
+// ── Que el trazado puntúe: sin cortar (altura de corte incorrecta) o desplazado (otro cero pieza) ──
+// Si el recorrido es el de la pieza pero no corta, o está movido, la geometría se lleva un porcentaje de sus puntos (cfgCorr.notaTrazado,
+// de partida el 50 %), en proporción al contorno que recorre bien. Lo pedido y la seguridad se cuentan como siempre.
+const TRAZADO_DEF = 50;
+const pctTrazado = () => { const v = +cfgCorr.notaTrazado; return isFinite(v) && v >= 0 ? Math.min(100, v) : TRAZADO_DEF; };
+const _valorarCorreccionTraz = valorarCorreccion;
+valorarCorreccion = function (r) {
+    const v = _valorarCorreccionTraz.apply(this, arguments);
+    if (!r || r.error) return v;
+    const t = r.desplazado ? { cob: r.desplazado.cob || 0, que: 'desplazado' } : r.trazado ? { cob: r.trazado.cob || 0, que: 'altura' } : null;
+    const f = pctTrazado() / 100; if (!t || !f) return v;
+    const N = critNota(), max = N.geo + N.pedido + N.seg || 1;
+    if (v.rub) {
+        const g = v.rub.find(x => x.k === 'geo'), pts = Math.round(g.peso * f * t.cob * 100) / 100;
+        if (pts > g.puntos) { g.puntos = pts; g.frac = f * t.cob; g.trazado = t.que; const tot = v.rub.reduce((a, x) => a + x.peso, 0) || 1; v.nota = Math.round(v.rub.reduce((a, x) => a + x.puntos, 0) / tot * 100) / 10; v.trazadoPuntua = t.que; }
+        return v;
+    }
+    const geo = Math.round(N.geo * f * t.cob * 100) / 100;
+    if (geo > v.desglose.geo) { v.desglose.geo = geo; v.nota = Math.round((geo + v.desglose.pedido + v.desglose.seg) / max * 100) / 10; v.trazadoPuntua = t.que; }
+    return v;
+};
+// ── Diagnóstico de dos errores típicos: la pieza en espejo y G90/G91 confundidos ──
+// Si el programa no encaja con la pieza (y no es un desplazamiento), se prueba:
+//  · la pieza en espejo (izquierda-derecha, arriba-abajo) o girada 180°, con o sin otro cero pieza: los vértices del
+//    programa, reflejados, caen sobre los del plano, y corregido con la pieza reflejada sale bien;
+//  · las coordenadas incrementales con G90 (o absolutas con G91): leídas en el otro modo, el trazado es el de la pieza.
+// El primer error dice qué pasa. Los demás errores y la nota no cambian.
+const TRANSF_ESPEJO = [
+    { sx: -1, sy: 1, que: 'en espejo izquierda-derecha (las X con el signo cambiado)', corto: 'pieza en espejo' },
+    { sx: 1, sy: -1, que: 'en espejo arriba-abajo (las Y con el signo cambiado)', corto: 'pieza en espejo' },
+    { sx: -1, sy: -1, que: 'girada 180° (las X y las Y con el signo cambiado)', corto: 'pieza girada 180°' }];
+const piezasDiag = () => contornos.filter(c => c.pts.length >= 2 && !c.texto && !c.deTexto && !soloFabricar(c));
+function geometriaMal(r) { return (r.cobertura || 0) < 0.995 || r.hallazgos.some(h => h.tipo === 'error' && (h.cat === 'geometria' || h.cat === 'compensacion')); }
+function geometriaBien(r) { return r && !r.error && (r.cobertura || 0) >= 0.95 && !r.hallazgos.some(h => h.tipo === 'error' && (h.cat === 'geometria' || h.cat === 'compensacion')); }
+function corregirConPieza(texto, mover) {
+    const antes = contornos, c0 = corr, base = typeof _corregirProgramaClase === 'function' ? _corregirProgramaClase : corregirPrograma;
+    try { contornos = contornos.map(mover); memoTipos = null; return base(texto); }
+    catch (e) { return null; } finally { contornos = antes; memoTipos = null; corr = c0; }
+}
+// La pieza en espejo o girada: programa p → plano q = T(p) + d
+function buscarEspejo(r, texto) {
+    const Q = [].concat(...piezasDiag().map(c => c.pts)), V = verticesCorte(r); if (V.length < 3 || !Q.length) return null;
+    const tol = Math.max(0.05, +cfgCorr.tol || 0.02), cerca = (a, b) => Math.abs(a.x - b.x) <= tol && Math.abs(a.y - b.y) <= tol;
+    let mejor = null; const S = tramosPlano();
+    TRANSF_ESPEJO.forEach(T => {
+        const tp = p => ({ x: T.sx * p.x, y: T.sy * p.y }), votos = new Map();
+        V.forEach(p => { const a = tp(p); Q.forEach(q => { const k = (Math.round((q.x - a.x) * 100) / 100) + ',' + (Math.round((q.y - a.y) * 100) / 100); votos.set(k, (votos.get(k) || 0) + 1); }); });
+        [...votos.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8).forEach(([k]) => {
+            const [dx, dy] = k.split(',').map(Number), d = { x: dx, y: dy };
+            // si la pieza reflejada es la misma pieza (simétrica), no es un espejo
+            if (Q.every(q => Q.some(q2 => cerca({ x: T.sx * (q.x - d.x), y: T.sy * (q.y - d.y) }, q2)))) return;
+            const n = V.filter(p => sobreContorno({ x: T.sx * p.x + d.x, y: T.sy * p.y + d.y }, S, Math.max(0.1, tol * 2))).length;
+            if (n >= Math.max(3, 0.6 * V.length) && (!mejor || n > mejor.n)) mejor = { T, d, n };
+        });
+    });
+    if (!mejor) return null;
+    const { T, d } = mejor, inv = T.sx * T.sy < 0;
+    const r2 = corregirConPieza(texto, c => ({ ...c, pts: c.pts.map(q => ({ x: T.sx * (q.x - d.x), y: T.sy * (q.y - d.y) })), b: inv ? c.b.map(x => -(x || 0)) : c.b }));
+    // (en espejo, la compensación queda al otro lado: G41 ↔ G42; eso no cuenta aquí)
+    const ok = r2 && !r2.error && (r2.cobertura || 0) >= 0.95 && !r2.hallazgos.some(h => h.tipo === 'error' && h.cat === 'geometria');
+    return ok ? { T, d, r2, comp: r2.hallazgos.some(h => h.tipo === 'error' && h.cat === 'compensacion') } : null;
+}
+// G90 / G91: reescribir las X Y como si el modo fuera el otro (todo en absolutas, con G90)
+// «inc»: las X Y se leen como incrementales (se van sumando); «abs»: como absolutas. Se escribe todo en absolutas, con G90.
+function convertirModo(texto, como) {
+    let x = 0, y = 0; const out = [], f = v => String(+(+v).toFixed(4));
+    String(texto).replace(/\r/g, '').split('\n').forEach(l => {
+        const k = l.search(/[(;]/), com = k >= 0 ? l.slice(k) : '';
+        let c = (k >= 0 ? l.slice(0, k) : l).replace(/G0*9[01](?!\d)/gi, '');
+        const X = /X\s*([-+]?(?:\d+\.?\d*|\.\d+))/i.exec(c), Y = /Y\s*([-+]?(?:\d+\.?\d*|\.\d+))/i.exec(c);
+        if (X) { x = como === 'inc' ? x + +X[1] : +X[1]; c = c.replace(X[0], 'X' + f(x)); }
+        if (Y) { y = como === 'inc' ? y + +Y[1] : +Y[1]; c = c.replace(Y[0], 'Y' + f(y)); }
+        out.push(c + com);
+    });
+    return 'G90\n' + out.join('\n');
+}
+function buscarModo(r, texto) {
+    if (/G0*16(?!\d)/i.test(texto)) return null;      // (con polares, no)
+    const hay91 = /G0*91(?!\d)/i.test(texto.replace(/\([^)]*\)|;.*$/gm, '')), como = hay91 ? 'abs' : 'inc';
+    const r2 = (() => { const c0 = corr, base = typeof _corregirProgramaClase === 'function' ? _corregirProgramaClase : corregirPrograma; try { return base(convertirModo(texto, como)); } catch (e) { return null; } finally { corr = c0; } })();
+    return geometriaBien(r2) ? { como, r2 } : null;
+}
+const _corregirProgramaDiag = corregirPrograma;
+corregirPrograma = function (texto) {
+    const r = _corregirProgramaDiag.apply(this, arguments);
+    try {
+        if (!r || r.error || r.piezaOk || r.desplazado || (r.trazado && r.trazado.ok) || !((r.resumen && r.resumen.cortes) || r.trazado) || !geometriaMal(r)) return r;
+        const sinCorte = !!r.trazado;
+        const m = buscarModo(r, texto);
+        if (m) {
+            r.diagnostico = { tipo: m.como === 'inc' ? 'g91' : 'g90', corto: 'G90 / G91 confundidos', cob: Math.min(1, m.r2.cobertura || 0) };
+            r.hallazgos.unshift({ tipo: 'error', cat: 'diagnostico', linea: null,
+                msg: m.como === 'inc'
+                    ? 'Coordenadas incrementales con G90: el programa está en absolutas (G90), pero las X Y son incrementales (lo que se mueve desde el punto anterior). Leídas como incrementales, el trazado es el de la pieza: falta G91, o hay que escribir las coordenadas absolutas (desde el cero pieza). Los errores de debajo son, sobre todo, consecuencia de esto.'
+                    : 'Coordenadas absolutas con G91: el programa está en incrementales (G91), pero las X Y son absolutas (desde el cero pieza). Leídas como absolutas, el trazado es el de la pieza: sobra G91 (con G90 estaría bien), o hay que escribir lo que se mueve desde el punto anterior. Los errores de debajo son, sobre todo, consecuencia de esto.',
+                pista: m.como === 'inc' ? 'G90: X Y desde el cero pieza · G91: X Y desde el punto anterior' : 'G91: X Y desde el punto anterior · G90: X Y desde el cero pieza' });
+        } else {
+            const e = sinCorte ? (r._textoSinZ ? buscarEspejo(Object.assign({}, r, { prog: interpretarISO(r._textoSinZ), _sinZ: true }), r._textoSinZ) : null) : buscarEspejo(r, texto);
+            if (e) {
+                const sg = v => (v > 0 ? '+' : '') + fmt(v, 3), movido = Math.hypot(e.d.x, e.d.y) > 0.05;
+                r.diagnostico = { tipo: 'espejo', corto: e.T.corto, sx: e.T.sx, sy: e.T.sy, cob: Math.min(1, e.r2.cobertura || 0) };
+                r.hallazgos.unshift({ tipo: 'error', cat: 'diagnostico', linea: null,
+                    msg: `Pieza ${e.T.que}: el recorrido tiene la forma de la pieza, pero ${e.T.sx < 0 && e.T.sy < 0 ? 'girada' : 'reflejada'}${movido ? ` y, además, con otro cero pieza (movida ${[Math.abs(e.d.x) > 0.005 ? 'X' + sg(-e.d.x) : '', Math.abs(e.d.y) > 0.005 ? 'Y' + sg(-e.d.y) : ''].filter(Boolean).join(' ')})` : ''}. Revisa el signo de ${e.T.sx < 0 && e.T.sy < 0 ? 'las X y las Y' : e.T.sx < 0 ? 'las X' : 'las Y'}: hacia la derecha y hacia arriba del cero pieza son positivas; hacia la izquierda y hacia abajo, negativas.${e.comp && e.T.sx * e.T.sy < 0 ? ' (Al reflejarla, además, la compensación queda al otro lado: G41 y G42 cambiados.)' : ''} Los errores de debajo son, sobre todo, consecuencia de esto.`,
+                    pista: 'X+ a la derecha del cero pieza, X− a la izquierda; Y+ hacia arriba, Y− hacia abajo' });
+            }
+        }
+        if (r.diagnostico) r.errores = r.hallazgos.filter(h => h.tipo === 'error').length;
+    } catch (e) { console.warn(e); }
+    return r;
+};
+const _extraVeredictoDiag = extraVeredicto;
+extraVeredicto = function (it) {
+    const dg = it && it.r && it.r.diagnostico;
+    return _extraVeredictoDiag(it) + (dg ? ` <span class="mv-despl" title="${dg.tipo === 'espejo' ? 'El recorrido es la pieza ' + (dg.sx < 0 && dg.sy < 0 ? 'girada 180°' : 'en espejo') + ': revisa los signos' : 'Leídas en el otro modo (G90/G91), las coordenadas dan la pieza'}">· ${dg.corto}</span>` : '');
+};
+// ── El profesor en la corrección masiva: su nota y su comentario, anterior / siguiente, guardar la corrección, devolución ──
+// · it.notaProf (número o null) manda sobre la nota orientativa (que se guarda en it.v.notaAuto); it.comProf, su comentario.
+//   Pasan a la tabla (✎), al CSV, al informe, a la hoja de devolución y a las notas para Aules.
+// · En la corrección detallada de un alumno: ◀ ▶ (o Alt+← Alt+→) para ir al anterior o al siguiente, con la nota y el comentario a mano.
+// · 💾 Guardar corrección / 📂 Abrir corrección: un .json con el ejercicio, las variantes, el reparto, los programas y lo del profesor.
+// · 🖨 Devoluciones: la hoja para el alumno (su recorrido, lo que tiene que revisar, el comentario y la nota).
+function aplicarProf(it) {
+    if (!it || !it.v || it.v.veredicto === 'pendiente') return;
+    if (it.v.notaAuto === undefined) it.v.notaAuto = it.v.nota;
+    if (it.notaProf !== null && it.notaProf !== undefined && isFinite(+it.notaProf)) it.v.nota = Math.max(0, Math.min(10, +it.notaProf));
+}
+const _corregirAlumnoProf = corregirAlumno;
+corregirAlumno = function (it) { const r = _corregirAlumnoProf.apply(this, arguments); aplicarProf(it); return r; };
+const _corregirConVariantesProf = corregirConVariantes;
+corregirConVariantes = function (items) { const r = _corregirConVariantesProf.apply(this, arguments); (items || []).forEach(aplicarProf); return r; };
+const hayProf = () => masiva.lista.some(it => (it.notaProf !== null && it.notaProf !== undefined) || it.comProf);
+function ponerProf(it, nota, com) {
+    const n = String(nota ?? '').trim().replace(',', '.');
+    it.notaProf = n === '' || !isFinite(+n) ? null : Math.max(0, Math.min(10, Math.round(+n * 100) / 100));
+    it.comProf = String(com || '').trim();
+    if (it.v) { if (it.v.notaAuto === undefined) it.v.notaAuto = it.v.nota; it.v.nota = it.notaProf !== null ? it.notaProf : it.v.notaAuto; }
+}
+function marcaProf(it) {
+    const p = it.notaProf !== null && it.notaProf !== undefined, c = !!it.comProf;
+    if (!p && !c) return '';
+    const t = (p ? `Nota del profesor (la orientativa: ${nf(it.v && it.v.notaAuto !== undefined ? it.v.notaAuto : 0, 1)})` : '') + (c ? (p ? ' · ' : '') + 'Comentario: ' + it.comProf : '');
+    return ` <span class="mv-prof" title="${String(t).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;')}">${p ? '✎' : ''}${c ? '💬' : ''}</span>`;
+}
+// La ventana para la nota y el comentario (desde la lista)
+function editarProf(k) {
+    const it = masiva.lista[k]; if (!it) return;
+    let ov = document.getElementById('modalProf');
+    if (!ov) { ov = document.createElement('div'); ov.className = 'modal-overlay'; ov.id = 'modalProf'; ov.onclick = e => { if (e.target === ov) ov.classList.remove('visible'); }; document.body.appendChild(ov); }
+    const esc = t => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+    ov.innerHTML = `<div class="help-modal" style="width:min(520px,100%)"><div class="help-header"><h2>✎ ${esc(it.alumno)}</h2><button class="help-close" onclick="document.getElementById('modalProf').classList.remove('visible')">✕</button></div>
+        <div class="help-content"><p class="ctx-nota" style="margin-top:0">Nota orientativa del Corrector: <b>${nf(it.v && it.v.notaAuto !== undefined ? it.v.notaAuto : (it.v ? it.v.nota : 0), 1)}</b>. Si pones la tuya, manda en la tabla, el CSV, los informes, la devolución y las notas para Aules (en blanco, la orientativa).</p>
+        <label class="prof-l">Nota del profesor <input type="text" id="profNota" value="${it.notaProf ?? ''}" placeholder="—" style="width:70px"></label>
+        <label class="prof-l">Comentario para el alumno<textarea id="profCom" rows="4" style="width:100%;box-sizing:border-box">${esc(it.comProf || '')}</textarea></label>
+        <div class="btn-row"><button class="btn-action sec" id="profQuitar">Quitar lo mío</button><button class="btn-action" id="profOk">Guardar</button></div></div></div>`;
+    const fin = () => { ov.classList.remove('visible'); corr = null; pintarMasiva(); };
+    ov.querySelector('#profOk').onclick = () => { ponerProf(it, ov.querySelector('#profNota').value, ov.querySelector('#profCom').value); fin(); };
+    ov.querySelector('#profQuitar').onclick = () => { ponerProf(it, '', ''); fin(); };
+    ov.classList.add('visible'); setTimeout(() => ov.querySelector('#profNota').focus(), 50);
+}
+// ── La barra del alumno en la corrección detallada: ◀ ▶, su nota y su comentario ──
+function ordenVista() { return listaOrdenada().map(o => o.k); }
+function pintarBarraAlumno() {
+    const b = document.getElementById('crAlumno'); if (!b) return;
+    const k = masiva.viendo, it = k !== null && k !== undefined ? masiva.lista[k] : null;
+    if (!it) { b.style.display = 'none'; return; }
+    const o = ordenVista(), i = o.indexOf(k), esc = t => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+    b.style.display = '';
+    b.innerHTML = `<button class="btn-action sec" id="crAnt" ${i <= 0 ? 'disabled' : ''} title="El alumno anterior (Alt+←)">◀</button>
+        <span class="cr-al-nom"><b>${esc(it.alumno)}</b> <small>${i + 1} de ${o.length}</small></span>
+        <button class="btn-action sec" id="crSig" ${i >= o.length - 1 ? 'disabled' : ''} title="El alumno siguiente (Alt+→)">▶</button>
+        <label title="En blanco, la nota orientativa del Corrector">Nota <input type="text" id="crNotaProf" value="${it.notaProf ?? ''}" placeholder="${it.v ? nf(it.v.notaAuto !== undefined ? it.v.notaAuto : it.v.nota, 1) : ''}"></label>
+        <input type="text" id="crComProf" value="${esc(it.comProf || '')}" placeholder="Comentario para el alumno (sale en su devolución y en Aules)">
+        <button class="btn-action sec" id="crDevol" title="Su hoja de devolución">🖨 Devolución</button>`;
+    const guardar = () => ponerProf(it, b.querySelector('#crNotaProf').value, b.querySelector('#crComProf').value);
+    b.querySelector('#crNotaProf').onchange = guardar; b.querySelector('#crComProf').onchange = guardar;
+    b.querySelector('#crAnt').onclick = () => { guardar(); irAlumno(-1); };
+    b.querySelector('#crSig').onclick = () => { guardar(); irAlumno(1); };
+    b.querySelector('#crDevol').onclick = () => { guardar(); imprimirDevoluciones([k]); };
+}
+function irAlumno(paso) {
+    const k = masiva.viendo; if (k === null || k === undefined) return;
+    const o = ordenVista(), i = o.indexOf(k), j = i + paso; if (j < 0 || j >= o.length) return;
+    const b = document.getElementById('crAlumno'); if (b && b.querySelector('#crNotaProf')) ponerProf(masiva.lista[k], b.querySelector('#crNotaProf').value, b.querySelector('#crComProf').value);
+    volverAMasiva(); verAlumno(o[j]);
+}
+const _verAlumnoProf = verAlumno;
+verAlumno = function (k) { const r = _verAlumnoProf.apply(this, arguments); pintarBarraAlumno(); return r; };
+const _volverAMasivaProf = volverAMasiva;
+volverAMasiva = function () { const b = document.getElementById('crAlumno'); const k = masiva.viendo;
+    if (b && b.querySelector('#crNotaProf') && masiva.lista[k]) ponerProf(masiva.lista[k], b.querySelector('#crNotaProf').value, b.querySelector('#crComProf').value);
+    const r = _volverAMasivaProf.apply(this, arguments); if (b) b.style.display = 'none'; return r; };
+const _cerrarCorregirProf = cerrarCorregir;
+cerrarCorregir = function () { const b = document.getElementById('crAlumno'); const k = masiva.viendo;
+    if (b && b.style.display !== 'none' && b.querySelector('#crNotaProf') && masiva.lista[k]) ponerProf(masiva.lista[k], b.querySelector('#crNotaProf').value, b.querySelector('#crComProf').value);
+    if (b) b.style.display = 'none'; return _cerrarCorregirProf.apply(this, arguments); };
+document.addEventListener('keydown', e => {
+    if (!e.altKey || (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight')) return;
+    const m = document.getElementById('modalCorregir'); if (!m || !m.classList.contains('visible') || masiva.viendo === null || masiva.viendo === undefined) return;
+    e.preventDefault(); irAlumno(e.key === 'ArrowRight' ? 1 : -1);
+});
+// ── Guardar y abrir la corrección ──
+function datosCorreccion() {
+    let ej = null; try { ej = exportarJSON(true); } catch (e) {}
+    return { tipo: 'correccion-calcador', version: 1, fecha: new Date().toISOString(), ejercicio: ej,
+        variantes: (masiva.variantes || []).map(v => ({ id: v.id, etq: v.etq, letra: v.letra, datos: v.datos })), reparto: masiva.reparto || null, ids: masiva.ids || {},
+        lista: masiva.lista.map(it => ({ alumno: it.alumno, archivo: it.archivo, texto: it.texto, ...(it.formato ? { formato: it.formato } : {}), ...(it.informe ? { informe: it.informe } : {}), ...(it.desdeInforme ? { desdeInforme: true } : {}),
+            ...(it.notaProf !== null && it.notaProf !== undefined ? { notaProf: it.notaProf } : {}), ...(it.comProf ? { comProf: it.comProf } : {}) })) };
+}
+function guardarCorreccion() {
+    if (!masiva.lista.length) { snack('No hay programas en la lista'); return; }
+    const f = new Date(), dd = n => String(n).padStart(2, '0');
+    descargar(JSON.stringify(datosCorreccion()), `${nombreProyecto()} - corrección ${f.getFullYear()}-${dd(f.getMonth() + 1)}-${dd(f.getDate())}.json`, 'application/json');
+    snack(`Corrección guardada: ${masiva.lista.length} programa(s)${hayProf() ? ', con tus notas y comentarios' : ''}. Ábrela con 📂 Abrir corrección`);
+}
+function abrirDatosCorreccion(d) {
+    if (!esObj(d) || d.tipo !== 'correccion-calcador' || !Array.isArray(d.lista)) { snack('Ese archivo no es una corrección guardada del Calcador'); return false; }
+    if (d.ejercicio) abrirJSONDatos(d.ejercicio);
+    masiva.variantes = Array.isArray(d.variantes) ? d.variantes : []; masiva.reparto = d.reparto || null; masiva.ids = esObj(d.ids) ? d.ids : {};
+    masiva.lista = d.lista.map(x => ({ ...x }));
+    sincronizarRequisitosMasiva(); recorregirMasiva(); abrirMasiva();
+    snack(`Corrección abierta: ${masiva.lista.length} programa(s)${masiva.variantes.length ? `, con ${masiva.variantes.length} variantes` : ''}${hayProf() ? ', con tus notas y comentarios' : ''}`);
+    return true;
+}
+function abrirCorreccionArchivo(input) {
+    const f = input.files[0]; input.value = ''; if (!f) return;
+    f.text().then(t => { let d; try { d = JSON.parse(t); } catch (e) { snack('El archivo no es un JSON válido'); return; } abrirDatosCorreccion(d); });
+}
+// ── La hoja de devolución (el informe, para el alumno) ──
+let modoDevol = false;
+function imprimirDevoluciones(ks) {
+    modoDevol = true;
+    try { imprimirInformes(ks || listaOrdenada().map(o => o.k)); } finally { modoDevol = false; }
+}
+// en las notas para Aules: la nota y el comentario del profesor
+const _comentarioAulesProf = comentarioAules;
+comentarioAules = function (it) {
+    let t = _comentarioAulesProf.apply(this, arguments);
+    if (it.notaProf !== null && it.notaProf !== undefined) t = t.replace(/^Nota orientativa del Corrector: [^.]+(?:\.\d)?[^.]*\./, `Nota: ${String(it.notaProf).replace('.', ',')} sobre 10 (orientativa del Corrector: ${String(Math.round((it.v.notaAuto ?? it.v.nota) * 10) / 10).replace('.', ',')}).`);
+    return it.comProf ? `Comentario del profesor: ${it.comProf}\n${t}` : t;
+};
 // Arrastrar archivos a la ventana de corrección masiva; ordenar por columna
 (function () {
     const m = document.getElementById('modalMasiva');
@@ -12099,6 +13453,95 @@ function describirVariante(sp) {
     if (sp.escala !== 1) t.push(`escala ${Math.round(sp.escala * 100)} %`);
     return t.length ? t.join(' · ') : 'el ejercicio original';
 }
+// ── Variantes con otras medidas: alargar o acortar la pieza por un corte (como «estirar» en CAD) ──
+// Un corte vertical (para el ancho) u horizontal (para el alto) que solo atraviesa rectas perpendiculares a él: todo lo que
+// queda a un lado se desplaza los mm pedidos. Los arcos no se tocan (se mueven enteros) y las rectas cortadas se alargan
+// o acortan sin cambiar de dirección, así que se conservan las tangencias, los radios y los agujeros; cambian las cotas.
+Object.assign(varCfg, { medidas: varCfg.medidas || false, mm: varCfg.mm || '10, -10' });
+const HUECO_MIN = 5;   // al acortar, lo que tiene que quedar como mínimo entre las dos partes (mm)
+function corteEstirar(cs, eje) {
+    const o = eje === 'x' ? 'y' : 'x', T = [].concat(...cs.map(c => tramos(c)));
+    if (!T.length) return null;
+    const vals = [...new Set([].concat(...cs.map(c => c.pts.map(p => +p[eje].toFixed(6)))))].sort((a, b) => a - b);
+    const ext = t => { const m = muestrearTramo(t); return [Math.min(...m.map(p => p[eje])), Math.max(...m.map(p => p[eje]))]; };
+    const E = T.map(t => ({ t, e: ext(t) }));
+    const lo = Math.min(...E.map(({ e }) => e[0])), hi = Math.max(...E.map(({ e }) => e[1])), mitad = (lo + hi) / 2;
+    let mejor = null;
+    for (let k = 0; k + 1 < vals.length; k++) {
+        const x = (vals[k] + vals[k + 1]) / 2;
+        // lo que cruza el corte: solo rectas perpendiculares a él
+        if (E.some(({ t, e }) => e[0] < x - 1e-9 && e[1] > x + 1e-9 && (t.b || Math.abs(t.p1[o] - t.p2[o]) > 1e-6))) continue;
+        // el hueco libre entre las dos partes (para poder acortar): de lo último a un lado a lo primero al otro (los arcos, con su bombeo)
+        const izq = Math.max(...E.filter(({ e }) => e[1] <= x + 1e-9).map(({ e }) => e[1])), der = Math.min(...E.filter(({ e }) => e[0] >= x - 1e-9).map(({ e }) => e[0]));
+        const c = { x, hueco: der - izq, lo, hi };
+        if (!mejor || Math.abs(x - mitad) < Math.abs(mejor.x - mitad)) mejor = c;
+    }
+    return mejor;
+}
+function estirarEstado(est, med) {
+    if (!med || (!med.x && !med.y)) return est;
+    const mueve = p => ({ x: p.x + (med.x && p.x > med.cx ? med.x : 0), y: p.y + (med.y && p.y > med.cy ? med.y : 0) });
+    est.contornos.forEach(c => { c.pts = c.pts.map(mueve); delete c.forma; if (c.mec && c.mec.puentes && Array.isArray(c.mec.puentes.pts)) c.mec.puentes.pts = c.mec.puentes.pts.map(mueve); });
+    est.aux = est.aux.map(e => e.t === 'P' ? { ...e, p: mueve(e.p) } : e.t === 'C' ? { ...e, c: mueve(e.c) } : e.t === 'L' ? { ...e, p: mueve(e.p) } : e);
+    // el cero pieza sigue al punto en el que estaba (si estaba en un vértice, sigue en él)
+    const O = mueve({ x: 0, y: 0 }), D = p => ({ x: +(p.x - O.x).toFixed(6), y: +(p.y - O.y).toFixed(6) });
+    if (O.x || O.y) {
+        est.contornos.forEach(c => { c.pts = c.pts.map(D); if (c.mec && c.mec.puentes && Array.isArray(c.mec.puentes.pts)) c.mec.puentes.pts = c.mec.puentes.pts.map(D); });
+        est.aux = est.aux.map(e => e.t === 'P' ? { ...e, p: D(e.p) } : e.t === 'C' ? { ...e, c: D(e.c) } : e.t === 'L' ? { ...e, p: D(e.p) } : e);
+    }
+    return est;
+}
+const _transformarEstadoBase = transformarEstado;
+transformarEstado = function (est, sp) { return _transformarEstadoBase(estirarEstado(est, sp.med), sp); };
+// Las medidas que se pueden cambiar (y cuánto), con los cortes del ejercicio abierto
+function medidasPosibles() {
+    if (!varCfg.medidas || hayTextos()) return [];
+    const cs = contornos.filter(c => c.pts.length >= 2), cx = corteEstirar(cs, 'x'), cy = corteEstirar(cs, 'y');
+    const ds = String(varCfg.mm).split(/[;,\s]+/).map(x => parseFloat(x.replace(',', '.'))).filter(d => isFinite(d) && Math.abs(d) >= 0.5 && Math.abs(d) <= 200);
+    const vale = (c, d) => c && (d > 0 || c.hueco - Math.abs(d) >= HUECO_MIN);
+    const out = [];
+    ds.forEach(d => { if (vale(cx, d)) out.push({ x: d, y: 0, cx: cx.x, cy: cy ? cy.x : 0, ancho: cx.hi - cx.lo }); });
+    ds.forEach(d => { if (vale(cy, d)) out.push({ x: 0, y: d, cx: cx ? cx.x : 0, cy: cy.x, alto: cy.hi - cy.lo }); });
+    if (ds.length && vale(cx, ds[0]) && vale(cy, ds[0])) out.push({ x: ds[0], y: ds[0], cx: cx.x, cy: cy.x, ancho: cx.hi - cx.lo, alto: cy.hi - cy.lo });
+    return out;
+}
+especificacionesVariantes = function () {
+    const textos = hayTextos();
+    const geos = [{ ex:0, ey:0 }];
+    if (!textos && varCfg.ex) geos.push({ ex:1, ey:0 }); if (!textos && varCfg.ey) geos.push({ ex:0, ey:1 }); if (!textos && varCfg.giro) geos.push({ ex:1, ey:1 });
+    const b0 = bboxPts([].concat(...contornos.filter(c => c.pts.length >= 2).map(c => muestrearContorno(c))));
+    const u = (0 - b0.x0) / ((b0.x1 - b0.x0) || 1), v = (0 - b0.y0) / ((b0.y1 - b0.y0) || 1), propia = (v < 0.5 ? 'B' : 'T') + (u < 0.5 ? 'L' : 'R');
+    const ceros = ['mismo'].concat(varCfg.cero ? ['BL', 'BR', 'TL', 'TR'].filter(k => k !== propia) : []);
+    const escalas = [1].concat(!textos && varCfg.escala ? String(varCfg.factores).split(/[;,\s]+/).map(x => parseFloat(x.replace(',', '.')) / 100).filter(f => f > 0.2 && f < 5 && Math.abs(f - 1) > 1e-9) : []);
+    const meds = [null].concat(medidasPosibles());
+    const todas = []; geos.forEach(g => ceros.forEach(c => escalas.forEach(e => meds.forEach(m => todas.push({ ...g, cero:c, escala:e, med:m })))));
+    const id = todas[0], resto = todas.slice(1);
+    const dif = (a, b) => (a.ex !== b.ex || a.ey !== b.ey ? 2 : 0) + (a.cero !== b.cero ? 1 : 0) + (a.escala !== b.escala ? 1 : 0) + (a.med !== b.med ? 2 : 0);
+    const elegidas = varCfg.aOriginal ? [id] : [];
+    while (elegidas.length < varCfg.n && resto.length) {
+        let mejor = 0, md = -1; resto.forEach((c, i) => { const m = elegidas.length ? Math.min(...elegidas.map(e => dif(c, e))) : 9; if (m > md) { md = m; mejor = i; } });
+        elegidas.push(resto.splice(mejor, 1)[0]);
+    }
+    return { elegidas, textos };
+};
+const _describirVarianteBase = describirVariante;
+describirVariante = function (sp) {
+    const t = _describirVarianteBase(sp), m = sp.med; if (!m) return t;
+    const nf = x => String(Math.round(x * 100) / 100).replace('.', ','), sg = d => (d > 0 ? '+' : '−') + nf(Math.abs(d));
+    const q = []; if (m.x) q.push(`ancho ${nf(m.ancho + m.x)} mm (${sg(m.x)})`); if (m.y) q.push(`alto ${nf(m.alto + m.y)} mm (${sg(m.y)})`);
+    return (t === 'el ejercicio original' ? '' : t + ' · ') + q.join(' · ');
+};
+const _abrirVariantesMed = abrirVariantes, _cambiarVariantesMed = cambiarVariantes;
+abrirVariantes = function () {
+    const g = id => document.getElementById(id);
+    if (g('varMed')) { g('varMed').checked = varCfg.medidas; g('varMm').value = varCfg.mm; g('varMed').disabled = hayTextos(); }
+    return _abrirVariantesMed.apply(this, arguments);
+};
+cambiarVariantes = function () {
+    const g = id => document.getElementById(id);
+    if (g('varMed')) { varCfg.medidas = g('varMed').checked; varCfg.mm = g('varMm').value; }
+    return _cambiarVariantesMed.apply(this, arguments);
+};
 function datosDeEstado(est, hoja, nombre) {
     const g = { contornos, aux, cotasManuales, cotasAjuste, cfgHoja: JSON.parse(JSON.stringify(cfgHoja)), nombre: document.getElementById('projectName').value };
     try { contornos = est.contornos; aux = est.aux; cotasManuales = []; cotasAjuste = {}; Object.assign(cfgHoja, hoja); document.getElementById('projectName').value = nombre; memoTipos = null; return exportarJSON(true); }
@@ -12293,11 +13736,98 @@ function xmlCuest(G) {
     });
     return x + '</quiz>\n';
 }
+// ── 📝 Completar el programa (huecos): una pregunta más del cuestionario para Aules ──
+// El programa de la solución (el de «📋 Solución», sin los comentarios) con algunas palabras en blanco: G2/G3 de los arcos,
+// su I y J, la compensación G41/G42 de la entrada y coordenadas X Y. En Aules es una pregunta «Respuestas incrustadas
+// (Cloze)» que se corrige sola (cada hueco por separado); en cada variante, los mismos huecos con sus valores. También
+// se imprime: la hoja con los huecos numerados y la de soluciones.
+cuestCfg.huecos = cuestCfg.huecos || 0;
+CUEST_TIPOS.push(['huecos', 'Completar el programa: nº de huecos']);
+const PALABRA_HUECO = /^([A-Z])(-?\d+(?:\.\d+)?)$/;
+function programaHuecos() {
+    if (typeof tuGenerar !== 'function') return null;
+    try { const p = tuGenerar(); return p && !p.vacio && p.lineas ? p.lineas.filter(l => l.cod && !l.sep).map(l => ({ cod: String(l.cod).trim(), titulo: !!l.titulo })) : null; } catch (e) { console.warn(e); return null; }
+}
+const _modeloCuestHuecos = modeloCuest;
+modeloCuest = function () { const M = _modeloCuestHuecos.apply(this, arguments); if (cuestCfg.huecos > 0) M.prog = programaHuecos(); return M; };
+// Los huecos posibles: G2/G3 y la compensación, I J de los arcos, las X Y de las rectas, las de los arcos y las de los rápidos
+function candidatosHuecos(prog) {
+    const C = [];
+    prog.forEach((l, li) => {
+        if (l.titulo) return;
+        const w = l.cod.split(/\s+/), arco = w.some(x => /^G0?[23]$/.test(x)), g1 = w.some(x => /^G0?1$/.test(x)), g0 = w.some(x => /^G0?0$/.test(x));
+        w.forEach((x, wi) => {
+            if (/^G0?[23]$/.test(x) || /^G4[12]$/.test(x)) C.push({ li, wi, pri: 0 });
+            else if (arco && /^[IJ]-?[\d.]+$/.test(x)) C.push({ li, wi, pri: 1 });
+            else if (g1 && !arco && /^[XY]-?[\d.]+$/.test(x)) C.push({ li, wi, pri: 2 });
+            else if (arco && /^[XY]-?[\d.]+$/.test(x)) C.push({ li, wi, pri: 3 });
+            else if (g0 && /^[XY]-?[\d.]+$/.test(x)) C.push({ li, wi, pri: 4 });
+        });
+    });
+    return C;
+}
+function elegirHuecos(prog, n) {
+    if (!prog || n <= 0) return [];
+    const C = candidatosHuecos(prog), porLinea = new Map(), out = [];
+    const tomar = (g, k) => { g = g.filter(c => !out.includes(c) && (porLinea.get(c.li) || 0) < 2); k = Math.min(k, g.length);
+        for (let i = 0; i < k; i++) { const c = g[Math.floor((i + 0.5) * g.length / k)]; if (out.includes(c) || (porLinea.get(c.li) || 0) >= 2) continue; out.push(c); porLinea.set(c.li, (porLinea.get(c.li) || 0) + 1); } };
+    // un reparto equilibrado: un tercio de funciones (G2/G3, G41/G42), un tercio de I J y el resto, coordenadas
+    tomar(C.filter(c => c.pri === 0), Math.ceil(n / 3));
+    tomar(C.filter(c => c.pri === 1), Math.ceil(n / 3));
+    tomar(C.filter(c => c.pri === 2), n - out.length); tomar(C.filter(c => c.pri === 3), n - out.length); tomar(C.filter(c => c.pri === 4), n - out.length);
+    for (let pri = 0; pri <= 4 && out.length < n; pri++) tomar(C.filter(c => c.pri === pri), n - out.length);      // si no hay de algún tipo, se completa con los demás
+    return out.sort((a, b) => a.li - b.li || a.wi - b.wi).map(c => ({ li: c.li, wi: c.wi }));
+}
+const mismaForma = (prog, H) => H.every(h => prog[h.li] && prog[h.li].cod.split(/\s+/)[h.wi] !== undefined);
+const _elegirCuestHuecos = elegirCuest;
+elegirCuest = function (M) { const s = _elegirCuestHuecos.apply(this, arguments); s.huecos = cuestCfg.huecos > 0 && M.prog ? elegirHuecos(M.prog, cuestCfg.huecos) : []; return s; };
+// La pregunta: el programa con los huecos (Cloze) y, para imprimir, con los huecos numerados
+function preguntaHuecos(M, H, tol) {
+    if (!M.prog || !H.length) return null;
+    if (!mismaForma(M.prog, H) || H.some(h => { const x = M.prog[h.li].cod.split(/\s+/)[h.wi]; return !(/^G/.test(x) || PALABRA_HUECO.test(x)); })) H = elegirHuecos(M.prog, H.length);   // esta variante tiene otro programa: sus propios huecos
+    const esc = t => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;'), fn = v => { const t = (+(+v).toFixed(3)).toString(); return t === '-0' ? '0' : t; };
+    const enH = new Map(H.map((h, k) => [h.li + ':' + h.wi, k + 1])), sol = [];
+    const linea = (l, li, modo) => l.cod.split(/\s+/).map((x, wi) => {
+        const k = enH.get(li + ':' + wi); if (!k) return esc(x);
+        if (/^G/.test(x)) { const alt = /^G0?([0-3])$/.test(x) ? [`G${x.replace(/^G0?/, '')}`, `G0${x.replace(/^G0?/, '')}`] : [x];
+            sol.push({ k, txt: x }); return modo === 'cloze' ? `{1:SHORTANSWER:${[...new Set(alt)].map(a => '=' + a).join('~')}}` : `<span class="hu">(${k}) ________</span>`; }
+        const m = PALABRA_HUECO.exec(x); sol.push({ k, txt: x });
+        return esc(m[1]) + (modo === 'cloze' ? `{1:NUMERICAL:=${fn(m[2])}:${tol}}` : `<span class="hu">(${k}) ______</span>`);
+    }).join(' ');
+    const cuerpo = modo => `<div style="font-family:Consolas,'Courier New',monospace;font-size:14px;line-height:2;background:#f7f7f7;border:1px solid #ddd;border-radius:6px;padding:8px 12px">${M.prog.map((l, li) => `<div>${linea(l, li, modo)}</div>`).join('')}</div>`;
+    const cloze = cuerpo('cloze'); sol.length = 0; const papel = cuerpo('papel');
+    const solTxt = sol.sort((a, b) => a.k - b.k).map(s => `(${s.k}) ${s.txt}`).join(' · ');
+    return { clave: `Completar el programa (${H.length} huecos)`, txt: `<p>Completa el programa de la pieza del plano: escribe en cada hueco la función (G2, G3, G41…) o el valor que falta.</p>${cloze}<p style="font-size:90%;color:#555">Los valores, con punto decimal (por ejemplo, 12.5). Tolerancia: ±${String(tol).replace('.', ',')} mm.</p>`,
+             sol: 'Solución: ' + solTxt, papel, solTxt };
+}
+const _preguntasCuestHuecos = preguntasCuest;
+preguntasCuest = function (M, sel, tol) {
+    const out = _preguntasCuestHuecos.apply(this, arguments);
+    if (sel.huecos && sel.huecos.length) { const q = preguntaHuecos(M, sel.huecos, tol); if (q) out.push(q); }
+    return out;
+};
+// Imprimir: cada variante en su hoja (el plano y el programa con los huecos numerados) y, al final, las soluciones
+async function imprimirHuecos() {
+    if (!cuestGen || !cuestGen.vars.some(v => v.preguntas.some(q => q.papel))) { snack('Pon algún hueco en «Completar el programa»'); return; }
+    const esc = t => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;'), tit = cfgHoja.titulo || nombreProyecto(), num = (cfgHoja.num || '').trim();
+    const pags = cuestGen.vars.map(v => { const q = v.preguntas.find(x => x.papel); if (!q) return '';
+        return `<section class="pag"><header><h1>${esc(tit)}${num ? ' · nº ' + esc(num) : ''}${cuestGen.vars.length > 1 ? ` · variante ${v.letra}` : ''}</h1><div class="al">Alumno/a: ______________________________ &nbsp; Fecha: ____________</div></header>
+            <p class="enun">Completa el programa: escribe en cada hueco la función (G2, G3, G41…) o el valor que falta.</p>
+            <div class="plano"><img src="data:image/png;base64,${v.png.b64}"></div>${q.papel}</section>`; }).join('');
+    const sols = `<section class="pag"><header><h1>Soluciones · ${esc(tit)}</h1></header>${cuestGen.vars.map(v => { const q = v.preguntas.find(x => x.papel); return q ? `<p><b>Variante ${v.letra}</b> (${esc(v.desc)}): ${esc(q.solTxt)}</p>` : ''; }).join('')}</section>`;
+    const html = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Completar el programa · ${esc(tit)}</title><style>
+        @page { size: A4; margin: 12mm; } body { font-family: Arial, sans-serif; color: #222; margin: 0; } .pag { page-break-after: always; }
+        h1 { font-size: 17px; margin: 0 0 4px; } .al { font-size: 13px; margin-bottom: 6px; } .enun { font-size: 13px; margin: 4px 0 8px; }
+        .plano { text-align: center; } .plano img { max-width: 100%; max-height: 120mm; } .hu { color: #1a56b0; font-weight: bold; }
+    </style></head><body>${pags}${sols}<script>window.onload = () => setTimeout(() => window.print(), 300);<\/script></body></html>`;
+    const w = window.open('', '_blank'); if (!w) { snack('El navegador ha bloqueado la ventana de impresión: permite las ventanas emergentes para este archivo'); return; }
+    w.document.open(); w.document.write(html); w.document.close();
+}
 async function abrirCuestionario() {
     if (!hayPieza()) { snack('Dibuja o abre un ejercicio primero'); return; }
     const g = id => document.getElementById(id);
     g('cuN').value = cuestCfg.n; g('cuTol').value = cuestCfg.tol;
-    g('cuTipos').innerHTML = CUEST_TIPOS.map(([k, t]) => `<label class="param-line var-chk" title="${t}: cuántas preguntas de este tipo (0, ninguna)">${t} <input type="number" min="0" max="6" step="1" value="${cuestCfg[k]}" data-k="${k}" style="width:48px;margin-left:auto" onchange="cambiarCuestionario()"></label>`).join('');
+    g('cuTipos').innerHTML = CUEST_TIPOS.map(([k, t]) => `<label class="param-line var-chk" title="${t}: cuántas preguntas de este tipo (0, ninguna)">${t} <input type="number" min="0" max="${k === 'huecos' ? 12 : 6}" step="1" value="${cuestCfg[k]}" data-k="${k}" style="width:48px;margin-left:auto" onchange="cambiarCuestionario()"></label>`).join('');
     g('modalCuest').classList.add('visible');
     await pintarCuestionario();
 }
@@ -12305,7 +13835,7 @@ function cerrarCuestionario() { document.getElementById('modalCuest').classList.
 async function cambiarCuestionario() {
     const g = id => document.getElementById(id);
     cuestCfg.n = Math.max(1, Math.min(8, Math.round(+g('cuN').value) || 1)); cuestCfg.tol = g('cuTol').value;
-    g('cuTipos').querySelectorAll('input[data-k]').forEach(el => cuestCfg[el.dataset.k] = Math.max(0, Math.min(6, Math.round(+el.value) || 0)));
+    g('cuTipos').querySelectorAll('input[data-k]').forEach(el => cuestCfg[el.dataset.k] = Math.max(0, Math.min(el.dataset.k === 'huecos' ? 12 : 6, Math.round(+el.value) || 0)));
     await pintarCuestionario();
 }
 async function pintarCuestionario() {
@@ -12314,7 +13844,7 @@ async function pintarCuestionario() {
     try { cuestGen = await generarCuest(); } catch (e) { console.warn(e); cuestGen = null; caja.innerHTML = `<p class="ctx-nota">No se han podido preparar: ${esc(e.message)}</p>`; return; }
     const G = cuestGen, v = G.vars[0], nq = v.preguntas.length;
     // la vista previa: la variante A, con las respuestas a la vista
-    const ver = t => t.replace(/\{1:NUMERICAL:=([^:}]+):[^}]*\}/g, '<b class="cu-sol">$1</b>').replace(/\{1:MULTICHOICE_V:([^}]*)\}/g, (_, o) => o.split('~').map(x => x.split('#')[0]).map(x => x.startsWith('=') ? `<b class="cu-sol">${x.slice(1)}</b>` : `<span class="cu-no">${x}</span>`).join(' · '));
+    const ver = t => t.replace(/\{1:SHORTANSWER:=([^~}]+)[^}]*\}/g, '<b class="cu-sol">$1</b>').replace(/\{1:NUMERICAL:=([^:}]+):[^}]*\}/g, '<b class="cu-sol">$1</b>').replace(/\{1:MULTICHOICE_V:([^}]*)\}/g, (_, o) => o.split('~').map(x => x.split('#')[0]).map(x => x.startsWith('=') ? `<b class="cu-sol">${x.slice(1)}</b>` : `<span class="cu-no">${x}</span>`).join(' · '));
     caja.innerHTML = !nq ? '<p class="ctx-nota">Con lo elegido no sale ninguna pregunta (¿la pieza no tiene arcos?).</p>'
         : `<div class="cu-cab"><b>${nq} pregunta${nq === 1 ? '' : 's'} × ${G.vars.length} variante${G.vars.length === 1 ? '' : 's'}</b> · ${G.vars.map(x => `<span title="${esc(x.desc)}">${x.letra}</span>`).join(' ')}</div>`
         + `<div class="cu-plano"><img src="data:image/png;base64,${v.png.b64}" alt="Plano de la variante A"><div class="ctx-nota">Variante A · ${esc(v.desc)}</div></div>`
