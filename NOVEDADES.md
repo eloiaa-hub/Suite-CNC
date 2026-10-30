@@ -4,7 +4,54 @@ La versión de la suite es **año.mes** (por ejemplo, 2026.10). Cada programa co
 
 ## Suite CNC 2026.10
 
-Versiones de los programas: **Calcador v105 · Corrector v50 · Tutor G-Code v4 · Simulador 3D V45 · Calculadora de taller v5 · Anidador de tableros v8**.
+Versiones de los programas: **Calcador v115 · Corrector v60 · Tutor G-Code v4 · Simulador 3D V45 · Calculadora de taller v5 · Anidador de tableros v8**.
+
+### Calcador v115 / Corrector v60: diagnóstico, la nota del profesor y la devolución
+- **Diagnóstico** de dos errores típicos, en el primer error y en la lista: la **pieza en espejo** o girada 180° (los signos de las X o las Y cambiados, con o sin otro cero; y la compensación al otro lado) y **G90 / G91 confundidos** (incrementales con G90, absolutas con G91). La nota no cambia.
+- **✎ Tu nota y tu comentario** en cada alumno: tu nota manda sobre la orientativa; pasan a la lista (✎ 💬), al CSV, a los informes, a la devolución y a las notas para Aules, y se conservan al recorregir.
+- En la corrección detallada, **◀ ▶** (o Alt+← Alt+→) para ir de un alumno a otro, con tu nota y tu comentario a mano.
+- **🖨 Devoluciones**: la hoja para el alumno, con su recorrido, lo que tiene que revisar, tu comentario y la nota.
+- **💾 Guardar corrección** y **📂 Abrir corrección**: la corrección de una tarea en un archivo, para seguir otro día.
+
+### Calcador v114 / Corrector v59: el trazado puntúa
+- Con «Altura de corte incorrecta» o con «Trazado desplazado», el trazado bien hecho se lleva una parte de los puntos de geometría: criterio nuevo **Trazado sin cortar o desplazado** (de partida, el 50 %), en proporción al contorno bien recorrido. Lo pedido y la seguridad, como siempre. Con 0 %, como antes. En la rúbrica, en el apartado de geometría.
+
+### Calcador v113 / Corrector v58: trazado desplazado
+- Si el recorrido tiene la forma de la pieza pero movido porque el alumno ha tomado otro cero pieza, el primer error es «**Trazado desplazado**: … movido X+80 Y+50: el cero pieza que ha usado no es el del plano, lo ha puesto en la esquina de abajo a la izquierda…», con un ejemplo de punto; en la lista, «· trazado desplazado». Los demás errores y la nota no cambian. También cuando la fresa no baja de Z0.
+
+### Calcador v112 / Corrector v57: altura de corte incorrecta
+- Si un programa no corta porque la fresa nunca baja de Z0, ya no sale «Sin programa válido»: sale **⛔ Altura de corte incorrecta** y se comprueba el recorrido en X Y como si la fresa estuviera abajo: «**Trazado geométrico correcto**» o lo que falla. Si con la fresa abajo algún movimiento se metería en la pieza (llegar al inicio con G1), sale como aviso con su línea. La nota no cambia.
+
+### Calcador v111 / Corrector v56: la batería, con la biblioteca
+- La **🗃 Batería** lee los ejercicios también de un **archivo de biblioteca** (el de ⬇ Exportar biblioteca) que esté en la carpeta, y **🗂 Usar la biblioteca** toma los de la biblioteca del navegador: en la carpeta basta con los zip de las entregas.
+- Casan con la tarea por el nombre de su archivo o por el **número** o el **título** de su ficha (también las variantes guardadas: números ISO GEO 02A, 02B…). En el desplegable, los de la biblioteca llevan 🗂.
+
+### Calcador v110 / Corrector v55: batería de corrección
+- **🗃 Batería…** (corrección masiva): una carpeta con los ejercicios (.json), los zip de «Descargar todas las entregas» de cada tarea de Aules («curso-ISO GEO 01A-número.zip») y, si están, sus hojas de calificaciones. Cada zip se casa con su ejercicio por el nombre de la tarea (también un examen con variantes: «ISO GEO 02» con «ISO GEO 02A», «02B»…), y se puede cambiar a mano.
+- **▶ Corregir todo**: alumnos, nota media, aprobados, el error más repetido y las parejas muy parecidas de cada tarea; 🔍 Ver la abre en la corrección masiva.
+- **⬇ Descargar todo (.zip)**: el resumen de la batería, el CSV de cada tarea y sus hojas de calificaciones rellenadas, listas para subir a Aules.
+- La hoja de calificaciones rellenada conserva las comillas del original.
+
+### Calcador v109 / Corrector v54: lo que falla en la clase, la rúbrica y los códigos de clase
+- **📊 Errores de la clase** (corrección masiva): los errores y avisos que más se repiten, juntando los del mismo tipo aunque sean en otra línea o con otras coordenadas, con una barra, la pista y quiénes los tienen; filtro de errores o avisos e impresión. También en el resumen de «🖨 Informes de todos».
+- **Nota por apartados (rúbrica)**, opcional (por defecto, la de siempre): geometría, compensación, lo pedido, seguridad, final del programa, formato y comentarios, con los puntos que elijas (⚙ Rúbrica…). En el informe de cada alumno, en el CSV y en las notas para Aules.
+- **Avisar de códigos no dados en clase**: G y M fuera de la lista de clase (G21, G54, G43, M08…), O1000 y «%», la D, la herramienta que no es T101 M06 y el husillo escrito M03 S…. Son avisos: no bajan la nota. La lista se cambia con ✎ y se guarda en el navegador.
+
+### Calcador v108 / Corrector v53: exámenes y notas a Aules
+- **⬆ Notas para Aules** (corrección masiva): abre la «hoja de calificaciones» que descarga la tarea de Aules y la rellena con la nota de cada alumno (sobre la calificación máxima de la tarea) y un comentario con su veredicto y sus errores; se sube en Aules con «Subir hoja de calificaciones». Cada alumno se reconoce por su número de participante del zip de Aules o por su nombre.
+- **🎲 Variantes con otras medidas**: la casilla «Otras medidas (mm)» alarga o acorta la pieza (ancho, alto o los dos) por donde solo hay rectas; los arcos, los radios y los agujeros no cambian, se conservan las tangencias y cambian las cotas.
+- **👥 Preparar el examen** (en 🎲 Variantes): la lista de la clase (pegada, o el CSV de participantes o la hoja de calificaciones de Aules), el reparto de las variantes (en orden o al azar, y a mano), las **hojas con el nombre** de cada alumno, las soluciones y la lista del reparto. El reparto se guarda y la corrección masiva sabe qué variante le tocaba a cada uno (por su número de participante o su nombre); en otro ordenador, se abre su CSV.
+- **📝 Completar el programa** (cuestionario para Aules): el programa de la solución con huecos (G2/G3, G41/G42, I J, X Y), como pregunta de respuestas incrustadas que Aules corrige sola, en cada variante; y la hoja para imprimir, con los huecos numerados y las soluciones. Por defecto, 0 huecos: el cuestionario de siempre no cambia.
+
+### Calcador v107 / Corrector v52: programas muy parecidos entre alumnos
+- En la **corrección masiva**, **👥 Parecidos**: las parejas de programas que comparten lo que no tiene nadie más en la clase. Cuenta lo raro: líneas con el mismo contenido poco habitual (un error, un valor raro) escritas igual (sin contar los números de bloque), comentarios iguales (sobre todo varios seguidos, en las mismas líneas) y los mismos errores. Una línea bien hecha cuenta muy poco aunque esté escrita igual: dos programas correctos no salen por eso.
+- **👥 junto al nombre** (en rojo si el parecido es muy alto), la cuenta en el resumen, la columna **«Parecido con»** del CSV y **⇆ Comparar**: los dos programas lado a lado, con las líneas raras iguales en rojo y los comentarios iguales en amarillo.
+- Es un indicio, no una prueba; no sale en el informe impreso del alumno.
+
+### Calcador v106 / Corrector v51: corregir un examen con variantes
+- En la **corrección masiva**, **🎲 Variantes…**: se marcan las variantes del examen (de la carpeta Variantes de la biblioteca, o sus JSON) y cada programa se corrige con todas; se queda la que mejor encaja.
+- La variante sale **junto al nombre** del alumno (con la nota de cada una al pasar el ratón), en el **CSV** (columnas «Variante» y «Aviso de variante») y en su **informe**, con el dibujo de esa variante. Al ver un alumno se abre su variante.
+- **La que le tocaba**: si el nombre del archivo, la carpeta o el principio del programa la dicen («12B», «variante B»), se corrige con esa y avisa (⚠️) si encaja mejor con otra: «ha hecho la 12A, le tocaba la 12B». Si dos variantes encajan casi igual, avisa de que no está claro.
 
 ### Calcador v105 / Corrector v50: la interfaz ordenada, seleccionar puntos y hacer arcos
 - **Botones de vista**, arriba a la derecha del dibujo: ◧ ◨ (paneles), 👁 Rejilla, **🏷 Nombres** (los nombres de los puntos, antes solo dentro de ⚙️ Mecanizado) y **📏 Cotas** (lo mismo que «Acotar automáticamente»). Las casillas de siempre siguen y van a la par. También en el Corrector.
