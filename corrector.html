@@ -643,7 +643,7 @@
 <body>
 <div class="app-window">
     <header class="top-bar">
-        <a href="index.html" class="ir-portada" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a><span class="top-bar-title">✅ Corrector — Por Eloi A.A.<span class="ver-suite" title="Versión del programa (generado a partir del Calcador v117)" style="font-size:11px;font-weight:600;padding:1px 7px;margin-left:8px;border-radius:9px;background:rgba(0,90,156,.12);color:#005A9C;vertical-align:middle">v62</span></span>
+        <a href="index.html" class="ir-portada" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a><span class="top-bar-title">✅ Corrector — Por Eloi A.A.<span class="ver-suite" title="Versión del programa (generado a partir del Calcador v118)" style="font-size:11px;font-weight:600;padding:1px 7px;margin-left:8px;border-radius:9px;background:rgba(0,90,156,.12);color:#005A9C;vertical-align:middle">v63</span></span>
         <div class="top-bar-right">
             <input class="project-name" id="projectName" type="text" value="calco_sin_nombre" placeholder="Nombre del proyecto">
             <div class="c2-archivo"><button class="btn-manual" onclick="nuevo()" title="Empieza de cero (se puede deshacer)">🗋 Nuevo</button><button class="btn-manual" onclick="document.getElementById('fileJSON').click()" title="Abre un proyecto .json del Calcador o del Corrector">📂 Abrir</button><button class="btn-manual" onclick="exportarJSON()" title="Guarda el proyecto en un archivo JSON: lo abren el Calcador, el Corrector, el Tutor y el Simulador (como plano del ejercicio)">💾 Guardar</button><button class="btn-manual" onclick="abrirBiblioteca()" title="Tus ejercicios: buscar, abrir e imprimir sus hojas">🗂 Biblioteca</button></div>
@@ -12973,7 +12973,8 @@ function casarTarea(t) {
 function anadirEjerciciosBib(lista, origen) {
     let n = 0;
     lista.forEach(e => { if (!e || !esObj(e.datos) || !esObj(e.datos.calcador)) return; const ruta = origen + '/' + (e.ruta || e.archivo);
-        if (bat.ejercicios.some(x => x.ruta === ruta)) return; bat.ejercicios.push({ archivo: e.archivo || (e.ruta || 'ejercicio.json').split('/').pop(), ruta, datos: e.datos, ficha: fichaDe(e.datos), origen }); n++; });
+        if (bat.ejercicios.some(x => x.ruta === ruta)) return; const archivo = e.archivo || (e.ruta || 'ejercicio.json').split('/').pop();
+        bat.ejercicios.push({ archivo, ruta, datos: e.datos, ficha: fichaDe(e.datos), origen, bibEntrada: e.ficha ? e : Object.assign(entradaDe(e.datos, e.ruta || archivo, archivo), { meta: e.meta || {}, actualizado: e.actualizado || 0 }) }); n++; });
     return n;
 }
 async function usarBibliotecaBat() {
@@ -12981,7 +12982,7 @@ async function usarBibliotecaBat() {
     if (!bib.lista || !bib.lista.length) { snack('La biblioteca de este navegador está vacía'); return; }
     const n = anadirEjerciciosBib(bib.lista, '🗂 Biblioteca');
     bat.tareas.forEach(t => { if (!t.manual) t.casa = casarTarea(t); });
-    pintarBateria(); snack(`${n} ejercicio(s) de la biblioteca${n < bib.lista.length ? ` (${bib.lista.length - n} ya estaban)` : ''}`);
+    ordenarTareasBat(); pintarBateria(); snack(`${n} ejercicio(s) de la biblioteca${n < bib.lista.length ? ` (${bib.lista.length - n} ya estaban)` : ''}`);
 }
 function casarHoja(t) {
     const nom = tokBat(t.resto);
@@ -13005,8 +13006,30 @@ async function leerArchivosBat(files) {
         }
     }
     bat.tareas.forEach(t => { if (!t.manual) t.casa = casarTarea(t); t.hoja = casarHoja(t); });
-    bat.tareas.sort((a, b) => a.tarea.localeCompare(b.tarea, 'es', { numeric: true }));
+    ordenarTareasBat();
     return { nuevos, raros };
+}
+// El orden de las tareas: el de sus ejercicios en la biblioteca (como esté ordenada: por número, título, nivel, carpeta o
+// recientes); las que no tienen ejercicio, al final, por su nombre
+function entradaBibBat(e) {
+    if (!e.bibEntrada) { try { e.bibEntrada = entradaDe(e.datos, e.ruta, e.archivo); } catch (x) { e.bibEntrada = { ficha: e.ficha || {}, meta: {}, ruta: e.ruta, actualizado: 0 }; } }
+    const b = e.bibEntrada; b.meta = b.meta || {}; b.ficha = b.ficha || {}; if (b.ficha.titulo === undefined) b.ficha.titulo = '';
+    return b;
+}
+function cmpOrdenBib(a, b) {
+    const numero = e => { const n = parseFloat(String(e.ficha.num).replace(',', '.')); return isFinite(n) ? n : 1e9; };
+    const orden = { rectas:0, arcos:1, varios:2, texto:3, avanzado:4 }, niv = e => { const n = nivelDe(e); return n in orden ? orden[n] : 9; };
+    const tit = (x, y) => String(x.ficha.titulo || '').localeCompare(String(y.ficha.titulo || ''), 'es', { numeric: true });
+    const nombre = (x, y) => String(x.ficha.num || '').localeCompare(String(y.ficha.num || ''), 'es', { numeric: true }) || String(x.ruta || '').localeCompare(String(y.ruta || ''), 'es', { numeric: true });
+    const f = { num: (x, y) => numero(x) - numero(y) || nombre(x, y) || tit(x, y), titulo: (x, y) => tit(x, y) || nombre(x, y), nivel: (x, y) => niv(x) - niv(y) || numero(x) - numero(y) || nombre(x, y),
+                reciente: (x, y) => (y.actualizado || 0) - (x.actualizado || 0), ruta: (x, y) => String(x.ruta || '').localeCompare(String(y.ruta || ''), 'es', { numeric: true }) }[(bib && bib.filtro && bib.filtro.orden) || 'num'] || (() => 0);
+    return f(a, b);
+}
+function ordenarTareasBat() {
+    const ej = t => t.casa ? bat.ejercicios[t.casa.is[0]] : null;
+    bat.tareas.sort((a, b) => { const ea = ej(a), eb = ej(b);
+        if (!ea || !eb) return (ea ? -1 : eb ? 1 : 0) || a.tarea.localeCompare(b.tarea, 'es', { numeric: true });
+        return cmpOrdenBib(entradaBibBat(ea), entradaBibBat(eb)) || a.tarea.localeCompare(b.tarea, 'es', { numeric: true }); });
 }
 const etqBat = e => (e.ficha && e.ficha.num) || e.archivo.replace(/\.json$/i, '');
 // Corregir una tarea: se abre su ejercicio (o sus variantes), se leen las entregas del zip y se corrigen
@@ -13104,7 +13127,7 @@ function abrirBateria() {
         caja.addEventListener('dragover', e => { e.preventDefault(); caja.classList.add('bat-sobre'); }); caja.addEventListener('dragleave', () => caja.classList.remove('bat-sobre'));
         caja.addEventListener('drop', async e => { e.preventDefault(); caja.classList.remove('bat-sobre'); leer(await archivosDeArrastre(e.dataTransfer)); });
     }
-    pintarBateria(); ov.classList.add('visible');
+    ordenarTareasBat(); pintarBateria(); ov.classList.add('visible');   // (por si ha cambiado el orden de la biblioteca)
 }
 // Lo arrastrado: archivos y carpetas (con sus subcarpetas)
 async function archivosDeArrastre(dt) {
@@ -13131,9 +13154,10 @@ function pintarBateria() {
             ${r && r.lista ? `<td class="n">${r.n}</td><td class="n"><b>${nf1(r.media)}</b></td><td class="n">${r.aprueban} de ${r.n}</td><td style="font-size:12px">${esc(r.error.slice(0, 90))}${r.error.length > 90 ? '…' : ''}${r.parejas ? `<div style="color:#b0301f">👥 ${r.parejas} pareja(s) muy parecida(s)</div>` : ''}</td>
                 <td class="bat-acc"><button class="btn-action sec" data-a="ver" data-k="${k}" title="Abrirla en la corrección masiva: la lista, cada alumno, los informes…">🔍 Ver</button><button class="btn-action sec" data-a="imp" data-k="${k}" title="Imprimir sus informes (el resumen de la clase y una hoja por alumno)">🖨</button><button class="btn-action sec" data-a="csv" data-k="${k}" title="La tabla para Excel o LibreOffice">⬇ CSV</button>${t.hoja ? `<button class="btn-action sec" data-a="hoja" data-k="${k}" title="La hoja de calificaciones con las notas, para subirla a Aules">⬆ Aules</button>` : ''}</td>`
               : `<td colspan="5" class="ctx-nota">${r && r.error ? '⚠️ ' + esc(r.error) : t.casa ? 'sin corregir' : '⚠️ elige su ejercicio'}</td>`}</tr>`; }).join('')}</table>
+        <p class="ctx-nota">Las tareas, en el orden de sus ejercicios en la biblioteca (${({ num: 'por número', titulo: 'por título', nivel: 'por nivel', ruta: 'por carpeta', reciente: 'los más recientes primero' })[(bib.filtro && bib.filtro.orden) || 'num'] || 'por número'}; se cambia en la 🗂 Biblioteca).</p>
         ${bat.ejercicios.length ? `<p class="ctx-nota">${bat.ejercicios.length} ejercicio(s): ${esc(bat.ejercicios.slice(0, 40).map(e => e.archivo + (e.ficha && e.ficha.num && !e.archivo.includes(e.ficha.num) ? ` (${e.ficha.num})` : '')).join(', '))}${bat.ejercicios.length > 40 ? '…' : ''}${bat.ejercicios.some(e => e.origen) ? ` · de la biblioteca: ${bat.ejercicios.filter(e => e.origen).length}` : ''}</p>` : ''}`;
     d.querySelectorAll('select.bat-ej').forEach(s => s.onchange = () => { const t = bat.tareas[+s.dataset.k]; t.manual = true; t.res = null;
-        t.casa = s.value === '' ? null : s.value === 'var' ? t.casa : { tipo: 'uno', is: [+s.value] }; pintarBateria(); });
+        t.casa = s.value === '' ? null : s.value === 'var' ? t.casa : { tipo: 'uno', is: [+s.value] }; ordenarTareasBat(); pintarBateria(); });
     d.querySelectorAll('button[data-a]').forEach(b => b.onclick = () => { const k = +b.dataset.k, t = bat.tareas[k];
         if (b.dataset.a === 'ver') verTareaBat(k);
         else if (b.dataset.a === 'imp') imprimirBateria(false, k);
