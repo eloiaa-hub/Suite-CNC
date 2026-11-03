@@ -644,7 +644,7 @@
 <body>
 <div class="app-window">
     <header class="top-bar">
-        <a href="index.html" class="ir-portada" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a><span class="top-bar-title">⬡ Calcador de contornos — Por Eloi A.A.<span class="ver-suite" title="Versión del programa" style="font-size:11px;font-weight:600;padding:1px 7px;margin-left:8px;border-radius:9px;background:rgba(0,90,156,.12);color:#005A9C;vertical-align:middle">v120</span></span>
+        <a href="index.html" class="ir-portada" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a><span class="top-bar-title">⬡ Calcador de contornos — Por Eloi A.A.<span class="ver-suite" title="Versión del programa" style="font-size:11px;font-weight:600;padding:1px 7px;margin-left:8px;border-radius:9px;background:rgba(0,90,156,.12);color:#005A9C;vertical-align:middle">v121</span></span>
         <div class="top-bar-right">
             <input class="project-name" id="projectName" type="text" value="calco_sin_nombre" placeholder="Nombre del proyecto">
             <div class="c2-archivo"><button class="btn-manual" onclick="nuevo()" title="Empieza de cero (se puede deshacer)">🗋 Nuevo</button><button class="btn-manual" onclick="document.getElementById('fileJSON').click()" title="Abre un proyecto .json del Calcador o del Corrector">📂 Abrir</button><button class="btn-manual" onclick="exportarJSON()" title="Guarda el proyecto en un archivo JSON: lo abren el Calcador, el Corrector, el Tutor y el Simulador (como plano del ejercicio)">💾 Guardar</button><button class="btn-manual" onclick="abrirBiblioteca()" title="Tus ejercicios: buscar, abrir e imprimir sus hojas">🗂 Biblioteca</button></div>
@@ -737,6 +737,7 @@
                     <button class="btn-action sec" onclick="exportarEjercicioTutor()" title="Guarda el ejercicio para el Tutor G-Code del alumno: verá el plano, pero no el programa. Las coordenadas y la compensación son las de ⚙️ Mecanizado">🎓 Para el Tutor</button>
                     <button class="btn-action sec" onclick="abrirEnArcosIJ()" title="Abre los arcos de esta pieza en Arcos I J, para practicar G2/G3, X Y e I J con ellos">◠ Practicar I J</button>
                     <button class="btn-action sec" onclick="abrirHojaIJ()" title="Hoja para imprimir con los arcos de esta pieza numerados, para calcular G2/G3, X Y e I J en papel; también con las variantes de examen, y con sus soluciones">◠ Hoja de I J…</button>
+                    <button class="btn-action sec" onclick="window.open('arcos_ij.html#profesor', '_blank')" title="Abre Arcos I J con la ventana para preparar un examen que Aules corrige solo">◠ Examen de I J…</button>
                 </div>
                 <div class="params-box c2-botones" id="c2PaneCorr" hidden>
                     <button class="btn-action sec" onclick="abrirCorregir()" title="Compara el programa ISO de un alumno con la pieza dibujada">✅ Un programa</button>
@@ -1068,7 +1069,7 @@
         <div class="var-cuerpo">
             <div class="var-opciones">
                 <p class="ctx-nota">La misma pieza, con la misma dificultad, pero otra solución: cada alumno o cada fila recibe una variante distinta.</p>
-                <div class="param-line">Variantes <input type="number" id="varN" min="2" max="8" step="1" value="4" onchange="cambiarVariantes()"></div>
+                <div class="param-line">Variantes <input type="number" id="varN" min="2" max="26" step="1" value="4" onchange="cambiarVariantes()"></div>
                 <label class="param-line var-chk"><input type="checkbox" id="varA" onchange="cambiarVariantes()"> La A es el ejercicio original</label>
                 <label class="param-line var-chk"><input type="checkbox" id="varEx" onchange="cambiarVariantes()"> Simetría izquierda-derecha</label>
                 <label class="param-line var-chk"><input type="checkbox" id="varEy" onchange="cambiarVariantes()"> Simetría arriba-abajo</label>
@@ -14323,7 +14324,7 @@ function abrirVariantes() {
 }
 function cambiarVariantes() {
     const g = id => document.getElementById(id);
-    Object.assign(varCfg, { n: Math.max(2, Math.min(8, +g('varN').value || 4)), aOriginal: g('varA').checked, ex: g('varEx').checked, ey: g('varEy').checked, giro: g('varGiro').checked, cero: g('varCero').checked, escala: g('varEsc').checked, factores: g('varFac').value });
+    Object.assign(varCfg, { n: Math.max(2, Math.min(26, +g('varN').value || 4)), aOriginal: g('varA').checked, ex: g('varEx').checked, ey: g('varEy').checked, giro: g('varGiro').checked, cero: g('varCero').checked, escala: g('varEsc').checked, factores: g('varFac').value });
     generarVariantes();
 }
 function cerrarVariantes() { document.getElementById('modalVariantes').classList.remove('visible'); }

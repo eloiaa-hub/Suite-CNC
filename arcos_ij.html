@@ -370,7 +370,7 @@
 <div class="app-window">
     <header class="top-bar">
         <a href="index.html" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a>
-        <span class="top-bar-title">◠ Arcos I J — Por Eloi A.A.<span class="ver-suite" title="Versión del programa">v3</span></span>
+        <span class="top-bar-title">◠ Arcos I J — Por Eloi A.A.<span class="ver-suite" title="Versión del programa">v4</span></span>
         <div class="niveles" id="niveles" title="Nivel del ejercicio">
             <button data-n="sencillo" title="Arcos de ¼, ½ o ¾ de vuelta tangentes a las rectas: el centro está alineado con el punto de inicio">① Sencillo</button>
             <button data-n="complejo" title="El centro queda por encima o por debajo de la recta: se calcula con Pitágoras">② Pitágoras</button>
@@ -382,6 +382,7 @@
         <div class="top-bar-right">
             <button class="btn-manual lleno" id="btnNuevo" onclick="nuevoEjercicio()" title="Nuevo ejercicio al azar (tecla N)">🎲 Nuevo ejercicio</button>
             <button class="btn-manual" id="btnHoja" onclick="abrirHoja()" title="Genera una hoja de ejercicios para imprimir, con sus soluciones">🖨 Hoja</button>
+            <button class="btn-manual" id="btnExamenAules" style="display:none" onclick="abrirExamenAules()" title="Prepara un examen que Aules corrige solo (solo para el profesor)">📝 Examen Aules</button>
             <a class="btn-manual" id="btnManual" href="manual_arcos_ij.html" target="_blank" rel="noopener" title="Guía del alumno (se abre en otra pestaña; debe estar en la misma carpeta que el programa)">📖 Manual</a>
             <button class="btn-manual" id="btnGuia" onclick="guiaEmpezar()" title="Recorrido guiado por el programa">🧭 Guía</button>
             <span class="icon-gear" id="btnAyuda" onclick="abrirAyuda()" title="Teoría y ayuda">❓</span>
@@ -599,6 +600,27 @@
 </div>
 
 <!-- Hoja de ejercicios -->
+<div class="modal-overlay" id="modalExamen" onclick="if(event.target===this)cerrarModal('modalExamen')">
+    <div class="help-modal hoja-modal">
+        <div class="help-header"><h2>📝 Examen para Aules</h2><button class="help-close" onclick="cerrarModal('modalExamen')">✕</button></div>
+        <div class="help-content">
+            <p class="nota-p">Cada tipo de ejercicio sale en varias versiones de dificultad parecida. En Aules se importan como preguntas que se corrigen solas, y cada alumno recibe una versión al azar de cada tipo.</p>
+            <div class="hoja-form">
+                <label class="largo">Título<input type="text" id="exTitulo" value="Examen de I J"></label>
+                <label>Versiones de cada tipo<input type="number" id="exN" min="2" max="60" value="18"></label>
+                <label>Coordenadas<select id="exCotas"><option value="G90">G90</option><option value="G91">G91</option><option value="MIX">Mixtas</option></select></label>
+                <label class="chk"><input type="checkbox" id="exSencillo" checked> ① Sencillo</label>
+                <label class="chk"><input type="checkbox" id="exComplejo" checked> ② Pitágoras</label>
+                <label class="chk"><input type="checkbox" id="exCirculo" checked> ③ Círculo completo</label>
+                <p class="nota-p largo" id="exInfo"></p>
+            </div>
+            <div class="btn-row" style="margin-top:14px">
+                <button class="btn-action" id="exBajar" onclick="bajarExamenAules()">⬇ Preguntas para Aules (.xml)</button>
+                <button class="btn-action sec" onclick="imprimirSolucionesExamen()">🖨 Soluciones</button>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="modal-overlay" id="modalHoja" onclick="if(event.target===this)cerrarModal('modalHoja')">
     <div class="help-modal hoja-modal">
         <div class="help-header"><h2>🖨 Hoja de ejercicios</h2><button class="help-close" onclick="cerrarModal('modalHoja')">✕</button></div>
@@ -2212,6 +2234,80 @@ document.addEventListener('keydown', e => {
 });
 window.addEventListener('resize', () => { render(); if (guiaI >= 0) guiaMostrar(); });
 
+/* =========================================================================
+   📝 EXAMEN PARA AULES: Moodle XML con preguntas Cloze, que Aules corrige solas.
+   Las mismas reglas en todas las versiones, para que la dificultad sea parecida. Cada examen sale de una semilla nueva.
+   ========================================================================= */
+const EX_TIPOS = [{ id: 'sencillo', chk: 'exSencillo', nom: 'Sencillo' }, { id: 'complejo', chk: 'exComplejo', nom: 'Pitágoras' }, { id: 'circulo', chk: 'exCirculo', nom: 'Círculo' }];
+let examenActual = null;
+function abrirExamenAules() { examenActual = null; pintarInfoExamen(); $('modalExamen').classList.add('visible'); }
+function pintarInfoExamen() { const n = +$('exN').value || 0, t = EX_TIPOS.filter(x => $(x.chk).checked).length; $('exInfo').textContent = t ? `${t} ${t === 1 ? 'pregunta' : 'preguntas'} por alumno, elegidas entre ${n * t} (${n} de cada tipo).` : 'Elige al menos un tipo.'; $('exBajar').disabled = !t; }
+function azarSemilla(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function huellaEj(e) { return JSON.stringify(e.tramos.map(t => [t.t, t.a, t.b, t.C, t.g])); }
+function generarExamen(semilla, n, cotas, tipos) {
+    const guard = { random: Math.random, cfg: Object.assign({}, cfg) };
+    Object.assign(cfg, { ang: ['90', '180'], dato: ['cuerda', 'dist'], ori: ['h', 'v'], tam: ['menor'], decimal: false, cdato: ['R', 'D'], cotas: [cotas], ay: Object.assign({}, AY0) });
+    Math.random = azarSemilla(semilla);
+    try {
+        return tipos.map(t => { const lista = [], vistas = new Set();
+            for (let k = 0; lista.length < n && k < n * 200; k++) { const e = generar(t.id), h = huellaEj(e); e.cotas = cotas; if (!vistas.has(h)) { vistas.add(h); lista.push(e); } }
+            return { tipo: t, lista }; });
+    } finally { Math.random = guard.random; Object.assign(cfg, guard.cfg); }
+}
+// El plano en PNG: los estilos de la página pasan al propio SVG (Aules no los tiene)
+async function pngDe(e) {
+    const W = 760, H = 460, oscuro = document.body.classList.contains('dark-mode'), ayuda = cfg.ay; document.body.classList.remove('dark-mode'); cfg.ay = Object.assign({}, AY0);
+    const caja = document.createElement('div'); caja.style.cssText = `position:fixed;left:-9999px;top:0;width:${W}px;height:${H}px`;
+    try {
+        caja.innerHTML = svgDe(e, W, H); document.body.appendChild(caja);
+        const svg = caja.querySelector('svg'); svg.setAttribute('width', W); svg.setAttribute('height', H); svg.removeAttribute('style');
+        svg.querySelectorAll('.hit, title').forEach(x => x.remove());
+        svg.querySelectorAll('*').forEach(el => { const c = getComputedStyle(el); ['fill', 'stroke', 'stroke-width', 'stroke-dasharray', 'stroke-linecap', 'opacity', 'font-size', 'font-family', 'font-weight', 'paint-order'].forEach(k => el.style.setProperty(k, c.getPropertyValue(k))); });
+        const txt = new XMLSerializer().serializeToString(svg), im = new Image();
+        await new Promise((ok, mal) => { im.onload = ok; im.onerror = mal; im.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(txt); });
+        const c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, W, H); x.drawImage(im, 0, 0);
+        return { b64: c.toDataURL('image/png').split(',')[1], W, H };
+    } finally { caja.remove(); cfg.ay = ayuda; if (oscuro) document.body.classList.add('dark-mode'); }
+}
+function clozeDe(e) {
+    const num = v => `{1:NUMERICAL:=${r1(v)}:0.05}`, gs = a => `{1:MULTICHOICE:${a === 'G2' ? '=G2~G3' : 'G2~=G3'}}`;
+    const { h, it } = textoEnunciado(e), limpio = t => t.replace(/<b style="[^"]*">/g, '<b>').replace(/<span class="tag-cotas [a-z]+">([^<]*)<\/span>/g, '<b>$1</b>');
+    let filas = '';
+    if (e.askIni) filas += `<tr><td><b>Inicio</b></td><td></td><td>${num(e.ini.x)}</td><td>${num(e.ini.y)}</td><td></td><td></td></tr>`;
+    e.tramos.forEach((t, k) => { if (!t.q) return; const xy = esperadoXY(e, k), et = e.tipo === 'circulo' ? (k + 1) + '.º semicírculo' : 'Arco';
+        filas += `<tr><td><b>${et}</b></td><td>${gs(t.g)}</td><td>${num(xy.x)}</td><td>${num(xy.y)}</td><td>${num(t.I)}</td><td>${num(t.J)}</td></tr>`; });
+    const sol = programa(e, true).filter(l => l.cls !== 'cab' && l.cls === 'arc-l').map(l => l.ws.filter(w => !/^N\d+$/.test(w.t)).map(w => w.t).join(' '));
+    return { h, cuerpo: `<p><b>${h}</b></p><ul>${it.map(x => `<li>${limpio(x)}</li>`).join('')}</ul><table border="1" cellpadding="6" style="border-collapse:collapse"><tr><th></th><th>G</th><th>X</th><th>Y</th><th>I</th><th>J</th></tr>${filas}</table><p style="font-size:90%;color:#555">Escribe los decimales con punto (por ejemplo, 12.5). I y J siempre desde el inicio del arco, con su signo.</p>`, sol: (e.askIni ? [`Inicio X${fmt(e.ini.x)} Y${fmt(e.ini.y)}`] : []).concat(sol) };
+}
+function leerExamen() {
+    if (examenActual) return examenActual;
+    const tipos = EX_TIPOS.filter(x => $(x.chk).checked), n = Math.max(2, Math.min(60, +$('exN').value || 18)), cotas = $('exCotas').value, semilla = (Date.now() ^ (Math.random() * 1e9)) >>> 0;
+    return examenActual = { titulo: $('exTitulo').value.trim() || 'Examen de I J', n, cotas, semilla, grupos: generarExamen(semilla, n, cotas, tipos) };
+}
+async function xmlExamen(E) {
+    const cd = t => '<![CDATA[' + String(t).replace(/]]>/g, ']]]]><![CDATA[>') + ']]>', es = t => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;'), base = E.titulo.replace(/\//g, '-');
+    let x = '<?xml version="1.0" encoding="UTF-8"?>\n<quiz>\n';
+    for (let g = 0; g < E.grupos.length; g++) { const G = E.grupos[g];
+        x += `  <question type="category">\n    <category><text>${es(`$course$/top/Arcos I J - ${base}/${g + 1} ${G.tipo.nom}`)}</text></category>\n    <info format="html"><text>${es(`${G.lista.length} versiones de «${G.tipo.nom}»: en el cuestionario, añade una pregunta aleatoria de esta categoría.`)}</text></info>\n  </question>\n`;
+        for (let i = 0; i < G.lista.length; i++) { const e = G.lista[i], c = clozeDe(e), p = await pngDe(e), nom = `${base} · ${G.tipo.nom} · versión ${String(i + 1).padStart(2, '0')}`, img = `plano_${g + 1}_${i + 1}.png`;
+            x += `  <question type="cloze">\n    <name><text>${es(nom)}</text></name>\n    <questiontext format="html">\n      <text>${cd(`<p><img src="@@PLUGINFILE@@/${img}" alt="Plano del ejercicio" width="${p.W}" height="${p.H}" style="max-width:100%;height:auto"></p>${c.cuerpo}`)}</text>\n      <file name="${img}" path="/" encoding="base64">${p.b64}</file>\n    </questiontext>\n    <generalfeedback format="html">\n      <text>${cd(`<p>${c.sol.map(es).join('<br>')}</p>`)}</text>\n    </generalfeedback>\n    <penalty>0.3333333</penalty>\n    <hidden>0</hidden>\n    <idnumber></idnumber>\n  </question>\n`; } }
+    return x + '</quiz>\n';
+}
+async function bajarExamenAules() {
+    const E = leerExamen(), b = $('exBajar'), t = b.textContent; b.disabled = true; b.textContent = 'Generando…';
+    try { const x = await xmlExamen(E), a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([x], { type: 'application/xml' })); a.download = E.titulo.replace(/[\\/:*?"<>|]/g, '-') + ' (Aules).xml'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+        $('exInfo').textContent = `Hecho: ${E.grupos.reduce((s, G) => s + G.lista.length, 0)} preguntas. Las 🖨 Soluciones de este examen siguen disponibles hasta que cierres el programa o abras esta ventana otra vez.`; }
+    catch (err) { console.error(err); $('exInfo').textContent = 'No se ha podido generar el archivo: ' + err.message; }
+    finally { b.disabled = false; b.textContent = t; }
+}
+function imprimirSolucionesExamen() {
+    const E = leerExamen(), w = window.open('', '_blank'); if (!w) { $('exInfo').textContent = 'El navegador ha bloqueado la ventana: permite las ventanas emergentes.'; return; }
+    const filas = G => G.lista.map((e, i) => `<tr><td>${String(i + 1).padStart(2, '0')}</td><td><pre>${esc(clozeDe(e).sol.join('\n'))}</pre></td></tr>`).join('');
+    w.document.open(); w.document.write(`<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>${esc(E.titulo)} — soluciones</title><style>@page{size:A4;margin:12mm}body{font-family:'Segoe UI',Arial,sans-serif;font-size:10pt}h1{font-size:15pt;margin:0 0 2mm}h2{font-size:12pt;margin:5mm 0 2mm;break-after:avoid}table{border-collapse:collapse;width:100%}td{border:1px solid #bbb;padding:1mm 2mm;vertical-align:top}pre{margin:0;font:9.5pt Consolas,monospace;white-space:pre-wrap}tr{break-inside:avoid}</style></head><body><h1>${esc(E.titulo)} — soluciones</h1><div>Coordenadas ${E.cotas === 'MIX' ? 'mixtas' : E.cotas}</div>${E.grupos.map(G => `<h2>${esc(G.tipo.nom)}</h2><table>${filas(G)}</table>`).join('')}<script>window.onload=()=>setTimeout(()=>print(),250)<\/script></body></html>`); w.document.close();
+}
+['exN', 'exCotas', 'exSencillo', 'exComplejo', 'exCirculo'].forEach(id => $(id).addEventListener('change', () => { examenActual = null; pintarInfoExamen(); }));
+if (location.hash.indexOf('profesor') >= 0 && !EXAMEN) { $('btnExamenAules').style.display = ''; setTimeout(abrirExamenAules, 300); }
+
 /* ---------- arranque ---------- */
 if (EXAMEN) document.body.classList.add('examen');
 setDarkMode(cfg.oscuro);
@@ -2219,7 +2315,7 @@ cambiarAcento(cfg.acento);
 ponerNivel(cfg.nivel);
 actualizarMarcador();
 const DESDE_CALCADOR = location.hash.indexOf('desdeCalcador') >= 0;
-if (!cfg.guiaVista && !EXAMEN && !DESDE_CALCADOR) setTimeout(guiaEmpezar, 500);
+if (!cfg.guiaVista && !EXAMEN && !DESDE_CALCADOR && location.hash.indexOf('profesor') < 0) setTimeout(guiaEmpezar, 500);
 /* ---------- recibir la pieza del Calcador: como el Simulador, por mensaje entre pestañas o, si no, por el almacenamiento ---------- */
 if (pieza && !EXAMEN && !NIVEL_FIJO) $('btnNivelPieza').style.display = '';
 window.addEventListener('message', e => {

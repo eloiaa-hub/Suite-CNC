@@ -4,7 +4,12 @@ La versión de la suite es **año.mes** (por ejemplo, 2026.10). Cada programa co
 
 ## Suite CNC 2026.10
 
-Versiones de los programas: **Calcador v120 · Corrector v65 · Tutor G-Code v6 · Simulador 3D V45 · Calculadora de taller v5 · Arcos I J v3 · Anidador de tableros v8**.
+Versiones de los programas: **Calcador v121 · Corrector v66 · Tutor G-Code v6 · Simulador 3D V45 · Calculadora de taller v5 · Arcos I J v4 · Anidador de tableros v8**.
+
+### Calcador v121 / Corrector v66 / Arcos I J v4: un examen distinto para cada alumno
+- **🎲 Variantes** llega hasta 26 (antes, 8), para dar a cada alumno la suya.
+- **📝 Examen para Aules** en Arcos I J (desde **◠ Examen de I J…** del Calcador): preguntas en Moodle XML que Aules corrige solas, con 18 versiones de dificultad parecida de cada tipo (sencillo, Pitágoras y círculo), con su plano y sus soluciones.
+- Guía nueva: **Un examen distinto para cada alumno** (`guia_examen.html` / `.pdf`).
 
 ### Itinerario del alumno y pruebas automáticas
 - **Itinerario del alumno** (`itinerario.html`), enlazado desde la portada: nueve pasos, de las primeras rectas al programa para la máquina, con el apunte y la herramienta de cada uno y casillas «Hecho».
