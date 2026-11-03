@@ -20,7 +20,7 @@ const { lanzar, path, SUITE, fs } = require('./comun');
   await c.goto('file://' + path.join(SUITE, 'calcador.html')); await c.waitForTimeout(700);
   await c.setInputFiles('#fileJSON', path.join(__dirname, 'Prueba01.json')); await c.waitForTimeout(400);
   const [w] = await Promise.all([ctx.waitForEvent('page'), c.evaluate(() => abrirEnSimulador())]);
-  await w.waitForFunction(() => location.hash !== '#desdeCalcador', null, { timeout: 15000 }).catch(() => {}); await w.waitForTimeout(800);
+  await w.waitForFunction(() => location.hash !== '#desdeCalcador', null, { timeout: 15000 }).catch(() => {}); await w.waitForFunction(() => /Contorno mecanizado: 100/.test((document.getElementById('planoEval') || {}).innerText || ''), null, { timeout: 30000 }).catch(() => {});
   const r = await w.evaluate(() => ({ url: location.href, moves: (typeof gcodeMoves !== 'undefined' && gcodeMoves.length) || 0, plano: (document.getElementById('planoEval') || {}).innerText || '' }));
   ok('«➜ Abrir en el Simulador» del Calcador abre simulador3d.html con el plano y la solución', /simulador3d\.html(#desdeCalcador)?$/.test(r.url) && r.moves > 5 && /Contorno mecanizado: 100/.test(r.plano), JSON.stringify(r));
   ok('la portada tiene un solo Simulador 3D, para alumnado y profesorado', await (async () => { const i = await ctx.newPage(); await i.goto('file://' + path.join(SUITE, 'index.html')); return i.evaluate(() => !document.querySelector('a[href="simulador3d_profesor.html"]') && [...document.querySelectorAll('.ficha')].filter(f => /Simulador 3D/.test(f.textContent)).length === 1); })());
