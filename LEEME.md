@@ -23,7 +23,7 @@ sin instalar nada y también sin conexión a internet.
 | `anidador.html` | Anidador de tableros: coloca piezas del Calcador (.json) o de un despiece (.csv) en tableros con colocación a mano, giro y escala con el ratón, y los devuelve como proyectos del Calcador o en PNG, SVG y DXF, por rectángulo o por forma real, con cantos y coste (profesorado) | v8 |
 | `simulador3d.html` | Simulador G-Code 3D, con vista 2D en planta, editor de G-code e informe de entrega en PDF, y explicación de cada línea (alumnado y profesorado) | V45 |
 | `simulador3d_profesor.html` | Solo lleva a `simulador3d.html` (para los enlaces antiguos); se puede borrar | — |
-| `tutor.html` | Tutor G-Code: dibujar una pieza y ver cómo se escribe su programa, línea a línea y comentado (👁 Aprender), o escribirlo y que el Tutor corrija cada línea (✍ Practicar); con ejemplos y ejercicios (alumnado; se genera a partir del Calcador) | v4 |
+| `tutor.html` | Tutor G-Code: dibujar una pieza y ver cómo se escribe su programa, línea a línea y comentado (👁 Aprender), o escribirlo y que el Tutor corrija cada línea (✍ Practicar); con ejemplos y ejercicios (alumnado; se genera a partir del Calcador) | v5 |
 | `calculadora.html` | Calculadora de taller: recta inclinada, polares, arcos (centro, I J y R), G90 ↔ G91 y velocidades de corte (alumnado) | v5 |
 | `arcos_ij.html` | Arcos I J: aprender a calcular I y J de los arcos G2 y G3, en seis niveles, con corrección, ayudas y paso a paso; recibe los arcos de una pieza desde el Calcador (◠ Practicar I J) (alumnado) | v3 |
 | `manual_arcos_ij.html` / `.pdf` | Manual de Arcos I J (alumnado) | — |

@@ -4,7 +4,12 @@ La versión de la suite es **año.mes** (por ejemplo, 2026.10). Cada programa co
 
 ## Suite CNC 2026.10
 
-Versiones de los programas: **Calcador v119 · Corrector v64 · Tutor G-Code v4 · Simulador 3D V45 · Calculadora de taller v5 · Arcos I J v3 · Anidador de tableros v8**.
+Versiones de los programas: **Calcador v119 · Corrector v64 · Tutor G-Code v5 · Simulador 3D V45 · Calculadora de taller v5 · Arcos I J v3 · Anidador de tableros v8**.
+
+### Tutor G-Code v5: la interfaz del Calcador
+- Arriba a la derecha del dibujo, **◧** oculta o muestra el panel izquierdo (F7) y **◨** el derecho (F8), y se recuerda al volver a abrir. La barra de herramientas se ve siempre y el dibujo se encuadra para llenar la zona. Al abrir un ejemplo o un ejercicio, el panel del programa vuelve a salir.
+- **👁 Rejilla**, **🏷 Nombres** y **📏 Cotas**, junto a esos botones, van a la par con sus casillas.
+- **↶ Deshacer, ↷ Rehacer, ⭘ Cerrar y ✓ Terminar**, al pie de la barra de herramientas. **🖼 Fondo**, en la barra de arriba. En la pestaña Dibujo, **Cotas y marcas** y **Ajustar medidas** van en desplegables; «📍 Absolutas» lleva su texto.
 
 ### Arcos I J v3 / Calcador v119 / Corrector v64: Arcos I J entra en la suite
 - **Arcos I J** (`arcos_ij.html`), el programa para aprender a calcular I y J, con su ficha en la portada, su manual en HTML y PDF y su versión de escritorio (`ArcosIJ`).

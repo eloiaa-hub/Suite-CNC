@@ -607,12 +607,25 @@
     .c2-imanes { margin-bottom: 4px; }
     .c2-imanes > .params-box { margin-top: 6px; }
     #tuNivelLinea select { max-width: 130px; }
+
+    /* ═══ Tutor v5: la interfaz del Calcador ═══ */
+    .vista-controls { position: absolute; top: 10px; right: 12px; display: flex; gap: 4px; z-index: 5; }
+    .vista-controls .vsep { width: 8px; }
+    .btn-vista.oculto { background: var(--accent-light); color: var(--accent); border-color: var(--accent); }
+    #btnVerRejilla.visible, #btnVerNombres.visible, #btnVerCotas.visible { background: var(--accent); color: #fff; border-color: var(--accent); }
+    html.sin-izq .action-panel, html.sin-der .tutor-panel { display: none !important; }
+    .tool-strip .tool-acc { border: none; background: transparent; color: var(--text-main); border-radius: 5px; font-size: 16px; padding: 0; cursor: pointer; }
+    .tool-strip .tool-acc:hover:not(:disabled) { background: var(--accent-light); color: var(--accent); }
+    .tool-strip .tool-acc:disabled { opacity: .3; cursor: default; }
+    .c2-cotas > .param-line, .c2-ajuste > .param-line { margin-top: 5px; }
+    .c2-cotas > button, .c2-ajuste > button { margin-top: 7px; width: 100%; }
+    html.tu-es-ejercicio #btnFondoArriba, html.tu-es-ejercicio .tool-strip .tool-acc { display: none !important; }
 </style>
 </head>
 <body>
 <div class="app-window">
     <header class="top-bar">
-        <a href="index.html" class="ir-portada" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a><span class="top-bar-title">🎓 Tutor G-Code — Por Eloi A.A.<span class="ver-suite" title="Versión del programa (hecho a partir del Calcador v118)" style="font-size:11px;font-weight:600;padding:1px 7px;margin-left:8px;border-radius:9px;background:rgba(0,90,156,.12);color:#005A9C;vertical-align:middle">v4</span></span>
+        <a href="index.html" class="ir-portada" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a><span class="top-bar-title">🎓 Tutor G-Code — Por Eloi A.A.<span class="ver-suite" title="Versión del programa (hecho a partir del Calcador v118)" style="font-size:11px;font-weight:600;padding:1px 7px;margin-left:8px;border-radius:9px;background:rgba(0,90,156,.12);color:#005A9C;vertical-align:middle">v5</span></span>
         <div class="top-bar-right">
             <input class="project-name" id="projectName" type="text" value="calco_sin_nombre" placeholder="Nombre del proyecto">
             <div class="c2-archivo"><button class="btn-manual" onclick="nuevo()" title="Empieza un dibujo nuevo (se puede deshacer). Si estás en un ejercicio, lo deja">🗋 Nuevo</button><button class="btn-manual" onclick="document.getElementById('fileJSON').click()" title="Abre un dibujo guardado o un ejercicio que te ha dado el profesor (.json). Si es un ejercicio, se abre en ✍ Practicar">📂 Abrir</button><button class="btn-manual" onclick="exportarJSON()" title="Guarda tu dibujo en un archivo .json, para seguir otro día o abrirlo en el Simulador">💾 Guardar</button><button class="btn-manual" onclick="tuAbrirEjemplos()" title="Piezas para ver su programa (los programas resueltos) y ejercicios para escribirlo tú (la biblioteca de inicio)">📚 Ejemplos</button></div>
@@ -916,6 +929,14 @@
                 <input id="cmd" type="text" autocomplete="off" spellcheck="false" placeholder="x,y">
                 <span class="cmd-ej" id="cmdEj">x,y · @dx,dy · dist&lt;ángulo · &lt;ángulo · G2 X Y I J</span>
             </div>
+            <div class="vista-controls">
+                <div class="zoom-btn btn-vista" id="btnPanelIzq" onclick="alternarPanel('izq')">◧</div>
+                <div class="zoom-btn btn-vista" id="btnPanelDer" onclick="alternarPanel('der')">◨</div>
+                <span class="vsep"></span>
+                <div class="zoom-btn btn-vista" id="btnVerRejilla" onclick="alternarVerRejilla()">👁 Rejilla</div>
+                <div class="zoom-btn btn-vista" id="btnVerNombres" onclick="alternarCasillaVista('tuNombres')">🏷 Nombres</div>
+                <div class="zoom-btn btn-vista" id="btnVerCotas" onclick="alternarCasillaVista('chkCotas')">📏 Cotas</div>
+            </div>
             <div class="zoom-controls">
                 <div class="zoom-btn" onclick="zoomBoton(1.25)" title="Acercar">+</div>
                 <div class="zoom-btn" onclick="zoomBoton(0.8)" title="Alejar">−</div>
@@ -970,7 +991,7 @@
                     <label title="Velocidad de la reproducción">🐢<input id="tuVel" type="range" min="-2" max="2" step="1" value="0">🐇</label>
                     <span id="tuInfoLinea"></span>
                     <span class="der">
-                        <label title="En las líneas en G91, el punto en el que queda la fresa (en absolutas)"><input id="tuAbs" type="checkbox"> 📍</label>
+                        <label title="En las líneas en G91, el punto en el que queda la fresa (en absolutas)"><input id="tuAbs" type="checkbox"> 📍 Absolutas</label>
                         <button id="tuDescargar" onclick="tuDescargar(false)" title="Guarda el programa en un archivo .nc (con sus comentarios), para abrirlo en el Simulador o llevarlo a la máquina">⬇ Guardar .nc</button>
                         <button onclick="tuEnviarSimulador()" title="Abre el Simulador 3D con el plano y el programa, para verlo mecanizado">➜ Simulador 3D</button>
                     </span>
@@ -1372,6 +1393,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.</pre>
             <p>Herramienta <span class="kbd">N</span>. En modo <strong>Automática</strong> (por defecto) basta un clic sobre lo que quieres medir: un lado recto da su longitud real (alineada, también en las inclinadas), un arco su radio, un círculo su diámetro, y un vértice o centro empieza una cota entre dos puntos (al colocarla, perpendicular a los puntos sale alineada; arriba o abajo, horizontal; a un lado, vertical). También puedes elegir el tipo concreto en Formas: <strong>lineal</strong> (dos puntos y la posición: arriba o abajo da una cota horizontal, a un lado una vertical), <strong>alineada</strong>, <strong>ángulo</strong> (vértice, un punto de cada lado y la posición del arco), <strong>radio</strong> o <strong>diámetro</strong> (clic sobre el arco y en la posición del texto). Si marcas vértices, puntos de un lado (el imán «Sobre curva» funciona sobre tus piezas mientras acotas) o arcos de un contorno, la cota queda ligada a ellos y sigue a la pieza al moverla, girarla o modificarla; si borras la pieza, sus cotas manuales se borran con ella. Se ven aunque desactives las automáticas, así que puedes acotar el plano solo a mano. Se arrastran, se ocultan y se borran con clic derecho. <strong>Doble clic sobre su número</strong> cambia la medida: si los puntos son del mismo contorno se mueve el vértice; si son de contornos distintos (p. ej. del borde a un taladro), se desplaza el contorno entero sin deformarlo; los radios y diámetros cambian el arco o escalan el círculo.</p>
             <h3>Imanes entre formas</h3>
             <p>Con el chip <strong>Entre formas</strong> activo, al arrastrar una forma (o varias seleccionadas) se atrae hacia las demás: <strong>centro con centro</strong> (concéntricos), vértice con vértice, punto medio con punto medio; <strong>bordes alineados</strong> en X y en Y por separado (apilar dos rectángulos compartiendo el borde, meter uno dentro de otro ajustado a una esquina o centrado, dejar un círculo tangente a un lado recto); y <strong>lados inclinados paralelos</strong> que se juntan. Unas guías rosas muestran la alineación y la barra de estado la nombra. <span class="kbd">Alt</span> la desactiva mientras la mantienes pulsada. Es la forma rápida de preparar piezas para Fusionar o Restar. Al <strong>escalar con las asas</strong> (doble clic en una forma) el asa también se atrae: a un vértice, centro o punto medio de otra forma, o se alinea con sus bordes; si no hay nada cerca y la rejilla está activa, salta a la rejilla. En la escala proporcional se clava el eje alineado.</p>
+            <h3>Más sitio para dibujar</h3>
+            <p>Arriba a la derecha del dibujo: <strong>◧</strong> oculta o muestra el panel izquierdo (tecla <span class="kbd">F7</span>) y <strong>◨</strong> el derecho (tecla <span class="kbd">F8</span>). <strong>👁 Rejilla</strong>, <strong>🏷 Nombres</strong> y <strong>📏 Cotas</strong> enseñan u ocultan la rejilla, los nombres de los puntos y las cotas automáticas. La barra de herramientas se ve siempre, con ↶ ↷ (deshacer, rehacer) y ⭘ ✓ (cerrar, terminar) al pie.</p>
             <h3>Imán a la rejilla</h3>
             <p>El botón <strong>▦ Rejilla</strong> (junto al zoom) o la tecla <span class="kbd">G</span> activan y desactivan el imán a los nudos de la rejilla, con el paso elegido en Imanes.</p>
             <h3>Ajuste automático de medidas</h3>
@@ -1449,6 +1472,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.</pre>
                 <tr><td><span class="kbd">Ctrl+Z</span> / <span class="kbd">Ctrl+Y</span></td><td>Deshacer / rehacer.</td></tr>
                 <tr><td><span class="kbd">F</span></td><td>Encuadrar todo.</td></tr>
                 <tr><td><span class="kbd">G</span></td><td>Imán a la rejilla: activar o desactivar.</td></tr>
+                <tr><td><span class="kbd">F7</span> · <span class="kbd">F8</span></td><td>Ocultar o mostrar el panel izquierdo · el derecho.</td></tr>
                 <tr><td><span class="kbd">Ctrl</span>+<span class="kbd">C</span> / <span class="kbd">X</span> / <span class="kbd">V</span></td><td>Copiar, cortar y pegar (pega donde está el ratón; con Mayús, en su sitio). Sirve también entre pestañas.</td></tr>
             </table>
             <h3>Exportar</h3>
@@ -5192,7 +5216,7 @@ function dibujar() {
     ctx.setTransform(1,0,0,1,0,0);
     ctx.fillStyle = colores.fondo; ctx.fillRect(0, 0, cv.width, cv.height);
     ctx.setTransform(DPR,0,0,DPR,0,0);
-    dibujarRejilla();
+    if (verRejilla) dibujarRejilla();
     if (fondo) dibujarFondo(V);
     dibujarAux();
     dibujarEjes();
@@ -5225,6 +5249,45 @@ function dibujarGruposSel() {
         ctx.setLineDash([]); ctx.font = '11px system-ui, sans-serif'; const tw = ctx.measureText('🔗 grupo').width; ctx.fillStyle = colores.fondo || '#fff'; ctx.fillRect(b.x + 6.5 - tw - 6, a.y - 6.5 - 16, tw + 6, 15); ctx.fillStyle = colores.acento; ctx.fillText('🔗 grupo', b.x + 6.5 - tw - 3, a.y - 6.5 - 4); ctx.setLineDash([6, 4]); });
     ctx.restore();
 }
+// ── Vista: ocultar los paneles (la barra de herramientas siempre se ve), la rejilla, los nombres y las cotas ──
+const VISTA_CLAVE = 'tutor_vista';
+var verRejilla = true;
+function guardarVista() { const h = document.documentElement.classList; try { localStorage.setItem(VISTA_CLAVE, JSON.stringify({ izq: h.contains('sin-izq'), der: h.contains('sin-der'), rejilla: verRejilla })); } catch (e) {} }
+function pintarBotonesVista() {
+    const h = document.documentElement.classList, $ = id => document.getElementById(id);
+    const panel = (id, cls, nom, tecla) => { const e = $(id); if (!e) return; const o = h.contains(cls); e.classList.toggle('oculto', o); e.title = (o ? 'Mostrar el panel ' + nom : 'Ocultar el panel ' + nom + ' para ver más grande el dibujo') + ' · tecla ' + tecla; };
+    panel('btnPanelIzq', 'sin-izq', 'izquierdo (opciones)', 'F7');
+    panel('btnPanelDer', 'sin-der', 'derecho (programa)', 'F8');
+    const vista = (id, on, tOn, tOff) => { const e = $(id); if (e) { e.classList.toggle('visible', on); e.title = on ? tOn : tOff; } };
+    vista('btnVerRejilla', verRejilla, 'Ocultar la rejilla del dibujo (el imán a la rejilla es el botón ▦ Rejilla)', 'Ver la rejilla del dibujo (el imán a la rejilla es el botón ▦ Rejilla)');
+    const c = id => { const e = $(id); return !!(e && e.checked); };
+    vista('btnVerNombres', c('tuNombres'), 'Ocultar los nombres de los puntos (P1, P2… A1…)', 'Ver los nombres de los puntos (P1, P2… A1…)');
+    vista('btnVerCotas', c('chkCotas'), 'Ocultar las cotas automáticas («Acotar automáticamente»)', 'Ver las cotas automáticas («Acotar automáticamente»)');
+}
+function alternarPanel(cual, forzar) {
+    const cls = cual === 'izq' ? 'sin-izq' : 'sin-der', h = document.documentElement.classList;
+    const ocultar = forzar === undefined ? !h.contains(cls) : !!forzar;
+    if (ocultar === h.contains(cls)) return;
+    h.toggle(cls, ocultar);
+    try { redimensionar(); } catch (e) {}
+    // con más (o menos) sitio, el dibujo se encuadra para llenar la zona
+    try { if (contornos.some(c => c.pts.length >= 2)) encuadrar(); else render(); } catch (e) {}
+    pintarBotonesVista(); guardarVista();
+}
+function alternarVerRejilla(forzar) {
+    verRejilla = forzar === undefined ? !verRejilla : !!forzar;
+    pintarBotonesVista(); guardarVista(); try { render(); } catch (e) {}
+}
+function alternarCasillaVista(id) { const c = document.getElementById(id); if (c) c.click(); pintarBotonesVista(); }
+(function () {
+    try { const v = JSON.parse(localStorage.getItem(VISTA_CLAVE) || '{}'); if (v && typeof v === 'object') {
+        if (v.izq) document.documentElement.classList.add('sin-izq'); if (v.der) document.documentElement.classList.add('sin-der'); if (v.rejilla === false) verRejilla = false; } } catch (e) {}
+    document.addEventListener('keydown', e => {
+        if (e.key !== 'F7' && e.key !== 'F8') return;
+        if (document.querySelector('.modal-overlay.visible')) return;
+        e.preventDefault(); alternarPanel(e.key === 'F7' ? 'izq' : 'der');
+    });
+})();
 function dibujarRejilla() {
     let g = snapCfg.paso;
     while (g * view.z < 8) g *= 10;
@@ -15368,7 +15431,7 @@ function tuNivel(n) {
     if (TU_C2) return;
     TU.nivel = +n || 3; tuGuardarPref();
     const ok = TU_NIVELES[TU.nivel];
-    document.querySelectorAll('#toolStrip .tool-btn').forEach(b => { b.style.display = (b.dataset.h === 'texto' || (ok && !ok.includes(b.dataset.h))) ? 'none' : ''; });
+    document.querySelectorAll('#toolStrip .tool-btn:not(.tool-acc)').forEach(b => { b.style.display = (b.dataset.h === 'texto' || (ok && !ok.includes(b.dataset.h))) ? 'none' : ''; });
     const s = document.getElementById('tuNivel'); if (s) s.value = String(TU.nivel);
     if (ok && !ok.includes(herramienta) && !TU.ejercicio) setHerramienta('linea');
 }
@@ -16660,6 +16723,52 @@ function descargarMec() { if (!ultimoMec) return; descargar(ultimoMec.nc, nombre
 function copiarMec() { if (!ultimoMec) return; navigator.clipboard.writeText(ultimoMec.nc).then(() => snack('G-code copiado'), () => { const t = document.getElementById('mecTexto'); t.select(); document.execCommand('copy'); snack('G-code copiado'); }); }
 function simularMec() { if (!ultimoMec) return; abrirEnSimulador(ultimoMec.nc, nombreProyecto() + ' (mecanizado).nc'); }
 
+</script>
+<script>
+// ═══ Tutor v5: la interfaz del Calcador, una vez montadas las pestañas ═══
+window.addEventListener('load', () => setTimeout(() => {
+    const $ = id => document.getElementById(id);
+    // Deshacer, Rehacer, Cerrar y Terminar, al pie de la barra de herramientas
+    const st = $('toolStrip'), dibP = $('c2PaneDib');
+    if (st && dibP) {
+        const div = document.createElement('div'); div.className = 'tool-divider'; st.appendChild(div);
+        const mover = (el, ico, tip) => { if (!el) return; el.className = 'tool-btn tool-acc'; el.textContent = ico; el.title = tip; el.dataset.tip = tip; st.appendChild(el); };
+        mover(dibP.querySelector('button[onclick="deshacer()"]'), '↶', 'Deshacer (Ctrl+Z)');
+        mover(dibP.querySelector('button[onclick="rehacer()"]'), '↷', 'Rehacer (Ctrl+Y)');
+        mover($('btnCerrar'), '⭘', 'Cerrar: une el último punto con el primero');
+        mover($('btnTerminar'), '✓', 'Terminar: deja el contorno abierto (Esc)');
+        dibP.querySelectorAll(':scope > .btn-row').forEach(r => { if (!r.children.length) r.remove(); });
+    }
+    // Dibujo: «Cotas y marcas» y «Ajustar medidas» en desplegables
+    if (dibP) {
+        const det = (cls, titulo) => { const d = document.createElement('details'); d.className = 'c2-opciones ' + cls; d.innerHTML = '<summary>' + titulo + '</summary>'; return d; };
+        const cotas = det('c2-cotas', 'Cotas y marcas'), linea = id => { const e = $(id); return e && e.closest('.param-line'); };
+        ['chkCotas', 'selNivelCotas', 'selIncl', 'chkCero', 'chkEntrada', 'chkSentido', 'chkCentros', 'chkCadena', 'chkVerOcultas'].forEach(id => { const l = linea(id); if (l) cotas.appendChild(l); });
+        const rest = dibP.querySelector('button[onclick="restaurarCotas()"]'); if (rest) cotas.appendChild(rest);
+        const aj = dibP.querySelector('.ajuste-box'), ajuste = det('c2-ajuste', 'Ajustar medidas');
+        if (aj) { [...aj.children].forEach(ch => ajuste.appendChild(ch)); aj.remove(); }
+        cotas.open = true;
+        dibP.appendChild(cotas); dibP.appendChild(ajuste);
+    }
+    // 🖼 Fondo en la barra de arriba, junto a Abrir; al cargarlo, se enseñan sus ajustes
+    const barra = document.querySelector('.c2-archivo'), ff = $('fileFondo');
+    if (barra && ff) {
+        const bAbrir = [...barra.children].find(b => /Abrir/.test(b.textContent));
+        const bf = document.createElement('button'); bf.className = 'btn-manual'; bf.id = 'btnFondoArriba'; bf.textContent = '🖼 Fondo';
+        bf.title = 'Carga una foto o imagen del plano (PNG, JPG) para calcarlo. Sus ajustes están en el apartado Fondo del panel izquierdo';
+        bf.onclick = () => ff.click();
+        if (bAbrir) bAbrir.after(bf);
+        ff.addEventListener('change', () => setTimeout(() => {
+            alternarPanel('izq', false);
+            const pf = $('c2PaneFondo'); if (pf) pf.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }, 300));
+    }
+    // Las casillas de siempre siguen y van a la par con los botones (también al abrir un ejercicio)
+    ['tuNombres', 'chkCotas'].forEach(id => { const c = $(id); if (c) c.addEventListener('change', pintarBotonesVista); });
+    pintarBotonesVista(); setInterval(pintarBotonesVista, 600);
+    // Al abrir un ejemplo o un ejercicio, el programa tiene que verse
+    if (typeof tuCargarEjemplo === 'function') { const o = tuCargarEjemplo; tuCargarEjemplo = function () { const r = o.apply(this, arguments); alternarPanel('der', false); return r; }; }
+    if (TU.ejercicio) alternarPanel('der', false);
+}, 60));
 </script>
 </body>
 </html>
