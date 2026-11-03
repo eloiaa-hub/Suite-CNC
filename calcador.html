@@ -632,12 +632,19 @@
     .exp-lista[hidden] { display: none; }
     .exp-lista .c2-opciones { grid-column: 1 / 3; }
     #c2Tabs3.solo-fondo button { flex: 0 0 100%; cursor: default; }
+    /* ═══ Pantallas pequeñas ═══ */
+    .canvas-wrap, #canvasWrap { container-type: inline-size; }
+    .vista-controls { max-width: calc(100% - 24px); flex-wrap: wrap; justify-content: flex-end; }
+    .cmd-bar { max-width: calc(100% - 24px); min-width: 0; } .cmd-bar input { min-width: 70px; flex-shrink: 1; }
+    .cmd-bar .cmd-ej { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+    @container (max-width: 900px) { .cmd-bar { bottom: 52px; } }
+    @container (max-width: 520px) { .cmd-bar .cmd-ej { display: none; } .cmd-bar { left: 8px; } .zoom-controls { right: 8px; bottom: 8px; } }
 </style>
 </head>
 <body>
 <div class="app-window">
     <header class="top-bar">
-        <a href="index.html" class="ir-portada" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a><span class="top-bar-title">⬡ Calcador de contornos — Por Eloi A.A.<span class="ver-suite" title="Versión del programa" style="font-size:11px;font-weight:600;padding:1px 7px;margin-left:8px;border-radius:9px;background:rgba(0,90,156,.12);color:#005A9C;vertical-align:middle">v119</span></span>
+        <a href="index.html" class="ir-portada" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a><span class="top-bar-title">⬡ Calcador de contornos — Por Eloi A.A.<span class="ver-suite" title="Versión del programa" style="font-size:11px;font-weight:600;padding:1px 7px;margin-left:8px;border-radius:9px;background:rgba(0,90,156,.12);color:#005A9C;vertical-align:middle">v120</span></span>
         <div class="top-bar-right">
             <input class="project-name" id="projectName" type="text" value="calco_sin_nombre" placeholder="Nombre del proyecto">
             <div class="c2-archivo"><button class="btn-manual" onclick="nuevo()" title="Empieza de cero (se puede deshacer)">🗋 Nuevo</button><button class="btn-manual" onclick="document.getElementById('fileJSON').click()" title="Abre un proyecto .json del Calcador o del Corrector">📂 Abrir</button><button class="btn-manual" onclick="exportarJSON()" title="Guarda el proyecto en un archivo JSON: lo abren el Calcador, el Corrector, el Tutor y el Simulador (como plano del ejercicio)">💾 Guardar</button><button class="btn-manual" onclick="abrirBiblioteca()" title="Tus ejercicios: buscar, abrir e imprimir sus hojas">🗂 Biblioteca</button></div>
@@ -729,6 +736,7 @@
                     <button class="btn-action sec" onclick="abrirCuestionario()" title="Preguntas para un cuestionario de Aules (Moodle XML) sobre este ejercicio">📝 Aules…</button>
                     <button class="btn-action sec" onclick="exportarEjercicioTutor()" title="Guarda el ejercicio para el Tutor G-Code del alumno: verá el plano, pero no el programa. Las coordenadas y la compensación son las de ⚙️ Mecanizado">🎓 Para el Tutor</button>
                     <button class="btn-action sec" onclick="abrirEnArcosIJ()" title="Abre los arcos de esta pieza en Arcos I J, para practicar G2/G3, X Y e I J con ellos">◠ Practicar I J</button>
+                    <button class="btn-action sec" onclick="abrirHojaIJ()" title="Hoja para imprimir con los arcos de esta pieza numerados, para calcular G2/G3, X Y e I J en papel; también con las variantes de examen, y con sus soluciones">◠ Hoja de I J…</button>
                 </div>
                 <div class="params-box c2-botones" id="c2PaneCorr" hidden>
                     <button class="btn-action sec" onclick="abrirCorregir()" title="Compara el programa ISO de un alumno con la pieza dibujada">✅ Un programa</button>
@@ -1042,6 +1050,18 @@
     </div>
 </div>
 
+<div class="modal-overlay" id="modalHojaIJ" onclick="if(event.target===this)cerrarHojaIJ()">
+    <div class="help-modal" style="max-width:480px">
+        <div class="help-header"><h2>◠ Hoja de I J</h2><button class="help-close" onclick="cerrarHojaIJ()">✕</button></div>
+        <div style="padding:14px 18px;display:flex;flex-direction:column;gap:9px">
+            <p class="ctx-nota" id="hijInfo" style="margin:0"></p>
+            <div class="param-line">Versiones <select id="hijVer"><option value="una">Solo esta pieza</option><option value="var">Las variantes de 🎲 Variantes</option></select></div>
+            <div class="param-line">Coordenadas <select id="hijCoord"><option value="G90">G90 · absolutas</option><option value="G91">G91 · incrementales</option><option value="mixta">Mixta · los arcos en G91</option></select></div>
+            <label class="param-line var-chk" title="Si se quita, el alumno tiene que deducir el centro del plano"><input type="checkbox" id="hijCentro" checked style="margin-right:6px"> Dar el centro de cada arco</label>
+            <div class="btn-row"><button class="btn-action" onclick="imprimirHojaIJ(false)">🖨 Hojas</button><button class="btn-action sec" onclick="imprimirHojaIJ(true)">🖨 Soluciones</button></div>
+        </div>
+    </div>
+</div>
 <div class="modal-overlay" id="modalVariantes" onclick="if(event.target===this)cerrarVariantes()">
     <div class="help-modal var-modal">
         <div class="help-header"><h2>🎲 Variantes para examen</h2><button class="help-close" onclick="cerrarVariantes()">✕</button></div>
@@ -13697,24 +13717,100 @@ function abrirEnGeneradorDesde(hash) {
     if (!w) { snack('El navegador ha bloqueado la pestaña nueva: permite las ventanas emergentes para este archivo, o usa «💾 Guardar (.json)»'); return; }
     snack('Abriendo el proyecto en otra pestaña…');
 }
+// ◠ Hoja de I J: los arcos de la pieza en papel. Un arco por fila, numerado en el plano, con 1 decimal como máximo
+function abrirHojaIJ() {
+    if (!contornos.some(c => c.pts.length >= 2)) { snack('Dibuja o abre un ejercicio primero'); return; }
+    const n = hijArcos().reduce((t, c) => t + c.filter(a => a.t === 'A').length, 0);
+    if (!n) { snack('Esta pieza no tiene arcos que practicar'); return; }
+    document.getElementById('hijCoord').value = cfgHoja.prog === 'g91' ? 'G91' : cfgHoja.prog === 'mix' ? 'mixta' : 'G90';
+    document.getElementById('hijInfo').textContent = `${n === 1 ? '1 arco' : n + ' arcos'}, en el orden y el sentido de la pieza. Los grabados no entran.`;
+    document.getElementById('modalHojaIJ').classList.add('visible');
+}
+function cerrarHojaIJ() { document.getElementById('modalHojaIJ').classList.remove('visible'); }
+// Los tramos de cada contorno, con el cero del plano (el mismo que las cotas de la hoja)
+function hijArcos() {
+    const { lista } = contornosExportables(), todos = contornos.filter(c => c.pts.length >= 2);
+    const off = desplazamientoOrigen(lista.length ? lista : todos.map(c => ({ c })));
+    return datosArcosIJ(off).filter(c => !c.grabado).map(c => c.tramos);
+}
+function hijHoja(coord, titulo, num, conCentro) {
+    const r1 = v => { const r = Math.round(v * 10) / 10; return Object.is(r, -0) ? 0 : r; }, fm = v => { const t = r1(v); return Number.isInteger(t) ? String(t) : t.toFixed(1); };
+    const pr = p => ({ x:r1(p.x), y:r1(p.y) }), arcos = [];
+    let redondeado = false;
+    hijArcos().forEach(tr => tr.forEach(t => { if (t.t !== 'A') return;
+        const a = pr(t.a), b = pr(t.b), C = pr(t.C); [[t.a, a], [t.b, b], [t.C, C]].forEach(([u, v]) => { if (Math.hypot(u.x - v.x, u.y - v.y) > 1e-6) redondeado = true; });
+        const inc = coord !== 'G90';
+        arcos.push({ a, b, C, g:t.g, R:t.R, m:t.m, x: inc ? r1(b.x - a.x) : b.x, y: inc ? r1(b.y - a.y) : b.y, i:r1(C.x - a.x), j:r1(C.y - a.y) }); }));
+    const chk = document.getElementById('chkCotasSVG'), antes = chk.checked; chk.checked = true;
+    let svg = ''; try { svg = (exportarSVG(true, false) || '').replace(/^<\?xml[^>]*>\s*/, ''); } finally { chk.checked = antes; }
+    const vb = (svg.match(/viewBox="([^"]+)"/) || [])[1]; if (!vb) return null;
+    const [, , w, h] = vb.split(' ').map(Number), tam = Math.max(w, h) / 34;
+    const marcas = arcos.map((a, k) => `<g font-family="Arial" font-weight="700" text-anchor="middle"><circle cx="${a.m.x}" cy="${-a.m.y}" r="${tam * .72}" fill="#fff" stroke="#c4580c" stroke-width="${tam * .1}"/><text x="${a.m.x}" y="${-a.m.y + tam * .34}" font-size="${tam}" fill="#c4580c">${k + 1}</text></g>`).join('');
+    svg = svg.replace('</svg>', marcas + '</svg>').replace(/width="[\d.]+mm"/, 'width="100%"').replace(/height="[\d.]+mm"/, 'height="100%"');
+    return { arcos, svg, titulo, num, coord, conCentro, redondeado, fm };
+}
+function hijTablaHTML(H, sol) {
+    const fm = H.fm, c = H.conCentro || sol;
+    const cab = `<tr><th>Arco</th><th>Inicio</th>${c ? '<th>Centro</th>' : ''}<th>R</th><th>G</th><th>X</th><th>Y</th><th>I</th><th>J</th></tr>`;
+    return `<table class="ij">${cab}${H.arcos.map((a, k) => `<tr><td class="n">${k + 1}</td><td>X${fm(a.a.x)} Y${fm(a.a.y)}</td>${c ? `<td>X${fm(a.C.x)} Y${fm(a.C.y)}</td>` : ''}<td>${fm(a.R)}</td><td class="r">${sol ? a.g : ''}</td><td class="r">${sol ? fm(a.x) : ''}</td><td class="r">${sol ? fm(a.y) : ''}</td><td class="r">${sol ? fm(a.i) : ''}</td><td class="r">${sol ? fm(a.j) : ''}</td></tr>`).join('')}</table>`;
+}
+function imprimirHojaIJ(soluciones) {
+    const coord = document.getElementById('hijCoord').value, ver = document.getElementById('hijVer').value, conCentro = document.getElementById('hijCentro').checked;
+    const tit = (cfgHoja.titulo || '').trim() || nombreProyecto().replace(/_/g, ' '), num = (cfgHoja.num || '').trim();
+    let hojas;
+    if (ver === 'var') {
+        generarVariantes();
+        if (!varGen.length) { snack('No se han podido hacer variantes de esta pieza'); return; }
+        hojas = varGen.map(v => conVariante(v, () => hijHoja(coord, `${tit} (variante ${v.letra})`, num ? num + v.letra : v.letra, conCentro)));
+    } else hojas = [hijHoja(coord, tit, num, conCentro)];
+    hojas = hojas.filter(h => h && h.arcos.length);
+    if (!hojas.length) { snack('No hay arcos que imprimir'); return; }
+    const esc = t => String(t || '').replace(/&/g, '&amp;').replace(/</g, '&lt;');
+    const nomC = { G90:'G90: X Y absolutas', G91:'G91: X Y incrementales, desde el inicio del arco', mixta:'mixta: los arcos en G91, X Y desde el inicio del arco' }[coord];
+    const pag = H => `<div class="pag"><div class="cab"><div><span class="et">Ejercicio</span><b class="tit">${esc(H.titulo)}</b></div><div class="nu"><span class="et">Nº</span><b>${esc(H.num)}</b></div></div>
+  ${soluciones ? '' : `<div class="al"><div><span class="et">Alumno/a</span></div><div><span class="et">Curso / grupo</span>${esc(cfgHoja.grupo)}</div><div><span class="et">Fecha</span>${esc(cfgHoja.fecha)}</div><div class="nota"><span class="et">Nota</span></div></div>`}
+  <div class="enun">${soluciones ? '<b>Soluciones.</b> ' : `Calcula cada arco numerado: <b>G2 o G3</b>, las <b>X Y</b> del final e <b>I J</b> (centro − inicio). `}Coordenadas ${nomC}.${H.redondeado ? ' Medidas redondeadas a 1 decimal.' : ''}</div>
+  <div class="dib">${H.svg}</div>${hijTablaHTML(H, soluciones)}</div>`;
+    const html = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>${esc(tit)} — ${soluciones ? 'soluciones de I J' : 'hoja de I J'}</title><style>
+  @page { size: A4; margin: 10mm; } * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Segoe UI', Arial, sans-serif; color: #111; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .pag { width: 190mm; height: 277mm; border: .5mm solid #111; padding: 4mm; display: flex; flex-direction: column; gap: 2.5mm; page-break-after: always; }
+  .pag:last-child { page-break-after: auto; }
+  .cab { display: flex; justify-content: space-between; border-bottom: .35mm solid #111; padding-bottom: 1.5mm; } .tit { font-size: 15pt; } .nu { text-align: right; font-size: 13pt; }
+  .et { display: block; font-size: 6.5pt; color: #555; text-transform: uppercase; letter-spacing: .03em; font-weight: 400; }
+  .al { display: grid; grid-template-columns: 3fr 2fr 1.2fr .8fr; border: .35mm solid #111; font-size: 9.5pt; } .al > div { padding: 1mm 2mm; min-height: 11mm; border-left: .35mm solid #111; } .al > div:first-child { border-left: 0; }
+  .enun { font-size: 10pt; line-height: 1.35; }
+  .dib { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; } .dib svg { display: block; }
+  table.ij { width: 100%; border-collapse: collapse; font-size: ${'${'}FS${'}'}pt; flex-shrink: 0; } table.ij th, table.ij td { border: .25mm solid #555; padding: ${'${'}PAD${'}'}mm 1.5mm; text-align: center; font-family: Consolas, 'DejaVu Sans Mono', monospace; }
+  table.ij th { background: #eef2f6; font-family: 'Segoe UI', Arial, sans-serif; font-size: 8pt; } table.ij .n { color: #c4580c; font-weight: 700; } table.ij .r { width: 12mm; font-weight: 700; }
+</style></head><body>${hojas.map(pag).join('')}<script>window.onload = () => setTimeout(() => window.print(), 250);<\/script></body></html>`.replace('${FS}', Math.max(...hojas.map(h => h.arcos.length)) > 14 ? 8 : 9.5).replace('${PAD}', Math.max(...hojas.map(h => h.arcos.length)) > 14 ? .6 : 1.6);
+    const w = window.open('', '_blank');
+    if (!w) { snack('El navegador ha bloqueado la ventana de impresión: permite las ventanas emergentes para este archivo'); return; }
+    w.document.open(); w.document.write(html); w.document.close();
+    cerrarHojaIJ();
+}
 // ◠ Practicar I J: los contornos de la pieza, con el orden, el sentido y el cero de la tabla de soluciones
 let paraArcos = null;
-function abrirEnArcosIJ() {
-    const tipos = tiposResueltos(), selO = document.getElementById('tbOrigen');
+function datosArcosIJ(off) {
+    const tipos = tiposResueltos();
     const lista = contornos.map((c, i) => ({ c, i })).filter(o => o.c.pts.length >= 2 && !soloFabricar(o.c))
         .sort((a, b) => (rangoMecanizado(tipos[a.i], contornos[a.i]) - rangoMecanizado(tipos[b.i], contornos[b.i])) || a.i - b.i);
+    const pt = p => { const q = sub(p, off); return { x:q.x, y:q.y }; };
+    return lista.map(({ c, i }) => ({ cerrado: !!c.cerrado, clase: tipos[i], grabado: !!esGrabado(c), tramos: tramos(c).map(t => {
+        if (!t.b) return { t:'L', a: pt(t.p1), b: pt(t.p2) };
+        const a = arcoDeBulge(t.p1, t.p2, t.b), mid = a.a1 + a.theta / 2;
+        return { t:'A', a: pt(t.p1), b: pt(t.p2), C: pt(a.c), R: a.r, g: t.b > 0 ? 'G3' : 'G2', m: pt({ x: a.c.x + a.r * Math.cos(mid), y: a.c.y + a.r * Math.sin(mid) }) };
+    }) }));
+}
+function abrirEnArcosIJ() {
+    const tipos = tiposResueltos(), selO = document.getElementById('tbOrigen');
     let off = { x:0, y:0 };
     if (!selO || selO.value === 'pieza') {
         const base = contornos.filter((c, i) => c.cerrado && tipos[i] !== 'interior');
         const usar = base.length ? base : contornos.filter(c => c.pts.length >= 2);
         if (usar.length) { const bb = bboxPts([].concat(...usar.map(c => c.pts.concat(muestrearContorno(c))))); off = { x:bb.x0, y:bb.y0 }; }
     }
-    const pt = p => { const q = sub(p, off); return { x:q.x, y:q.y }; };
-    const envio = lista.map(({ c, i }) => ({ cerrado: !!c.cerrado, clase: tipos[i], grabado: !!esGrabado(c), tramos: tramos(c).map(t => {
-        if (!t.b) return { t:'L', a: pt(t.p1), b: pt(t.p2) };
-        const a = arcoDeBulge(t.p1, t.p2, t.b);
-        return { t:'A', a: pt(t.p1), b: pt(t.p2), C: pt(a.c), R: a.r, g: t.b > 0 ? 'G3' : 'G2' };
-    }) }));
+    const envio = datosArcosIJ(off);
     if (!envio.some(c => !c.grabado && c.tramos.some(t => t.t === 'A'))) { snack('Esta pieza no tiene arcos que practicar'); return; }
     paraArcos = { tipo:'arcos-calcador', nombre: nombreProyecto(), contornos: envio };
     try { localStorage.setItem('suiteCNC:paraArcos', JSON.stringify({ ...paraArcos, t: Date.now() })); } catch (e) {}

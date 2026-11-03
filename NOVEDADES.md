@@ -4,7 +4,11 @@ La versión de la suite es **año.mes** (por ejemplo, 2026.10). Cada programa co
 
 ## Suite CNC 2026.10
 
-Versiones de los programas: **Calcador v119 · Corrector v64 · Tutor G-Code v5 · Simulador 3D V45 · Calculadora de taller v5 · Arcos I J v3 · Anidador de tableros v8**.
+Versiones de los programas: **Calcador v120 · Corrector v65 · Tutor G-Code v6 · Simulador 3D V45 · Calculadora de taller v5 · Arcos I J v3 · Anidador de tableros v8**.
+
+### Calcador v120 / Corrector v65 / Tutor G-Code v6: la hoja de I J y las pantallas pequeñas
+- **◠ Hoja de I J…** en el Calcador (pestaña 🧩 Ejercicios): el plano con los arcos numerados y una tabla para calcular G2 o G3, X Y e I J, en G90, G91 o mixta, con el centro o sin él. Una hoja por pieza o por cada variante de 🎲 Variantes, y sus soluciones. El Corrector no lleva este botón.
+- **Pantallas pequeñas**: en los portátiles, el recuadro de Coordenadas ya no queda debajo de los botones de zoom, y los botones de vista pasan a otra fila si no caben.
 
 ### Tutor G-Code v5: la interfaz del Calcador
 - Arriba a la derecha del dibujo, **◧** oculta o muestra el panel izquierdo (F7) y **◨** el derecho (F8), y se recuerda al volver a abrir. La barra de herramientas se ve siempre y el dibujo se encuadra para llenar la zona. Al abrir un ejemplo o un ejercicio, el panel del programa vuelve a salir.

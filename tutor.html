@@ -620,12 +620,19 @@
     .c2-cotas > .param-line, .c2-ajuste > .param-line { margin-top: 5px; }
     .c2-cotas > button, .c2-ajuste > button { margin-top: 7px; width: 100%; }
     html.tu-es-ejercicio #btnFondoArriba, html.tu-es-ejercicio .tool-strip .tool-acc { display: none !important; }
+    /* ═══ Pantallas pequeñas ═══ */
+    .canvas-wrap, #canvasWrap { container-type: inline-size; }
+    .vista-controls { max-width: calc(100% - 24px); flex-wrap: wrap; justify-content: flex-end; }
+    .cmd-bar { max-width: calc(100% - 24px); min-width: 0; } .cmd-bar input { min-width: 70px; flex-shrink: 1; }
+    .cmd-bar .cmd-ej { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+    @container (max-width: 900px) { .cmd-bar { bottom: 52px; } }
+    @container (max-width: 520px) { .cmd-bar .cmd-ej { display: none; } .cmd-bar { left: 8px; } .zoom-controls { right: 8px; bottom: 8px; } }
 </style>
 </head>
 <body>
 <div class="app-window">
     <header class="top-bar">
-        <a href="index.html" class="ir-portada" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a><span class="top-bar-title">🎓 Tutor G-Code — Por Eloi A.A.<span class="ver-suite" title="Versión del programa (hecho a partir del Calcador v118)" style="font-size:11px;font-weight:600;padding:1px 7px;margin-left:8px;border-radius:9px;background:rgba(0,90,156,.12);color:#005A9C;vertical-align:middle">v5</span></span>
+        <a href="index.html" class="ir-portada" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a><span class="top-bar-title">🎓 Tutor G-Code — Por Eloi A.A.<span class="ver-suite" title="Versión del programa (hecho a partir del Calcador v118)" style="font-size:11px;font-weight:600;padding:1px 7px;margin-left:8px;border-radius:9px;background:rgba(0,90,156,.12);color:#005A9C;vertical-align:middle">v6</span></span>
         <div class="top-bar-right">
             <input class="project-name" id="projectName" type="text" value="calco_sin_nombre" placeholder="Nombre del proyecto">
             <div class="c2-archivo"><button class="btn-manual" onclick="nuevo()" title="Empieza un dibujo nuevo (se puede deshacer). Si estás en un ejercicio, lo deja">🗋 Nuevo</button><button class="btn-manual" onclick="document.getElementById('fileJSON').click()" title="Abre un dibujo guardado o un ejercicio que te ha dado el profesor (.json). Si es un ejercicio, se abre en ✍ Practicar">📂 Abrir</button><button class="btn-manual" onclick="exportarJSON()" title="Guarda tu dibujo en un archivo .json, para seguir otro día o abrirlo en el Simulador">💾 Guardar</button><button class="btn-manual" onclick="tuAbrirEjemplos()" title="Piezas para ver su programa (los programas resueltos) y ejercicios para escribirlo tú (la biblioteca de inicio)">📚 Ejemplos</button></div>
