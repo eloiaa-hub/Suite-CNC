@@ -15,6 +15,7 @@ Del mismo código salen 7 apps portables, para Windows y Linux:
 | **Simulador 3D** | `Simulador3D.exe` | El simulador y su guía. |
 | **Tutor G-Code** | `TutorGCode.exe` | El tutor y su guía. |
 | **Calculadora de taller** | `Calculadora.exe` | La calculadora y su manual. |
+| **Arcos I J** | `ArcosIJ.exe` | El programa de los arcos y su manual. |
 
 - Las apps están definidas en `ediciones/ediciones.json`.
 - Lo que cada herramienta enlaza o abre se incluye solo.

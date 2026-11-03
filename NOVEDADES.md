@@ -4,7 +4,11 @@ La versión de la suite es **año.mes** (por ejemplo, 2026.10). Cada programa co
 
 ## Suite CNC 2026.10
 
-Versiones de los programas: **Calcador v118 · Corrector v63 · Tutor G-Code v4 · Simulador 3D V45 · Calculadora de taller v5 · Anidador de tableros v8**.
+Versiones de los programas: **Calcador v119 · Corrector v64 · Tutor G-Code v4 · Simulador 3D V45 · Calculadora de taller v5 · Arcos I J v3 · Anidador de tableros v8**.
+
+### Arcos I J v3 / Calcador v119 / Corrector v64: Arcos I J entra en la suite
+- **Arcos I J** (`arcos_ij.html`), el programa para aprender a calcular I y J, con su ficha en la portada, su manual en HTML y PDF y su versión de escritorio (`ArcosIJ`).
+- **◠ Practicar I J** en el Calcador (pestaña 🧩 Ejercicios): abre los arcos de la pieza en el nuevo nivel **⑥ Pieza** de Arcos I J, un contorno cada vez, con el orden, el sentido y el cero pieza de la tabla de soluciones. Las rectas van hechas; se escribe cada arco, con 1 decimal como máximo. El Corrector no lleva este botón.
 
 ### Calcador v118 / Corrector v63: la batería, en el orden de la biblioteca
 - Las tareas de la **🗃 Batería** salen en el mismo orden que sus ejercicios en la biblioteca (por número, título, nivel, carpeta o recientes, como esté ordenada), también en el resumen, el zip y los informes de todas; las que no tienen ejercicio, al final.

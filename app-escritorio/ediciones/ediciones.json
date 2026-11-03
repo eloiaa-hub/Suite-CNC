@@ -59,6 +59,11 @@
         "manual_corrector.html",
         "manual_corrector.pdf"
       ],
+      "excluir": [
+        "arcos_ij.html",
+        "manual_arcos_ij.html",
+        "manual_arcos_ij.pdf"
+      ],
       "descripcion": "El Calcador sin dibujo: abre un ejercicio, corrige y simula los programas de los alumnos, imprime hojas y soluciones.",
       "icono": 2,
       "devtools": false,
@@ -128,6 +133,21 @@
       ],
       "descripcion": "Proyecciones, polares, centro e I J R de un arco, G90 ↔ G91, revoluciones y avance.",
       "icono": 6,
+      "devtools": false,
+      "publicar": true
+    },
+    "arcos": {
+      "nombre": "Arcos I J",
+      "titulo": "Arcos I J",
+      "exe": "ArcosIJ",
+      "id": "es.eloiaa.suitecnc.arcos",
+      "inicio": "arcos_ij.html",
+      "incluir": [
+        "manual_arcos_ij.html",
+        "manual_arcos_ij.pdf"
+      ],
+      "descripcion": "Aprende a calcular I y J de los arcos G2 y G3: centro alineado, Pitágoras, círculo completo, contorno y leer el bloque.",
+      "icono": 7,
       "devtools": false,
       "publicar": true
     }

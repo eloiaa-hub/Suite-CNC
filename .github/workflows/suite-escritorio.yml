@@ -1,7 +1,7 @@
 # Compila la Suite CNC como apps de escritorio portables:
 #
 #   · SuiteCNC     — la portada y todas las herramientas (profesorado)
-#   · Calcador, Corrector, Anidador, Simulador3D, TutorGCode, Calculadora — cada programa por separado
+#   · Calcador, Corrector, Anidador, Simulador3D, TutorGCode, Calculadora, ArcosIJ — cada programa por separado
 #
 # para Windows (ZIP: se descomprime y funciona) y Linux (un archivo .AppImage).
 # Las ediciones (nombre, ejecutable, archivos, icono…) están en app-escritorio/ediciones/ediciones.json.
@@ -36,7 +36,7 @@ jobs:
       fail-fast: false
       matrix:
         # Para añadir un programa: créalo en ediciones.json y añade aquí su clave
-        edicion: [profesorado, calcador, corrector, anidador, simulador, tutor, calculadora]
+        edicion: [profesorado, calcador, corrector, anidador, simulador, tutor, calculadora, arcos]
         so: [Windows, Linux]
     env:
       SUITE_EDICION: ${{ matrix.edicion }}
@@ -105,7 +105,7 @@ jobs:
           body: |
             **Herramientas CNC (Eloi A.A.) — versión de escritorio portable**
 
-            Cada programa por separado (`Calcador`, `Corrector`, `Anidador`, `Simulador3D`, `TutorGCode`, `Calculadora`) o todos juntos con la portada (`SuiteCNC`).
+            Cada programa por separado (`Calcador`, `Corrector`, `Anidador`, `Simulador3D`, `TutorGCode`, `Calculadora`, `ArcosIJ`) o todos juntos con la portada (`SuiteCNC`).
 
             · **Windows:** descarga el `.zip`. Antes de descomprimirlo: clic derecho → **Propiedades** → marca **Desbloquear** → Aceptar (así Windows no muestra la pantalla azul). Después «Extraer todo…» donde quieras (también en un USB) y abre el `.exe`.
             · **Linux:** descarga el `.AppImage`, dale permiso de ejecución (clic derecho → Propiedades → Permitir ejecutar) y ábrelo.

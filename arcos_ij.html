@@ -1,0 +1,2245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arcos I J — Por Eloi A.A.</title>
+<style>
+    :root {
+        --bg-app: #eef1f5; --bg-panel: #f8f9fa; --border-color: #d1d5db;
+        --text-main: #333; --text-muted: #888; --accent: #005A9C;
+        --accent-light: #e8f0f8; --canvas-bg: #ffffff; --draw-stroke: #000000;
+        --shadow: 0 2px 8px rgba(0,0,0,0.12);
+        --col-i: #d35400; --col-j: #1e8449; --col-r: #c0392b; --col-ini: #1e8449; --col-fin: #c0392b;
+        --tri-fill: rgba(241,196,15,.22); --grid-min: #eef1f4; --grid-may: #dde3ea; --linea: #55606b;
+        --ok: #1e7a46; --ok-bg: rgba(30,158,90,.12); --mal: #b03030; --mal-bg: rgba(216,67,67,.10);
+    }
+    body.dark-mode {
+        --bg-app: #1a1a1e; --bg-panel: #252528; --border-color: #3a3a3f;
+        --text-main: #e8e8ec; --text-muted: #8a8a92; --accent-light: #1a2a3a;
+        --canvas-bg: #1e1e22; --draw-stroke: #f0f0f0; --shadow: 0 2px 8px rgba(0,0,0,0.4);
+        --col-i: #f39c4a; --col-j: #4cd38a; --col-r: #ff7b6b; --col-ini: #4cd38a; --col-fin: #ff7b6b;
+        --tri-fill: rgba(241,196,15,.16); --grid-min: #26262b; --grid-may: #303037; --linea: #a8b0ba;
+        --ok: #5fd08f; --ok-bg: rgba(95,208,143,.12); --mal: #ff8a80; --mal-bg: rgba(255,138,128,.12);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Geneva, Verdana, sans-serif; }
+    body { background: var(--bg-app); color: var(--text-main); height: 100vh; overflow: hidden;
+        display: flex; align-items: stretch; justify-content: center; padding: 10px; transition: background .25s,color .25s; }
+    .app-window { background: var(--bg-panel); width: 100%; max-width: 1700px;
+        border-radius: 10px; box-shadow: 0 12px 40px rgba(0,0,0,.22); display: flex; flex-direction: column;
+        overflow: hidden; border: 1px solid var(--border-color); position: relative; }
+
+    .top-bar { background: var(--bg-panel); padding: 10px 18px; border-bottom: 1px solid var(--border-color);
+        display: flex; align-items: center; user-select: none; gap: 10px; flex-wrap: wrap; }
+    .top-bar-title { font-weight: 700; font-size: 14px; }
+    .ver-suite { font-size: 11px; font-weight: 600; padding: 1px 7px; margin-left: 8px; border-radius: 9px; background: var(--accent-light); color: var(--accent); vertical-align: middle; }
+    .top-bar-right { display: flex; align-items: center; gap: 10px; margin-left: auto; flex-wrap: wrap; }
+    .icon-gear { cursor: pointer; font-size: 18px; transition: transform .25s; }
+    .icon-gear:hover { transform: rotate(60deg); }
+    .btn-manual { font-size: 12.5px; font-weight: 600; color: var(--accent); text-decoration: none; padding: 4px 10px; border: 1px solid var(--accent); border-radius: 5px; white-space: nowrap; background: transparent; cursor: pointer; }
+    .btn-manual:hover { background: var(--accent); color: #fff; }
+    .btn-manual.lleno { background: var(--accent); color: #fff; }
+    .btn-manual.lleno:hover { opacity: .88; }
+
+    .niveles { display: flex; gap: 2px; border: 1px solid var(--border-color); border-radius: 8px; padding: 2px; background: var(--bg-app); }
+    .niveles button { border: none; background: transparent; padding: 5px 12px; border-radius: 6px; cursor: pointer; font-size: 12.5px; font-weight: 600; color: var(--text-main); }
+    .niveles button:hover { background: var(--accent-light); color: var(--accent); }
+    .niveles button.activo { background: var(--accent); color: #fff; }
+
+    .status-bar { font-size: 11px; color: var(--text-muted); padding: 4px 18px;
+        border-bottom: 1px solid var(--border-color); background: var(--bg-app);
+        display: flex; gap: 16px; align-items: center; min-height: 26px; }
+    .status-pill { background: var(--accent); color: white; font-size: 10px; font-weight: 700;
+        padding: 1px 7px; border-radius: 20px; letter-spacing: .05em; white-space: nowrap; }
+    .status-hint { font-size: 10.5px; color: var(--text-muted); font-style: italic;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; }
+    .status-coords { font-family: Consolas, monospace; font-size: 11px; color: var(--text-main); white-space: nowrap; }
+    .status-score { font-size: 11px; font-weight: 700; color: var(--accent); white-space: nowrap; }
+
+    .settings-panel { position: absolute; top: 46px; right: 18px; background: var(--bg-panel);
+        border: 1px solid var(--border-color); padding: 14px; border-radius: 8px; box-shadow: var(--shadow);
+        display: none; flex-direction: column; gap: 14px; z-index: 200; width: 210px; }
+    .settings-panel.active { display: flex; }
+    .settings-panel h4 { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--text-muted); }
+    .color-palette { display: flex; gap: 8px; flex-wrap: wrap; }
+    .color-btn { width: 22px; height: 22px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: transform .1s; }
+    .color-btn:hover { transform: scale(1.15); }
+    .color-btn.active { border-color: var(--text-main); }
+    .setting-row { display: flex; align-items: center; justify-content: space-between; font-size: 13px; gap: 8px; }
+    .toggle { position: relative; display: inline-block; width: 36px; height: 20px; flex-shrink: 0; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider { position: absolute; cursor: pointer; inset: 0; background: var(--border-color); border-radius: 20px; transition: .25s; }
+    .toggle-slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: .25s; }
+    .toggle input:checked + .toggle-slider { background: var(--accent); }
+    .toggle input:checked + .toggle-slider:before { transform: translateX(16px); }
+    .toggle input:disabled + .toggle-slider { opacity: .35; cursor: not-allowed; }
+
+    .workspace { display: flex; flex: 1; padding: 12px; gap: 12px; overflow: hidden; min-height: 0; }
+    .side { display: flex; flex-direction: column; gap: 10px; overflow-y: auto; padding-right: 2px; flex-shrink: 0; }
+    .side.izq { width: 250px; }
+    .side.der { width: 360px; }
+    .side::-webkit-scrollbar { width: 4px; }
+    .side::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 2px; }
+    .section-label { font-size: 10px; text-transform: uppercase; letter-spacing: .1em; color: var(--text-muted); font-weight: 700; display: flex; align-items: center; gap: 6px; }
+
+    button.btn-action { background: var(--accent); color: white; border: none; padding: 8px 10px;
+        border-radius: 5px; cursor: pointer; font-size: 12.5px; font-weight: 600;
+        transition: opacity .15s, transform .1s; display: flex; align-items: center;
+        justify-content: center; gap: 6px; width: 100%; }
+    button.btn-action:hover { opacity: .88; }
+    button.btn-action:active { transform: scale(.98); }
+    button.btn-action.sec { background: var(--bg-panel); color: var(--text-main); border: 1px solid var(--border-color); font-weight: 500; }
+    button.btn-action.sec:hover { background: var(--bg-app); }
+    button.btn-action:disabled { opacity: .4; cursor: not-allowed; }
+    .btn-row { display: flex; gap: 6px; }
+    .btn-row > * { flex: 1; }
+
+    .params-box { background: var(--bg-app); border: 1px solid var(--border-color); border-radius: 5px; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+    .param-line { display: flex; justify-content: space-between; align-items: center; gap: 6px; font-size: 12px; color: var(--text-main); }
+    .param-line input[type=checkbox] { accent-color: var(--accent); }
+    .sub { font-size: 11px; color: var(--text-muted); font-weight: 600; }
+    .chips { display: flex; flex-wrap: wrap; gap: 5px; }
+    .chip { font-size: 11px; padding: 3px 9px; border-radius: 20px; border: 1px solid var(--border-color);
+        background: var(--bg-panel); color: var(--text-muted); cursor: pointer; user-select: none; transition: all .12s; }
+    .chip.on { background: var(--accent); border-color: var(--accent); color: white; }
+
+    .info-box { background: var(--bg-app); border: 1px solid var(--border-color); border-radius: 5px;
+        padding: 9px 10px; font-size: 11.5px; line-height: 1.6; color: var(--text-muted); }
+    .info-box strong, .info-box b { color: var(--text-main); }
+    .kbd { background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 3px; padding: 0 5px; font-size: 10px; font-family: monospace; color: var(--text-main); }
+    .ci { color: var(--col-i); font-weight: 700; } .cj { color: var(--col-j); font-weight: 700; } .cr { color: var(--col-r); font-weight: 700; }
+
+    .info { display: inline-flex; align-items: center; justify-content: center; width: 15px; height: 15px; border-radius: 50%;
+        font-size: 10px; font-weight: 700; font-style: normal; background: var(--accent-light); color: var(--accent); cursor: pointer; text-transform: none; letter-spacing: 0; border: 1px solid transparent; flex-shrink: 0; }
+    .info:hover { border-color: var(--accent); }
+    .popover { position: fixed; z-index: 900; max-width: 320px; background: var(--bg-panel); color: var(--text-main); border: 1.5px solid var(--accent);
+        border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,.25); padding: 10px 12px; font-size: 12.5px; line-height: 1.55; display: none; }
+    .popover.visible { display: block; }
+    .popover b { color: var(--accent); }
+    .popover .pop-cerrar { float: right; margin: -4px -4px 0 6px; border: none; background: transparent; color: var(--text-muted); cursor: pointer; font-size: 14px; }
+
+    .canvas-container { flex: 1; min-width: 300px; display: flex; flex-direction: column;
+        background: var(--bg-app); border: 1px solid var(--border-color); border-radius: 6px;
+        overflow: hidden; position: relative; }
+    #lienzo { flex: 1; width: 100%; height: 100%; display: block; background: var(--canvas-bg); cursor: crosshair; touch-action: none; user-select: none; }
+    .enunciado { position: absolute; left: 12px; top: 12px; max-width: min(430px, calc(100% - 24px)); background: var(--bg-panel); border: 1px solid var(--border-color);
+        border-left: 4px solid var(--accent); border-radius: 6px; padding: 8px 12px; box-shadow: var(--shadow); font-size: 12.5px; line-height: 1.55; }
+    .enunciado h3 { font-size: 13px; margin-bottom: 3px; display: flex; gap: 6px; align-items: center; }
+    .enunciado ul { margin: 2px 0 0 18px; }
+    .enunciado .plegar { margin-left: auto; border: none; background: transparent; cursor: pointer; color: var(--text-muted); font-size: 13px; }
+    .enunciado.plegado .cuerpo { display: none; }
+    .leyenda { position: absolute; left: 12px; bottom: 12px; display: flex; gap: 12px; flex-wrap: wrap; background: var(--bg-panel); border: 1px solid var(--border-color);
+        border-radius: 6px; padding: 4px 10px; font-size: 11px; color: var(--text-muted); box-shadow: var(--shadow); }
+    .leyenda span { display: inline-flex; align-items: center; gap: 5px; }
+    .leyenda i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; }
+    .zoom-controls { position: absolute; bottom: 12px; right: 12px; display: flex; gap: 4px; }
+    .zoom-btn { min-width: 26px; height: 26px; padding: 0 6px; background: var(--bg-panel); border: 1px solid var(--border-color);
+        border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 13px; color: var(--text-main); }
+    .zoom-btn:hover { background: var(--accent); color: white; border-color: var(--accent); }
+
+    /* SVG del plano */
+    .g-min { stroke: var(--grid-min); stroke-width: 1; }
+    .g-may { stroke: var(--grid-may); stroke-width: 1; }
+    .eje { stroke: var(--text-muted); stroke-width: 1.2; }
+    .eje-t { fill: var(--text-muted); font-size: 11px; font-weight: 700; }
+    .recta { stroke: var(--linea); stroke-width: 3; fill: none; stroke-linecap: round; }
+    .arco { stroke: var(--accent); stroke-width: 4; fill: none; stroke-linecap: round; }
+    .arco2 { stroke: var(--accent); stroke-width: 4; fill: none; stroke-linecap: round; stroke-dasharray: 10 5; }
+    .punta { fill: var(--linea); } .punta-a { fill: var(--accent); }
+    .eje-c { stroke: var(--text-muted); stroke-width: 1; stroke-dasharray: 12 3 2 3; fill: none; }
+    .circ-ref { stroke: var(--text-muted); stroke-width: 1; stroke-dasharray: 3 4; fill: none; opacity: .6; }
+    .p-ini { fill: var(--col-ini); stroke: var(--canvas-bg); stroke-width: 2; }
+    .p-fin { fill: var(--col-fin); stroke: var(--canvas-bg); stroke-width: 2; }
+    .p-otro { fill: var(--linea); stroke: var(--canvas-bg); stroke-width: 2; }
+    .p-c { stroke: var(--text-main); stroke-width: 1.6; fill: none; }
+    .t { font-size: 12.5px; fill: var(--text-main); paint-order: stroke; stroke: var(--canvas-bg); stroke-width: 4px; stroke-linejoin: round; }
+    .t-b { font-weight: 700; }
+    .t-m { fill: var(--text-muted); font-size: 11.5px; }
+    .t-ini { fill: var(--col-ini); font-weight: 700; } .t-fin { fill: var(--col-fin); font-weight: 700; }
+    .t-i { fill: var(--col-i); font-weight: 700; font-size: 13.5px; } .t-j { fill: var(--col-j); font-weight: 700; font-size: 13.5px; } .t-r { fill: var(--col-r); font-weight: 700; font-size: 13.5px; }
+    .t-acc { fill: var(--accent); font-weight: 700; }
+    .cota { stroke: var(--text-main); stroke-width: 1; fill: none; } .cota-p { fill: var(--text-main); }
+    .cota-ext { stroke: var(--text-muted); stroke-width: .8; fill: none; }
+    .v-i { stroke: var(--col-i); stroke-width: 2.6; fill: none; } .v-i-p { fill: var(--col-i); }
+    .v-j { stroke: var(--col-j); stroke-width: 2.6; fill: none; } .v-j-p { fill: var(--col-j); }
+    .v-r { stroke: var(--col-r); stroke-width: 2.2; fill: none; } .v-r-p { fill: var(--col-r); }
+    .tri { fill: var(--tri-fill); stroke: none; }
+    .ang-r { stroke: var(--text-main); stroke-width: 1.2; fill: none; }
+    .giro { stroke: var(--accent); stroke-width: 2; fill: none; stroke-dasharray: 5 3; } .giro-p { fill: var(--accent); }
+    .pulso { fill: none; stroke: #f1c40f; stroke-width: 3; animation: pulso 1.2s ease-out infinite; transform-box: fill-box; transform-origin: center; }
+    @keyframes pulso { 0% { opacity: 1; transform: scale(.6); } 100% { opacity: 0; transform: scale(1.8); } }
+    .hit { fill: transparent; cursor: help; }
+    .medida { stroke: var(--accent); stroke-width: 1; stroke-dasharray: 3 3; fill: none; }
+    .med-i { stroke: var(--col-i); stroke-width: 2.4; stroke-dasharray: 7 4; fill: none; }
+    .med-j { stroke: var(--col-j); stroke-width: 2.4; stroke-dasharray: 7 4; fill: none; }
+    .med-t { font-size: 15px; font-weight: 700; paint-order: stroke; stroke: var(--canvas-bg); stroke-width: 6px; stroke-linejoin: round; pointer-events: none; }
+    .med-t.i { fill: var(--col-i); } .med-t.j { fill: var(--col-j); }
+    .med-c { font-size: 11.5px; fill: var(--text-muted); paint-order: stroke; stroke: var(--canvas-bg); stroke-width: 4px; pointer-events: none; }
+    .med-p { fill: var(--canvas-bg); stroke: var(--text-main); stroke-width: 1.5; pointer-events: none; }
+    #capaMedida line { pointer-events: none; }
+    .med-snap { fill: rgba(241,196,15,.18); stroke: #e0a800; stroke-width: 2; pointer-events: none; }
+    .med-n { font-size: 12px; font-weight: 700; fill: #b07d00; paint-order: stroke; stroke: var(--canvas-bg); stroke-width: 4px; pointer-events: none; }
+    body.dark-mode .med-n { fill: #ffd479; }
+
+    /* Respuesta */
+    .resp-tabla { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .resp-tabla th { font-size: 10px; text-transform: uppercase; letter-spacing: .06em; color: var(--text-muted); font-weight: 700; padding: 2px 3px; text-align: center; }
+    .resp-tabla th:first-child { text-align: left; }
+    .resp-tabla td { padding: 3px 2px; text-align: center; }
+    .resp-tabla select { min-width: 58px; }
+    .resp-tabla td:nth-child(2) { width: 62px; }
+    .resp-tabla td:first-child { text-align: left; font-weight: 600; font-size: 11.5px; white-space: nowrap; padding-right: 4px; }
+    .resp-tabla input, .resp-tabla select { width: 100%; min-width: 0; background: var(--bg-panel); color: var(--text-main); border: 1.5px solid var(--border-color);
+        border-radius: 4px; padding: 5px 4px; font-size: 13px; font-family: Consolas, monospace; text-align: center; outline: none; }
+    .resp-tabla select { padding: 4px 0; font-family: Consolas, monospace; }
+    .resp-tabla input:focus, .resp-tabla select:focus { border-color: var(--accent); }
+    .resp-tabla .ok { border-color: var(--ok); background: var(--ok-bg); }
+    .resp-tabla .mal { border-color: var(--mal); background: var(--mal-bg); }
+    .resp-tabla th.ci { color: var(--col-i); } .resp-tabla th.cj { color: var(--col-j); }
+    .feedback { font-size: 12px; line-height: 1.55; border-radius: 6px; padding: 8px 10px; display: none; }
+    .feedback.visible { display: block; }
+    .feedback.ok { background: var(--ok-bg); color: var(--ok); border: 1px solid var(--ok); }
+    .feedback.mal { background: var(--mal-bg); color: var(--text-main); border: 1px solid var(--mal); }
+    .feedback ul { margin: 4px 0 0 16px; }
+    .feedback li { margin: 2px 0; }
+
+    .gcode { font-family: Consolas, 'Courier New', monospace; font-size: 13px; background: var(--canvas-bg); border: 1px solid var(--border-color); border-radius: 6px; padding: 6px 0; overflow-x: auto; }
+    .gl { padding: 2px 10px; white-space: pre; display: flex; gap: 0; }
+    .gl.arc-l { background: var(--accent-light); border-left: 3px solid var(--accent); padding-left: 7px; }
+    .gl .w { cursor: help; border-radius: 3px; padding: 0 1px; }
+    .gl .w:hover { background: rgba(241,196,15,.3); }
+    .w-n { color: #9aa5b1; } .w-g { color: var(--accent); font-weight: 700; } .w-xy { color: var(--text-main); } .w-i { color: var(--col-i); font-weight: 700; } .w-j { color: var(--col-j); font-weight: 700; }
+    .w-z { color: #8e44ad; } .w-f { color: #a3560f; } .w-com { color: var(--text-muted); font-style: italic; }
+    .w-q { color: #e67e22; font-weight: 700; background: rgba(230,126,34,.12); }
+
+    .pasos { display: flex; flex-direction: column; gap: 8px; }
+    .paso-cab { display: flex; align-items: center; gap: 6px; }
+    .paso-cab .paso-n { font-size: 11px; color: var(--text-muted); font-weight: 600; flex: 1; }
+    .paso-nav { min-width: 30px; height: 28px; border-radius: 5px; border: 1px solid var(--border-color); background: var(--bg-panel); cursor: pointer; color: var(--text-main); font-size: 13px; }
+    .paso-nav:hover:not(:disabled) { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .paso-nav:disabled { opacity: .35; cursor: not-allowed; }
+    .puntos-pasos { display: flex; gap: 4px; flex-wrap: wrap; }
+    .puntos-pasos span { width: 9px; height: 9px; border-radius: 50%; background: var(--border-color); cursor: pointer; }
+    .puntos-pasos span.hecho { background: var(--accent-light); border: 1px solid var(--accent); }
+    .puntos-pasos span.actual { background: var(--accent); }
+    .paso { background: var(--bg-app); border: 1px solid var(--border-color); border-radius: 6px; padding: 10px 12px; font-size: 12.5px; line-height: 1.6; }
+    .paso h4 { font-size: 13px; color: var(--accent); margin-bottom: 4px; }
+    .paso p { margin: 3px 0; }
+    .calc { font-family: Consolas, 'Courier New', monospace; font-size: 13px; background: var(--canvas-bg); border: 1px dashed var(--border-color); border-radius: 5px; padding: 6px 9px; margin: 6px 0; line-height: 1.8; }
+    .raiz { white-space: nowrap; } .raiz > span { border-top: 1.4px solid currentColor; padding: 0 2px; }
+    .paso-vacio { font-size: 12px; color: var(--text-muted); line-height: 1.6; }
+    .todos-pasos .paso { margin-bottom: 8px; }
+
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 700; display: none; align-items: center; justify-content: center; padding: 24px; }
+    .modal-overlay.visible { display: flex; }
+    .help-modal { background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 10px; box-shadow: 0 20px 60px rgba(0,0,0,.4);
+        width: min(860px,100%); max-height: min(760px,100%); display: flex; flex-direction: column; overflow: hidden; }
+    .help-header { display: flex; align-items: center; gap: 10px; padding: 14px 20px; border-bottom: 1px solid var(--border-color); }
+    .help-header h2 { font-size: 16px; flex: 1; }
+    .help-close { width: 26px; height: 26px; border-radius: 50%; background: #e74c3c; border: none; cursor: pointer; color: white; font-size: 13px; }
+    .help-content { overflow-y: auto; padding: 18px 24px; }
+    .help-content h3 { font-size: 14px; margin: 16px 0 8px; color: var(--accent); }
+    .help-content h3:first-child { margin-top: 0; }
+    .help-content p, .help-content li { font-size: 12.5px; line-height: 1.6; margin-bottom: 6px; }
+    .help-content ul { margin-left: 20px; }
+    .help-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+    .help-table tr { border-bottom: 1px solid var(--border-color); }
+    .help-table td, .help-table th { padding: 6px; font-size: 12.5px; vertical-align: top; line-height: 1.5; text-align: left; }
+    .help-table th { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; }
+    .help-table td code, .help-content code { font-family: Consolas, monospace; font-size: 12.5px; background: var(--bg-app); padding: 0 4px; border-radius: 3px; }
+    .help-tip { background: var(--accent-light); border-left: 3px solid var(--accent); border-radius: 4px; padding: 9px 12px; font-size: 12.5px; line-height: 1.6; margin: 10px 0; }
+
+    /* Guía */
+    .guia-bocadillo { position: fixed; z-index: 950; width: 300px; background: var(--bg-panel); color: var(--text-main); border: 2px solid var(--accent); border-radius: 10px;
+        box-shadow: 0 14px 40px rgba(0,0,0,.35); padding: 12px 14px; font-size: 13px; line-height: 1.55; display: none; }
+    .guia-bocadillo.visible { display: block; }
+    .guia-bocadillo h4 { font-size: 13px; color: var(--accent); margin-bottom: 4px; }
+    .guia-pie { display: flex; align-items: center; gap: 6px; margin-top: 10px; }
+    .guia-pie span { flex: 1; font-size: 11px; color: var(--text-muted); }
+    .guia-pie button { padding: 4px 10px; border-radius: 5px; border: 1px solid var(--accent); background: var(--accent); color: #fff; cursor: pointer; font-size: 12px; font-weight: 600; }
+    .guia-pie button.sec { background: transparent; color: var(--accent); }
+    .guia-foco { position: fixed; z-index: 940; border: 3px solid #f1c40f; border-radius: 8px; box-shadow: 0 0 0 9999px rgba(0,0,0,.35); pointer-events: none; display: none; transition: all .2s; }
+    .guia-foco.visible { display: block; }
+
+    .tip-flot { position: fixed; z-index: 960; pointer-events: none; background: rgba(20,24,30,.92); color: #fff; font-size: 12px; line-height: 1.45; padding: 6px 9px; border-radius: 6px; max-width: 280px; display: none; }
+    .tip-flot.visible { display: block; }
+    .tip-flot b { color: #ffd479; }
+
+    .acierto { animation: brillo .9s ease-out; }
+    @keyframes brillo { 0% { box-shadow: 0 0 0 0 rgba(39,174,96,.6); } 100% { box-shadow: 0 0 0 14px rgba(39,174,96,0); } }
+
+    @media (max-width: 1150px) {
+        body { height: auto; overflow: auto; }
+        .workspace { flex-wrap: wrap; overflow: visible; }
+        .canvas-container { order: -1; flex: 1 1 100%; min-height: 62vh; }
+        .side.izq, .side.der { flex: 1 1 300px; width: auto; overflow: visible; }
+    }
+
+    /* ---- v2: contorno, leer el bloque, cotas, examen, hoja ---- */
+    .niveles button { padding: 5px 10px; }
+    .cotas-nota { font-size: 11.5px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .tag-cotas { display: inline-block; font-size: 10.5px; font-weight: 700; padding: 1px 7px; border-radius: 4px; font-family: Consolas, monospace; }
+    .tag-cotas.abs { background: rgba(0,90,156,.14); color: #005A9C; }
+    .tag-cotas.inc { background: rgba(39,174,96,.16); color: #1e8449; }
+    body.dark-mode .tag-cotas.abs { color: #6fb1ff; } body.dark-mode .tag-cotas.inc { color: #5fd08f; }
+    .resp-tabla td.nt-cel { font-family: Consolas, monospace; }
+    .resp-tabla .tipo-t { display: inline-block; width: 16px; text-align: center; color: var(--text-muted); font-weight: 400; }
+    .resp-tabla input:disabled { background: transparent; border-style: dashed; opacity: .45; }
+    .resp-scroll { max-height: 46vh; overflow-y: auto; }
+    .pieza { fill: var(--accent); opacity: .06; }
+    .nt-c { fill: var(--bg-panel); stroke: var(--text-muted); stroke-width: 1.2; }
+    .nt-t { font-size: 11px; font-weight: 700; fill: var(--text-main); }
+    .cand { fill: none; stroke-width: 3.5; stroke-linecap: round; }
+    .cand.sel { stroke-width: 7; }
+    .cand.apagado { opacity: .22; }
+    .c0 { stroke: #7b4fd6; } .c1 { stroke: #0e9aa7; } .c2 { stroke: #c2185b; } .c3 { stroke: #8a7a00; }
+    .f0 { fill: #7b4fd6; } .f1 { fill: #0e9aa7; } .f2 { fill: #c2185b; } .f3 { fill: #8a7a00; }
+    body.dark-mode .c0 { stroke: #a98bff; } body.dark-mode .c1 { stroke: #3fd0dc; } body.dark-mode .c2 { stroke: #ff6fa8; } body.dark-mode .c3 { stroke: #d9c84a; }
+    body.dark-mode .f0 { fill: #a98bff; } body.dark-mode .f1 { fill: #3fd0dc; } body.dark-mode .f2 { fill: #ff6fa8; } body.dark-mode .f3 { fill: #d9c84a; }
+    .bloque-grande { font-family: Consolas, 'Courier New', monospace; font-size: 17px; font-weight: 700; background: var(--canvas-bg); border: 1px solid var(--border-color); border-radius: 6px; padding: 8px 10px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+    .bloque-grande .w-n { font-weight: 400; }
+    .opc-arcos { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+    .opc-arco { height: 44px; border-radius: 8px; border: 2px solid var(--border-color); background: var(--bg-panel); cursor: pointer; font-size: 18px; font-weight: 800; color: var(--text-main); }
+    .opc-arco:hover { border-color: var(--accent); }
+    .opc-arco.sel { color: #fff; }
+    .opc-arco.sel.k0 { background: #7b4fd6; border-color: #7b4fd6; } .opc-arco.sel.k1 { background: #0e9aa7; border-color: #0e9aa7; }
+    .opc-arco.sel.k2 { background: #c2185b; border-color: #c2185b; } .opc-arco.sel.k3 { background: #8a7a00; border-color: #8a7a00; }
+    .palabra { font-family: Consolas, monospace; font-size: 16px; font-weight: 700; padding: 5px 9px; border-radius: 6px; border: 2px solid var(--border-color); background: var(--bg-panel); color: var(--text-main); cursor: pointer; }
+    .palabra:hover { border-color: var(--accent); }
+    .palabra.marcada { border-color: var(--mal); background: var(--mal-bg); color: var(--mal); text-decoration: line-through; }
+    .palabra.bien { border-color: var(--ok); background: var(--ok-bg); color: var(--ok); }
+    .palabra.fija { cursor: default; border-color: transparent; background: transparent; color: #9aa5b1; font-weight: 400; }
+    .palabra-ok { font-size: 12.5px; font-weight: 600; padding: 6px 10px; border-radius: 6px; border: 2px solid var(--border-color); background: var(--bg-panel); color: var(--text-main); cursor: pointer; }
+    .palabra-ok.marcada { border-color: var(--ok); background: var(--ok-bg); color: var(--ok); }
+    .nota-p { font-size: 11.5px; color: var(--text-muted); line-height: 1.5; }
+    .gl.cab { opacity: .55; }
+    .gl.corr { background: var(--ok-bg); border-left: 3px solid var(--ok); padding-left: 7px; }
+    .gl.mal-l { background: var(--mal-bg); border-left: 3px solid var(--mal); padding-left: 7px; }
+
+    /* modo examen */
+    .pill-examen { background: #c0392b !important; }
+    body.examen #btnSolucion, body.examen #secPasos, body.examen #pasos, body.examen #lblAyudas, body.examen #panelAyudas,
+    body.examen #chuleta, body.examen #btnGuia, body.examen #btnHoja, body.examen #btnNC, body.examen #btnManual, body.examen #btnAyuda, body.examen .solo-practica { display: none !important; }
+    body.examen .niveles button.bloqueado { display: none; }
+
+    /* hoja de ejercicios (solo se ve al imprimir) */
+    #hoja { display: none; }
+    .hoja-modal { width: min(560px, 100%); }
+    .hoja-form { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 14px; font-size: 12.5px; }
+    .hoja-form label { display: flex; flex-direction: column; gap: 4px; color: var(--text-muted); font-size: 11.5px; }
+    .hoja-form input[type=text], .hoja-form select, .hoja-form input[type=number] { background: var(--bg-app); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 4px; padding: 6px 7px; font-size: 12.5px; }
+    .hoja-form .largo { grid-column: 1 / -1; }
+    .hoja-form .chk { flex-direction: row; align-items: center; gap: 8px; color: var(--text-main); font-size: 12.5px; }
+    @media print {
+        @page { size: A4; margin: 11mm; }
+        body, body.dark-mode {
+            --bg-app: #fff; --bg-panel: #fff; --border-color: #bbb; --text-main: #111; --text-muted: #666; --canvas-bg: #fff;
+            --col-i: #c0570e; --col-j: #1e8449; --col-r: #c0392b; --col-ini: #1e8449; --col-fin: #c0392b; --grid-min: #f0f0f0; --grid-may: #dcdcdc; --linea: #444; --accent-light: #e8f0f8;
+            background: #fff !important; height: auto; overflow: visible; display: block; padding: 0; color: #111;
+        }
+        .app-window, .modal-overlay, .popover, .tip-flot, .guia-foco, .guia-bocadillo, .settings-panel { display: none !important; }
+        #hoja { display: block; }
+        .hj-cab { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid #111; padding-bottom: 4px; margin-bottom: 6px; }
+        .hj-cab h1 { font-size: 16px; }
+        .hj-cab .hj-autor { font-size: 10px; color: #666; }
+        .hj-datos { display: flex; gap: 18px; font-size: 11.5px; margin-bottom: 8px; }
+        .hj-datos span { flex: 1; border-bottom: 1px solid #999; padding-bottom: 2px; }
+        .hj-ej { break-inside: avoid; page-break-inside: avoid; border: 1px solid #bbb; border-radius: 6px; padding: 6px 9px; margin-bottom: 7px; }
+        .hj-ej h2 { font-size: 12.5px; margin-bottom: 2px; }
+        .hj-ej ul { font-size: 11px; margin: 0 0 3px 16px; line-height: 1.4; }
+        .hj-fila { display: flex; gap: 10px; align-items: stretch; }
+        .hj-fila svg { flex: 1; border: 1px solid #ddd; border-radius: 4px; }
+        .hj-resp { width: 250px; display: flex; flex-direction: column; gap: 5px; font-size: 10.5px; }
+        .hj-resp table { border-collapse: collapse; width: 100%; }
+        .hj-resp th { font-size: 9.5px; color: #555; font-weight: 700; padding: 1px; }
+        .hj-resp td { border: 1px solid #999; height: 21px; text-align: center; font-size: 10px; }
+        .hj-resp td.lb { border: none; text-align: left; font-weight: 600; white-space: nowrap; padding-right: 3px; width: 1%; }
+        .hj-resp td.nulo { background: repeating-linear-gradient(45deg, #fff, #fff 3px, #eee 3px, #eee 5px); }
+        .hj-calc { flex: 1; border: 1px dashed #aaa; border-radius: 4px; min-height: 60px; padding: 3px 5px; color: #888; font-size: 9.5px; }
+        .hj-ej.grande .hj-fila { flex-direction: column; }
+        .hj-ej.grande .hj-resp { width: 100%; flex-direction: row; }
+        .hj-ej.grande .hj-resp table { width: 62%; }
+        .hj-salto { break-before: page; page-break-before: always; }
+        .hj-sol { break-inside: avoid; page-break-inside: avoid; font-size: 10.5px; border-bottom: 1px solid #ccc; padding: 5px 0; }
+        .hj-sol pre { font-family: Consolas, 'Courier New', monospace; font-size: 10.5px; white-space: pre-wrap; margin-top: 2px; }
+        .hj-sol b { font-size: 11.5px; }
+    }
+</style>
+</head>
+<body>
+<div class="app-window">
+    <header class="top-bar">
+        <a href="index.html" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a>
+        <span class="top-bar-title">◠ Arcos I J — Por Eloi A.A.<span class="ver-suite" title="Versión del programa">v3</span></span>
+        <div class="niveles" id="niveles" title="Nivel del ejercicio">
+            <button data-n="sencillo" title="Arcos de ¼, ½ o ¾ de vuelta tangentes a las rectas: el centro está alineado con el punto de inicio">① Sencillo</button>
+            <button data-n="complejo" title="El centro queda por encima o por debajo de la recta: se calcula con Pitágoras">② Pitágoras</button>
+            <button data-n="circulo" title="Circunferencia completa en dos semicírculos">③ Círculo</button>
+            <button data-n="contorno" title="Una pieza completa: programa todos los tramos, rectas y arcos">④ Contorno</button>
+            <button data-n="leer" title="Al revés: te dan el bloque y tienes que interpretarlo">⑤ Leer el bloque</button>
+            <button data-n="pieza" id="btnNivelPieza" style="display:none" title="Los arcos de la pieza que has enviado desde el Calcador">⑥ Pieza</button>
+        </div>
+        <div class="top-bar-right">
+            <button class="btn-manual lleno" id="btnNuevo" onclick="nuevoEjercicio()" title="Nuevo ejercicio al azar (tecla N)">🎲 Nuevo ejercicio</button>
+            <button class="btn-manual" id="btnHoja" onclick="abrirHoja()" title="Genera una hoja de ejercicios para imprimir, con sus soluciones">🖨 Hoja</button>
+            <a class="btn-manual" id="btnManual" href="manual_arcos_ij.html" target="_blank" rel="noopener" title="Guía del alumno (se abre en otra pestaña; debe estar en la misma carpeta que el programa)">📖 Manual</a>
+            <button class="btn-manual" id="btnGuia" onclick="guiaEmpezar()" title="Recorrido guiado por el programa">🧭 Guía</button>
+            <span class="icon-gear" id="btnAyuda" onclick="abrirAyuda()" title="Teoría y ayuda">❓</span>
+            <span class="icon-gear" onclick="toggleSettings()" title="Ajustes">⚙️</span>
+        </div>
+    </header>
+
+    <div class="status-bar">
+        <span class="status-pill" id="pillNivel">SENCILLO</span>
+        <span class="status-hint" id="stHint">Pasa el ratón por el plano: los puntos y las cotas explican qué son.</span>
+        <span class="status-score" id="stScore"></span>
+        <span class="status-coords" id="stCoords">X — Y —</span>
+    </div>
+
+    <div id="settingsPanel" class="settings-panel">
+        <div>
+            <h4>Apariencia</h4><div style="height:8px"></div>
+            <div class="setting-row"><span>Modo oscuro</span>
+                <label class="toggle"><input type="checkbox" id="chkDarkMode" onchange="setDarkMode(this.checked)"><span class="toggle-slider"></span></label></div>
+        </div>
+        <div>
+            <h4>Color entorno</h4><div style="height:8px"></div>
+            <div class="color-palette" id="paleta">
+                <div class="color-btn active" style="background:#005A9C" data-c="#005A9C"></div>
+                <div class="color-btn" style="background:#28a745" data-c="#28a745"></div>
+                <div class="color-btn" style="background:#dc3545" data-c="#dc3545"></div>
+                <div class="color-btn" style="background:#e67e22" data-c="#e67e22"></div>
+                <div class="color-btn" style="background:#8e44ad" data-c="#8e44ad"></div>
+                <div class="color-btn" style="background:#16a085" data-c="#16a085"></div>
+            </div>
+        </div>
+        <div>
+            <h4>Marcador</h4><div style="height:8px"></div>
+            <button class="btn-action sec" onclick="reiniciarMarcador()">Poner el marcador a cero</button>
+        </div>
+        <div>
+            <h4>Suite CNC 2026.10</h4><div style="height:8px"></div>
+            <a href="licencias.html" target="_blank" rel="noopener" style="color:inherit;font-size:13px">Créditos y licencias</a>
+        </div>
+    </div>
+
+    <div class="workspace">
+        <!-- IZQUIERDA: opciones y ayudas -->
+        <div class="side izq">
+            <div class="section-label">Opciones del nivel <span class="info" data-info="opciones">i</span></div>
+            <div class="params-box">
+                <span class="sub">Cotas <span class="info" data-info="cotas">i</span></span>
+                <div class="chips" data-grupo="cotas">
+                    <span class="chip on" data-v="G90" title="Todo en cotas absolutas desde el cero pieza">G90</span><span class="chip" data-v="G91" title="Todo en cotas incrementales desde el punto anterior">G91</span><span class="chip" data-v="MIX" title="Rectas en G90 y arcos en G91">Mixto</span>
+                </div>
+            </div>
+            <div class="params-box" id="opcSencillo">
+                <span class="sub">Ángulo del arco</span>
+                <div class="chips" data-grupo="ang">
+                    <span class="chip on" data-v="90">¼ · 90°</span><span class="chip on" data-v="180">½ · 180°</span><span class="chip on" data-v="270">¾ · 270°</span>
+                </div>
+            </div>
+            <div class="params-box" id="opcComplejo">
+                <span class="sub">Dato que da el plano</span>
+                <div class="chips" data-grupo="dato">
+                    <span class="chip on" data-v="cuerda" title="La cota entre el inicio y el final del arco">Cuerda</span><span class="chip on" data-v="dist" title="La distancia de la recta al centro">Distancia al centro</span>
+                </div>
+                <span class="sub">Recta</span>
+                <div class="chips" data-grupo="ori">
+                    <span class="chip on" data-v="h">Horizontal</span><span class="chip on" data-v="v">Vertical</span>
+                </div>
+                <span class="sub">Arco</span>
+                <div class="chips" data-grupo="tam">
+                    <span class="chip on" data-v="menor" title="El centro está al otro lado de la recta">Menor de 180°</span><span class="chip" data-v="mayor" title="El centro está del mismo lado que el arco">Mayor de 180°</span>
+                </div>
+                <label class="param-line" title="Si no se activa, todos los ejercicios dan I y J enteros"><span>Permitir resultados con 1 decimal</span><input type="checkbox" id="chkDecimal"></label>
+            </div>
+            <div class="params-box" id="opcCirculo">
+                <span class="sub">El plano da</span>
+                <div class="chips" data-grupo="cdato">
+                    <span class="chip on" data-v="R">Radio R</span><span class="chip on" data-v="D">Diámetro Ø</span>
+                </div>
+            </div>
+            <div class="params-box" id="opcContorno">
+                <span class="sub">La pieza puede llevar</span>
+                <div class="chips" data-grupo="cont">
+                    <span class="chip on" data-v="red" title="Esquinas redondeadas (arcos de 90° tangentes)">Redondeos</span><span class="chip on" data-v="semi" title="Entalla semicircular centrada en un lado">Semicírculos</span><span class="chip" data-v="pit" title="Entalla o saliente con el centro fuera de la recta (Pitágoras)">Arcos con Pitágoras</span>
+                </div>
+            </div>
+            <div class="params-box" id="opcLeer">
+                <span class="sub">Tipo de ejercicio</span>
+                <div class="chips" data-grupo="leer">
+                    <span class="chip on" data-v="cual" title="Te dan el bloque: elige cuál de los 4 arcos es">¿Qué arco es?</span><span class="chip on" data-v="error" title="Te dan un bloque que puede tener errores: márcalos">¿Dónde está el error?</span>
+                </div>
+            </div>
+
+            <div class="section-label" id="lblAyudas">Ayudas visuales <span class="info" data-info="ayudas">i</span></div>
+            <div class="params-box" id="panelAyudas">
+                <div class="setting-row"><span>Centro y radio</span><label class="toggle"><input type="checkbox" data-ay="centro"><span class="toggle-slider"></span></label></div>
+                <div class="setting-row"><span><span class="ci">I</span> y <span class="cj">J</span> como flechas</span><label class="toggle"><input type="checkbox" data-ay="vector"><span class="toggle-slider"></span></label></div>
+                <div class="setting-row" id="filaTri"><span>Triángulo rectángulo</span><label class="toggle"><input type="checkbox" data-ay="tri"><span class="toggle-slider"></span></label></div>
+                <div class="setting-row"><span>Sentido de giro</span><label class="toggle"><input type="checkbox" data-ay="giro"><span class="toggle-slider"></span></label></div>
+                <div class="setting-row"><span>Medir con el cursor</span><label class="toggle"><input type="checkbox" data-ay="medir"><span class="toggle-slider"></span></label></div>
+            </div>
+
+            <div class="info-box" id="chuleta">
+                <b>I</b> = X<sub>centro</sub> − X<sub>inicio</sub><br>
+                <b>J</b> = Y<sub>centro</sub> − Y<sub>inicio</sub><br>
+                Siempre se miden <b>desde el punto de inicio del arco</b> hasta el centro, con su signo, también en G90.<br>
+                <b>G2</b> horario · <b>G3</b> antihorario
+            </div>
+            <div class="info-box">
+                <span class="kbd">Intro</span> comprobar · <span class="kbd">N</span> nuevo ejercicio<span class="solo-practica"> · <span class="kbd">←</span> <span class="kbd">→</span> paso a paso</span> · <span class="kbd">F</span> encuadrar
+            </div>
+        </div>
+
+        <!-- CENTRO: plano -->
+        <div class="canvas-container" id="zonaPlano">
+            <svg id="lienzo" xmlns="http://www.w3.org/2000/svg"></svg>
+            <div class="enunciado" id="enunciado"></div>
+            <div class="leyenda" id="leyenda"></div>
+            <div class="zoom-controls">
+                <div class="zoom-btn" onclick="zoom(1.25)" title="Acercar (rueda del ratón)">+</div>
+                <div class="zoom-btn" onclick="zoom(0.8)" title="Alejar">−</div>
+                <div class="zoom-btn" onclick="encuadrar()" title="Encuadrar (F)">⤢</div>
+            </div>
+        </div>
+
+        <!-- DERECHA: respuesta, G-code y paso a paso -->
+        <div class="side der">
+            <div class="section-label">Tu respuesta <span class="info" data-info="respuesta">i</span></div>
+            <div class="params-box" id="respuesta">
+                <div id="zonaResp"></div>
+                <div class="btn-row">
+                    <button class="btn-action" onclick="comprobar()" title="Intro">✔ Comprobar</button>
+                    <button class="btn-action sec" id="btnSolucion" onclick="verSolucion()" title="Muestra la solución (cuenta como ejercicio con ayuda)">👁 Solución</button>
+                </div>
+                <div class="feedback" id="feedback"></div>
+            </div>
+
+            <div class="section-label">Programa G-code <span class="info" data-info="gcode">i</span>
+                <span style="margin-left:auto"></span>
+                <button class="btn-manual" style="font-size:11px;padding:2px 8px" onclick="copiarGcode()" title="Copia el programa al portapapeles">📋 Copiar</button>
+                <button class="btn-manual" id="btnNC" style="font-size:11px;padding:2px 8px" onclick="exportarNC()" title="Guarda el programa como .nc para abrirlo en el Simulador 3D (cuando el ejercicio esté resuelto)">💾 .nc</button></div>
+            <div class="gcode" id="gcode"></div>
+
+            <div class="section-label" id="secPasos">Paso a paso <span class="info" data-info="pasos">i</span>
+                <span style="margin-left:auto"></span><button class="btn-manual" style="font-size:11px;padding:2px 8px" onclick="verTodosPasos()" title="Todos los cálculos de una vez">Ver todos</button></div>
+            <div class="pasos" id="pasos"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Ayuda -->
+<div class="modal-overlay" id="modalAyuda" onclick="if(event.target===this)cerrarModal('modalAyuda')">
+    <div class="help-modal">
+        <div class="help-header"><h2>❓ Cómo se calculan I y J</h2><button class="help-close" onclick="cerrarModal('modalAyuda')">✕</button></div>
+        <div class="help-content">
+            <h3>¿Qué son I y J?</h3>
+            <p>En un bloque de arco <code>G2</code> / <code>G3</code> la máquina necesita saber <b>dónde acaba</b> el arco (<code>X Y</code>) y <b>dónde está su centro</b>. El centro se da con <code>I</code> y <code>J</code>:</p>
+            <ul>
+                <li><b class="ci">I</b> = distancia en <b>X</b> (en horizontal) desde el <b>punto de inicio</b> del arco hasta el centro → <code>I = Xcentro − Xinicio</code></li>
+                <li><b class="cj">J</b> = distancia en <b>Y</b> (en vertical) desde el <b>punto de inicio</b> del arco hasta el centro → <code>J = Ycentro − Yinicio</code></li>
+            </ul>
+            <div class="help-tip">I y J son <b>siempre incrementales</b> (desde el inicio del arco), aunque el programa esté en cotas absolutas <code>G90</code>. Las coordenadas <code>X Y</code> del final sí siguen a G90 / G91.</div>
+            <h3>Los signos</h3>
+            <table class="help-table">
+                <tr><th>Desde el inicio, el centro está…</th><th>Signo</th></tr>
+                <tr><td>a la derecha</td><td><code>I</code> positivo</td></tr>
+                <tr><td>a la izquierda</td><td><code>I</code> negativo</td></tr>
+                <tr><td>encima</td><td><code>J</code> positivo</td></tr>
+                <tr><td>debajo</td><td><code>J</code> negativo</td></tr>
+                <tr><td>en la misma vertical</td><td><code>I0</code></td></tr>
+                <tr><td>en la misma horizontal</td><td><code>J0</code></td></tr>
+            </table>
+            <h3>G2 o G3</h3>
+            <p>Se mira la pieza desde arriba, con X hacia la derecha e Y hacia arriba, y se recorre el arco desde el inicio hasta el final: si gira como las agujas del reloj es <code>G2</code> (horario); si gira al revés, <code>G3</code> (antihorario).</p>
+            <h3>G90, G91 y mixto</h3>
+            <table class="help-table">
+                <tr><td><code>G90</code></td><td>X Y del final del bloque en <b>absolutas</b>, desde el cero pieza.</td></tr>
+                <tr><td><code>G91</code></td><td>X Y en <b>incrementales</b>: lo que te desplazas desde el punto anterior (final − inicio del tramo).</td></tr>
+                <tr><td>Mixto</td><td>Rectas en G90 y arcos en G91: antes del arco se escribe <code>G91</code> y después se vuelve a <code>G90</code>.</td></tr>
+            </table>
+            <p>En los tres casos <b>I y J se calculan igual</b>: desde el inicio del arco hasta el centro.</p>
+            <h3>① Nivel sencillo: centro alineado</h3>
+            <p>Cuando el arco es tangente a las rectas (arcos de ¼, ½ o ¾ de vuelta con rectas horizontales y verticales), el centro está en la perpendicular a la recta que llega, a una distancia R. Por eso el centro queda en la misma horizontal o vertical que el inicio: <b>uno de los dos vale 0 y el otro vale ±R</b>.</p>
+            <h3>② Nivel Pitágoras: el centro por encima o por debajo de la recta</h3>
+            <p>Si el arco corta la recta y el centro no está sobre ella, I y J no se ven directamente. Se dibuja un <b>triángulo rectángulo</b>:</p>
+            <ul>
+                <li><b class="cr">Hipotenusa</b>: el radio R, del centro al punto de inicio.</li>
+                <li><b>Un cateto</b>: sobre la recta, del punto de inicio al pie de la perpendicular que baja desde el centro (es la mitad de la cuerda).</li>
+                <li><b>El otro cateto</b>: del centro a ese pie, en perpendicular (es la distancia de la recta al centro).</li>
+            </ul>
+            <p>Con Pitágoras, <code>R² = a² + b²</code>, se despeja el cateto que falta: <code>b = √(R² − a²)</code>. Si no sale exacto, se redondea a <b>1 decimal</b>. Después, cada cateto se convierte en I o J con su signo.</p>
+            <h3>③ Círculo completo</h3>
+            <p>Un círculo completo se programa con <b>dos semicírculos</b>: del punto de inicio al punto opuesto y del punto opuesto otra vez al inicio. En el segundo bloque, I y J se miden desde su propio inicio (el punto opuesto), así que cambian de signo.</p>
+            <h3>④ Contorno completo</h3>
+            <p>Una pieza entera, con esquinas redondeadas y entallas. Se programa <b>tramo a tramo</b>: cada recta (<code>G1 X Y</code>) y cada arco (<code>G2/G3 X Y I J</code>). El inicio de cada tramo es el final del anterior, así que <b>en cada arco I y J se miden desde su propio inicio</b>. Cuando está resuelto se puede exportar a <code>.nc</code> (💾) y abrir en el Simulador 3D.</p>
+            <h3>⑤ Leer el bloque</h3>
+            <ul>
+                <li><b>¿Qué arco es?</b> Te dan el bloque y cuatro arcos posibles entre los mismos puntos. Calcula el centro (inicio + I, J) y mira el sentido (G2/G3).</li>
+                <li><b>¿Dónde está el error?</b> Te dan un bloque que puede tener errores: marca las palabras que están mal o di que está bien.</li>
+            </ul>
+            <h3>El bloque completo</h3>
+            <p><code>N60 G3 X45 Y55 I0 J25</code>: el orden es N, G, X, Y, I, J (y F si hace falta). Después del arco hay que volver a escribir <code>G1</code>, porque G2 / G3 se quedan activos hasta que se cambian. El programa empieza con el cambio de herramienta (<code>T101 M06</code>), arranca el cabezal (<code>S18000 M03</code>) y termina con <code>M05</code> y <code>M30</code>.</p>
+            <h3>Cómo usar el programa</h3>
+            <ul>
+                <li>Elige el nivel arriba y las cotas a la izquierda, y pulsa <b>🎲 Nuevo ejercicio</b>.</li>
+                <li>Rellena la tabla y pulsa <b>✔ Comprobar</b>. Si algo está mal, te dice por qué (signo cambiado, medido desde el final, I y J intercambiados, absolutas en lugar de incrementales…).</li>
+                <li>Las <b>ayudas visuales</b> dibujan el centro, las flechas de I y J, el triángulo y el sentido de giro, sin darte los números.</li>
+                <li><b>Medir con el cursor</b>: al mover el ratón (o arrastrar el dedo en la pantalla táctil) se dibujan sobre el plano dos líneas desde el inicio del arco: la horizontal (ΔX, color de I) y la vertical (ΔY, color de J). Si llevas el cursor al centro, ΔX es I y ΔY es J. Cerca de un punto clave la medida <b>se engancha</b> a él (cuadrado amarillo con su nombre) y da el valor exacto. En los arcos de Pitágoras no se engancha al centro: ese cálculo tienes que hacerlo tú. Toca el inicio de otro tramo para medir desde él.</li>
+                <li>El <b>paso a paso</b> explica el cálculo y lo resalta en el plano. Si llegas a los resultados o pides la solución, el ejercicio cuenta como «con ayuda».</li>
+                <li><b>🖨 Hoja</b>: genera una hoja de ejercicios para imprimir (o guardar como PDF) con las soluciones al final.</li>
+                <li>Pasa el ratón por el plano y por el G-code para ver explicaciones. Rueda: zoom · arrastrar: mover.</li>
+            </ul>
+            <h3>Para el profesorado: modo examen</h3>
+            <p>Abriendo el programa con <code>arcos_ij.html?examen=1</code> se ocultan las ayudas, la solución, el paso a paso, la guía, la hoja y la exportación, y al comprobar solo se marca qué casillas están bien o mal, sin explicaciones. Se puede fijar el nivel y las cotas: <code>?examen=1&amp;nivel=complejo&amp;cotas=G91</code> (niveles: <code>sencillo</code>, <code>complejo</code>, <code>circulo</code>, <code>contorno</code>, <code>leer</code>; cotas: <code>G90</code>, <code>G91</code>, <code>MIX</code>). <code>nivel</code> y <code>cotas</code> también funcionan sin <code>examen</code>.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Hoja de ejercicios -->
+<div class="modal-overlay" id="modalHoja" onclick="if(event.target===this)cerrarModal('modalHoja')">
+    <div class="help-modal hoja-modal">
+        <div class="help-header"><h2>🖨 Hoja de ejercicios</h2><button class="help-close" onclick="cerrarModal('modalHoja')">✕</button></div>
+        <div class="help-content">
+            <div class="hoja-form">
+                <label class="largo">Título<input type="text" id="hjTitulo" value="Cálculo de I y J en arcos G2 / G3"></label>
+                <label>Nivel<select id="hjNivel">
+                    <option value="actual">El nivel elegido arriba</option>
+                    <option value="sencillo">① Sencillo</option>
+                    <option value="complejo">② Pitágoras</option>
+                    <option value="circulo">③ Círculo completo</option>
+                    <option value="contorno">④ Contorno</option>
+                    <option value="mezcla">Mezcla de ①, ② y ③</option>
+                </select></label>
+                <label>Número de ejercicios<input type="number" id="hjN" min="1" max="12" value="6"></label>
+                <label class="chk largo"><input type="checkbox" id="hjSol" checked> Añadir las soluciones al final (en otra hoja)</label>
+                <label class="chk largo"><input type="checkbox" id="hjSoloSol"> Imprimir solo las soluciones de la hoja anterior</label>
+                <p class="nota-p largo">Usa las opciones del nivel y las cotas elegidas a la izquierda. En el cuadro de impresión puedes elegir «Guardar como PDF».</p>
+            </div>
+            <div class="btn-row" style="margin-top:14px">
+                <button class="btn-action" onclick="imprimirHoja()">🖨 Generar e imprimir</button>
+                <button class="btn-action sec" onclick="cerrarModal('modalHoja')">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="hoja"></div>
+<div class="popover" id="popover"></div>
+<div class="guia-foco" id="guiaFoco"></div>
+<div class="guia-bocadillo" id="guiaBocadillo"></div>
+<div class="tip-flot" id="tipFlot"></div>
+
+<script>
+'use strict';
+/* =========================================================================
+   Arcos I J — aprender a calcular I, J en los arcos G2 / G3
+   Programa offline de un solo archivo. Por Eloi A.A.
+   ========================================================================= */
+const $ = id => document.getElementById(id);
+const r1 = v => { const r = Math.round(v * 10) / 10; return Object.is(r, -0) ? 0 : r; };
+const fmt = v => { v = r1(v); return Number.isInteger(v) ? String(v) : v.toFixed(1); };
+const rnd = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const barajar = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const P = (x, y) => ({ x, y });
+const suma = (a, b) => P(a.x + b.x, a.y + b.y);
+const resta = (a, b) => P(a.x - b.x, a.y - b.y);
+const mul = (a, k) => P(a.x * k, a.y * k);
+const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+const pr1 = p => P(r1(p.x), r1(p.y));
+const rot = (v, ang) => { const c = Math.round(Math.cos(ang) * 1e12) / 1e12, s = Math.round(Math.sin(ang) * 1e12) / 1e12; return P(v.x * c - v.y * s, v.x * s + v.y * c); };
+const TOL = 0.051;
+const NIVELES = ['sencillo', 'complejo', 'circulo', 'contorno', 'leer'];
+const NOMBRE_NIVEL = { sencillo: 'SENCILLO', complejo: 'PITÁGORAS', circulo: 'CÍRCULO COMPLETO', contorno: 'CONTORNO', leer: 'LEER EL BLOQUE', pieza: 'PIEZA' };
+
+/* ---------- Parámetros de la dirección (modo examen) ---------- */
+const URLP = new URLSearchParams(location.search);
+const EXAMEN = URLP.get('examen') === '1';
+const NIVEL_FIJO = NIVELES.includes(URLP.get('nivel')) ? URLP.get('nivel') : null;
+const COTAS_FIJAS = ['G90', 'G91', 'MIX'].includes((URLP.get('cotas') || '').toUpperCase()) ? URLP.get('cotas').toUpperCase() : null;
+
+/* ---------- Configuración persistente ---------- */
+const CLAVE = 'arcos_ij_cfg';
+const AY0 = { centro: false, vector: false, tri: false, giro: false, medir: false };
+let cfg = {
+    nivel: 'sencillo', oscuro: false, acento: '#005A9C',
+    cotas: ['G90'], ang: ['90', '180', '270'], dato: ['cuerda', 'dist'], ori: ['h', 'v'], tam: ['menor'], decimal: false, cdato: ['R', 'D'],
+    cont: ['red', 'semi'], leer: ['cual', 'error'],
+    ay: Object.assign({}, AY0), marcador: { ok: 0, ayuda: 0, total: 0 }, guiaVista: false
+};
+try { const g = JSON.parse(localStorage.getItem(CLAVE) || 'null'); if (g && typeof g === 'object') { cfg = Object.assign(cfg, g); cfg.ay = Object.assign({}, AY0, g.ay || {}); } } catch (e) {}
+['cotas', 'ang', 'dato', 'ori', 'tam', 'cdato', 'cont', 'leer'].forEach(k => { if (!Array.isArray(cfg[k])) cfg[k] = []; });
+/* ---------- ⑥ La pieza enviada desde el Calcador ---------- */
+const CLAVE_PIEZA = 'arcos_ij_pieza', MAX_ARCOS_PIEZA = 16;
+let pieza = null, piezaI = 0;
+function prepararPieza(d) {
+    if (!d || !Array.isArray(d.contornos)) return null;
+    const lista = d.contornos.map((c, n) => {
+        let red = false;
+        const redon = p => { const q = pr1(p); if (dist(p, q) > 1e-6) red = true; return q; };
+        const tr = (c.tramos || []).map(t => t.t === 'A'
+            ? crearArco(redon(t.a), redon(t.b), redon(t.C), t.g, { kind: 'pieza', q: true, R: t.R })
+            : linea(redon(t.a), redon(t.b))).filter(t => t.t === 'A' || dist(t.a, t.b) >= .05);
+        const arcos = tr.filter(t => t.t === 'A');
+        const vale = arcos.length > 0 && arcos.length <= MAX_ARCOS_PIEZA && !c.grabado && arcos.every(a => dist(a.a, a.b) >= .05 && a.R >= .5);
+        return { n, tr, vale, red, cerrado: !!c.cerrado, clase: c.clase || '' };
+    }).filter(c => c.tr.length);
+    const validos = lista.filter(c => c.vale);
+    return validos.length ? { nombre: d.nombre || 'Pieza', lista, validos, sinPracticar: lista.filter(c => !c.vale && c.tr.some(t => t.t === 'A')).length } : null;
+}
+try { pieza = prepararPieza(JSON.parse(localStorage.getItem(CLAVE_PIEZA) || 'null')); } catch (e) {}
+if (!NIVELES.includes(cfg.nivel) && !(cfg.nivel === 'pieza' && pieza)) cfg.nivel = 'sencillo';
+if (NIVEL_FIJO) cfg.nivel = NIVEL_FIJO;
+if (EXAMEN) cfg.ay = Object.assign({}, AY0);
+function guardar() { try { localStorage.setItem(CLAVE, JSON.stringify(cfg)); } catch (e) {} }
+
+/* ---------- Estado ---------- */
+let ej = null;            // ejercicio actual
+let paso = -1;            // paso a paso: -1 = sin empezar
+let vista = null;         // {k, ox, oy} transformación mundo → pantalla
+let vistaUsuario = null;  // zoom / desplazamiento manual
+let medirDesde = 0;       // tramo desde cuyo inicio se mide
+let impresion = false;    // dibujando para la hoja impresa
+
+/* =========================================================================
+   MODELO: un ejercicio es una lista de tramos (rectas y arcos)
+   ========================================================================= */
+const DIRS = [P(1, 0), P(0, 1), P(-1, 0), P(0, -1)];
+function linea(a, b) { return { t: 'L', a, b }; }
+function crearArco(a, b, C, g, extra) {
+    return Object.assign({ t: 'A', a, b, C, g, R: dist(a, C), I: r1(C.x - a.x), J: r1(C.y - a.y) }, extra || {});
+}
+function angulosArco(a) {
+    const a1 = Math.atan2(a.a.y - a.C.y, a.a.x - a.C.x), a2 = Math.atan2(a.b.y - a.C.y, a.b.x - a.C.x);
+    let sw = a2 - a1;
+    if (a.g === 'G3') { while (sw <= 1e-9) sw += 2 * Math.PI; } else { while (sw >= -1e-9) sw -= 2 * Math.PI; }
+    return { a1, a2, sw };
+}
+function puntoArco(a, frac) { const { a1, sw } = angulosArco(a); const t = a1 + sw * frac; const R = dist(a.a, a.C); return P(a.C.x + R * Math.cos(t), a.C.y + R * Math.sin(t)); }
+function muestrasArco(a, n) { const o = []; for (let i = 0; i <= n; i++) o.push(puntoArco(a, i / n)); return o; }
+function completarPit(arc) {
+    // datos geométricos para el triángulo y las cotas (según el sentido de recorrido final)
+    const v = resta(arc.b, arc.a), n = Math.hypot(v.x, v.y);
+    arc.tdir = P(Math.round(v.x / n), Math.round(v.y / n));
+    arc.ori = arc.tdir.y === 0 ? 'h' : 'v';
+    const nL = P(-arc.tdir.y, arc.tdir.x);
+    const w = resta(arc.C, arc.F); arc.lado = (w.x * nL.x + w.y * nL.y) > 0 ? 1 : -1;
+    const m = resta(puntoArco(arc, .5), arc.F); arc.bulto = (m.x * nL.x + m.y * nL.y) > 0 ? 1 : -1;
+    return arc;
+}
+function colocar(puntos, margen) {
+    let mx = Infinity, my = Infinity;
+    puntos.forEach(p => { mx = Math.min(mx, p.x); my = Math.min(my, p.y); });
+    return P(Math.ceil((-mx + margen) / 5) * 5 + rnd(0, 4) * 5, Math.ceil((-my + margen) / 5) * 5 + rnd(0, 4) * 5);
+}
+function moverTramos(tr, off, f) {
+    f = f || (p => P(r1(p.x + off.x), r1(p.y + off.y)));
+    return tr.map(t => {
+        const n = Object.assign({}, t, { a: f(t.a), b: f(t.b) });
+        if (t.t === 'A') { n.C = f(t.C); if (t.F) n.F = f(t.F); n.I = r1(n.C.x - n.a.x); n.J = r1(n.C.y - n.a.y); }
+        return n;
+    });
+}
+function puntosTramos(tr) { let p = []; tr.forEach(t => { p.push(t.a, t.b); if (t.t === 'A') p = p.concat(muestrasArco(t, 24)); }); return p; }
+
+/* ---------- ① Sencillo ---------- */
+function genSencillo(angsForzados) {
+    const angs = angsForzados || (cfg.ang.length ? cfg.ang : ['90', '180', '270']);
+    const ang = +pick(angs);
+    const R = pick([10, 15, 20, 25, 30, 35, 40, 50]);
+    const dIn = pick(DIRS);
+    const ccw = Math.random() < .5, s = ccw ? 1 : -1;
+    const nrm = ccw ? P(-dIn.y, dIn.x) : P(dIn.y, -dIn.x);
+    const corto = Math.max(5, Math.floor(R * .8 / 5) * 5);
+    const L1 = ang === 270 ? corto : pick([20, 25, 30, 40, 50, 60]);
+    const L2 = ang === 270 ? corto : pick([20, 25, 30, 40, 50, 60]);
+    const P1 = P(0, 0), C = mul(nrm, R);
+    let P2 = suma(C, rot(resta(P1, C), s * ang * Math.PI / 180)); P2 = P(Math.round(P2.x), Math.round(P2.y));
+    const dOut = rot(dIn, s * ang * Math.PI / 180);
+    let tr = [linea(resta(P1, mul(dIn, L1)), P1), crearArco(P1, P2, C, ccw ? 'G3' : 'G2', { kind: 'tang', q: true }), linea(P2, suma(P2, mul(dOut, L2)))];
+    const off = colocar(puntosTramos(tr), 20);
+    tr = moverTramos(tr, off);
+    return { tipo: 'sencillo', ang, dIn, tramos: tr, ini: tr[0].a };
+}
+
+/* ---------- ② Pitágoras ---------- */
+function listaPitagoras(modo) {
+    const ent = [], dec = [];
+    for (let R = 12; R <= 60; R++) {
+        if (modo === 'cuerda') {
+            for (let c = 10; c <= 2 * R - 6; c += 2) {
+                const h = c / 2, d = Math.sqrt(R * R - h * h);
+                if (d < 4 || h < 5) continue;
+                if (Math.abs(d - Math.round(d)) < 1e-9) ent.push({ R, h, d: Math.round(d), dExacto: d, calc: 'd' });
+                else if (Math.abs(d * 10 - Math.round(d * 10)) > 1e-6) dec.push({ R, h, d: r1(d), dExacto: d, calc: 'd' });
+            }
+        } else {
+            for (let d = 4; d <= R - 4; d++) {
+                const h = Math.sqrt(R * R - d * d);
+                if (h < 5) continue;
+                if (Math.abs(h - Math.round(h)) < 1e-9) ent.push({ R, h: Math.round(h), d, hExacto: h, calc: 'h' });
+                else dec.push({ R, h: r1(h), d, hExacto: h, calc: 'h' });
+            }
+        }
+    }
+    return { ent, dec };
+}
+function genComplejo(opts) {
+    opts = opts || {};
+    const modo = pick(cfg.dato.length ? cfg.dato : ['cuerda', 'dist']);
+    const ori = pick(cfg.ori.length ? cfg.ori : ['h', 'v']);
+    const tam = pick(cfg.tam.length ? cfg.tam : ['menor']);
+    const decimal = opts.decimal === undefined ? cfg.decimal : opts.decimal;
+    const L = listaPitagoras(modo);
+    const D = (decimal && Math.random() < .5) ? pick(L.dec) : pick(L.ent);
+    const t = ori === 'h' ? pick([P(1, 0), P(-1, 0)]) : pick([P(0, 1), P(0, -1)]);
+    const nL = P(-t.y, t.x);
+    const lado = pick([1, -1]);
+    const bulto = tam === 'menor' ? -lado : lado;
+    const g = bulto > 0 ? 'G2' : 'G3';          // el arco sale a la izquierda del recorrido → horario
+    const L1 = pick([25, 30, 35, 40, 50]), L2 = pick([25, 30, 35, 40, 50]);
+    const P1 = P(0, 0), P2 = mul(t, 2 * D.h), Mm = mul(t, D.h), C = suma(Mm, mul(nL, lado * D.d));
+    let tr = [linea(resta(P1, mul(t, L1)), P1), crearArco(P1, P2, C, g, { kind: 'pit', q: true, D, modo, tam, F: Mm }), linea(P2, suma(P2, mul(t, L2)))];
+    const off = colocar(puntosTramos(tr), 20);
+    tr = moverTramos(tr, off);
+    tr[1].R = D.R; completarPit(tr[1]);
+    return { tipo: 'complejo', tramos: tr, ini: tr[0].a };
+}
+
+/* ---------- ③ Círculo completo ---------- */
+function genCirculo() {
+    const R = pick([10, 15, 20, 25, 30, 40, 50]);
+    const C = P(R + 15 + rnd(0, 16) * 5, R + 15 + rnd(0, 12) * 5);
+    const u = pick(DIRS), g = pick(['G2', 'G3']);
+    const A = suma(C, mul(u, R)), B = resta(C, mul(u, R));
+    const dato = pick(cfg.cdato.length ? cfg.cdato : ['R', 'D']);
+    return { tipo: 'circulo', R, C, u, dato, askIni: true, ini: A,
+        tramos: [crearArco(A, B, C, g, { kind: 'circ', q: true }), crearArco(B, A, C, g, { kind: 'circ', q: true })] };
+}
+const NOMBRE_U = u => u.x > 0 ? 'derecho' : u.x < 0 ? 'izquierdo' : u.y > 0 ? 'superior' : 'inferior';
+
+/* ---------- ④ Contorno ---------- */
+const LADO_NOMBRE = ['inferior', 'derecho', 'superior', 'izquierdo'];
+function genContorno() {
+    const feats = cfg.cont.length ? cfg.cont : ['red', 'semi'];
+    for (let intento = 0; intento < 400; intento++) {
+        const W = rnd(12, 20) * 10, H = rnd(8, 14) * 10;
+        const C4 = [P(0, 0), P(W, 0), P(W, H), P(0, H)], T4 = [P(1, 0), P(0, 1), P(-1, 0), P(0, -1)];
+        const r = [0, 0, 0, 0];
+        if (feats.includes('red')) {
+            for (let i = 0; i < 4; i++) r[i] = pick([0, 10, 15, 20, 25, 30].filter(v => v <= Math.min(W, H) / 4));
+            if (r.every(v => !v)) r[rnd(0, 3)] = pick([10, 15, 20]);
+        }
+        const tiposF = feats.filter(f => f === 'semi' || f === 'pit');
+        const lados = [null, null, null, null];
+        if (tiposF.length && (Math.random() < .9 || !feats.includes('red'))) {
+            const i0 = rnd(0, 3);
+            const ladosF = (Math.random() < .35 || !feats.includes('red')) ? [i0, (i0 + 2) % 4] : [i0];
+            for (const i of ladosF) {
+                const len = i % 2 === 0 ? W : H, perp = i % 2 === 0 ? H : W;
+                const libre = len - r[i] - r[(i + 1) % 4];
+                const tipo = pick(tiposF);
+                if (tipo === 'semi') {
+                    const op = [10, 15, 20, 25, 30].filter(R => 2 * R <= libre - 20 && R <= perp * .4);
+                    if (op.length) { const R = pick(op); lados[i] = { tipo: 'semi', R, h: R, d: 0 }; }
+                } else {
+                    const sub = pick(['entalla', 'saliente']);
+                    const modo = pick(cfg.dato.length ? cfg.dato : ['cuerda', 'dist']);
+                    const op = listaPitagoras(modo).ent.filter(D => 2 * D.h <= libre - 20 && D.R <= 60 && (sub === 'entalla' ? D.R - D.d <= perp * .4 : D.R - D.d <= 35));
+                    if (op.length) { const D = pick(op); lados[i] = { tipo: 'pit', sub, modo, D, R: D.R, h: D.h, d: D.d }; }
+                }
+            }
+        }
+        if (!lados.some(Boolean) && !r.some(Boolean)) continue;
+        if (!feats.includes('red') && !lados.some(Boolean)) continue;
+        // construcción en sentido antihorario, empezando en el lado inferior
+        let tr = [];
+        const ini = suma(C4[0], mul(T4[0], r[0]));
+        let cur = ini;
+        for (let i = 0; i < 4; i++) {
+            const t = T4[i], nL = P(-t.y, t.x), j = (i + 1) % 4, f = lados[i];
+            if (f) {
+                const len = i % 2 === 0 ? W : H, m = suma(C4[i], mul(t, len / 2));
+                const pA = resta(m, mul(t, f.h)), pB = suma(m, mul(t, f.h));
+                if (dist(cur, pA) > 1e-9) tr.push(linea(cur, pA));
+                let C, g;
+                if (f.tipo === 'semi') { C = m; g = 'G2'; }
+                else if (f.sub === 'entalla') { C = resta(m, mul(nL, f.d)); g = 'G2'; }
+                else { C = suma(m, mul(nL, f.d)); g = 'G3'; }
+                tr.push(crearArco(pA, pB, C, g, f.tipo === 'semi' ? { kind: 'semi', q: true, lado: i, F: m } : { kind: 'pit', q: true, D: f.D, modo: f.modo, sub: f.sub, tam: 'menor', F: m, ladoPieza: i }));
+                cur = pB;
+            }
+            const fin = resta(C4[j], mul(t, r[j]));
+            if (dist(cur, fin) > 1e-9) tr.push(linea(cur, fin));
+            if (r[j]) { const b = suma(C4[j], mul(T4[j], r[j])); tr.push(crearArco(fin, b, suma(fin, mul(nL, r[j])), 'G3', { kind: 'redondeo', q: true, esquina: C4[j] })); cur = b; }
+            else cur = fin;
+        }
+        const ccw = Math.random() < .5;
+        if (!ccw) tr = tr.reverse().map(x => {
+            if (x.t === 'L') return linea(x.b, x.a);
+            const { t, a, b, C, g, R, I, J, ...resto } = x;
+            return crearArco(b, a, C, g === 'G2' ? 'G3' : 'G2', resto);
+        });
+        tr.forEach(x => { x.q = true; if (x.t === 'A' && x.kind === 'pit') { x.R = x.D.R; completarPit(x); } });
+        return { tipo: 'contorno', W, H, r, lados, sentido: ccw ? 'antihorario' : 'horario', tramos: tr, ini };
+    }
+    return genContorno();
+}
+
+/* ---------- ⑤ Leer el bloque ---------- */
+function prepararLeer(e) {
+    const a = e.tramos[1];
+    if (e.sub === 'cual') {
+        // los cuatro arcos posibles entre los mismos puntos con el mismo radio: 2 centros × 2 sentidos
+        const v = resta(a.b, a.a), n = Math.hypot(v.x, v.y), u = P(v.x / n, v.y / n);
+        const w = resta(a.C, a.a), k = w.x * u.x + w.y * u.y;
+        const pie = suma(a.a, mul(u, k)); const C2 = pr1(resta(mul(pie, 2), a.C));
+        const otra = a.g === 'G2' ? 'G3' : 'G2';
+        const cands = barajar([{ C: a.C, g: a.g, ok: true }, { C: a.C, g: otra, tipo: 'sentido' }, { C: C2, g: a.g, tipo: 'centro' }, { C: C2, g: otra, tipo: 'ambos' }]);
+        e.cands = cands.map(c => crearArco(a.a, a.b, c.C, c.g, { ok: !!c.ok, tipoErr: c.tipo }));
+        e.correcta = e.cands.findIndex(c => c.ok);
+        e.C2 = C2;
+        e.bloque = { g: a.g, x: esperadoXY(e, 1).x, y: esperadoXY(e, 1).y, i: a.I, j: a.J };
+        e.sel = null;
+    } else {
+        const ok = { g: a.g, x: esperadoXY(e, 1).x, y: esperadoXY(e, 1).y, i: a.I, j: a.J };
+        const inc = modoT(e, 1) === 'inc';
+        for (let n = 0; n < 50; n++) {
+            const tipos = [];
+            if (a.I) tipos.push('signoI');
+            if (a.J) tipos.push('signoJ');
+            if (a.I !== a.J && (a.I || a.J)) tipos.push('swap');
+            tipos.push('desdeFin', 'abs', 'G', 'XY');
+            const tipo = Math.random() < .12 ? 'ok' : pick(tipos);
+            const b = Object.assign({}, ok);
+            if (tipo === 'signoI') b.i = -a.I;
+            if (tipo === 'signoJ') b.j = -a.J;
+            if (tipo === 'swap') { b.i = a.J; b.j = a.I; }
+            if (tipo === 'desdeFin') { b.i = r1(a.C.x - a.b.x); b.j = r1(a.C.y - a.b.y); }
+            if (tipo === 'abs') { b.i = a.C.x; b.j = a.C.y; }
+            if (tipo === 'G') b.g = a.g === 'G2' ? 'G3' : 'G2';
+            if (tipo === 'XY') { const q = inc ? a.b : (inc ? null : e.tramos[2].b); b.x = q.x; b.y = q.y; }
+            const malas = ['g', 'x', 'y', 'i', 'j'].filter(k => k === 'g' ? b.g !== ok.g : Math.abs(b[k] - ok[k]) > 1e-9);
+            if (tipo !== 'ok' && !malas.length) continue;
+            e.errTipo = tipo; e.bloque = b; e.correcto = ok; e.malas = malas;
+            break;
+        }
+        e.sel = new Set(); e.selOk = false;
+    }
+}
+function genLeer() {
+    const sub = pick(cfg.leer.length ? cfg.leer : ['cual', 'error']);
+    const base = Math.random() < .5 ? genSencillo(sub === 'cual' ? ['90', '270'] : null) : genComplejo({ decimal: false });
+    base.baseTipo = base.tipo; base.tipo = 'leer'; base.sub = sub;
+    return base;
+}
+
+/* ---------- ⑥ Pieza del Calcador ---------- */
+function genPieza() {
+    const v = pieza.validos, c = v[piezaI % v.length]; piezaI++;
+    const otros = pieza.lista.filter(o => o !== c).map(o => o.tr);
+    const pts = puntosTramos(c.tr).concat(...otros.map(puntosTramos));
+    const x0 = Math.min(...pts.map(p => p.x)), y0 = Math.min(...pts.map(p => p.y)), x1 = Math.max(...pts.map(p => p.x)), y1 = Math.max(...pts.map(p => p.y));
+    const m = puntosTramos(c.tr); let area = 0; m.forEach((p, i) => { const q = m[(i + 1) % m.length]; area += p.x * q.y - q.x * p.y; });
+    const ms = puntosTramos(c.tr), cx0 = Math.min(...ms.map(p => p.x)), cy0 = Math.min(...ms.map(p => p.y)), cx1 = Math.max(...ms.map(p => p.x)), cy1 = Math.max(...ms.map(p => p.y));
+    const enfoque = (cx1 - cx0) < .6 * (x1 - x0) && (cy1 - cy0) < .6 * (y1 - y0);   // un contorno pequeño (un agujero): se encuadra él
+    return { tipo: 'contorno', enfoque, centroC: P((cx0 + cx1) / 2, (cy0 + cy1) / 2), pieza: { nombre: pieza.nombre, i: v.indexOf(c) + 1, n: v.length, clase: c.clase, red: c.red, sinPracticar: pieza.sinPracticar },
+        W: r1(x1 - x0), H: r1(y1 - y0), x0: r1(x0), y0: r1(y0), origenFuera: enfoque || Math.abs(x0) > .05 || Math.abs(y0) > .05, abierto: !c.cerrado, otros,
+        r: [0, 0, 0, 0], lados: [null, null, null, null], sentido: area > 0 ? 'antihorario' : 'horario', tramos: c.tr, ini: c.tr[0].a };
+}
+function recibirPieza(d) {
+    if (EXAMEN || NIVEL_FIJO) return;
+    const p = prepararPieza(d);
+    if (!p) { estado('Esta pieza no tiene arcos que se puedan practicar aquí.'); return; }
+    pieza = p; piezaI = 0;
+    try { localStorage.setItem(CLAVE_PIEZA, JSON.stringify(d)); } catch (e) {}
+    $('btnNivelPieza').style.display = '';
+    ponerNivel('pieza');
+    try { window.focus(); } catch (e) {}
+}
+
+/* ---------- cotas G90 / G91 ---------- */
+function modoT(e, k) {
+    const c = e.cotas || 'G90';
+    if (c === 'G90') return 'abs';
+    if (c === 'G91') return 'inc';
+    return e.tramos[k].t === 'A' ? 'inc' : 'abs';
+}
+function esperadoXY(e, k) { const t = e.tramos[k]; return modoT(e, k) === 'abs' ? t.b : pr1(resta(t.b, t.a)); }
+function textoCotas(c) {
+    return c === 'G90' ? '<span class="tag-cotas abs">G90</span> cotas absolutas desde el cero pieza'
+        : c === 'G91' ? '<span class="tag-cotas inc">G91</span> cotas incrementales: X Y = lo que te desplazas desde el punto anterior'
+        : '<span class="tag-cotas abs">G90</span> en las rectas y <span class="tag-cotas inc">G91</span> en los arcos';
+}
+
+/* ---------- crear un ejercicio ---------- */
+function generar(nivel) {
+    const e = ({ sencillo: genSencillo, complejo: genComplejo, circulo: genCirculo, contorno: genContorno, leer: genLeer, pieza: genPieza })[nivel]();
+    e.cotas = COTAS_FIJAS || pick(cfg.cotas.length ? cfg.cotas : ['G90']);
+    if (e.tipo === 'leer') prepararLeer(e);
+    e.rev = {}; e.resuelto = false; e.ayuda = false; e.contado = false; e.intentos = 0;
+    return e;
+}
+function nuevoEjercicio() {
+    ej = generar(cfg.nivel);
+    paso = -1; vistaUsuario = null;
+    medirDesde = Math.max(0, ej.tramos.findIndex(t => t.q));
+    if (ej.tipo === 'leer') medirDesde = 1;
+    construirRespuesta();
+    pintarEnunciado();
+    pintarLeyenda();
+    pintarPasos();
+    pintarGcode();
+    ocultarFeedback();
+    render();
+    actualizarMarcador();
+    const f = document.querySelector('#zonaResp input:not(:disabled), #zonaResp select');
+    if (f && !('ontouchstart' in window)) f.focus();
+}
+
+/* =========================================================================
+   ENUNCIADO
+   ========================================================================= */
+function ptxt(p) { return `(${fmt(p.x)}, ${fmt(p.y)})`; }
+function textoEnunciado(e) {
+    const it = []; let h = '';
+    const a = e.tramos.find(t => t.q && t.t === 'A') || e.tramos[1];
+    if (e.tipo === 'sencillo') {
+        h = `Arco de ${e.ang === 90 ? '¼ de vuelta (90°)' : e.ang === 180 ? '½ vuelta (180°)' : '¾ de vuelta (270°)'} tangente a las rectas`;
+        it.push(`Inicio del arco: <b style="color:var(--col-ini)">${ptxt(a.a)}</b> · Radio: <b>R${fmt(a.R)}</b>`);
+        it.push(`Las flechas indican el sentido del recorrido.`);
+        it.push(`Calcula <b>G2/G3</b>, el <b>punto final X Y</b> e <b>I J</b>.`);
+    } else if (e.tipo === 'complejo') {
+        h = `Arco con el centro ${a.ori === 'h' ? (a.C.y > a.a.y ? 'por encima de' : 'por debajo de') : (a.C.x > a.a.x ? 'a la derecha de' : 'a la izquierda de')} la recta`;
+        it.push(`Inicio del arco: <b style="color:var(--col-ini)">${ptxt(a.a)}</b> · Radio: <b>R${fmt(a.R)}</b>`);
+        it.push(a.modo === 'cuerda' ? `Cuerda (del inicio al final del arco): <b>${fmt(2 * a.D.h)}</b>` : `Distancia de la recta al centro: <b>${fmt(a.D.d)}</b>`);
+        it.push(`Calcula <b>G2/G3</b>, el <b>punto final X Y</b> e <b>I J</b> (si no sale exacto, con 1 decimal).`);
+    } else if (e.tipo === 'circulo') {
+        h = `Círculo completo en dos semicírculos`;
+        it.push(`Centro: <b>${ptxt(e.C)}</b> · ${e.dato === 'R' ? `Radio <b>R${fmt(e.R)}</b>` : `Diámetro <b>Ø${fmt(2 * e.R)}</b>`}`);
+        it.push(`Empieza en el <b style="color:var(--col-ini)">punto ${NOMBRE_U(e.u)}</b> y gira según las flechas.`);
+        it.push(`Calcula el <b>punto de inicio</b> y, para cada semicírculo, <b>G2/G3</b>, el <b>final X Y</b> e <b>I J</b>.`);
+    } else if (e.pieza) {
+        const pz = e.pieza;
+        h = `${esc(pz.nombre)} · contorno ${pz.i} de ${pz.n}`;
+        it.push(`Empieza en <b style="color:var(--col-ini)">${ptxt(e.ini)}</b>${e.abierto ? '' : `, recorrido en sentido <b>${e.sentido}</b>`} (flechas). El plano da los puntos y el centro <b>C</b> de cada arco.`);
+        it.push(`Las rectas ya están hechas. Escribe cada <b>arco</b> numerado: <b>G2/G3</b>, <b>X Y</b> del final e <b>I J</b>.${pz.n > 1 ? ' Con 🎲 pasas al contorno siguiente.' : ''}`);
+        if (pz.red) it.push('Medidas redondeadas a 1 decimal.');
+        if (pz.sinPracticar) it.push(`${pz.sinPracticar === 1 ? 'Un contorno no se practica' : pz.sinPracticar + ' contornos no se practican'} por ser un grabado, tener más de ${MAX_ARCOS_PIEZA} arcos o arcos demasiado pequeños.`);
+    } else if (e.tipo === 'contorno') {
+        h = `Contorno de una pieza de ${e.W} × ${e.H}`;
+        it.push(`Cero pieza en la esquina inferior izquierda. Inicio: <b style="color:var(--col-ini)">${ptxt(e.ini)}</b>, recorrido en sentido <b>${e.sentido}</b> (flechas).`);
+        const extras = [];
+        if (e.r.some(Boolean)) extras.push('esquinas redondeadas tangentes');
+        e.lados.forEach((f, i) => { if (!f) return; extras.push(f.tipo === 'semi' ? `entalla semicircular centrada en el lado ${LADO_NOMBRE[i]}` : `${f.sub === 'entalla' ? 'entalla' : 'saliente'} de R${f.R} centrado en el lado ${LADO_NOMBRE[i]} (${f.modo === 'cuerda' ? 'cuerda ' + fmt(2 * f.h) : 'centro a ' + fmt(f.d) + ' de la recta'})`); });
+        if (extras.length) it.push('Lleva ' + extras.join('; ') + '.');
+        it.push(`Escribe cada tramo numerado: <b>G1/G2/G3</b>, <b>X Y</b> del final e <b>I J</b> en los arcos.`);
+    } else if (e.tipo === 'leer') {
+        if (e.sub === 'cual') {
+            h = '¿Qué arco hace este bloque?';
+            it.push(`La herramienta está en <b style="color:var(--col-ini)">${ptxt(a.a)}</b> y ejecuta el bloque de la derecha.`);
+            it.push(`Hay cuatro arcos posibles (A, B, C, D) entre los mismos puntos y con el mismo radio. Elige el correcto.`);
+        } else {
+            h = '¿Dónde está el error?';
+            it.push(`El arco del plano empieza en <b style="color:var(--col-ini)">${ptxt(a.a)}</b> y acaba en <b style="color:var(--col-fin)">${ptxt(a.b)}</b> · <b>R${fmt(a.R)}</b>${a.kind === 'pit' ? (a.modo === 'cuerda' ? ` · cuerda <b>${fmt(2 * a.D.h)}</b>` : ` · centro a <b>${fmt(a.D.d)}</b> de la recta`) : ''}.`);
+            it.push(`Marca las palabras del bloque que están mal, o «El bloque está bien».`);
+        }
+    }
+    it.push('Cotas: ' + textoCotas(e.cotas));
+    return { h, it };
+}
+function pintarEnunciado() {
+    const e = $('enunciado'); const { h, it } = textoEnunciado(ej);
+    const pleg = e.classList.contains('plegado');
+    e.innerHTML = `<h3>📐 ${h}<button class="plegar" onclick="this.closest('.enunciado').classList.toggle('plegado');this.textContent=this.closest('.enunciado').classList.contains('plegado')?'▾':'▴';render()" title="Plegar / desplegar">${pleg ? '▾' : '▴'}</button></h3><div class="cuerpo"><ul>${it.map(x => `<li>${x}</li>`).join('')}</ul></div>`;
+    $('pillNivel').textContent = (EXAMEN ? 'EXAMEN · ' : '') + NOMBRE_NIVEL[ej.pieza ? 'pieza' : ej.tipo];
+    $('pillNivel').classList.toggle('pill-examen', EXAMEN);
+}
+function pintarLeyenda() {
+    const l = [];
+    l.push('<span><i style="background:var(--col-ini)"></i>Inicio</span>');
+    if (ej.tipo !== 'contorno') l.push(`<span><i style="background:var(--col-fin)"></i>${ej.tipo === 'circulo' ? 'Punto opuesto' : 'Fin del arco'}</span>`);
+    if (!(ej.tipo === 'leer' && ej.sub === 'cual')) l.push('<span><i style="background:var(--accent)"></i>Arco</span>');
+    if (ej.tipo === 'contorno') l.push('<span><i style="background:var(--linea)"></i>Recta</span><span><b style="font-size:11px">①</b> número de tramo</span>');
+    $('leyenda').innerHTML = l.join('');
+}
+
+/* =========================================================================
+   RESPUESTA DEL ALUMNO
+   ========================================================================= */
+function filasPregunta(e) {
+    // filas de la tabla: [{k, etiqueta, esArco}] (k = -1: punto de inicio)
+    const f = [];
+    if (e.askIni) f.push({ k: -1, et: 'Inicio' });
+    e.tramos.forEach((t, k) => {
+        if (!t.q) return;
+        let et;
+        if (e.tipo === 'circulo') et = (k + 1) + '.º semic.';
+        else if (e.tipo === 'contorno') et = (k + 1) + ' ' + (t.t === 'A' ? '◠' : '╱');
+        else et = 'Arco';
+        f.push({ k, et, esArco: t.t === 'A' });
+    });
+    return f;
+}
+function construirRespuesta() {
+    const z = $('zonaResp');
+    if (ej.tipo === 'leer') {
+        if (ej.sub === 'cual') {
+            z.innerHTML = `<div class="nota-p">El bloque:</div>${bloqueGrande(ej.bloque, false)}<div class="nota-p" style="margin-top:6px">¿Qué arco hace?</div>
+                <div class="opc-arcos">${ej.cands.map((c, i) => `<button class="opc-arco k${i}" data-i="${i}" onclick="elegirArco(${i})">${'ABCD'[i]}</button>`).join('')}</div>`;
+        } else {
+            z.innerHTML = `<div class="nota-p">Toca las palabras que están mal:</div>${bloqueGrande(ej.bloque, true)}
+                <div style="margin-top:6px"><button class="palabra-ok" id="pOk" onclick="marcarBloqueOk()">✔ El bloque está bien</button></div>`;
+        }
+        return;
+    }
+    const filas = filasPregunta(ej);
+    const cont = ej.tipo === 'contorno';
+    const selG = (id, arco) => `<select id="${id}"><option value="">—</option>${cont && !ej.pieza ? '<option>G1</option>' : ''}<option>G2</option><option>G3</option></select>`;
+    const inp = (id, dis, ph) => `<input id="${id}" inputmode="decimal" autocomplete="off"${dis ? ' disabled title="Las rectas no llevan I ni J"' : ''} placeholder="${ph || ''}">`;
+    let h = `<div class="cotas-nota" style="margin-bottom:6px">${textoCotas(ej.cotas)}</div><div class="${cont ? 'resp-scroll' : ''}"><table class="resp-tabla" id="tablaResp"><tr><th></th><th>G</th><th>X</th><th>Y</th><th class="ci">I</th><th class="cj">J</th></tr>`;
+    filas.forEach(f => {
+        if (f.k < 0) { h += `<tr><td title="Punto donde empieza (se llega con G0)">Inicio</td><td></td><td>${inp('f_ini_x')}</td><td>${inp('f_ini_y')}</td><td></td><td></td></tr>`; return; }
+        const inc = modoT(ej, f.k) === 'inc';
+        h += `<tr><td title="${cont ? 'Tramo ' + (f.k + 1) : ''}">${f.et}</td><td>${selG('f_' + f.k + '_g')}</td><td>${inp('f_' + f.k + '_x', false, inc ? 'G91' : '')}</td><td>${inp('f_' + f.k + '_y', false, inc ? 'G91' : '')}</td><td>${inp('f_' + f.k + '_i', !f.esArco)}</td><td>${inp('f_' + f.k + '_j', !f.esArco)}</td></tr>`;
+    });
+    z.innerHTML = h + '</table></div>';
+    z.querySelectorAll('input,select').forEach(el => {
+        el.addEventListener('input', () => el.classList.remove('ok', 'mal'));
+        el.addEventListener('keydown', ev => { if (ev.key === 'Enter') { ev.preventDefault(); comprobar(); } });
+    });
+}
+function bloqueGrande(b, clic) {
+    const inc = modoT(ej, 1) === 'inc';
+    const pal = (k, txt) => clic ? `<button class="palabra" data-k="${k}" onclick="marcarPalabra('${k}')">${txt}</button>` : `<span class="w ${k === 'g' ? 'w-g' : k === 'i' ? 'w-i' : k === 'j' ? 'w-j' : 'w-xy'}">${txt}</span>`;
+    return `<div class="bloque-grande"><span class="w-n">N40</span>${inc ? '<span class="w-g">G91</span>' : ''}${pal('g', b.g)}${pal('x', 'X' + fmt(b.x))}${pal('y', 'Y' + fmt(b.y))}${pal('i', 'I' + fmt(b.i))}${pal('j', 'J' + fmt(b.j))}</div>`;
+}
+function elegirArco(i) {
+    if (!ej || ej.resuelto) return;
+    ej.sel = i;
+    document.querySelectorAll('.opc-arco').forEach(b => b.classList.toggle('sel', +b.dataset.i === i));
+    render();
+}
+function marcarPalabra(k) {
+    if (!ej || ej.resuelto) return;
+    if (ej.sel.has(k)) ej.sel.delete(k); else ej.sel.add(k);
+    ej.selOk = false;
+    pintarSeleccionPalabras();
+}
+function marcarBloqueOk() { if (!ej || ej.resuelto) return; ej.selOk = !ej.selOk; if (ej.selOk) ej.sel.clear(); pintarSeleccionPalabras(); }
+function pintarSeleccionPalabras() {
+    document.querySelectorAll('.palabra').forEach(b => b.classList.toggle('marcada', ej.sel.has(b.dataset.k)));
+    const ok = $('pOk'); if (ok) ok.classList.toggle('marcada', ej.selOk);
+}
+
+const leer = id => { const el = $(id); if (!el || el.disabled) return null; const s = el.value.trim().replace(',', '.'); if (s === '') return null; const v = Number(s.replace(/^\+/, '')); return isFinite(v) ? v : NaN; };
+const igual = (u, v) => u !== null && !isNaN(u) && Math.abs(u - v) <= TOL;
+
+function comprobar() {
+    if (!ej) return;
+    ej.intentos++;
+    let todo = true; const msgs = [];
+    if (ej.tipo === 'leer') { const r = comprobarLeer(); todo = r.ok; msgs.push(...r.msgs); }
+    else {
+        const marca = (id, ok) => { const el = $(id); if (el) { el.classList.toggle('ok', ok); el.classList.toggle('mal', !ok); } if (!ok) todo = false; return ok; };
+        if (ej.askIni) {
+            const x = leer('f_ini_x'), y = leer('f_ini_y');
+            const okx = marca('f_ini_x', igual(x, ej.ini.x)), oky = marca('f_ini_y', igual(y, ej.ini.y));
+            if (!okx || !oky) {
+                if (igual(x, ej.C.x) && igual(y, ej.C.y)) msgs.push('El <b>punto de inicio</b> no es el centro: está sobre la circunferencia, a una distancia R del centro.');
+                else msgs.push(`El <b>punto de inicio</b> es el punto ${NOMBRE_U(ej.u)} de la circunferencia: ${ej.u.x ? 'X del centro ' + (ej.u.x > 0 ? '+' : '−') + ' R, la misma Y' : 'la misma X que el centro, Y del centro ' + (ej.u.y > 0 ? '+' : '−') + ' R'}.` + (ej.dato === 'D' ? ' Recuerda que R es la mitad del diámetro.' : '') + ' El G0 de posicionado va siempre en absolutas.');
+            } else ej.rev.ini = true;
+        }
+        ej.tramos.forEach((t, k) => {
+            if (!t.q) return;
+            const nom = ej.tipo === 'circulo' ? ` (${k + 1}.º semicírculo)` : ej.tipo === 'contorno' ? ` (tramo ${k + 1})` : '';
+            const pre = ej.tipo === 'contorno' ? `<b>Tramo ${k + 1}</b>: ` : '';
+            const gOk = t.t === 'A' ? t.g : 'G1';
+            const g = $('f_' + k + '_g').value;
+            if (marca('f_' + k + '_g', g === gOk)) ej.rev['G' + k] = true;
+            else if (!g) msgs.push(`${pre}elige <b>${ej.tipo === 'contorno' && !ej.pieza ? 'G1, G2 o G3' : 'G2 o G3'}</b>${pre ? '' : nom}.`);
+            else if (t.t === 'L') msgs.push(`${pre}es una <b>recta</b>: G1.`);
+            else if (g === 'G1') msgs.push(`${pre}es un <b>arco</b>: G2 o G3, no G1.`);
+            else msgs.push(`${pre}<b>${g}</b> no es el sentido correcto${pre ? '' : nom}. Recorre el arco desde su inicio siguiendo las flechas: ¿gira como las agujas del reloj (G2) o al revés (G3)?`);
+            const xy = esperadoXY(ej, k), inc = modoT(ej, k) === 'inc';
+            const x = leer('f_' + k + '_x'), y = leer('f_' + k + '_y');
+            const okx = marca('f_' + k + '_x', igual(x, xy.x)), oky = marca('f_' + k + '_y', igual(y, xy.y));
+            if (okx && oky) ej.rev['F' + k] = true;
+            else if (x === null || y === null) msgs.push(`${pre}falta ${x === null && y === null ? 'X e Y' : x === null ? 'X' : 'Y'}${pre ? '' : nom}.${inc ? ' En G91, si no te mueves en ese eje, escribe 0.' : ''}`);
+            else if (inc && igual(x, t.b.x) && igual(y, t.b.y)) msgs.push(`${pre}has escrito X Y en <b>absolutas</b>, pero este bloque va en <b>G91</b>: X Y es lo que te desplazas desde el inicio del tramo (final − inicio).`);
+            else if (!inc && igual(x, t.b.x - t.a.x) && igual(y, t.b.y - t.a.y)) msgs.push(`${pre}has escrito X Y en <b>incrementales</b>, pero este bloque va en <b>G90</b>: escribe las coordenadas absolutas del final, desde el cero pieza.`);
+            else if (ej.tipo !== 'contorno' && ej.tramos[k + 1] && igual(x, (inc ? resta(ej.tramos[k + 1].b, t.a) : ej.tramos[k + 1].b).x) && igual(y, (inc ? resta(ej.tramos[k + 1].b, t.a) : ej.tramos[k + 1].b).y)) msgs.push('Has puesto el final de la <b>recta siguiente</b>. X Y del bloque del arco es donde <b>acaba el arco</b>.');
+            else if (t.t === 'A' && igual(x, t.C.x) && igual(y, t.C.y)) msgs.push(`${pre}X Y es el <b>punto final</b> del arco, no el centro${pre ? '' : nom}.`);
+            else msgs.push(`${pre}revisa ${!okx && !oky ? 'X e Y' : !okx ? 'X' : 'Y'}${pre ? '' : nom}: es el final del ${t.t === 'A' ? 'arco' : 'tramo'}${inc ? ', en incrementales desde su inicio' : ''}.`);
+            if (t.t === 'A') {
+                const I = leer('f_' + k + '_i'), J = leer('f_' + k + '_j');
+                const okI = marca('f_' + k + '_i', igual(I, t.I)), okJ = marca('f_' + k + '_j', igual(J, t.J));
+                if (okI) ej.rev['I' + k] = true;
+                if (okJ) ej.rev['J' + k] = true;
+                if (!okI || !okJ) msgs.push(pre + diagnosticoIJ(t, I, J, pre ? '' : nom, okI, okJ, !!pre));
+            }
+        });
+    }
+    const fb = $('feedback');
+    if (todo) {
+        ej.resuelto = true; ej.rev.sol = true;
+        if (!ej.contado) { ej.contado = true; cfg.marcador.total++; if (ej.ayuda) cfg.marcador.ayuda++; else cfg.marcador.ok++; guardar(); }
+        fb.className = 'feedback visible ok';
+        fb.innerHTML = `<b>✔ ¡Correcto!</b> ${ej.ayuda ? 'Resuelto con ayuda.' : ej.intentos === 1 ? 'A la primera.' : 'Resuelto en ' + ej.intentos + ' intentos.'} ${ej.tipo === 'contorno' && !EXAMEN ? 'Puedes exportarlo con 💾 .nc y abrirlo en el Simulador 3D. ' : ''}<a href="#" onclick="nuevoEjercicio();return false" style="color:inherit;font-weight:700">Otro ejercicio →</a>`;
+        $('respuesta').classList.remove('acierto'); void $('respuesta').offsetWidth; $('respuesta').classList.add('acierto');
+        if (ej.tipo === 'leer') construirRespuestaResuelta();
+    } else {
+        fb.className = 'feedback visible mal';
+        if (EXAMEN) fb.innerHTML = `<b style="color:var(--mal)">Aún no.</b> Revisa las casillas marcadas en rojo.`;
+        else fb.innerHTML = `<b style="color:var(--mal)">Aún no.</b><ul>${msgs.map(m => `<li>${m.charAt(0) === '<' ? m : m.charAt(0).toUpperCase() + m.slice(1)}</li>`).join('')}</ul>`;
+    }
+    pintarGcode(); render(); actualizarMarcador();
+}
+
+function diagnosticoIJ(a, I, J, nom, okI, okJ, minus) {
+    const may = s => minus ? s : s.charAt(0).toUpperCase() + s.slice(1);
+    if (I === null || J === null) return may(`falta ${I === null && J === null ? '<b>I</b> y <b>J</b>' : I === null ? '<b>I</b>' : '<b>J</b>'}${nom}. Si el centro está en la misma vertical u horizontal que el inicio, escribe <b>0</b>.`);
+    if (isNaN(I) || isNaN(J)) return may('I y J tienen que ser números (se admite coma o punto decimal).');
+    if (igual(I, -a.I) && igual(J, -a.J) && (a.I || a.J)) return may(`los signos están al revés${nom}: has medido <b>del centro al inicio</b>. I y J van <b>del inicio hacia el centro</b>.`);
+    if (igual(I, a.C.x) && igual(J, a.C.y)) return may(`has escrito las <b>coordenadas absolutas del centro</b>${nom}. I y J son <b>incrementales</b>: centro − inicio (también en G90).`);
+    const fI = a.C.x - a.b.x, fJ = a.C.y - a.b.y;
+    if (igual(I, fI) && igual(J, fJ) && !(igual(fI, a.I) && igual(fJ, a.J))) return may(`has medido <b>desde el punto final</b>${nom}. I y J se miden siempre <b>desde el inicio del arco</b>.`);
+    if (igual(I, a.J) && igual(J, a.I) && a.I !== a.J) return may(`<b>I y J están intercambiados</b>${nom}: I es la distancia en <b>X</b> (horizontal) y J la distancia en <b>Y</b> (vertical).`);
+    const partes = [];
+    if (!okI) {
+        if (igual(Math.abs(I), Math.abs(a.I))) partes.push(`el valor de <b>I</b> es correcto pero el <b>signo</b> no: el centro está ${a.I > 0 ? 'a la <b>derecha</b> del inicio → I positivo' : 'a la <b>izquierda</b> del inicio → I negativo'}`);
+        else if (a.I === 0) partes.push(`<b>I</b>: el centro está en la <b>misma vertical</b> que el inicio`);
+        else partes.push(`<b>I</b> es la distancia en X desde el inicio hasta el centro${a.kind === 'pit' ? ' (uno de los catetos del triángulo)' : ''}`);
+    }
+    if (!okJ) {
+        if (igual(Math.abs(J), Math.abs(a.J))) partes.push(`el valor de <b>J</b> es correcto pero el <b>signo</b> no: el centro está ${a.J > 0 ? '<b>encima</b> del inicio → J positivo' : '<b>debajo</b> del inicio → J negativo'}`);
+        else if (a.J === 0) partes.push(`<b>J</b>: el centro está en la <b>misma horizontal</b> que el inicio`);
+        else partes.push(`<b>J</b> es la distancia en Y desde el inicio hasta el centro${a.kind === 'pit' ? ' (uno de los catetos del triángulo)' : ''}`);
+    }
+    let m = may(partes.join('; ') + nom + '.');
+    if (a.kind === 'pit' && ((!okI && !igual(Math.abs(I), Math.abs(a.I))) || (!okJ && !igual(Math.abs(J), Math.abs(a.J))))) m += ' Prueba a activar el <b>triángulo rectángulo</b> en las ayudas.';
+    return m;
+}
+
+function comprobarLeer() {
+    const a = ej.tramos[1], msgs = [];
+    if (ej.sub === 'cual') {
+        if (ej.sel === null) return { ok: false, msgs: ['Elige una letra: A, B, C o D.'] };
+        const c = ej.cands[ej.sel];
+        if (c.ok) { ej.rev.cual = true; return { ok: true, msgs }; }
+        const L = 'ABCD'[ej.sel];
+        if (c.tipoErr === 'sentido') msgs.push(`El arco <b>${L}</b> tiene el centro bien, pero gira al revés: <b>${a.g}</b> es ${a.g === 'G2' ? 'horario' : 'antihorario'}.`);
+        else if (c.tipoErr === 'centro') msgs.push(`El arco <b>${L}</b> gira bien, pero su centro está en ${ptxt(c.C)}. El centro del bloque es inicio + (I, J) = ${ptxt(a.a)} + (${fmt(a.I)}, ${fmt(a.J)}).`);
+        else msgs.push(`El arco <b>${L}</b> no tiene ni el centro ni el sentido del bloque. Centro = inicio + (I, J); y ${a.g} es ${a.g === 'G2' ? 'horario' : 'antihorario'}.`);
+        return { ok: false, msgs };
+    }
+    // ¿dónde está el error?
+    const marcadas = [...ej.sel].sort().join(','), malas = ej.malas.slice().sort().join(',');
+    if (!ej.sel.size && !ej.selOk) return { ok: false, msgs: ['Marca las palabras que están mal, o «El bloque está bien».'] };
+    if (ej.errTipo === 'ok') {
+        if (ej.selOk) return { ok: true, msgs };
+        return { ok: false, msgs: ['Revisa otra vez: comprueba cada palabra con el plano (G, X Y del final, I J desde el inicio).'] };
+    }
+    if (ej.selOk) return { ok: false, msgs: ['El bloque <b>no</b> está bien: hay al menos una palabra mal.'] };
+    if (marcadas === malas) return { ok: true, msgs };
+    const sobran = [...ej.sel].filter(k => !ej.malas.includes(k)), faltan = ej.malas.filter(k => !ej.sel.has(k));
+    if (sobran.length) msgs.push(`${sobran.map(k => '<b>' + k.toUpperCase() + '</b>').join(', ')} ${sobran.length > 1 ? 'están' : 'está'} bien.`);
+    if (faltan.length) msgs.push(`Hay ${faltan.length > 1 ? 'otras palabras' : 'otra palabra'} mal.`);
+    return { ok: false, msgs };
+}
+function explicacionError() {
+    const a = ej.tramos[1], c = ej.correcto, inc = modoT(ej, 1) === 'inc';
+    return {
+        ok: 'El bloque está bien.',
+        signoI: `<b>I</b> tiene el signo cambiado: el centro está ${a.I > 0 ? 'a la derecha' : 'a la izquierda'} del inicio → <b>I${fmt(c.i)}</b>.`,
+        signoJ: `<b>J</b> tiene el signo cambiado: el centro está ${a.J > 0 ? 'encima' : 'debajo'} del inicio → <b>J${fmt(c.j)}</b>.`,
+        swap: `<b>I y J están intercambiados</b>: I es la distancia en X y J en Y → <b>I${fmt(c.i)} J${fmt(c.j)}</b>.`,
+        desdeFin: `I y J están medidos <b>desde el final</b> del arco. Se miden desde el inicio → <b>I${fmt(c.i)} J${fmt(c.j)}</b>.`,
+        abs: `I y J son las <b>coordenadas absolutas del centro</b>. Deben ser incrementales desde el inicio → <b>I${fmt(c.i)} J${fmt(c.j)}</b>.`,
+        G: `El sentido está mal: el arco gira en sentido ${a.g === 'G2' ? 'horario' : 'antihorario'} → <b>${c.g}</b>.`,
+        XY: inc ? `X Y está en <b>absolutas</b>, pero el bloque va en <b>G91</b>: debe ser el desplazamiento desde el inicio → <b>X${fmt(c.x)} Y${fmt(c.y)}</b>.` : `X Y es el final de la <b>recta siguiente</b>, no el del arco → <b>X${fmt(c.x)} Y${fmt(c.y)}</b>.`
+    }[ej.errTipo];
+}
+function construirRespuestaResuelta() {
+    if (ej.sub === 'cual') { document.querySelectorAll('.opc-arco').forEach(b => { b.classList.toggle('sel', +b.dataset.i === ej.correcta); }); return; }
+    document.querySelectorAll('.palabra').forEach(b => { const mala = ej.malas.includes(b.dataset.k); b.classList.toggle('marcada', mala); });
+    const fb = $('feedback'); if (!EXAMEN) fb.innerHTML += `<div style="margin-top:6px;color:var(--text-main)">${explicacionError()}</div>`;
+}
+
+function verSolucion() {
+    if (!ej || EXAMEN) return;
+    if (!ej.resuelto) ej.ayuda = true;
+    if (ej.tipo === 'leer') {
+        if (ej.sub === 'cual') ej.sel = ej.correcta;
+        else { ej.sel = new Set(ej.malas); ej.selOk = ej.errTipo === 'ok'; }
+        comprobar(); return;
+    }
+    if (ej.askIni) { $('f_ini_x').value = fmt(ej.ini.x); $('f_ini_y').value = fmt(ej.ini.y); }
+    ej.tramos.forEach((t, k) => {
+        if (!t.q) return;
+        const xy = esperadoXY(ej, k);
+        $('f_' + k + '_g').value = t.t === 'A' ? t.g : 'G1'; $('f_' + k + '_x').value = fmt(xy.x); $('f_' + k + '_y').value = fmt(xy.y);
+        if (t.t === 'A') { $('f_' + k + '_i').value = fmt(t.I); $('f_' + k + '_j').value = fmt(t.J); }
+    });
+    comprobar();
+}
+function ocultarFeedback() { $('feedback').className = 'feedback'; }
+function actualizarMarcador() { const m = cfg.marcador; $('stScore').textContent = m.total ? `✔ ${m.ok} sin ayuda · ${m.ayuda} con ayuda` : ''; }
+function reiniciarMarcador() { cfg.marcador = { ok: 0, ayuda: 0, total: 0 }; guardar(); actualizarMarcador(); }
+
+/* =========================================================================
+   G-CODE: programa completo
+   ========================================================================= */
+const TIPS = {
+    N: '<b>Número de bloque</b>. De 10 en 10 para poder intercalar bloques (N15…).',
+    G0: '<b>G0</b>: desplazamiento rápido, sin cortar.',
+    G1: '<b>G1</b>: interpolación lineal (recta) al avance F. Hay que volver a escribirlo después de un arco: G2/G3 se quedan activos.',
+    G2: '<b>G2</b>: arco en sentido <b>horario</b> (mirando la pieza desde arriba).',
+    G3: '<b>G3</b>: arco en sentido <b>antihorario</b>.',
+    G90: '<b>G90</b>: cotas <b>absolutas</b>. X Y se miden desde el cero pieza.',
+    G91: '<b>G91</b>: cotas <b>incrementales</b>. X Y es lo que te desplazas desde el punto anterior. I y J no cambian: siempre son desde el inicio del arco.',
+    Xa: '<b>X</b> del punto final del bloque (absoluta, G90).', Ya: '<b>Y</b> del punto final del bloque (absoluta, G90).',
+    Xi: '<b>X</b> en G91: lo que te desplazas en X desde el inicio del bloque.', Yi: '<b>Y</b> en G91: lo que te desplazas en Y desde el inicio del bloque.',
+    Z: '<b>Z</b>: altura de la herramienta. Negativa = dentro del material.',
+    I: '<b>I</b> = X<sub>centro</sub> − X<sub>inicio del arco</sub>. Incremental, con signo.',
+    J: '<b>J</b> = Y<sub>centro</sub> − Y<sub>inicio del arco</sub>. Incremental, con signo.',
+    I0: '<b>I0</b>: el centro está en la misma vertical que el inicio. Muchos controles permiten omitirlo, pero escribirlo es más claro.',
+    J0: '<b>J0</b>: el centro está en la misma horizontal que el inicio. Muchos controles permiten omitirlo, pero escribirlo es más claro.',
+    F: '<b>F</b>: avance en mm/min. Bajada lenta (F150) y corte más rápido (F1500).',
+    T: '<b>T101 M06</b>: cambio a la herramienta 101.', S: '<b>S18000 M03</b>: el cabezal gira a 18000 rpm en sentido horario.',
+    M05: '<b>M05</b>: para el cabezal.', M30: '<b>M30</b>: fin de programa (vuelve al principio).',
+    q: '<b>?</b> Este dato lo tienes que calcular tú. Aparece cuando lo aciertas en «Tu respuesta».'
+};
+function programa(e, todo) {
+    // devuelve [{ws:[{t,c,tip}], com, cls}]
+    const L = []; let n = 10;
+    const N = () => { const s = { t: 'N' + n, c: 'w-n', tip: TIPS.N }; n += 10; return s; };
+    const sol = todo || e.rev.sol;
+    const sabe = (k, que) => sol || !e.tramos[k].q || e.rev[que + k];
+    const W = (t, c, tip) => ({ t, c, tip });
+    const num = (l, v, ok, c, tip) => ok ? W(l + fmt(v), c, (l === 'I' && r1(v) === 0) ? TIPS.I0 : (l === 'J' && r1(v) === 0) ? TIPS.J0 : tip) : W(l + '?', 'w-q', TIPS.q);
+    L.push({ ws: [N(), W('T101', 'w-g', TIPS.T), W('M06', 'w-g', TIPS.T)], com: 'cambio de herramienta', cls: 'cab' });
+    L.push({ ws: [N(), W('S18000', 'w-f', TIPS.S), W('M03', 'w-g', TIPS.S)], com: 'arranca el cabezal', cls: 'cab' });
+    const kIni = sol || !e.askIni || e.rev.ini;
+    L.push({ ws: [N(), W('G90', 'w-g', TIPS.G90), W('G0', 'w-g', TIPS.G0), num('X', e.ini.x, kIni, 'w-xy', TIPS.Xa), num('Y', e.ini.y, kIni, 'w-xy', TIPS.Ya), W('Z20', 'w-z', TIPS.Z)], com: 'rápido sobre el punto de inicio' });
+    L.push({ ws: [N(), W('G1', 'w-g', TIPS.G1), W('Z-10', 'w-z', TIPS.Z), W('F150', 'w-f', TIPS.F)], com: 'bajada' });
+    let modo = 'abs';
+    e.tramos.forEach((t, k) => {
+        const ws = [N()];
+        const m = modoT(e, k);
+        if (m !== modo) { ws.push(W(m === 'inc' ? 'G91' : 'G90', 'w-g', m === 'inc' ? TIPS.G91 : TIPS.G90)); modo = m; }
+        const g = t.t === 'A' ? t.g : 'G1';
+        ws.push(sabe(k, 'G') ? W(g, 'w-g', TIPS[g]) : W('G?', 'w-q', TIPS.q));
+        const xy = esperadoXY(e, k);
+        ws.push(num('X', xy.x, sabe(k, 'F'), 'w-xy', m === 'inc' ? TIPS.Xi : TIPS.Xa), num('Y', xy.y, sabe(k, 'F'), 'w-xy', m === 'inc' ? TIPS.Yi : TIPS.Ya));
+        if (t.t === 'A') ws.push(num('I', t.I, sabe(k, 'I'), 'w-i', TIPS.I), num('J', t.J, sabe(k, 'J'), 'w-j', TIPS.J));
+        if (k === 0) ws.push(W('F1500', 'w-f', TIPS.F));
+        let com;
+        if (e.tipo === 'circulo') com = k === 0 ? '1.er semicírculo' : '2.º semicírculo: vuelve al inicio';
+        else if (e.tipo === 'contorno') com = 'tramo ' + (k + 1) + (t.t === 'A' ? ' (arco)' : '');
+        else com = t.t === 'A' ? 'arco' : k === 0 ? 'recta anterior: llega al inicio del arco' : 'recta posterior';
+        L.push({ ws, com, cls: t.t === 'A' && (t.q || e.tipo !== 'contorno') ? 'arc-l' : '', k });
+    });
+    L.push({ ws: [N()].concat(modo === 'inc' ? [W('G90', 'w-g', TIPS.G90)] : []).concat([W('G0', 'w-g', TIPS.G0), W('Z20', 'w-z', '<b>Z20</b>: sube la herramienta por encima de la pieza.' + (modo === 'inc' ? ' Antes se vuelve a G90 para que Z20 sea absoluta.' : ''))]), com: 'salida' });
+    L.push({ ws: [N(), W('M05', 'w-g', TIPS.M05)], com: 'para el cabezal', cls: 'cab' });
+    L.push({ ws: [N(), W('M30', 'w-g', TIPS.M30)], com: 'fin de programa', cls: 'cab' });
+    return L;
+}
+function lineaTexto(l) { return l.ws.map(w => w.t).join(' ') + (l.com ? ' ; ' + l.com : ''); }
+function lineaHTML(l) {
+    return `<div class="gl ${l.cls || ''}">${l.ws.map(w => `<span class="w ${w.c}" data-tip="${esc(w.tip)}">${esc(w.t)}</span>`).join(' ')} <span class="w w-com" data-tip="Comentario: la máquina ignora lo que va detrás del punto y coma.">; ${esc(l.com || '')}</span></div>`;
+}
+function pintarGcode() {
+    if (!ej) return;
+    if (ej.tipo === 'leer') {
+        const a = ej.tramos[1], b = ej.bloque, inc = modoT(ej, 1) === 'inc';
+        const ant = { ws: [{ t: 'N30', c: 'w-n', tip: TIPS.N }, { t: 'G1', c: 'w-g', tip: TIPS.G1 }, { t: 'X' + fmt(a.a.x), c: 'w-xy', tip: TIPS.Xa }, { t: 'Y' + fmt(a.a.y), c: 'w-xy', tip: TIPS.Ya }], com: 'recta anterior: la herramienta llega a ' + ptxt(a.a) };
+        const blq = { ws: [{ t: 'N40', c: 'w-n', tip: TIPS.N }].concat(inc ? [{ t: 'G91', c: 'w-g', tip: TIPS.G91 }] : []).concat([{ t: b.g, c: 'w-g', tip: TIPS[b.g] }, { t: 'X' + fmt(b.x), c: 'w-xy', tip: inc ? TIPS.Xi : TIPS.Xa }, { t: 'Y' + fmt(b.y), c: 'w-xy', tip: inc ? TIPS.Yi : TIPS.Ya }, { t: 'I' + fmt(b.i), c: 'w-i', tip: TIPS.I }, { t: 'J' + fmt(b.j), c: 'w-j', tip: TIPS.J }]), com: ej.sub === 'cual' ? 'el bloque' : 'bloque a revisar', cls: (ej.sub === 'error' && ej.resuelto && ej.errTipo !== 'ok') ? 'mal-l' : 'arc-l' };
+        let h = lineaHTML(ant) + lineaHTML(blq);
+        if (ej.sub === 'error' && ej.resuelto && ej.errTipo !== 'ok') {
+            const c = ej.correcto;
+            h += lineaHTML({ ws: [{ t: 'N40', c: 'w-n', tip: TIPS.N }].concat(inc ? [{ t: 'G91', c: 'w-g', tip: TIPS.G91 }] : []).concat([{ t: c.g, c: 'w-g', tip: TIPS[c.g] }, { t: 'X' + fmt(c.x), c: 'w-xy', tip: '' }, { t: 'Y' + fmt(c.y), c: 'w-xy', tip: '' }, { t: 'I' + fmt(c.i), c: 'w-i', tip: TIPS.I }, { t: 'J' + fmt(c.j), c: 'w-j', tip: TIPS.J }]), com: 'corregido', cls: 'corr' });
+        }
+        $('gcode').innerHTML = h;
+        return;
+    }
+    $('gcode').innerHTML = programa(ej).map(lineaHTML).join('');
+}
+function textoPrograma(e) {
+    const nombre = { sencillo: 'arco sencillo', complejo: 'arco con Pitágoras', circulo: 'círculo completo', contorno: 'contorno ' + e.W + 'x' + e.H }[e.tipo];
+    return ['; Arcos I J — ' + nombre + ' — cotas ' + (e.cotas === 'MIX' ? 'G90/G91' : e.cotas), '; Generado con Arcos I J (Por Eloi A.A.)'].concat(programa(e, true).map(lineaTexto)).join('\n') + '\n';
+}
+function copiarGcode() {
+    const t = [...$('gcode').querySelectorAll('.gl')].map(d => d.textContent.replace(/\s+/g, ' ').trim()).join('\n');
+    const ok = () => estado('G-code copiado al portapapeles.');
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(t).then(ok, () => vieja(t)); else vieja(t);
+    function vieja(s) { const ta = document.createElement('textarea'); ta.value = s; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); ok(); } catch (e) {} ta.remove(); }
+}
+function exportarNC() {
+    if (!ej || EXAMEN) return;
+    if (ej.tipo === 'leer') { estado('En «Leer el bloque» no hay programa completo que exportar.'); return; }
+    if (!ej.rev.sol) { estado('Primero resuelve el ejercicio (o mira la solución): el .nc lleva el programa completo.'); flashFeedback('Para exportar el .nc, primero resuelve el ejercicio (o mira la solución).'); return; }
+    const blob = new Blob([textoPrograma(ej)], { type: 'text/plain' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'arcos_ij_' + ej.tipo + '_' + new Date().toISOString().slice(0, 10) + '.nc';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+    estado('Programa guardado. Ábrelo en el Simulador 3D para verlo mecanizar.');
+}
+function flashFeedback(t) { const fb = $('feedback'); fb.className = 'feedback visible mal'; fb.innerHTML = t; }
+function estado(t) { $('stHint').textContent = t; }
+
+/* =========================================================================
+   PASO A PASO
+   ========================================================================= */
+function raiz(s) { return `<span class="raiz">√<span>${s}</span></span>`; }
+function nombreSigno(v, eje) {
+    if (r1(v) === 0) return eje === 'x' ? 'en la misma vertical' : 'en la misma horizontal';
+    return eje === 'x' ? (v > 0 ? 'a la derecha' : 'a la izquierda') : (v > 0 ? 'encima' : 'debajo');
+}
+function sentidoTxt(g) { return g === 'G2' ? '<b>G2</b> (horario, como las agujas del reloj)' : '<b>G3</b> (antihorario, al revés que las agujas del reloj)'; }
+function signoOp(v) { v = r1(v); return v === 0 ? '+ 0' : (v > 0 ? '+ ' : '− ') + fmt(Math.abs(v)); }
+function dirTxt(v) { return Math.abs(v.x) > Math.abs(v.y) ? (v.x > 0 ? 'derecha (+X)' : 'izquierda (−X)') : (v.y > 0 ? 'arriba (+Y)' : 'abajo (−Y)'); }
+function calcIJ(a) {
+    return `<div class="calc"><span class="ci">I</span> = X<sub>centro</sub> − X<sub>inicio</sub> = ${fmt(a.C.x)} − ${fmt(a.a.x)} = <b class="ci">${fmt(a.I)}</b><br><span class="cj">J</span> = Y<sub>centro</sub> − Y<sub>inicio</sub> = ${fmt(a.C.y)} − ${fmt(a.a.y)} = <b class="cj">${fmt(a.J)}</b></div>`;
+}
+function calcXY(k, motivo) {
+    const t = ej.tramos[k], inc = modoT(ej, k) === 'inc';
+    let h = motivo ? `<p>${motivo}</p>` : '';
+    h += `<div class="calc">Final = <b>${ptxt(t.b)}</b>`;
+    if (inc) h += `<br><span class="tag-cotas inc">G91</span> X = ${fmt(t.b.x)} − ${fmt(t.a.x)} = <b>${fmt(t.b.x - t.a.x)}</b> · Y = ${fmt(t.b.y)} − ${fmt(t.a.y)} = <b>${fmt(t.b.y - t.a.y)}</b>`;
+    else h += `<br><span class="tag-cotas abs">G90</span> X<b>${fmt(t.b.x)}</b> Y<b>${fmt(t.b.y)}</b>`;
+    return h + '</div>';
+}
+function pasoGiro(a, k, n) { return { t: n + '. G2 o G3', ay: ['giro'], foco: k, pul: 'arco', h: `<p>Mira la pieza desde arriba y recorre el arco desde su inicio siguiendo las flechas. Alrededor del centro gira en sentido ${sentidoTxt(a.g)}.</p>`, rev: ['G' + k] }; }
+function pasoBloque(n) {
+    return { t: n + '. El programa', ay: [], foco: null, pul: null, h: `<p>Cada bloque de arco lleva: <b>N</b>, <b>G2/G3</b>, el <b>punto final X Y</b> y el centro con <b>I J</b>. Mira el programa: las líneas resaltadas son los arcos.</p><p>Después de un arco se vuelve a escribir <b>G1</b>: G2 / G3 son <b>modales</b> y seguirían activos.${ej.cotas !== 'G90' ? ' Y al cambiar de G91 a G90 (o al revés) se escribe en el bloque donde cambia.' : ''}</p>`, rev: [] };
+}
+function pasosPit(a, k, n0) {
+    const S = [], D = a.D, hor = a.ori === 'h';
+    const legL = hor ? 'I' : 'J', legP = hor ? 'J' : 'I', vL = hor ? a.I : a.J, vP = hor ? a.J : a.I;
+    let n = n0;
+    S.push({ t: (n++) + '. El centro no está en la recta', ay: ['centro'], foco: k, pul: 'C', h: `<p>El centro está ${hor ? (a.C.y > a.a.y ? 'por <b>encima</b>' : 'por <b>debajo</b>') : (a.C.x > a.a.x ? 'a la <b>derecha</b>' : 'a la <b>izquierda</b>')} de la recta ${hor ? 'horizontal' : 'vertical'}, así que <b>I y J no valen 0</b>. Los sacamos con un triángulo rectángulo:</p><ul style="margin-left:18px"><li><b class="cr">Hipotenusa</b>: el radio, del centro al inicio → <b>R = ${fmt(a.R)}</b>.</li><li><b>Cateto sobre la recta</b>: del inicio al pie de la perpendicular desde el centro (la <b>mitad de la cuerda</b>).</li><li><b>Cateto perpendicular</b>: del centro a la recta (la <b>distancia al centro</b>).</li></ul>` });
+    if (a.modo === 'cuerda') {
+        const exacto = Math.abs(D.dExacto - Math.round(D.dExacto)) < 1e-9;
+        S.push({ t: (n++) + '. Pitágoras', ay: ['centro', 'tri'], foco: k, pul: 'C', h: `<p>Cateto sobre la recta = cuerda ÷ 2 = ${fmt(2 * D.h)} ÷ 2 = <b>${fmt(D.h)}</b>. Con R² = a² + b² despejamos el otro:</p><div class="calc">b = ${raiz('R² − a²')} = ${raiz(fmt(a.R) + '² − ' + fmt(D.h) + '²')}<br>b = ${raiz(fmt(a.R * a.R) + ' − ' + fmt(D.h * D.h))} = ${raiz(fmt(a.R * a.R - D.h * D.h))} = <b>${exacto ? fmt(D.d) : D.dExacto.toFixed(3) + '… ≈ ' + fmt(D.d)}</b></div>${exacto ? '' : '<p>No sale exacto: lo <b>redondeamos a 1 decimal</b>.</p>'}<p>Es la distancia del centro a la recta.</p>`, rev: ['calc' + k, 'cL' + k, 'cP' + k] });
+    } else {
+        const exacto = Math.abs(D.hExacto - Math.round(D.hExacto)) < 1e-9;
+        S.push({ t: (n++) + '. Pitágoras', ay: ['centro', 'tri'], foco: k, pul: 'F', h: `<p>El plano da el cateto perpendicular: <b>${fmt(D.d)}</b>. Con R² = a² + b² despejamos el que va sobre la recta:</p><div class="calc">a = ${raiz('R² − b²')} = ${raiz(fmt(a.R) + '² − ' + fmt(D.d) + '²')}<br>a = ${raiz(fmt(a.R * a.R) + ' − ' + fmt(D.d * D.d))} = ${raiz(fmt(a.R * a.R - D.d * D.d))} = <b>${exacto ? fmt(D.h) : D.hExacto.toFixed(3) + '… ≈ ' + fmt(D.h)}</b></div>${exacto ? '' : '<p>No sale exacto: lo <b>redondeamos a 1 decimal</b>.</p>'}<p>Es la mitad de la cuerda.</p>`, rev: ['calc' + k, 'cL' + k, 'cP' + k] });
+    }
+    S.push({ t: (n++) + '. Los catetos son I y J', ay: ['centro', 'tri', 'vector'], foco: k, pul: 'C', h: `<p>La recta es <b>${hor ? 'horizontal' : 'vertical'}</b>:</p><ul style="margin-left:18px"><li>cateto sobre la recta (${fmt(D.h)}) → <b class="${legL === 'I' ? 'ci' : 'cj'}">${legL}</b>; el centro está <b>${nombreSigno(vL, hor ? 'x' : 'y')}</b> del inicio → <b>${legL} = ${fmt(vL)}</b></li><li>cateto perpendicular (${fmt(D.d)}) → <b class="${legP === 'I' ? 'ci' : 'cj'}">${legP}</b>; el centro está <b>${nombreSigno(vP, hor ? 'y' : 'x')}</b> del inicio → <b>${legP} = ${fmt(vP)}</b></li></ul><div class="calc"><span class="ci">I</span> = <b class="ci">${fmt(a.I)}</b> &nbsp; <span class="cj">J</span> = <b class="cj">${fmt(a.J)}</b></div>`, rev: ['I' + k, 'J' + k, 'calc' + k, 'cL' + k, 'cP' + k] });
+    return S;
+}
+function motivoFinal(k) {
+    const t = ej.tramos[k], sig = ej.tramos[(k + 1) % ej.tramos.length];
+    if (t.t === 'A') {
+        if (t.kind === 'pieza') return `El final del arco está en el plano: ${ptxt(t.b)}.`;
+        if (t.kind === 'tang') return `El arco acaba donde empieza la recta siguiente: desde el centro, a R hacia la ${dirTxt(resta(t.b, t.C))}.`;
+        if (t.kind === 'pit') return `El final está sobre la misma recta, a una cuerda (${fmt(2 * t.D.h)}) del inicio.`;
+        if (t.kind === 'semi') return `El final está sobre el mismo lado, a un diámetro (${fmt(2 * t.R)}) del inicio.`;
+        if (t.kind === 'redondeo') return `El redondeo acaba sobre el lado siguiente, a R = ${fmt(t.R)} de la esquina ${ptxt(t.esquina)}.`;
+        if (t.kind === 'circ') return `Acaba en el punto opuesto del círculo.`;
+    }
+    if (ej.tipo !== 'contorno') return '';
+    if (k === ej.tramos.length - 1) return 'Es el último tramo: vuelve al punto de inicio.';
+    if (sig.t === 'A' && sig.kind === 'redondeo') return `La recta llega hasta donde empieza el redondeo: a R = ${fmt(sig.R)} de la esquina ${ptxt(sig.esquina)}.`;
+    if (sig.t === 'A') return `La recta llega hasta donde empieza la ${sig.kind === 'semi' || sig.sub === 'entalla' ? 'entalla' : 'saliente'}: está centrada en el lado, así que empieza en la mitad del lado − ${fmt(sig.kind === 'semi' ? sig.R : sig.D.h)}.`;
+    return 'La recta llega hasta la esquina.';
+}
+function generarPasos() {
+    const S = []; let n = 1;
+    if (ej.tipo === 'sencillo' || ej.tipo === 'complejo') {
+        const k = 1, a = ej.tramos[1];
+        S.push({ t: (n++) + '. El punto de inicio', ay: [], foco: k, pul: 'P1', h: `<p>El arco empieza donde acaba la recta anterior: <b style="color:var(--col-ini)">${ptxt(a.a)}</b>. I y J se miden <b>siempre desde este punto</b>.</p>` });
+        if (a.kind === 'tang') {
+            S.push({ t: (n++) + '. ¿Dónde está el centro?', ay: ['centro'], foco: k, pul: 'C', h: `<p>El arco es <b>tangente</b> a la recta que llega: el centro está en la <b>perpendicular</b> a esa recta, a R = ${fmt(a.R)}. Queda <b>alineado</b> con el inicio.</p><div class="calc">Centro = ${ptxt(a.C)}</div>` });
+            S.push({ t: (n++) + '. Calcula I y J', ay: ['centro', 'vector'], foco: k, pul: 'C', h: `<p>Desde el inicio, el centro está <b>${a.I ? nombreSigno(a.I, 'x') : nombreSigno(a.J, 'y')}</b>. Uno de los dos vale 0 y el otro ±R:</p>` + calcIJ(a), rev: ['I' + k, 'J' + k] });
+        } else S.push(...pasosPit(a, k, n)), n = S.length + 1;
+        S.push(pasoGiro(a, k, n++));
+        S.push({ t: (n++) + '. El punto final', ay: [], foco: k, pul: 'P2', h: calcXY(k, motivoFinal(k)), rev: ['F' + k] });
+        S.push(pasoBloque(n++));
+    } else if (ej.tipo === 'circulo') {
+        const A = ej.tramos[0], B = ej.tramos[1];
+        S.push({ t: (n++) + '. Los datos', ay: ['centro'], foco: 0, pul: 'C', h: `<p>Centro <b>${ptxt(ej.C)}</b>.</p>${ej.dato === 'D' ? `<div class="calc">R = Ø ÷ 2 = ${fmt(2 * ej.R)} ÷ 2 = <b>${fmt(ej.R)}</b></div>` : `<p>Radio <b>R = ${fmt(ej.R)}</b>.</p>`}` });
+        S.push({ t: (n++) + '. El punto de inicio', ay: ['centro'], foco: 0, pul: 'P1', h: `<p>Empieza en el punto <b>${NOMBRE_U(ej.u)}</b>: a R del centro ${ej.u.x ? 'en horizontal' : 'en vertical'}.</p><div class="calc">X = ${fmt(ej.C.x)} ${signoOp(ej.ini.x - ej.C.x)} = <b>${fmt(ej.ini.x)}</b><br>Y = ${fmt(ej.C.y)} ${signoOp(ej.ini.y - ej.C.y)} = <b>${fmt(ej.ini.y)}</b></div><p>Allí se llega con <b>G0</b> (siempre en absolutas) y se baja con <b>G1 Z</b>.</p>`, rev: ['ini'] });
+        S.push({ t: (n++) + '. ¿Por qué dos semicírculos?', ay: [], foco: null, pul: 'P2', h: `<p>En un círculo completo el inicio y el final coinciden y muchos controles no lo aceptan en un solo bloque. Se parte en <b>dos semicírculos</b>: del inicio al <b>punto opuesto</b> ${ptxt(A.b)}, y de ahí otra vez al inicio.</p>` + calcXY(0, ''), rev: ['F0', 'F1'] });
+        S.push({ t: (n++) + '. I y J del 1.er semicírculo', ay: ['centro', 'vector'], foco: 0, pul: 'P1', h: `<p>Desde el inicio ${ptxt(A.a)}, el centro está <b>${A.I ? nombreSigno(A.I, 'x') : nombreSigno(A.J, 'y')}</b>.</p>` + calcIJ(A), rev: ['I0', 'J0'] });
+        S.push({ t: (n++) + '. I y J del 2.º semicírculo', ay: ['centro', 'vector'], foco: 1, pul: 'P2', h: `<p>El 2.º semicírculo <b>empieza en el punto opuesto</b> ${ptxt(B.a)}: desde ahí el centro está <b>${B.I ? nombreSigno(B.I, 'x') : nombreSigno(B.J, 'y')}</b>, así que <b>I y J cambian de signo</b>.</p>` + calcIJ(B), rev: ['I1', 'J1'] });
+        const g = pasoGiro(A, 0, n++); g.rev = ['G0', 'G1']; g.h += '<p>Los dos semicírculos giran en el mismo sentido.</p>'; S.push(g);
+        S.push(pasoBloque(n++));
+    } else if (ej.pieza) {
+        S.push({ t: (n++) + '. El recorrido', ay: [], foco: null, pul: 'INI', h: `<p>Se empieza en <b style="color:var(--col-ini)">${ptxt(ej.ini)}</b> y se sigue el sentido de las flechas. <b>Cada arco empieza donde acaba el tramo anterior</b>: desde ese punto se miden I y J.</p>` });
+        ej.tramos.forEach((t, k) => {
+            if (t.t !== 'A') return;
+            S.push({ t: (n++) + '. Tramo ' + (k + 1) + ': arco', ay: ['centro', 'vector', 'giro'], foco: k, pul: 'C', h: `<p>Inicio ${ptxt(t.a)}, centro ${ptxt(t.C)}.</p>` + calcIJ(t) + `<p>Gira en sentido ${sentidoTxt(t.g)}.</p>` + calcXY(k, motivoFinal(k)), rev: ['G' + k, 'F' + k, 'I' + k, 'J' + k] });
+        });
+        S.push(pasoBloque(n++));
+    } else if (ej.tipo === 'contorno') {
+        S.push({ t: (n++) + '. El recorrido', ay: [], foco: null, pul: 'INI', h: `<p>Se llega con <b>G0</b> al inicio <b style="color:var(--col-ini)">${ptxt(ej.ini)}</b>, se baja con <b>G1 Z</b> y se recorre la pieza en sentido <b>${ej.sentido}</b>, tramo a tramo. <b>El inicio de cada tramo es el final del anterior.</b></p><p>Las cotas generales: ${ej.W} de ancho y ${ej.H} de alto, con el cero pieza en la esquina inferior izquierda.</p>` });
+        ej.tramos.forEach((t, k) => {
+            if (t.t === 'L') { S.push({ t: (n++) + '. Tramo ' + (k + 1) + ': recta', ay: [], foco: k, pul: 'T', h: `<p>Recta <b>G1</b> desde ${ptxt(t.a)}.</p>` + calcXY(k, motivoFinal(k)), rev: ['G' + k, 'F' + k] }); return; }
+            if (t.kind === 'pit') {
+                const sub = pasosPit(t, k, n); sub.forEach(s => s.t = s.t.replace(/^(\d+)\. /, '$1. Tramo ' + (k + 1) + ': ')); S.push(...sub); n += sub.length;
+                S.push({ t: (n++) + '. Tramo ' + (k + 1) + ': sentido y final', ay: ['giro'], foco: k, pul: 'P2', h: `<p>Gira en sentido ${sentidoTxt(t.g)}.</p>` + calcXY(k, motivoFinal(k)), rev: ['G' + k, 'F' + k] });
+                return;
+            }
+            const que = t.kind === 'redondeo' ? `Redondeo de esquina tangente: el centro está a R = ${fmt(t.R)} de los dos lados, alineado con el inicio.` : `Entalla semicircular: el centro está en el lado, en su punto medio ${ptxt(t.C)}; I o J vale 0 y el otro ±R.`;
+            S.push({ t: (n++) + '. Tramo ' + (k + 1) + ': arco', ay: ['centro', 'vector', 'giro'], foco: k, pul: 'C', h: `<p>${que}</p>` + calcIJ(t) + `<p>Gira en sentido ${sentidoTxt(t.g)}.</p>` + calcXY(k, motivoFinal(k)), rev: ['G' + k, 'F' + k, 'I' + k, 'J' + k] });
+        });
+        S.push(pasoBloque(n++));
+    } else if (ej.tipo === 'leer') {
+        const a = ej.tramos[1];
+        if (ej.sub === 'cual') {
+            const L = 'ABCD'[ej.correcta];
+            S.push({ t: (n++) + '. El inicio', ay: [], foco: 1, pul: 'P1', h: `<p>La herramienta está en <b>${ptxt(a.a)}</b>. Desde aquí se miden I y J.</p>` });
+            S.push({ t: (n++) + '. El centro', ay: ['vector'], foco: 1, pul: 'C', h: `<p>El centro es el inicio más I y J:</p><div class="calc">X<sub>c</sub> = ${fmt(a.a.x)} ${signoOp(a.I)} = <b>${fmt(a.C.x)}</b><br>Y<sub>c</sub> = ${fmt(a.a.y)} ${signoOp(a.J)} = <b>${fmt(a.C.y)}</b></div><p>Solo dos de los cuatro arcos tienen el centro en ${ptxt(a.C)}.</p>`, rev: ['cent'] });
+            S.push({ t: (n++) + '. El sentido', ay: ['vector'], foco: 1, pul: 'C', h: `<p><b>${a.g}</b> es ${a.g === 'G2' ? 'horario' : 'antihorario'}. De los dos arcos con ese centro, el que gira así desde el inicio es el <b>${L}</b>.</p>`, rev: ['sol'] });
+        } else {
+            const c = ej.correcto;
+            S.push({ t: (n++) + '. Calcula el bloque correcto', ay: ['centro', 'vector'], foco: 1, pul: 'C', h: `<p>Centro ${ptxt(a.C)}; inicio ${ptxt(a.a)}:</p>` + calcIJ(a) + `<p>Sentido: ${sentidoTxt(a.g)}.</p>` + calcXY(1, ''), rev: ['I1', 'J1', 'G1', 'F1'] });
+            S.push({ t: (n++) + '. Compara palabra a palabra', ay: [], foco: 1, pul: null, h: `<div class="calc">Correcto: ${c.g} X${fmt(c.x)} Y${fmt(c.y)} I${fmt(c.i)} J${fmt(c.j)}<br>Dado: &nbsp;&nbsp;&nbsp;${ej.bloque.g} X${fmt(ej.bloque.x)} Y${fmt(ej.bloque.y)} I${fmt(ej.bloque.i)} J${fmt(ej.bloque.j)}</div><p>${explicacionError()}</p>`, rev: ['sol'] });
+        }
+    }
+    return S;
+}
+function pintarPasos() {
+    const cont = $('pasos');
+    ej.pasos = generarPasos();
+    if (paso < 0) {
+        cont.innerHTML = `<div class="paso-vacio">Si te atascas, sigue el cálculo paso a paso. Cada paso resalta en el plano lo que explica.</div><button class="btn-action sec" onclick="irPaso(0)">▶ Empezar paso a paso</button>`;
+        return;
+    }
+    const s = ej.pasos[paso], n = ej.pasos.length;
+    cont.innerHTML = `<div class="paso-cab"><button class="paso-nav" onclick="irPaso(${paso - 1})" ${paso ? '' : 'disabled'} title="Paso anterior (←)">◀</button><span class="paso-n">Paso ${paso + 1} de ${n}</span><button class="paso-nav" onclick="irPaso(${paso + 1})" ${paso < n - 1 ? '' : 'disabled'} title="Paso siguiente (→)">▶</button><button class="paso-nav" onclick="irPaso(-1)" title="Cerrar el paso a paso">✕</button></div>
+      <div class="puntos-pasos">${ej.pasos.map((_, i) => `<span class="${i === paso ? 'actual' : i < paso ? 'hecho' : ''}" onclick="irPaso(${i})" title="Paso ${i + 1}"></span>`).join('')}</div>
+      <div class="paso"><h4>${s.t}</h4>${s.h}</div>`;
+}
+const REV_AYUDA = /^(I|J|G|F)\d+$|^ini$|^calc\d*$|^sol$|^cent$/;
+function irPaso(i) {
+    if (!ej || EXAMEN || i >= ej.pasos.length) return;
+    paso = Math.max(-1, i);
+    if (paso >= 0) for (let k = 0; k <= paso; k++) (ej.pasos[k].rev || []).forEach(r => { if (!ej.rev[r]) { ej.rev[r] = true; if (!ej.resuelto && REV_AYUDA.test(r)) ej.ayuda = true; } });
+    pintarPasos(); pintarGcode(); render();
+}
+function verTodosPasos() {
+    if (!ej || EXAMEN) return;
+    ej.pasos = generarPasos();
+    ej.pasos.forEach(s => (s.rev || []).forEach(r => { if (r !== 'sol') ej.rev[r] = true; }));
+    if (!ej.resuelto) ej.ayuda = true;
+    paso = ej.pasos.length - 1;
+    $('pasos').innerHTML = `<div class="paso-cab"><span class="paso-n">Todos los pasos</span><button class="paso-nav" onclick="irPaso(-1)" title="Cerrar">✕</button></div><div class="todos-pasos">${ej.pasos.map(s => `<div class="paso"><h4>${s.t}</h4>${s.h}</div>`).join('')}</div>`;
+    pintarGcode(); render();
+}
+
+/* =========================================================================
+   DIBUJO DEL PLANO (SVG)
+   ========================================================================= */
+function pasoActual() { return (!impresion && paso >= 0 && ej.pasos && ej.pasos[paso]) ? ej.pasos[paso] : null; }
+function ayudaActiva(k) {
+    if (EXAMEN || impresion) return false;
+    if (cfg.ay[k]) return true;
+    const s = pasoActual();
+    return !!(s && s.ay.includes(k));
+}
+function arcosAyuda() {
+    const s = pasoActual();
+    if (s && s.foco !== null && s.foco !== undefined && ej.tramos[s.foco].t === 'A') return [s.foco];
+    return ej.tramos.map((t, k) => k).filter(k => ej.tramos[k].t === 'A' && (ej.tramos[k].q || ej.tipo === 'leer'));
+}
+function cajaMundo(conOrigen) {
+    let pts = conOrigen ? [P(0, 0)] : [];
+    (ej.cands ? [ej.tramos[1]] : ej.tramos.concat(...(ej.enfoque ? [] : ej.otros || []))).forEach(t => { pts.push(t.a, t.b); if (t.t === 'A') { pts.push(t.C); pts = pts.concat(muestrasArco(t, 48)); } });
+    if (ej.cands) ej.cands.forEach(c => { pts.push(c.C); pts = pts.concat(muestrasArco(c, 48)); });
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    pts.forEach(p => { x0 = Math.min(x0, p.x); y0 = Math.min(y0, p.y); x1 = Math.max(x1, p.x); y1 = Math.max(y1, p.y); });
+    return { x0, y0, x1, y1 };
+}
+function calcularVista(W, H) {
+    if (vistaUsuario && !impresion) return vistaUsuario;
+    const en = $('enunciado');
+    const extraT = (!impresion && en) ? en.offsetHeight + 12 : 0;
+    const cont = ej.tipo === 'contorno';
+    const padL = impresion ? (cont ? 70 : 90) : 140, padR = impresion ? (cont ? 40 : 90) : 140, padT = 30 + extraT, padB = impresion ? (cont ? 64 : 34) : (cont ? 86 : 60);
+    const escala = b => Math.min((W - padL - padR) / Math.max(b.x1 - b.x0, 10), (H - padT - padB) / Math.max(b.y1 - b.y0, 10));
+    const bo = cajaMundo(true), bg = cajaMundo(false);
+    const b = ej.enfoque ? bg : (cont || escala(bo) >= .8 * escala(bg)) ? bo : bg;
+    const bw = Math.max(b.x1 - b.x0, 10), bh = Math.max(b.y1 - b.y0, 10);
+    const k = Math.min(escala(b), 12);
+    const ox = padL + (W - padL - padR - bw * k) / 2 - b.x0 * k;
+    const oy = H - padB - (H - padT - padB - bh * k) / 2 + b.y0 * k;
+    return { k, ox, oy };
+}
+const S = p => P(vista.ox + p.x * vista.k, vista.oy - p.y * vista.k);
+const M = (x, y) => P((x - vista.ox) / vista.k, (vista.oy - y) / vista.k);
+
+function punta(x1, y1, x2, y2, cls, tam) {
+    tam = tam || 10;
+    const a = Math.atan2(y2 - y1, x2 - x1), w = tam * .45;
+    const bx = x2 - Math.cos(a) * tam, by = y2 - Math.sin(a) * tam;
+    return `<polygon class="${cls}" points="${x2},${y2} ${bx - Math.sin(a) * w},${by + Math.cos(a) * w} ${bx + Math.sin(a) * w},${by - Math.cos(a) * w}"/>`;
+}
+function flecha(p1, p2, cls, clsP) {
+    const a = S(p1), b = S(p2);
+    if (Math.hypot(b.x - a.x, b.y - a.y) < 2) return '';
+    return `<line class="${cls}" x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}"/>` + punta(a.x, a.y, b.x, b.y, clsP);
+}
+function txt(p, t, cls, anchor, dx, dy, tip) {
+    const s = S(p);
+    return `<text class="t ${cls || ''}" x="${s.x + (dx || 0)}" y="${s.y + (dy || 0)}" text-anchor="${anchor || 'start'}" dominant-baseline="middle"${tip ? ` data-tip="${esc(tip)}"` : ''}>${t}</text>`;
+}
+function arcoPath(a, conM) {
+    const s1 = S(a.a), s2 = S(a.b), r = dist(a.a, a.C) * vista.k;
+    const { sw } = angulosArco(a);
+    const large = Math.abs(sw) > Math.PI + 1e-9 ? 1 : 0, sweep = a.g === 'G2' ? 1 : 0;
+    return (conM === false ? '' : `M${s1.x},${s1.y} `) + `A${r},${r} 0 ${large} ${sweep} ${s2.x},${s2.y}`;
+}
+function puntaArco(a, frac, cls) {
+    const p = puntoArco(a, frac), q = puntoArco(a, frac + .001);
+    const sp = S(p), sq = S(q), ang = Math.atan2(sq.y - sp.y, sq.x - sp.x);
+    return punta(sp.x - Math.cos(ang) * 6, sp.y - Math.sin(ang) * 6, sp.x + Math.cos(ang) * 6, sp.y + Math.sin(ang) * 6, cls, 13);
+}
+function hit(p, r, tip) { const s = S(p); return `<circle class="hit" cx="${s.x}" cy="${s.y}" r="${r}" data-tip="${esc(tip)}"/>`; }
+function pulso(p) { const s = S(p); return `<circle class="pulso" cx="${s.x}" cy="${s.y}" r="16"/>`; }
+function rejilla(W, H) {
+    const a = M(0, H), b = M(W, 0);
+    let pas = 10; if (vista.k < 1.2) pas = 50; else if (vista.k < 2.5) pas = 20;
+    let s = '';
+    for (let x = Math.floor(a.x / pas) * pas; x <= b.x; x += pas) { const sx = S(P(x, 0)).x; s += `<line class="${x % 50 === 0 ? 'g-may' : 'g-min'}" x1="${sx}" y1="0" x2="${sx}" y2="${H}"/>`; }
+    for (let y = Math.floor(a.y / pas) * pas; y <= b.y; y += pas) { const sy = S(P(0, y)).y; s += `<line class="${y % 50 === 0 ? 'g-may' : 'g-min'}" x1="0" y1="${sy}" x2="${W}" y2="${sy}"/>`; }
+    const o = S(P(0, 0));
+    if (ej.tipo !== 'contorno' || ej.origenFuera) s += `<line class="eje" x1="${o.x}" y1="${o.y}" x2="${W}" y2="${o.y}"/><line class="eje" x1="${o.x}" y1="${o.y}" x2="${o.x}" y2="0"/><text class="eje-t" x="${W - 18}" y="${o.y - 8}">X+</text><text class="eje-t" x="${o.x + 8}" y="14">Y+</text>`;
+    s += `<g data-tip="<b>Cero pieza</b> (X0 Y0): todas las coordenadas absolutas se miden desde aquí."><circle cx="${o.x}" cy="${o.y}" r="8" fill="var(--canvas-bg)" stroke="var(--text-main)" stroke-width="1.4"/><path d="M${o.x},${o.y} L${o.x + 8},${o.y} A8,8 0 0 0 ${o.x},${o.y - 8} Z M${o.x},${o.y} L${o.x - 8},${o.y} A8,8 0 0 0 ${o.x},${o.y + 8} Z" fill="var(--text-main)"/><circle cx="${o.x}" cy="${o.y}" r="12" fill="transparent"/></g>`;
+    if (ej.tipo !== 'contorno' || ej.origenFuera) s += `<text class="t t-m" x="${o.x + 12}" y="${o.y - 12}">X0 Y0</text>`;
+    return s;
+}
+function lineaCentro(C, l) { const c = S(C); return `<line class="eje-c" x1="${c.x - l}" y1="${c.y}" x2="${c.x + l}" y2="${c.y}"/><line class="eje-c" x1="${c.x}" y1="${c.y - l}" x2="${c.x}" y2="${c.y + l}"/>`; }
+function marcaCentro(C, tip, tam) { const c = S(C); tam = tam || 7; return `<g data-tip="${esc(tip)}"><line class="p-c" x1="${c.x - tam}" y1="${c.y - tam}" x2="${c.x + tam}" y2="${c.y + tam}"/><line class="p-c" x1="${c.x - tam}" y1="${c.y + tam}" x2="${c.x + tam}" y2="${c.y - tam}"/><circle cx="${c.x}" cy="${c.y}" r="11" fill="transparent" style="cursor:help"/></g>`; }
+function lado(p, ref, d) { let v = resta(p, ref); const n = Math.hypot(v.x, v.y) || 1; v = P(v.x / n, v.y / n); return { dx: v.x * d, dy: -v.y * d, anchor: v.x > .35 ? 'start' : v.x < -.35 ? 'end' : 'middle' }; }
+function etiquetaFuera(p, C, otro) {
+    const v1 = resta(p, C), n1 = Math.hypot(v1.x, v1.y) || 1, v2 = resta(p, otro), n2 = Math.hypot(v2.x, v2.y) || 1;
+    let v = P(v1.x / n1 + v2.x / n2 * .8, v1.y / n1 + v2.y / n2 * .8); const n = Math.hypot(v.x, v.y) || 1; v = P(v.x / n, v.y / n);
+    return { dx: v.x * 14, dy: -v.y * 16, anchor: v.x > .3 ? 'start' : v.x < -.3 ? 'end' : 'middle' };
+}
+function cotaRadio(a, frac, pref, dentro) {
+    const pr = puntoArco(a, frac), cR = S(a.C), pR = S(pr);
+    let s = `<line class="cota" x1="${cR.x}" y1="${cR.y}" x2="${pR.x}" y2="${pR.y}"/>` + punta(cR.x, cR.y, pR.x, pR.y, 'cota-p', 9);
+    const len = Math.hypot(pR.x - cR.x, pR.y - cR.y);
+    if (dentro && len <= 46) {
+        const u = P((pR.x - cR.x) / (len || 1), (pR.y - cR.y) / (len || 1));
+        s += `<text class="t t-b" x="${cR.x - u.x * 8}" y="${cR.y - u.y * 8 + (u.y > 0 ? -2 : 8)}" text-anchor="${u.x > 0 ? 'end' : 'start'}" data-tip="Radio del redondeo.">${pref || 'R'}${fmt(a.R)}</text>`;
+    } else if (len > 46) {
+        const mR = P((cR.x + pR.x) / 2, (cR.y + pR.y) / 2); let ang = Math.atan2(pR.y - cR.y, pR.x - cR.x) * 180 / Math.PI; if (ang > 90) ang -= 180; if (ang < -90) ang += 180;
+        s += `<text class="t t-b" x="${mR.x}" y="${mR.y}" transform="rotate(${ang} ${mR.x} ${mR.y}) translate(0 -9)" text-anchor="middle" data-tip="Radio del arco.">${pref || 'R'}${fmt(a.R)}</text>`;
+    } else {
+        const u = P((pR.x - cR.x) / (len || 1), (pR.y - cR.y) / (len || 1));
+        const e = P(pR.x + u.x * 16, pR.y + u.y * 16);
+        s += `<line class="cota" x1="${pR.x}" y1="${pR.y}" x2="${e.x}" y2="${e.y}"/><text class="t t-b" x="${e.x + (u.x >= 0 ? 3 : -3)}" y="${e.y + (u.y >= 0 ? 10 : -4)}" text-anchor="${u.x >= 0 ? 'start' : 'end'}" data-tip="Radio del arco.">${pref || 'R'}${fmt(a.R)}</text>`;
+    }
+    return s;
+}
+function cotasPit(a) {
+    let s = '';
+    const t = a.tdir, nL = P(-t.y, t.x), lejos = -a.bulto;
+    if (a.modo === 'cuerda') {
+        const off = mul(nL, lejos * 22 / vista.k);
+        const e1 = S(a.a), e2 = S(a.b), f1 = S(suma(a.a, off)), f2 = S(suma(a.b, off));
+        const ext = (e, f) => { const dx = f.x - e.x, dy = f.y - e.y, n = Math.hypot(dx, dy) || 1; return `<line class="cota-ext" x1="${e.x + dx / n * 4}" y1="${e.y + dy / n * 4}" x2="${f.x + dx / n * 6}" y2="${f.y + dy / n * 6}"/>`; };
+        s += ext(e1, f1) + ext(e2, f2);
+        s += `<line class="cota" x1="${f1.x}" y1="${f1.y}" x2="${f2.x}" y2="${f2.y}"/>` + punta(f1.x, f1.y, f2.x, f2.y, 'cota-p', 9) + punta(f2.x, f2.y, f1.x, f1.y, 'cota-p', 9);
+        const m = P((f1.x + f2.x) / 2, (f1.y + f2.y) / 2), vert = Math.abs(f1.x - f2.x) < 1;
+        s += `<text class="t t-b" x="${m.x}" y="${m.y}" text-anchor="middle" transform="${vert ? `rotate(-90 ${m.x} ${m.y}) ` : ''}translate(0 ${(vert ? (lejos * nL.x > 0 ? 1 : -1) : (lejos * nL.y > 0 ? -1 : 1)) * 10})" data-tip="<b>Cuerda</b>: distancia entre el inicio y el final del arco, sobre la recta.">${fmt(2 * a.D.h)}</text>`;
+    } else {
+        const F = a.F, C = a.C, off = mul(t, (a.R + 8));
+        const e1 = S(F), e2 = S(C), f1 = S(suma(F, off)), f2 = S(suma(C, off));
+        s += `<line class="cota-ext" x1="${S(a.b).x}" y1="${S(a.b).y}" x2="${f1.x + (f1.x - e1.x) * .03}" y2="${f1.y + (f1.y - e1.y) * .03}"/>`;
+        s += `<line class="cota-ext" x1="${e2.x}" y1="${e2.y}" x2="${f2.x + (f2.x - e2.x) * .03}" y2="${f2.y + (f2.y - e2.y) * .03}"/>`;
+        s += `<line class="cota" x1="${f1.x}" y1="${f1.y}" x2="${f2.x}" y2="${f2.y}"/>` + punta(f1.x, f1.y, f2.x, f2.y, 'cota-p', 9) + punta(f2.x, f2.y, f1.x, f1.y, 'cota-p', 9);
+        const m = P((f1.x + f2.x) / 2, (f1.y + f2.y) / 2), vert = Math.abs(f1.x - f2.x) < 1;
+        s += `<text class="t t-b" x="${m.x}" y="${m.y}" text-anchor="middle" transform="${vert ? `rotate(-90 ${m.x} ${m.y}) translate(0 ${t.x > 0 ? 10 : -10})` : `translate(0 ${t.y > 0 ? -10 : 10})`}" data-tip="<b>Distancia de la recta al centro</b> (en perpendicular).">${fmt(a.D.d)}</text>`;
+    }
+    return s;
+}
+function cotasPieza() {
+    const W = ej.W, H = ej.H, X0 = ej.x0 || 0, Y0 = ej.y0 || 0, o = S(P(X0, Y0)), w = S(P(X0 + W, Y0)), h = S(P(X0, Y0 + H));
+    let yMax = o.y, xMin = o.x;
+    ej.tramos.concat(...(ej.otros || [])).forEach(t => { const pts = t.t === 'A' ? muestrasArco(t, 24).concat([t.C]) : [t.a, t.b]; pts.forEach(q => { const sq = S(q); yMax = Math.max(yMax, sq.y); xMin = Math.min(xMin, sq.x); }); });
+    const y = yMax + 44, x = xMin - 38;
+    let s = `<line class="cota-ext" x1="${o.x}" y1="${o.y + 4}" x2="${o.x}" y2="${y + 6}"/><line class="cota-ext" x1="${w.x}" y1="${w.y + 4}" x2="${w.x}" y2="${y + 6}"/>`;
+    s += `<line class="cota" x1="${o.x}" y1="${y}" x2="${w.x}" y2="${y}"/>` + punta(o.x, y, w.x, y, 'cota-p', 9) + punta(w.x, y, o.x, y, 'cota-p', 9);
+    s += `<text class="t t-b" x="${(o.x + w.x) / 2}" y="${y - 7}" text-anchor="middle" data-tip="Ancho total de la pieza">${fmt(W)}</text>`;
+    s += `<line class="cota-ext" x1="${o.x - 4}" y1="${o.y}" x2="${x - 6}" y2="${o.y}"/><line class="cota-ext" x1="${h.x - 4}" y1="${h.y}" x2="${x - 6}" y2="${h.y}"/>`;
+    s += `<line class="cota" x1="${x}" y1="${o.y}" x2="${x}" y2="${h.y}"/>` + punta(x, o.y, x, h.y, 'cota-p', 9) + punta(x, h.y, x, o.y, 'cota-p', 9);
+    s += `<text class="t t-b" x="${x - 7}" y="${(o.y + h.y) / 2}" text-anchor="middle" transform="rotate(-90 ${x - 7} ${(o.y + h.y) / 2})" data-tip="Alto total de la pieza">${fmt(H)}</text>`;
+    if (!ej.origenFuera) s += `<text class="t t-m" x="${o.x - 12}" y="${o.y + 14}" text-anchor="end">X0 Y0</text>`;
+    return s;
+}
+function triangulo(a, k, sinCatetos) {
+    const F = a.F, p1 = S(a.a), f = S(F), c = S(a.C), rv = ej.rev, sol = rv.sol;
+    let s = `<polygon class="tri" points="${p1.x},${p1.y} ${f.x},${f.y} ${c.x},${c.y}" data-tip="<b>Triángulo rectángulo</b>: hipotenusa = R; catetos = semicuerda y distancia al centro."/>`;
+    s += `<line class="v-r" x1="${c.x}" y1="${c.y}" x2="${p1.x}" y2="${p1.y}"/>`;
+    s += `<line class="ang-r" x1="${p1.x}" y1="${p1.y}" x2="${f.x}" y2="${f.y}" stroke-dasharray="4 3"/><line class="ang-r" x1="${f.x}" y1="${f.y}" x2="${c.x}" y2="${c.y}" stroke-dasharray="4 3"/>`;
+    const u1 = resta(a.a, F), u2 = resta(a.C, F), n1 = Math.hypot(u1.x, u1.y), n2 = Math.hypot(u2.x, u2.y), q = 9 / vista.k;
+    const A1 = suma(F, mul(u1, q / n1)), A2 = suma(F, mul(u2, q / n2)), A3 = suma(A1, mul(u2, q / n2));
+    const sA1 = S(A1), sA2 = S(A2), sA3 = S(A3);
+    s += `<polyline class="ang-r" points="${sA1.x},${sA1.y} ${sA3.x},${sA3.y} ${sA2.x},${sA2.y}"/>`;
+    const hipM = P((a.a.x + a.C.x) / 2, (a.a.y + a.C.y) / 2);
+    const nh = P(-(a.C.y - a.a.y), a.C.x - a.a.x), nn = Math.hypot(nh.x, nh.y);
+    const away = resta(hipM, F), sg = (nh.x * away.x + nh.y * away.y) > 0 ? 1 : -1;
+    const lh = suma(hipM, mul(nh, sg * 10 / vista.k / nn));
+    s += txt(lh, 'R = ' + fmt(a.R), 't-r', (nh.x * sg) > .2 * nn ? 'start' : (nh.x * sg) < -.2 * nn ? 'end' : 'middle', 0, 0, 'Hipotenusa: el radio.');
+    if (!sinCatetos) {
+        const conocL = a.modo === 'cuerda' || rv['cL' + k] || sol, conocP = a.modo === 'dist' || rv['cP' + k] || sol, hor = a.ori === 'h';
+        const mL = P((a.a.x + F.x) / 2, (a.a.y + F.y) / 2), mP = P((F.x + a.C.x) / 2, (F.y + a.C.y) / 2);
+        const sideL = resta(F, a.C), nsl = Math.hypot(sideL.x, sideL.y) || 1;
+        s += txt(suma(mL, mul(sideL, 12 / vista.k / nsl)), conocL ? fmt(a.D.h) : '?', hor ? 't-i' : 't-j', 'middle', 0, 0, 'Cateto sobre la recta (mitad de la cuerda).' + (hor ? ' Es I.' : ' Es J.'));
+        const sideP = resta(F, a.a), nsp = Math.hypot(sideP.x, sideP.y) || 1;
+        s += txt(suma(mP, mul(sideP, 10 / vista.k / nsp)), conocP ? fmt(a.D.d) : '?', hor ? 't-j' : 't-i', sideP.x > 0 ? 'start' : sideP.x < 0 ? 'end' : 'middle', 0, 0, 'Cateto perpendicular: del centro a la recta.' + (hor ? ' Es J.' : ' Es I.'));
+    }
+    s += `<circle cx="${f.x}" cy="${f.y}" r="3.5" fill="var(--text-main)"/>` + hit(F, 10, 'Pie de la perpendicular desde el centro: el ángulo recto del triángulo.');
+    return s;
+}
+function vectoresIJ(a, k, sub, valores) {
+    // valores: {I, J} a mostrar (en «leer» vienen del bloque); si no, los del arco con «?» hasta revelarlos
+    const rv = ej.rev, sol = rv.sol;
+    const Iv = valores ? valores.i : a.I, Jv = valores ? valores.j : a.J;
+    const Cv = valores ? P(a.a.x + Iv, a.a.y + Jv) : a.C;
+    const jPrimero = a.kind === 'pit' && a.ori === 'v' && !valores;
+    const esq = jPrimero ? P(a.a.x, Cv.y) : P(Cv.x, a.a.y);
+    const magn = l => {
+        if (a.kind !== 'pit' || valores) return null;
+        const hor = a.ori === 'h', sobre = (l === 'I') === hor;
+        const conoce = sobre ? (a.modo === 'cuerda' || rv['cL' + k]) : (a.modo === 'dist' || rv['cP' + k]);
+        return conoce ? '±' + fmt(sobre ? a.D.h : a.D.d) : null;
+    };
+    const et = (l, v) => l + (sub || '') + ' = ' + (valores || sol || rv[l + k] ? fmt(v) : (magn(l) || '?'));
+    const tipI = '<b>I</b>: distancia en X desde el inicio hasta el centro.', tipJ = '<b>J</b>: distancia en Y desde el inicio hasta el centro.';
+    const sgn = v => v > 0 ? 1 : v < 0 ? -1 : 1;
+    const hayI = Math.abs(Iv) > 1e-9, hayJ = Math.abs(Jv) > 1e-9;
+    let s = '';
+    if (!jPrimero) {
+        if (hayI) { s += flecha(a.a, esq, 'v-i', 'v-i-p'); s += txt(P((a.a.x + esq.x) / 2, a.a.y), et('I', Iv), 't-i', 'middle', 0, hayJ ? sgn(Jv) * 15 : 16, tipI); }
+        if (hayJ) { s += flecha(esq, Cv, 'v-j', 'v-j-p'); s += txt(P(esq.x, (esq.y + Cv.y) / 2), et('J', Jv), 't-j', sgn(Iv) > 0 ? 'start' : 'end', sgn(Iv) * 10, 0, tipJ); }
+    } else {
+        if (hayJ) { s += flecha(a.a, esq, 'v-j', 'v-j-p'); s += txt(P(a.a.x, (a.a.y + esq.y) / 2), et('J', Jv), 't-j', sgn(Iv) > 0 ? 'end' : 'start', -sgn(Iv) * 10, 0, tipJ); }
+        if (hayI) { s += flecha(esq, Cv, 'v-i', 'v-i-p'); s += txt(P((esq.x + Cv.x) / 2, esq.y), et('I', Iv), 't-i', 'middle', 0, -sgn(Jv) * 15, tipI); }
+    }
+    const p = S(a.a);
+    if (!hayI) {
+        const tip0 = '<b>I</b> se mide en <b>horizontal (X)</b>. Aquí el centro está en la misma vertical que el inicio: en X no hay que moverse.';
+        s += `<g data-tip="${esc(tip0)}"><line class="v-i" stroke-dasharray="4 3" x1="${p.x - 22}" y1="${p.y}" x2="${p.x + 22}" y2="${p.y}"/><line class="v-i" x1="${p.x - 22}" y1="${p.y - 5}" x2="${p.x - 22}" y2="${p.y + 5}"/><line class="v-i" x1="${p.x + 22}" y1="${p.y - 5}" x2="${p.x + 22}" y2="${p.y + 5}"/></g>`;
+        s += txt(a.a, et('I', Iv), 't-i', 'end', -30, (Jv > 0 ? -1 : 1) * 13, tip0);
+    }
+    if (!hayJ) {
+        const tip0 = '<b>J</b> se mide en <b>vertical (Y)</b>. Aquí el centro está en la misma horizontal que el inicio: en Y no hay que moverse.';
+        s += `<g data-tip="${esc(tip0)}"><line class="v-j" stroke-dasharray="4 3" x1="${p.x}" y1="${p.y - 22}" x2="${p.x}" y2="${p.y + 22}"/><line class="v-j" x1="${p.x - 5}" y1="${p.y - 22}" x2="${p.x + 5}" y2="${p.y - 22}"/><line class="v-j" x1="${p.x - 5}" y1="${p.y + 22}" x2="${p.x + 5}" y2="${p.y + 22}"/></g>`;
+        const hc = Iv > 0 ? 1 : -1;
+        s += txt(a.a, et('J', Jv), 't-j', hc > 0 ? 'start' : 'end', hc * 8, -34, tip0);
+    }
+    return s;
+}
+function giro(a, k) {
+    const c = S(a.C), r = Math.max(14, Math.min(34, dist(a.a, a.C) * vista.k * .38));
+    const cw = a.g === 'G2', a0 = Math.PI * .75, sw = (cw ? -1 : 1) * Math.PI * 1.5;
+    const pt = t => P(c.x + r * Math.cos(t), c.y - r * Math.sin(t));
+    const p0 = pt(a0), p1 = pt(a0 + sw), p2 = pt(a0 + sw - (cw ? -1 : 1) * .25);
+    const rv = ej.rev, lbl = (rv.sol || rv['G' + k] ? a.g + ' · ' : '') + (cw ? 'horario' : 'antihorario');
+    return `<path class="giro" d="M${p0.x},${p0.y} A${r},${r} 0 1 ${cw ? 1 : 0} ${p1.x},${p1.y}"/>` + punta(p2.x, p2.y, p1.x, p1.y, 'giro-p', 10) + `<text class="t t-acc" x="${c.x}" y="${c.y + r + 15}" text-anchor="middle" data-tip="Sentido de giro alrededor del centro, mirando la pieza desde arriba.">${lbl}</text>`;
+}
+
+function dibujarPlano(W, H) {
+    vista = calcularVista(W, H);
+    let s = rejilla(W, H);
+    if (ej.tipo === 'leer' && ej.sub === 'cual') return s + dibujarCual() + '<g id="capaMedida"></g>';
+    const rv = ej.rev, sol = rv.sol, st = pasoActual(), pul = st ? st.pul : null;
+    const focos = arcosAyuda();
+    const verCentro = ayudaActiva('centro'), verVec = ayudaActiva('vector'), verTri = ayudaActiva('tri'), verGiro = ayudaActiva('giro');
+    let capaA = '', capaT = '';
+    const cont = ej.tipo === 'contorno', circ = ej.tipo === 'circulo', simple = !cont && !circ;
+    const mostrarFin = ej.tipo === 'leer';
+
+    if (cont) {
+        // relleno de la pieza
+        let d = `M${S(ej.tramos[0].a).x},${S(ej.tramos[0].a).y} `;
+        ej.tramos.forEach(t => { d += t.t === 'L' ? `L${S(t.b).x},${S(t.b).y} ` : arcoPath(t, false) + ' '; });
+        s += (ej.abierto ? '' : `<path class="pieza" d="${d}Z"/>`) + (ej.enfoque ? '' : cotasPieza());
+        // los demás contornos de la pieza, de referencia
+        (ej.otros || []).forEach(tr => tr.forEach(t => { const a = S(t.a), b = S(t.b); s += `<path d="${t.t === 'L' ? `M${a.x},${a.y} L${b.x},${b.y}` : arcoPath(t)}" fill="none" stroke="var(--linea)" stroke-width="1.2" opacity=".35"/>`; }));
+    }
+    // centros: líneas de eje
+    const vistos = new Set();
+    ej.tramos.forEach(t => { if (t.t !== 'A') return; const key = t.C.x + ',' + t.C.y; if (vistos.has(key)) return; vistos.add(key); s += lineaCentro(t.C, circ ? t.R * vista.k + 12 : cont ? 10 : Math.min(t.R, 30) * vista.k + 12); });
+
+    // tramos
+    ej.tramos.forEach((t, k) => {
+        if (t.t === 'L') {
+            const a = S(t.a), b = S(t.b);
+            const tip = cont ? `<b>Tramo ${k + 1}</b>: recta (G1).` : k === 0 ? '<b>Recta anterior</b> (G1): llega al punto de inicio del arco.' : '<b>Recta posterior</b> (G1): empieza donde acaba el arco.';
+            s += `<g data-tip="${esc(tip)}"><line class="recta" x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}"/><line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="transparent" stroke-width="14"/></g>`;
+            if (Math.hypot(b.x - a.x, b.y - a.y) > 24) { const m = P(a.x + (b.x - a.x) * .58, a.y + (b.y - a.y) * .58); s += punta(a.x, a.y, m.x, m.y, 'punta', 13); }
+        } else {
+            const tip = cont ? `<b>Tramo ${k + 1}</b>: arco (${sol || rv['G' + k] ? t.g : 'G2 o G3'}).` : circ ? (k ? '<b>2.º semicírculo</b> (discontinuo): del punto opuesto otra vez al inicio.' : '<b>1.er semicírculo</b>: del inicio (verde) al punto opuesto (rojo).') : `<b>El arco</b> (${sol || rv['G' + k] ? t.g : 'G2 o G3'}). Va del punto de inicio (verde) al final (rojo).`;
+            s += `<g data-tip="${esc(tip)}"><path class="${circ && k ? 'arco2' : 'arco'}" d="${arcoPath(t)}"/><path d="${arcoPath(t)}" stroke="transparent" stroke-width="16" fill="none"/></g>`;
+            if (Math.abs(angulosArco(t).sw) * dist(t.a, t.C) * vista.k > 30) s += puntaArco(t, .5, 'punta-a');
+        }
+    });
+    // cotas de radio y de Pitágoras
+    ej.tramos.forEach((t, k) => {
+        if (t.t !== 'A') return;
+        if (circ) return;
+        if (t.kind === 'pit') { s += cotaRadio(t, .74) + cotasPit(t); return; }
+        if (t.kind === 'redondeo') { s += cotaRadio(t, .5, 'R', true); return; }
+        s += cotaRadio(t, simple && ej.ang === 270 ? .62 : .5);
+    });
+    if (circ) {
+        const A = ej.tramos[0], B = ej.tramos[1];
+        const nA = puntoArco(A, .5), nB = puntoArco(B, .5), la = lado(nA, ej.C, 16), lb = lado(nB, ej.C, 16);
+        capaT += txt(nA, '1.º', 't-acc', la.anchor, la.dx, la.dy) + txt(nB, '2.º', 't-acc', lb.anchor, lb.dx, lb.dy);
+        const ang = Math.PI / 4 + (ej.u.x > 0 && ej.u.y === 0 ? Math.PI / 2 : 0);
+        const pr = P(ej.C.x + ej.R * Math.cos(ang), ej.C.y + ej.R * Math.sin(ang)), cR = S(ej.C), pR = S(pr);
+        const ext = P(pR.x + Math.cos(ang) * 26, pR.y - Math.sin(ang) * 26), anc = Math.cos(ang) > 0 ? 'start' : 'end', dx = Math.cos(ang) > 0 ? 4 : -4;
+        if (ej.dato === 'R') s += `<line class="cota" x1="${cR.x}" y1="${cR.y}" x2="${pR.x}" y2="${pR.y}"/>` + punta(cR.x, cR.y, pR.x, pR.y, 'cota-p', 9);
+        else { const p2 = S(P(ej.C.x - ej.R * Math.cos(ang), ej.C.y - ej.R * Math.sin(ang))); s += `<line class="cota" x1="${p2.x}" y1="${p2.y}" x2="${pR.x}" y2="${pR.y}"/>` + punta(p2.x, p2.y, pR.x, pR.y, 'cota-p', 9) + punta(pR.x, pR.y, p2.x, p2.y, 'cota-p', 9); }
+        s += `<line class="cota" x1="${pR.x}" y1="${pR.y}" x2="${ext.x}" y2="${ext.y}"/><text class="t t-b" x="${ext.x + dx}" y="${ext.y - 6}" text-anchor="${anc}" data-tip="${ej.dato === 'R' ? 'Radio de la circunferencia' : 'Diámetro: el radio es la mitad.'}">${ej.dato === 'R' ? 'R' : 'Ø'}${fmt(ej.dato === 'R' ? ej.R : 2 * ej.R)}</text>`;
+    }
+    // marcas de centro
+    vistos.clear();
+    ej.tramos.forEach((t, k) => {
+        if (t.t !== 'A') return; const key = t.C.x + ',' + t.C.y; if (vistos.has(key)) return; vistos.add(key);
+        s += marcaCentro(t.C, circ ? '<b>Centro</b> ' + ptxt(t.C) : '<b>Centro del arco</b>. I y J dicen dónde está, medido desde el inicio del arco.', cont ? 5 : 7);
+        if (circ) { capaT += txt(t.C, 'C ' + ptxt(t.C), 't-b', 'start', 10, ej.u.y === 0 ? 14 : -14); return; }
+        if (verCentro && focos.includes(k) || (sol && !cont) || ej.pieza) {
+            const coords = (t.kind !== 'pit') || sol || rv['calc' + k];
+            const lc = lado(t.C, P((t.a.x + t.b.x) / 2, (t.a.y + t.b.y) / 2), 16);
+            capaT += txt(t.C, 'C' + (coords ? ' ' + ptxt(t.C) : ''), 't-b', lc.anchor === 'middle' ? 'start' : lc.anchor, lc.anchor === 'middle' ? 12 : lc.dx, lc.dy || -12);
+        }
+    });
+
+    // puntos y etiquetas
+    if (simple) {
+        const P0 = ej.tramos[0].a, a = ej.tramos[1], P3 = ej.tramos[2].b;
+        const s0 = S(P0), s1 = S(a.a), s2 = S(a.b), s3 = S(P3);
+        s += `<circle class="p-otro" cx="${s0.x}" cy="${s0.y}" r="4"/>` + hit(P0, 9, 'Inicio de la recta anterior ' + ptxt(P0));
+        s += `<circle class="p-otro" cx="${s3.x}" cy="${s3.y}" r="4"/>` + hit(P3, 9, '<b>Final de la recta posterior</b> ' + ptxt(P3));
+        const l0 = lado(P0, a.a, 14), l3 = lado(P3, a.b, 14);
+        capaT += txt(P0, ptxt(P0), 't-m', l0.anchor, l0.dx, l0.dy) + txt(P3, ptxt(P3), 't-m', l3.anchor, l3.dx, l3.dy);
+        s += `<circle class="p-ini" cx="${s1.x}" cy="${s1.y}" r="6.5"/>` + hit(a.a, 12, '<b>Inicio del arco</b> ' + ptxt(a.a) + '. I y J se miden desde aquí.');
+        const finVisto = mostrarFin || sol || rv.F1;
+        s += `<circle class="p-fin" cx="${s2.x}" cy="${s2.y}" r="6.5"/>` + hit(a.b, 12, '<b>Fin del arco</b>: son las X Y del bloque G2/G3.' + (finVisto ? ' ' + ptxt(a.b) : ' Tienes que calcularlas.'));
+        const o1 = etiquetaFuera(a.a, a.C, P0), o2 = etiquetaFuera(a.b, a.C, P3);
+        capaT += txt(a.a, 'Inicio ' + ptxt(a.a), 't-ini', o1.anchor, o1.dx, o1.dy);
+        capaT += txt(a.b, 'Fin ' + (finVisto ? ptxt(a.b) : '(X?, Y?)'), 't-fin', o2.anchor, o2.dx, o2.dy);
+    } else if (circ) {
+        const A = ej.tramos[0], s1 = S(A.a), s2 = S(A.b);
+        s += `<circle class="p-ini" cx="${s1.x}" cy="${s1.y}" r="6.5"/>` + hit(A.a, 12, '<b>Punto de inicio</b> del círculo y del 1.er semicírculo.' + (sol || rv.ini ? ' ' + ptxt(A.a) : ''));
+        s += `<circle class="p-fin" cx="${s2.x}" cy="${s2.y}" r="6.5"/>` + hit(A.b, 12, '<b>Punto opuesto</b>: final del 1.er semicírculo e inicio del 2.º.' + (sol || rv.F0 ? ' ' + ptxt(A.b) : ''));
+        const o1 = lado(A.a, ej.C, 14), o2 = lado(A.b, ej.C, 14);
+        capaT += txt(A.a, 'Inicio ' + (sol || rv.ini ? ptxt(A.a) : '(X?, Y?)'), 't-ini', o1.anchor, o1.dx, o1.dy + (o1.anchor === 'middle' ? 0 : -12));
+        capaT += txt(A.b, 'Opuesto ' + (sol || rv.F0 ? ptxt(A.b) : '(X?, Y?)'), 't-fin', o2.anchor, o2.dx, o2.dy + (o2.anchor === 'middle' ? 0 : -12));
+    } else {
+        const centro = ej.centroC || P(ej.W / 2, ej.H / 2);
+        ej.tramos.forEach((t, k) => {
+            const sp = S(t.a);
+            if (k === 0) return;
+            s += `<circle class="p-otro" cx="${sp.x}" cy="${sp.y}" r="3.2"/>` + hit(t.a, 8, `Final del tramo ${k} e inicio del tramo ${k + 1}` + (sol || ej.pieza || rv['F' + (k - 1)] ? ' ' + ptxt(t.a) : ''));
+            if (sol || ej.pieza || rv['F' + (k - 1)]) { const l = lado(t.a, centro, 12); capaT += txt(t.a, ptxt(t.a), 't-m', l.anchor, l.dx, l.dy); }
+        });
+        // números de tramo
+        ej.tramos.forEach((t, k) => {
+            const m = t.t === 'L' ? P((t.a.x + t.b.x) / 2, (t.a.y + t.b.y) / 2) : puntoArco(t, .5);
+            let v = resta(m, t.t === 'A' ? t.C : centro); if (t.t === 'L') { const d = resta(t.b, t.a); v = P(d.y, -d.x); if (ej.sentido === 'horario') v = mul(v, -1); }
+            const n = Math.hypot(v.x, v.y) || 1, sm = S(m);
+            let off = 17; if (t.t === 'A' && (t.kind === 'semi' || t.sub === 'entalla')) off = -17;
+            const c = P(sm.x + v.x / n * off, sm.y - v.y / n * off);
+            capaT += `<g data-tip="Tramo ${k + 1}"><circle class="nt-c" cx="${c.x}" cy="${c.y}" r="9"/><text class="nt-t" x="${c.x}" y="${c.y + .5}" text-anchor="middle" dominant-baseline="middle">${k + 1}</text></g>`;
+        });
+        const si = S(ej.ini);
+        s += `<circle class="p-ini" cx="${si.x}" cy="${si.y}" r="6.5"/>` + hit(ej.ini, 12, '<b>Inicio</b> ' + ptxt(ej.ini) + ': se llega con G0 y se baja con G1 Z.');
+        { let v = resta(centro, ej.ini); const nv = Math.hypot(v.x, v.y) || 1; v = P(v.x / nv, v.y / nv); if (ej.pieza) v = mul(v, -1);
+          capaT += txt(ej.ini, 'Inicio ' + ptxt(ej.ini), 't-ini', v.x > .2 ? 'start' : v.x < -.2 ? 'end' : 'middle', v.x * 12, -v.y * 18); }
+    }
+
+    // ayudas sobre los arcos con foco
+    focos.forEach(k => {
+        const a = ej.tramos[k];
+        const sub = circ ? String(k + 1) : cont ? '' : '';
+        if (verTri && a.kind === 'pit') capaA += triangulo(a, k, verVec);
+        if (verCentro && !circ) { const c = S(a.C), p = S(a.a); capaA += `<line class="v-r" x1="${c.x}" y1="${c.y}" x2="${p.x}" y2="${p.y}" stroke-dasharray="6 4" data-tip="El radio desde el centro hasta el inicio."/>`; }
+        if (verCentro && circ && k === 0) { const c = S(a.C), p = S(a.a); capaA += `<line class="v-r" x1="${c.x}" y1="${c.y}" x2="${p.x}" y2="${p.y}" stroke-dasharray="6 4"/>`; }
+        if (verVec) capaA += vectoresIJ(a, k, sub, ej.tipo === 'leer' ? null : null);
+        if (verGiro && !(circ && k === 1)) capaA += giro(a, k);
+    });
+    if (pul) {
+        const k = st.foco !== null && st.foco !== undefined ? st.foco : 0, t = ej.tramos[k];
+        const q = pul === 'P1' ? t.a : pul === 'P2' ? t.b : pul === 'C' ? t.C : pul === 'F' ? t.F : pul === 'INI' ? ej.ini : pul === 'T' ? P((t.a.x + t.b.x) / 2, (t.a.y + t.b.y) / 2) : (t.t === 'A' ? puntoArco(t, .5) : t.b);
+        if (q) capaA += pulso(q);
+    }
+    return s + capaA + capaT + '<g id="capaMedida"></g>';
+}
+
+function dibujarCual() {
+    const a = ej.tramos[1];
+    let s = '';
+    s += lineaCentro(a.C, 14) + lineaCentro(ej.C2, 14);
+    ej.cands.forEach((c, i) => {
+        const cls = 'cand c' + i + (ej.sel === i ? ' sel' : '') + (ej.resuelto && i !== ej.correcta ? ' apagado' : '');
+        s += `<g data-tip="Arco ${'ABCD'[i]}: ${c.g === 'G2' ? 'horario' : 'antihorario'}, centro ${ptxt(c.C)}"><path class="${cls}" d="${arcoPath(c)}"/><path d="${arcoPath(c)}" stroke="transparent" stroke-width="16" fill="none" style="cursor:pointer" onclick="elegirArco(${i})"/></g>`;
+        const m = puntoArco(c, .5), q = puntoArco(c, .52), sm = S(m), sq = S(q), ang = Math.atan2(sq.y - sm.y, sq.x - sm.x);
+        s += `<polygon class="f${i}" points="${sm.x + Math.cos(ang) * 8},${sm.y + Math.sin(ang) * 8} ${sm.x - Math.cos(ang) * 6 - Math.sin(ang) * 6},${sm.y - Math.sin(ang) * 6 + Math.cos(ang) * 6} ${sm.x - Math.cos(ang) * 6 + Math.sin(ang) * 6},${sm.y - Math.sin(ang) * 6 - Math.cos(ang) * 6}"${ej.resuelto && i !== ej.correcta ? ' opacity=".25"' : ''}/>`;
+        const l = lado(m, c.C, 22), lc = S(m);
+        s += `<g style="cursor:pointer" onclick="elegirArco(${i})"><circle cx="${lc.x + l.dx}" cy="${lc.y + l.dy}" r="12" fill="var(--canvas-bg)" class="c${i}" stroke-width="2"/><text x="${lc.x + l.dx}" y="${lc.y + l.dy + 1}" text-anchor="middle" dominant-baseline="middle" class="f${i}" style="font-weight:800;font-size:14px">${'ABCD'[i]}</text></g>`;
+    });
+    [a.C, ej.C2].forEach(C => { s += marcaCentro(C, 'Centro de una de las dos circunferencias posibles ' + ptxt(C)); const l = lado(C, P((a.a.x + a.b.x) / 2, (a.a.y + a.b.y) / 2), 14); s += txt(C, ptxt(C), 't-b', l.anchor === 'middle' ? 'start' : l.anchor, l.anchor === 'middle' ? 10 : l.dx, l.dy || -12); });
+    const s1 = S(a.a), s2 = S(a.b);
+    s += `<circle class="p-ini" cx="${s1.x}" cy="${s1.y}" r="6.5"/>` + hit(a.a, 12, '<b>Inicio</b>: aquí está la herramienta antes del bloque.');
+    s += `<circle class="p-fin" cx="${s2.x}" cy="${s2.y}" r="6.5"/>` + hit(a.b, 12, '<b>Final</b> del bloque.');
+    const o1 = lado(a.a, a.b, 16), o2 = lado(a.b, a.a, 16);
+    s += txt(a.a, 'Inicio ' + ptxt(a.a), 't-ini', o1.anchor, o1.dx, o1.dy + (o1.anchor === 'middle' ? 0 : -10));
+    s += txt(a.b, 'Final ' + ptxt(a.b), 't-fin', o2.anchor, o2.dx, o2.dy + (o2.anchor === 'middle' ? 0 : -10));
+    if (ayudaActiva('vector')) s += vectoresIJ(a, 1, '', ej.bloque);
+    const st = pasoActual();
+    if (st && st.pul) s += pulso(st.pul === 'P1' ? a.a : a.C);
+    return s;
+}
+
+function render() {
+    if (!ej) return;
+    const svg = $('lienzo'); const W = svg.clientWidth || 800, H = svg.clientHeight || 600;
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    svg.innerHTML = dibujarPlano(W, H);
+}
+
+/* ---------- zoom, desplazamiento y medida ---------- */
+function zoom(f, cx, cy) {
+    const svg = $('lienzo'); const W = svg.clientWidth, H = svg.clientHeight;
+    const v = vistaUsuario || Object.assign({}, vista);
+    if (cx === undefined) { cx = W / 2; cy = H / 2; }
+    const m = P((cx - v.ox) / v.k, (v.oy - cy) / v.k);
+    v.k = Math.max(.3, Math.min(40, v.k * f)); v.ox = cx - m.x * v.k; v.oy = cy + m.y * v.k;
+    vistaUsuario = v; render();
+}
+function encuadrar() { vistaUsuario = null; render(); }
+function puntosClave() {
+    const L = [], vistos = new Set();
+    const add = (p, n) => { const k = p.x + ',' + p.y; if (vistos.has(k)) return; vistos.add(k); L.push({ p, n }); };
+    if (ej.tipo === 'leer' && ej.sub === 'cual') {
+        const a = ej.tramos[1]; add(a.a, 'Inicio'); add(a.b, 'Final'); add(a.C, 'Centro'); add(ej.C2, 'Centro'); add(P(0, 0), 'Cero pieza'); return L;
+    }
+    ej.tramos.forEach((t, k) => {
+        if (t.t === 'A' && t.kind !== 'pit') add(t.C, 'Centro');      // en Pitágoras, el centro lo tiene que calcular el alumno
+    });
+    ej.tramos.forEach((t, k) => {
+        const nom = ej.tipo === 'contorno' ? (k === 0 ? 'Inicio' : 'Inicio del tramo ' + (k + 1)) : ej.tipo === 'circulo' ? (k === 0 ? 'Inicio' : 'Punto opuesto') : (k === 0 ? 'Inicio de la recta anterior' : k === 1 ? 'Inicio del arco' : 'Fin del arco');
+        add(t.a, nom);
+        if (ej.tipo !== 'contorno' && ej.tipo !== 'circulo' && k === 2) add(t.b, 'Fin de la recta posterior');
+    });
+    add(P(0, 0), 'Cero pieza');
+    return L;
+}
+function dibujarMedida(sx, sy) {
+    const cap = $('capaMedida'); if (!cap || !ej) return '';
+    let enganche = null, mejor = 16;
+    if (ayudaActiva('medir')) puntosClave().forEach(k => { const q = S(k.p); const d = Math.hypot(q.x - sx, q.y - sy); if (d < mejor) { mejor = d; enganche = k; } });
+    if (enganche) { const q = S(enganche.p); sx = q.x; sy = q.y; }
+    const m = enganche ? enganche.p : M(sx, sy);
+    let t = `X ${m.x.toFixed(1)}  Y ${m.y.toFixed(1)}`;
+    if (!ayudaActiva('medir')) { cap.innerHTML = ''; return t; }
+    const o = ej.tramos[Math.min(medirDesde, ej.tramos.length - 1)].a, so = S(o);
+    const dX = r1(m.x - o.x), dY = r1(m.y - o.y);
+    const sg = v => (v > 0 ? '+' : v < 0 ? '−' : '') + fmt(Math.abs(v));
+    t += `   ·   desde ${ptxt(o)}: ΔX ${sg(dX)}  ΔY ${sg(dY)}`;
+    const esq = P(sx, so.y);
+    let h = '';
+    if (Math.abs(sx - so.x) > 2) h += `<line class="med-i" x1="${so.x}" y1="${so.y}" x2="${esq.x}" y2="${esq.y}"/><line class="med-i" style="stroke-dasharray:none" x1="${so.x}" y1="${so.y - 6}" x2="${so.x}" y2="${so.y + 6}"/>`;
+    const der = sx >= so.x;
+    if (Math.abs(sx - so.x) >= 90) h += `<text class="med-t i" x="${(so.x + esq.x) / 2}" y="${so.y + (sy < so.y ? 20 : -12)}" text-anchor="middle">ΔX = ${sg(dX)}</text>`;
+    else h += `<text class="med-t i" x="${sx + (der ? -12 : 12)}" y="${sy + (sy < so.y ? -14 : 22)}" text-anchor="${der ? 'end' : 'start'}">ΔX = ${sg(dX)}</text>`;
+    if (Math.abs(sy - so.y) > 2) {
+        h += `<line class="med-j" x1="${esq.x}" y1="${esq.y}" x2="${sx}" y2="${sy}"/>`;
+        h += `<text class="med-t j" x="${sx + (der ? 10 : -10)}" y="${(so.y + sy) / 2}" text-anchor="${der ? 'start' : 'end'}" dominant-baseline="middle">ΔY = ${sg(dY)}</text>`;
+    } else h += `<text class="med-t j" x="${sx + (der ? 10 : -10)}" y="${sy - 14}" text-anchor="${der ? 'start' : 'end'}">ΔY = 0</text>`;
+    h += `<circle class="med-p" cx="${esq.x}" cy="${esq.y}" r="3"/>`;
+    if (enganche) { h += `<rect class="med-snap" x="${sx - 9}" y="${sy - 9}" width="18" height="18" rx="2"/><text class="med-n" x="${sx + (der ? 13 : -13)}" y="${sy + (sy < so.y ? -14 : 22)}" text-anchor="${der ? 'start' : 'end'}">${enganche.n}</text>`; t = '⌖ ' + enganche.n + '  ·  ' + t; }
+    else h += `<circle class="med-p" cx="${sx}" cy="${sy}" r="4.5"/>`;
+    cap.innerHTML = h;
+    return t;
+}
+(function () {
+    const svg = $('lienzo'); let arr = null;
+    const local = e => { const r = svg.getBoundingClientRect(); return P(e.clientX - r.left, e.clientY - r.top); };
+    svg.addEventListener('wheel', e => { e.preventDefault(); const q = local(e); zoom(e.deltaY < 0 ? 1.15 : 1 / 1.15, q.x, q.y); }, { passive: false });
+    svg.addEventListener('pointerdown', e => {
+        if (e.target.closest && e.target.closest('[onclick]')) { arr = null; return; }   // clic en un arco candidato
+        const medirTactil = e.pointerType !== 'mouse' && ej && ayudaActiva('medir');
+        arr = { x: e.clientX, y: e.clientY, v: Object.assign({}, vistaUsuario || vista), mov: false, medir: medirTactil };
+        try { svg.setPointerCapture(e.pointerId); } catch (er) {}
+        if (medirTactil) { const q = local(e); $('stCoords').textContent = dibujarMedida(q.x, q.y); }
+    });
+    svg.addEventListener('pointermove', e => {
+        const q = local(e);
+        if (arr && !arr.medir) {
+            const dx = e.clientX - arr.x, dy = e.clientY - arr.y;
+            if (Math.abs(dx) + Math.abs(dy) > 3) arr.mov = true;
+            if (arr.mov) { vistaUsuario = { k: arr.v.k, ox: arr.v.ox + dx, oy: arr.v.oy + dy }; render(); }
+            return;
+        }
+        if (!vista || !ej) return;
+        if (e.pointerType !== 'mouse' && !arr) return;
+        $('stCoords').textContent = dibujarMedida(q.x, q.y);
+    });
+    svg.addEventListener('pointerup', e => {
+        if (arr && !arr.mov && ej && ayudaActiva('medir')) {
+            const q = local(e);
+            ej.tramos.forEach((t, k) => { const s = S(t.a); if (Math.hypot(s.x - q.x, s.y - q.y) < 14 && k !== medirDesde) { medirDesde = k; estado('Ahora se mide desde ' + ptxt(t.a) + (ej.tipo === 'contorno' ? ' (inicio del tramo ' + (k + 1) + ').' : '.')); } });
+        }
+        if (arr && arr.medir) { const cap = $('capaMedida'); if (cap) cap.innerHTML = ''; }
+        arr = null;
+    });
+    svg.addEventListener('pointerleave', () => { if (arr) return; const cap = $('capaMedida'); if (cap) cap.innerHTML = ''; $('stCoords').textContent = 'X — Y —'; });
+    svg.addEventListener('dblclick', encuadrar);
+})();
+
+/* ---------- tooltips flotantes ---------- */
+(function () {
+    const tip = $('tipFlot');
+    document.addEventListener('pointermove', e => {
+        const el = e.target.closest && e.target.closest('[data-tip]');
+        if (!el || e.pointerType === 'touch' || !el.getAttribute('data-tip')) { tip.classList.remove('visible'); return; }
+        tip.innerHTML = el.getAttribute('data-tip'); tip.classList.add('visible');
+        const w = tip.offsetWidth, h = tip.offsetHeight;
+        let x = e.clientX + 14, y = e.clientY + 16;
+        if (x + w > innerWidth - 8) x = e.clientX - w - 14;
+        if (y + h > innerHeight - 8) y = e.clientY - h - 12;
+        tip.style.left = x + 'px'; tip.style.top = y + 'px';
+    });
+    document.addEventListener('pointerdown', e => {
+        if (e.pointerType !== 'touch') return;
+        const el = e.target.closest && e.target.closest('[data-tip]');
+        if (el) { const d = document.createElement('div'); d.innerHTML = el.getAttribute('data-tip'); estado(d.textContent); }
+    });
+})();
+
+/* ---------- textos emergentes (ⓘ) ---------- */
+const INFOS = {
+    opciones: '<b>Opciones del nivel</b>: elige qué tipo de ejercicios salen al azar. Si marcas varias, se mezclan.',
+    cotas: '<b>Cotas</b>: <b>G90</b> = X Y absolutas desde el cero pieza; <b>G91</b> = X Y incrementales desde el punto anterior; <b>Mixto</b> = rectas en G90 y arcos en G91. <b>I y J son iguales en los tres</b>: siempre desde el inicio del arco.',
+    ayudas: '<b>Ayudas visuales</b>: dibujan el centro, las flechas de I y J, el triángulo rectángulo y el sentido de giro. <b>No dan los números</b>: aparecen como «?» hasta que los aciertas o llegas a ese paso.',
+    respuesta: 'Rellena <b>G</b>, las coordenadas <b>X Y</b> del final (según las cotas: G90 o G91) e <b>I J</b> (siempre incrementales, desde el inicio del arco). Puedes usar coma o punto decimal. Pulsa <b>Intro</b> para comprobar.',
+    gcode: 'El <b>programa completo</b>: cambio de herramienta, posicionado, bajada, los tramos (los arcos resaltados), salida y fin. Lo que aún tienes que calcular aparece como <b>?</b>. Pasa el ratón por cada palabra para ver qué significa. Con <b>💾 .nc</b> lo guardas para el Simulador 3D.',
+    pasos: 'El <b>paso a paso</b> explica el cálculo y resalta en el plano lo que toca. Si llegas a los pasos que dan los resultados, el ejercicio cuenta como <b>«con ayuda»</b>.'
+};
+(function () {
+    const pop = $('popover');
+    document.addEventListener('click', e => {
+        const i = e.target.closest('.info');
+        if (i) {
+            e.stopPropagation();
+            pop.innerHTML = `<button class="pop-cerrar" onclick="this.parentNode.classList.remove('visible')">✕</button>` + INFOS[i.dataset.info];
+            pop.classList.add('visible');
+            const r = i.getBoundingClientRect();
+            let x = r.left, y = r.bottom + 8;
+            if (x + pop.offsetWidth > innerWidth - 10) x = innerWidth - pop.offsetWidth - 10;
+            if (y + pop.offsetHeight > innerHeight - 10) y = r.top - pop.offsetHeight - 8;
+            pop.style.left = x + 'px'; pop.style.top = y + 'px';
+            return;
+        }
+        if (!e.target.closest('.popover')) pop.classList.remove('visible');
+        if (!e.target.closest('.settings-panel') && !e.target.closest('.icon-gear')) $('settingsPanel').classList.remove('active');
+    });
+})();
+
+/* =========================================================================
+   HOJA DE EJERCICIOS (impresión)
+   ========================================================================= */
+let ultimaHoja = null;
+function abrirHoja() { $('modalHoja').classList.add('visible'); $('hjSoloSol').disabled = !ultimaHoja; }
+function svgDe(e, W, H) {
+    const guard = { ej, vista, vistaUsuario, paso };
+    ej = e; vistaUsuario = null; paso = -1; impresion = true;
+    let s;
+    try { s = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="100%" style="max-height:${H}px">${dibujarPlano(W, H)}</svg>`; }
+    finally { impresion = false; ej = guard.ej; vista = guard.vista; vistaUsuario = guard.vistaUsuario; paso = guard.paso; }
+    return s;
+}
+function tarjetaHoja(e, n) {
+    const { h, it } = textoEnunciado(e);
+    const cont = e.tipo === 'contorno';
+    const filas = filasPregunta(e);
+    let tabla = `<table><tr><th></th><th>G</th><th>X</th><th>Y</th><th>I</th><th>J</th></tr>`;
+    filas.forEach(f => {
+        if (f.k < 0) tabla += `<tr><td class="lb">Inicio</td><td class="nulo"></td><td></td><td></td><td class="nulo"></td><td class="nulo"></td></tr>`;
+        else tabla += `<tr><td class="lb">${f.et}</td><td></td><td></td><td></td><td class="${f.esArco ? '' : 'nulo'}"></td><td class="${f.esArco ? '' : 'nulo'}"></td></tr>`;
+    });
+    tabla += '</table>';
+    const svg = svgDe(e, cont ? 760 : 470, cont ? 420 : 280);
+    const limpiar = s => s.replace(/<b style="color:var\(--col-[a-z]+\)">/g, '<b>');
+    return `<div class="hj-ej${cont ? ' grande' : ''}"><h2>Ejercicio ${n} · ${h}</h2><ul>${it.map(x => `<li>${limpiar(x)}</li>`).join('')}</ul><div class="hj-fila">${svg}<div class="hj-resp">${tabla}<div class="hj-calc">Cálculos:</div></div></div></div>`;
+}
+function solucionHoja(e, n) {
+    const L = programa(e, true).filter(l => l.cls !== 'cab').map(lineaTexto);
+    return `<div class="hj-sol"><b>Ejercicio ${n}</b>${e.askIni ? ` · inicio ${ptxt(e.ini)}` : ''}<pre>${esc(L.join('\n'))}</pre></div>`;
+}
+function imprimirHoja() {
+    const solo = $('hjSoloSol').checked && ultimaHoja;
+    let lista;
+    if (solo) lista = ultimaHoja.lista;
+    else {
+        const n = Math.max(1, Math.min(12, +$('hjN').value || 6));
+        const sel = $('hjNivel').value;
+        lista = [];
+        for (let i = 0; i < n; i++) {
+            const niv = sel === 'actual' ? (cfg.nivel === 'leer' ? 'sencillo' : cfg.nivel) : sel === 'mezcla' ? ['sencillo', 'complejo', 'circulo'][i % 3] : sel;
+            lista.push(generar(niv));
+        }
+        ultimaHoja = { lista, titulo: $('hjTitulo').value };
+    }
+    const tit = esc(ultimaHoja.titulo || 'Hoja de ejercicios');
+    const cab = (sub) => `<div class="hj-cab"><h1>${tit}${sub ? ' — ' + sub : ''}</h1><span class="hj-autor">Arcos I J · Por Eloi A.A.</span></div>`;
+    let h = '';
+    if (!solo) {
+        h += cab('') + `<div class="hj-datos"><span>Nombre:</span><span>Curso:</span><span>Fecha:</span></div>`;
+        h += `<p style="font-size:10.5px;margin-bottom:6px">I = X<sub>centro</sub> − X<sub>inicio</sub> · J = Y<sub>centro</sub> − Y<sub>inicio</sub> (siempre desde el inicio del arco) · G2 horario · G3 antihorario. Si un resultado no es exacto, con 1 decimal.</p>`;
+        h += lista.map((e, i) => tarjetaHoja(e, i + 1)).join('');
+    }
+    if (solo || $('hjSol').checked) h += `<div class="${solo ? '' : 'hj-salto'}">${cab('Soluciones')}${lista.map((e, i) => solucionHoja(e, i + 1)).join('')}</div>`;
+    $('hoja').innerHTML = h;
+    cerrarModal('modalHoja');
+    setTimeout(() => window.print(), 80);
+}
+window.addEventListener('afterprint', () => { $('hoja').innerHTML = ''; });
+
+/* =========================================================================
+   GUÍA (recorrido con bocadillos)
+   ========================================================================= */
+const GUIA = [
+    { sel: '#niveles', t: 'Elige el nivel', h: '<b>①</b> centro alineado · <b>②</b> con Pitágoras · <b>③</b> círculo en dos semicírculos · <b>④</b> una pieza entera · <b>⑤</b> al revés: te dan el bloque y lo interpretas.' },
+    { sel: '.params-box', t: 'Las cotas', h: 'Elige <b>G90</b>, <b>G91</b> o <b>Mixto</b>. Cambia cómo se escriben X Y, pero <b>I y J se calculan siempre igual</b>: desde el inicio del arco.' },
+    { sel: '#zonaPlano', t: 'El plano', h: 'El arco está en color. Las <b>flechas</b> indican el sentido del recorrido. El punto <b style="color:var(--col-ini)">verde</b> es el inicio y el <b style="color:var(--col-fin)">rojo</b>, el final. Pasa el ratón por los puntos y las cotas.' },
+    { sel: '#enunciado', t: 'Los datos', h: 'Aquí tienes los datos del ejercicio y lo que tienes que calcular.' },
+    { sel: '#panelAyudas', t: 'Ayudas visuales', h: 'Activa el centro, las flechas de I y J, el triángulo rectángulo o el sentido de giro. «Medir con el cursor» dibuja ΔX y ΔY desde el inicio y se engancha a los puntos clave.' },
+    { sel: '#respuesta', t: 'Tu respuesta', h: 'Rellena la tabla y pulsa <b>Comprobar</b>. Si te equivocas, te dice qué ha fallado: un signo, medir desde el final, I y J cambiados, absolutas en lugar de incrementales…' },
+    { sel: '#pasos', t: 'Paso a paso', h: 'Te lleva por el cálculo, resaltándolo en el plano. Con <b>←</b> y <b>→</b> avanzas y retrocedes.' },
+    { sel: '#gcode', t: 'El programa', h: 'El programa completo. Cuando lo resuelves puedes guardarlo con <b>💾 .nc</b> y abrirlo en el Simulador 3D.' },
+    { sel: '#btnNuevo', t: '¡A practicar!', h: 'Cada vez que pulses aquí (o la tecla <b>N</b>) sale un ejercicio nuevo. Con <b>🖨 Hoja</b> puedes imprimir una hoja de ejercicios con sus soluciones.' }
+];
+let guiaI = -1;
+function guiaEmpezar() { if (EXAMEN) return; guiaI = 0; guiaMostrar(); }
+function guiaFin() { guiaI = -1; $('guiaBocadillo').classList.remove('visible'); $('guiaFoco').classList.remove('visible'); cfg.guiaVista = true; guardar(); }
+function guiaMostrar() {
+    const g = GUIA[guiaI]; const el = document.querySelector(g.sel);
+    if (!el || !el.offsetParent) { if (guiaI < GUIA.length - 1) { guiaI++; guiaMostrar(); } else guiaFin(); return; }
+    const r = el.getBoundingClientRect(), foco = $('guiaFoco'), b = $('guiaBocadillo');
+    foco.style.left = (r.left - 5) + 'px'; foco.style.top = (r.top - 5) + 'px'; foco.style.width = (r.width + 10) + 'px'; foco.style.height = (r.height + 10) + 'px';
+    foco.classList.add('visible');
+    b.innerHTML = `<h4>${g.t}</h4><div>${g.h}</div><div class="guia-pie"><span>${guiaI + 1} / ${GUIA.length}</span><button class="sec" onclick="guiaFin()">Cerrar</button>${guiaI ? '<button class="sec" onclick="guiaI--;guiaMostrar()">◀</button>' : ''}<button onclick="${guiaI < GUIA.length - 1 ? 'guiaI++;guiaMostrar()' : 'guiaFin()'}">${guiaI < GUIA.length - 1 ? 'Siguiente ▶' : 'Empezar'}</button></div>`;
+    b.classList.add('visible');
+    const bw = b.offsetWidth, bh = b.offsetHeight;
+    let x, y;
+    if (r.width > innerWidth * .45) { x = r.left + r.width / 2 - bw / 2; y = r.top + 70; }
+    else if (r.right + bw + 20 < innerWidth) { x = r.right + 14; y = r.top; }
+    else if (r.left - bw - 20 > 0) { x = r.left - bw - 14; y = r.top; }
+    else { x = r.left; y = r.bottom + 12; }
+    if (y + bh > innerHeight - 10) y = innerHeight - bh - 10;
+    if (y < 10) y = 10; if (x < 10) x = 10; if (x + bw > innerWidth - 10) x = innerWidth - bw - 10;
+    b.style.left = x + 'px'; b.style.top = y + 'px';
+}
+
+/* =========================================================================
+   INTERFAZ: niveles, chips, ayudas, ajustes
+   ========================================================================= */
+function ponerNivel(n) {
+    if (NIVEL_FIJO) n = NIVEL_FIJO;
+    cfg.nivel = n; guardar();
+    document.querySelectorAll('#niveles button').forEach(b => { b.classList.toggle('activo', b.dataset.n === n); b.classList.toggle('bloqueado', !!NIVEL_FIJO && b.dataset.n !== n); b.disabled = !!NIVEL_FIJO && b.dataset.n !== n; });
+    const vis = { opcSencillo: 'sencillo', opcComplejo: 'complejo', opcCirculo: 'circulo', opcContorno: 'contorno', opcLeer: 'leer' };
+    Object.keys(vis).forEach(id => { $(id).style.display = vis[id] === n || (id === 'opcComplejo' && n === 'contorno' && cfg.cont.includes('pit')) ? '' : 'none'; });
+    const triOk = n === 'complejo' || (n === 'contorno' && cfg.cont.includes('pit')) || n === 'leer';
+    const tri = document.querySelector('[data-ay="tri"]');
+    tri.disabled = !triOk;
+    $('filaTri').title = triOk ? '' : 'Solo con arcos de Pitágoras: en los otros el centro está alineado y no hace falta.';
+    $('filaTri').style.opacity = triOk ? '' : '.5';
+    nuevoEjercicio();
+}
+document.querySelectorAll('#niveles button').forEach(b => b.addEventListener('click', () => ponerNivel(b.dataset.n)));
+document.querySelectorAll('.chips[data-grupo]').forEach(g => {
+    const k = g.dataset.grupo;
+    g.querySelectorAll('.chip').forEach(c => {
+        c.classList.toggle('on', cfg[k].includes(c.dataset.v));
+        c.addEventListener('click', () => {
+            if (k === 'cotas' && COTAS_FIJAS) { estado('Las cotas las ha fijado el profesor.'); return; }
+            const on = !c.classList.contains('on');
+            if (!on && g.querySelectorAll('.chip.on').length === 1) { estado('Tiene que quedar al menos una opción marcada.'); return; }
+            c.classList.toggle('on', on);
+            cfg[k] = [...g.querySelectorAll('.chip.on')].map(x => x.dataset.v);
+            guardar();
+            if (k === 'cont') ponerNivel(cfg.nivel); else nuevoEjercicio();
+        });
+    });
+});
+if (COTAS_FIJAS) document.querySelectorAll('.chips[data-grupo="cotas"] .chip').forEach(c => c.classList.toggle('on', c.dataset.v === COTAS_FIJAS));
+$('chkDecimal').checked = !!cfg.decimal;
+$('chkDecimal').addEventListener('change', e => { cfg.decimal = e.target.checked; guardar(); nuevoEjercicio(); });
+document.querySelectorAll('[data-ay]').forEach(inp => {
+    inp.checked = !!cfg.ay[inp.dataset.ay];
+    inp.addEventListener('change', () => { cfg.ay[inp.dataset.ay] = inp.checked; guardar(); render(); });
+});
+function toggleSettings() { $('settingsPanel').classList.toggle('active'); }
+function setDarkMode(on) { cfg.oscuro = !!on; document.body.classList.toggle('dark-mode', cfg.oscuro); $('chkDarkMode').checked = cfg.oscuro; guardar(); }
+function cambiarAcento(c) {
+    cfg.acento = c;
+    document.documentElement.style.setProperty('--accent', c);
+    document.documentElement.style.setProperty('--accent-light', c + '22');
+    document.querySelectorAll('#paleta .color-btn').forEach(b => b.classList.toggle('active', b.dataset.c === c));
+    guardar();
+}
+document.querySelectorAll('#paleta .color-btn').forEach(b => b.addEventListener('click', () => cambiarAcento(b.dataset.c)));
+function abrirAyuda() { if (EXAMEN) return; $('modalAyuda').classList.add('visible'); }
+function cerrarModal(id) { $(id).classList.remove('visible'); }
+
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { ['modalAyuda', 'modalHoja'].forEach(cerrarModal); $('popover').classList.remove('visible'); $('settingsPanel').classList.remove('active'); if (guiaI >= 0) guiaFin(); return; }
+    if (/^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement.tagName)) return;
+    if ($('modalHoja').classList.contains('visible')) return;
+    if (e.key === 'Enter') { e.preventDefault(); comprobar(); }
+    else if (e.key === 'n' || e.key === 'N') nuevoEjercicio();
+    else if (e.key === 'f' || e.key === 'F') encuadrar();
+    else if (e.key === 'ArrowRight') { if (ej) irPaso(Math.min(paso + 1, ej.pasos.length - 1)); }
+    else if (e.key === 'ArrowLeft') { if (ej && paso > 0) irPaso(paso - 1); }
+});
+window.addEventListener('resize', () => { render(); if (guiaI >= 0) guiaMostrar(); });
+
+/* ---------- arranque ---------- */
+if (EXAMEN) document.body.classList.add('examen');
+setDarkMode(cfg.oscuro);
+cambiarAcento(cfg.acento);
+ponerNivel(cfg.nivel);
+actualizarMarcador();
+const DESDE_CALCADOR = location.hash.indexOf('desdeCalcador') >= 0;
+if (!cfg.guiaVista && !EXAMEN && !DESDE_CALCADOR) setTimeout(guiaEmpezar, 500);
+/* ---------- recibir la pieza del Calcador: como el Simulador, por mensaje entre pestañas o, si no, por el almacenamiento ---------- */
+if (pieza && !EXAMEN && !NIVEL_FIJO) $('btnNivelPieza').style.display = '';
+window.addEventListener('message', e => {
+    const d = e.data; if (!d || d.tipo !== 'arcos-calcador') return;
+    DESDE_CALCADOR_LISTO = true; recibirPieza(d);
+    try { localStorage.removeItem('suiteCNC:paraArcos'); } catch (err) {}
+});
+var DESDE_CALCADOR_LISTO = false;
+if (DESDE_CALCADOR) {
+    try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}   // al recargar, no vuelve a esperar la pieza
+    try { if (window.opener) window.opener.postMessage({ tipo: 'arcos-listo' }, '*'); } catch (e) {}
+    setTimeout(() => {
+        if (DESDE_CALCADOR_LISTO) return;
+        try {
+            const g = JSON.parse(localStorage.getItem('suiteCNC:paraArcos') || 'null');
+            if (g && Date.now() - g.t < 120000) { localStorage.removeItem('suiteCNC:paraArcos'); recibirPieza(g); }
+            else estado('No ha llegado la pieza: vuelve a pulsar «◠ Practicar I J» en el Calcador.');
+        } catch (e) {}
+    }, 1500);
+}
+</script>
+</body>
+</html>

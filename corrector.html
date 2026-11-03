@@ -636,6 +636,7 @@
     html[data-visor="1"] #c2Tabs2, html[data-visor="1"] #c2PaneDib, html[data-visor="1"] #c2PaneCons, html[data-visor="1"] #c2PaneFormas,
     html[data-visor="1"] #c2PaneFondo, html[data-visor="1"] #c2Tabs3 button[data-p="c2PaneFondo"],
     html[data-visor="1"] #c2PaneEj button[onclick="abrirGenerador()"], html[data-visor="1"] #c2PaneEj button[onclick="exportarEjercicioTutor()"],
+    html[data-visor="1"] #c2PaneEj button[onclick="abrirEnArcosIJ()"],
     html[data-visor="1"] #tutorPanel .tu-tabs button[data-t="contornos"] { display: none !important; }
     html[data-visor="1"] #c2Tabs3 button { flex: 0 0 50%; }
 </style>
@@ -643,7 +644,7 @@
 <body>
 <div class="app-window">
     <header class="top-bar">
-        <a href="index.html" class="ir-portada" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a><span class="top-bar-title">✅ Corrector — Por Eloi A.A.<span class="ver-suite" title="Versión del programa (generado a partir del Calcador v118)" style="font-size:11px;font-weight:600;padding:1px 7px;margin-left:8px;border-radius:9px;background:rgba(0,90,156,.12);color:#005A9C;vertical-align:middle">v63</span></span>
+        <a href="index.html" class="ir-portada" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a><span class="top-bar-title">✅ Corrector — Por Eloi A.A.<span class="ver-suite" title="Versión del programa (generado a partir del Calcador v119)" style="font-size:11px;font-weight:600;padding:1px 7px;margin-left:8px;border-radius:9px;background:rgba(0,90,156,.12);color:#005A9C;vertical-align:middle">v64</span></span>
         <div class="top-bar-right">
             <input class="project-name" id="projectName" type="text" value="calco_sin_nombre" placeholder="Nombre del proyecto">
             <div class="c2-archivo"><button class="btn-manual" onclick="nuevo()" title="Empieza de cero (se puede deshacer)">🗋 Nuevo</button><button class="btn-manual" onclick="document.getElementById('fileJSON').click()" title="Abre un proyecto .json del Calcador o del Corrector">📂 Abrir</button><button class="btn-manual" onclick="exportarJSON()" title="Guarda el proyecto en un archivo JSON: lo abren el Calcador, el Corrector, el Tutor y el Simulador (como plano del ejercicio)">💾 Guardar</button><button class="btn-manual" onclick="abrirBiblioteca()" title="Tus ejercicios: buscar, abrir e imprimir sus hojas">🗂 Biblioteca</button></div>
@@ -734,6 +735,7 @@
                     <button class="btn-action sec" onclick="abrirVariantes()" title="Varias versiones del ejercicio con la misma dificultad y distinta solución, para exámenes">🎲 Variantes…</button>
                     <button class="btn-action sec" onclick="abrirCuestionario()" title="Preguntas para un cuestionario de Aules (Moodle XML) sobre este ejercicio">📝 Aules…</button>
                     <button class="btn-action sec" onclick="exportarEjercicioTutor()" title="Guarda el ejercicio para el Tutor G-Code del alumno: verá el plano, pero no el programa. Las coordenadas y la compensación son las de ⚙️ Mecanizado">🎓 Para el Tutor</button>
+                    <button class="btn-action sec" onclick="abrirEnArcosIJ()" title="Abre los arcos de esta pieza en Arcos I J, para practicar G2/G3, X Y e I J con ellos">◠ Practicar I J</button>
                 </div>
                 <div class="params-box c2-botones" id="c2PaneCorr" hidden>
                     <button class="btn-action sec" onclick="abrirCorregir()" title="Compara el programa ISO de un alumno con la pieza dibujada">✅ Un programa</button>
@@ -13707,6 +13709,35 @@ function abrirEnGeneradorDesde(hash) {
     if (!w) { snack('El navegador ha bloqueado la pestaña nueva: permite las ventanas emergentes para este archivo, o usa «💾 Guardar (.json)»'); return; }
     snack('Abriendo el proyecto en otra pestaña…');
 }
+// ◠ Practicar I J: los contornos de la pieza, con el orden, el sentido y el cero de la tabla de soluciones
+let paraArcos = null;
+function abrirEnArcosIJ() {
+    const tipos = tiposResueltos(), selO = document.getElementById('tbOrigen');
+    const lista = contornos.map((c, i) => ({ c, i })).filter(o => o.c.pts.length >= 2 && !soloFabricar(o.c))
+        .sort((a, b) => (rangoMecanizado(tipos[a.i], contornos[a.i]) - rangoMecanizado(tipos[b.i], contornos[b.i])) || a.i - b.i);
+    let off = { x:0, y:0 };
+    if (!selO || selO.value === 'pieza') {
+        const base = contornos.filter((c, i) => c.cerrado && tipos[i] !== 'interior');
+        const usar = base.length ? base : contornos.filter(c => c.pts.length >= 2);
+        if (usar.length) { const bb = bboxPts([].concat(...usar.map(c => c.pts.concat(muestrearContorno(c))))); off = { x:bb.x0, y:bb.y0 }; }
+    }
+    const pt = p => { const q = sub(p, off); return { x:q.x, y:q.y }; };
+    const envio = lista.map(({ c, i }) => ({ cerrado: !!c.cerrado, clase: tipos[i], grabado: !!esGrabado(c), tramos: tramos(c).map(t => {
+        if (!t.b) return { t:'L', a: pt(t.p1), b: pt(t.p2) };
+        const a = arcoDeBulge(t.p1, t.p2, t.b);
+        return { t:'A', a: pt(t.p1), b: pt(t.p2), C: pt(a.c), R: a.r, g: t.b > 0 ? 'G3' : 'G2' };
+    }) }));
+    if (!envio.some(c => !c.grabado && c.tramos.some(t => t.t === 'A'))) { snack('Esta pieza no tiene arcos que practicar'); return; }
+    paraArcos = { tipo:'arcos-calcador', nombre: nombreProyecto(), contornos: envio };
+    try { localStorage.setItem('suiteCNC:paraArcos', JSON.stringify({ ...paraArcos, t: Date.now() })); } catch (e) {}
+    const w = window.open('arcos_ij.html#desdeCalcador', '_blank');
+    if (!w) { snack('El navegador ha bloqueado la pestaña nueva: permite las ventanas emergentes para este archivo'); return; }
+    snack('Abriendo los arcos de la pieza en Arcos I J…');
+}
+window.addEventListener('message', e => {
+    const d = e.data; if (!d || typeof d !== 'object') return;
+    if (d.tipo === 'arcos-listo' && paraArcos && e.source) { e.source.postMessage(paraArcos, '*'); paraArcos = null; }
+});
 // ── Abrir el plano y su solución en el Simulador 3D ──
 let paraSimulador = null;
 // 🎓 El proyecto marcado como ejercicio para el Tutor G-Code (el alumno no ve su programa)

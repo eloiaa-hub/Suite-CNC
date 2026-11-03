@@ -11,6 +11,7 @@ Todas las apps que se compilan están en **`ediciones.json`**: la Suite completa
 | `simulador` | Simulador 3D | `Simulador3D.exe` | `simulador3d.html` |
 | `tutor` | Tutor G-Code | `TutorGCode.exe` | `tutor.html` |
 | `calculadora` | Calculadora de taller | `Calculadora.exe` | `calculadora.html` |
+| `arcos` | Arcos I J | `ArcosIJ.exe` | `arcos_ij.html` |
 
 Además de lo que diga `incluir`, cada app lleva **automáticamente** lo que sus páginas enlazan o abren (`scripts/preparar.mjs` lo detecta). Por ejemplo, el Calcador lleva dentro el Generador y el Simulador, porque los abre con «Abrir en…».
 

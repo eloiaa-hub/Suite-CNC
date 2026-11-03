@@ -9,8 +9,8 @@ sin instalar nada y también sin conexión a internet.
 | Archivo | Herramienta | Versión |
 |---|---|---|
 | `index.html` | Portada con enlaces a todo | — |
-| `calcador.html` | Calcador de contornos: diseñar ejercicios, hojas, soluciones, corrección y biblioteca. Escribe el programa de la pieza mientras se dibuja (el de la solución o el de la máquina, ⚙️ Mecanizar) y prepara ejercicios para el Tutor (🎓) | v118 |
-| `corrector.html` | Corrector: el Calcador sin dibujo, para corregir, simular, imprimir, exportar y generar el G-code con ⚙️ Mecanizar (se genera a partir del Calcador) | v63 |
+| `calcador.html` | Calcador de contornos: diseñar ejercicios, hojas, soluciones, corrección y biblioteca. Escribe el programa de la pieza mientras se dibuja (el de la solución o el de la máquina, ⚙️ Mecanizar) y prepara ejercicios para el Tutor (🎓) | v119 |
+| `corrector.html` | Corrector: el Calcador sin dibujo, para corregir, simular, imprimir, exportar y generar el G-code con ⚙️ Mecanizar (se genera a partir del Calcador) | v64 |
 | `manual_calcador.html` / `.pdf` | Manual del Calcador | — |
 | `manual_corrector.html` / `.pdf` | Manual del Corrector (profesorado) | — |
 | `manual_anidador.html` / `.pdf` | Manual del Anidador de tableros (profesorado) | — |
@@ -25,6 +25,8 @@ sin instalar nada y también sin conexión a internet.
 | `simulador3d_profesor.html` | Solo lleva a `simulador3d.html` (para los enlaces antiguos); se puede borrar | — |
 | `tutor.html` | Tutor G-Code: dibujar una pieza y ver cómo se escribe su programa, línea a línea y comentado (👁 Aprender), o escribirlo y que el Tutor corrija cada línea (✍ Practicar); con ejemplos y ejercicios (alumnado; se genera a partir del Calcador) | v4 |
 | `calculadora.html` | Calculadora de taller: recta inclinada, polares, arcos (centro, I J y R), G90 ↔ G91 y velocidades de corte (alumnado) | v5 |
+| `arcos_ij.html` | Arcos I J: aprender a calcular I y J de los arcos G2 y G3, en seis niveles, con corrección, ayudas y paso a paso; recibe los arcos de una pieza desde el Calcador (◠ Practicar I J) (alumnado) | v3 |
+| `manual_arcos_ij.html` / `.pdf` | Manual de Arcos I J (alumnado) | — |
 | `licencias.html` | Créditos y licencias (fuentes y bibliotecas de terceros) | — |
 | `LICENSE` | Licencia de los programas (EUPL-1.2) | — |
 | `LICENCIA-MANUAL.txt` | Licencia del manual (CC BY-SA 4.0) | — |
@@ -65,13 +67,13 @@ Para actualizar un programa basta con sustituir su archivo (manteniendo el mismo
 
 ## Licencia
 
-- **Programas** (`calcador.html`, `corrector.html`, `simulador3d.html`, `calculadora.html`, `anidador.html`
+- **Programas** (`calcador.html`, `corrector.html`, `simulador3d.html`, `calculadora.html`, `arcos_ij.html`, `anidador.html`
   e `index.html`): © 2026 Eloi A.A. — **European Union Public Licence v. 1.2 (EUPL-1.2)**,
   archivo `LICENSE`. Puedes usarlos, estudiarlos, modificarlos y redistribuirlos; si distribuyes
   una versión modificada, debe publicarse también con la EUPL (o una licencia compatible) y con
   su código. La EUPL tiene la misma validez en todas las lenguas oficiales de la UE; la versión
   en castellano está en el Diario Oficial de la UE (Decisión de Ejecución (UE) 2017/863).
-- **Manual y guías** (`manual_calcador`, `manual_corrector`, `manual_anidador`, `manual_calculadora`, `guia_simulador`, `guia_tutor` y `apuntes_iso`): © 2026 Eloi A.A. — **Creative Commons
+- **Manual y guías** (`manual_calcador`, `manual_corrector`, `manual_anidador`, `manual_calculadora`, `manual_arcos_ij`, `guia_simulador`, `guia_tutor` y `apuntes_iso`): © 2026 Eloi A.A. — **Creative Commons
   Atribución-CompartirIgual 4.0 (CC BY-SA 4.0)**, archivo `LICENCIA-MANUAL.txt`.
 - Los **componentes de terceros** (fuentes EMS y Hershey, opentype.js, Clipper, three.js) conservan sus
   propias licencias, todas compatibles: ver `licencias.html`.
