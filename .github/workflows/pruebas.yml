@@ -1,0 +1,49 @@
+# Lanza las pruebas de la suite en cada envío a GitHub, en cualquier rama. Si algo falla, sale ✗ junto al commit
+# y en la pestaña Actions, y los registros quedan en «pruebas-registros». No publica ni compila nada.
+name: Pruebas
+
+on:
+  push:
+    paths-ignore: ['**.md', '**.pdf']
+  workflow_dispatch:
+
+concurrency:
+  group: pruebas-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  pruebas:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Instalar Playwright, Chromium y ezdxf
+        run: |
+          mkdir -p "$RUNNER_TEMP/h" && cd "$RUNNER_TEMP/h"
+          npm init -y >/dev/null
+          npm install playwright@1
+          npx playwright install --with-deps chromium
+          echo "NODE_PATH=$RUNNER_TEMP/h/node_modules" >> "$GITHUB_ENV"
+          pip install ezdxf
+          sudo apt-get install -y poppler-utils
+      - name: Pruebas
+        env:
+          LANG: C.UTF-8
+          SUITE: ${{ github.workspace }}
+        run: node herramientas_desarrollo/pruebas/ejecutar_todas.js "$RUNNER_TEMP/registros"
+      - name: Guardar los registros
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pruebas-registros
+          path: ${{ runner.temp }}/registros/*.log
+          retention-days: 14

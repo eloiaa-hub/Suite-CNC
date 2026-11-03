@@ -27,6 +27,7 @@ sin instalar nada y también sin conexión a internet.
 | `calculadora.html` | Calculadora de taller: recta inclinada, polares, arcos (centro, I J y R), G90 ↔ G91 y velocidades de corte (alumnado) | v5 |
 | `arcos_ij.html` | Arcos I J: aprender a calcular I y J de los arcos G2 y G3, en seis niveles, con corrección, ayudas y paso a paso; recibe los arcos de una pieza desde el Calcador (◠ Practicar I J) (alumnado) | v3 |
 | `manual_arcos_ij.html` / `.pdf` | Manual de Arcos I J (alumnado) | — |
+| `itinerario.html` | Itinerario del alumno: nueve pasos con el apunte y la herramienta de cada uno (alumnado) | — |
 | `licencias.html` | Créditos y licencias (fuentes y bibliotecas de terceros) | — |
 | `LICENSE` | Licencia de los programas (EUPL-1.2) | — |
 | `LICENCIA-MANUAL.txt` | Licencia del manual (CC BY-SA 4.0) | — |
@@ -81,4 +82,4 @@ Para actualizar un programa basta con sustituir su archivo (manteniendo el mismo
 
 ## Herramientas de desarrollo
 
-La carpeta `herramientas_desarrollo/` no se usa en clase: guarda los scripts que construyen el Corrector a partir del Calcador, las fuentes del motor de ⚙️ Mecanizar y las pruebas automáticas. Ver su `LEEME.md`.
+En el repositorio solo está `herramientas_desarrollo/pruebas/`, que GitHub lanza sola en cada envío. La carpeta `herramientas_desarrollo/` no se usa en clase: guarda los scripts que construyen el Corrector a partir del Calcador, las fuentes del motor de ⚙️ Mecanizar y las pruebas automáticas. Ver su `LEEME.md`.

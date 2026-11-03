@@ -1,0 +1,10 @@
+const { lanzar, abrir, fs } = require('./comun');
+(async () => { const b = await lanzar(); const cal = await abrir(b, 'calcador.html');
+  const caso = JSON.parse(fs.readFileSync(process.argv[2], 'utf8')); const d = JSON.parse(fs.readFileSync(caso.f, 'utf8')); await cal.evaluate(c => { window.__cfg = c; }, caso.cfg);
+  console.log(await cal.evaluate(d => { abrirJSONDatos(d); cfgFresa.d = 3; const c = window.__cfg; cfgFresa.d = c.d; contornos.forEach((k, j) => { if (!k.cerrado) return; const o = c.ops[j % c.ops.length]; k.mec = { op:o.op, prof:o.prof, caj:{ estr:o.estr, paso:50, entrada:o.entrada }, puentes:o.pz || { n:0, ancho:5, alto:2 } }; });
+    Object.assign(cfgMec, { prof:c.prof, paso:c.paso, acab:c.acab, coord:c.coord, comp:c.comp, estr:c.estr, zSeg:c.zSeg }); abrirMec();
+    const T = {}; ['interpretarISO', 'dibujarMec', 'trazadosParaMecanizar', 'itemsDePrograma', 'muestrasSeg'].forEach(n => { const o = window[n]; window[n] = function () { const t = performance.now(); try { return o.apply(this, arguments); } finally { T[n] = (T[n] || 0) + performance.now() - t; } }; });
+    const o = MEC.generar; MEC.generar = function () { const t = performance.now(); try { return o.apply(this, arguments); } finally { T.motor = performance.now() - t; } };
+    const t0 = performance.now(); generarMec(); T.total = performance.now() - t0;
+    return Object.entries(T).map(([k, v]) => `${k} ${Math.round(v)} ms`).join(' · ') + ` · ${ultimoMec.nc.split('\n').length} líneas`; }, d));
+  await b.close(); })();

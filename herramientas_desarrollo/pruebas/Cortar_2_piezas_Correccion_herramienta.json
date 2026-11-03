@@ -1,0 +1,237 @@
+{
+  "version": 7,
+  "nombre": "calco_sin_nombre",
+  "vertices": [
+    {
+      "x": 96,
+      "y": 568,
+      "seg": "recta",
+      "arcAng": 180
+    },
+    {
+      "x": 696,
+      "y": 568,
+      "seg": "recta",
+      "arcAng": 180
+    },
+    {
+      "x": 542.389143,
+      "y": 301.990955,
+      "seg": "recta",
+      "arcAng": 180
+    },
+    {
+      "x": 511.307122,
+      "y": 282.152422,
+      "seg": "arco-i",
+      "arcAng": 54.89291388
+    },
+    {
+      "x": 84,
+      "y": 244,
+      "seg": "recta",
+      "arcAng": 180
+    },
+    {
+      "x": 4,
+      "y": 356,
+      "seg": "arco-e",
+      "arcAng": 67.38013505
+    }
+  ],
+  "poligonoListo": true,
+  "segModoCierre": "recta",
+  "trazadoTipoActual": "exterior",
+  "entryIdx": 0,
+  "mec": null,
+  "uid": "kmuvpgoa50nay",
+  "estrategia": "plano",
+  "wcs": {
+    "x": 0,
+    "y": 0,
+    "activo": true
+  },
+  "trazados": [
+    {
+      "vertices": [
+        {
+          "x": 320,
+          "y": 336,
+          "seg": "recta",
+          "arcAng": 180
+        },
+        {
+          "x": 164,
+          "y": 336,
+          "seg": "recta",
+          "arcAng": 180
+        },
+        {
+          "x": 164,
+          "y": 392,
+          "seg": "arco-i",
+          "arcAng": 180
+        },
+        {
+          "x": 320,
+          "y": 392,
+          "seg": "recta",
+          "arcAng": 180
+        }
+      ],
+      "segModoCierre": "arco-i",
+      "tipo": "interior",
+      "entryIdx": 0,
+      "mec": null,
+      "uid": "kmuvrf8h402ta"
+    }
+  ],
+  "calcador": {
+    "version": 4,
+    "escala": 10,
+    "origen": {
+      "x": 0,
+      "y": 0
+    },
+    "contornos": [
+      {
+        "pts": [
+          {
+            "x": 24,
+            "y": 8
+          },
+          {
+            "x": 174,
+            "y": 8
+          },
+          {
+            "x": 135.59728572000841,
+            "y": 74.50226131413174
+          },
+          {
+            "x": 127.82678052083861,
+            "y": 79.4618945963537
+          },
+          {
+            "x": 21,
+            "y": 89
+          },
+          {
+            "x": 1,
+            "y": 61
+          }
+        ],
+        "b": [
+          0,
+          0,
+          0.24420327068781839,
+          0,
+          -0.3027756377319946,
+          0
+        ],
+        "cerrado": true,
+        "tipo": "auto",
+        "uid": "kmuvpgoa50nay",
+        "forma": {
+          "tipo": "rectangulo",
+          "c": {
+            "x": 58.5,
+            "y": 28.5
+          },
+          "w": 69,
+          "h": 39,
+          "rot": 0,
+          "esq": [
+            {
+              "t": "v",
+              "r": 0
+            },
+            {
+              "t": "v",
+              "r": 0
+            },
+            {
+              "t": "v",
+              "r": 0
+            },
+            {
+              "t": "v",
+              "r": 0
+            }
+          ]
+        }
+      },
+      {
+        "pts": [
+          {
+            "x": 80,
+            "y": 66
+          },
+          {
+            "x": 41,
+            "y": 66
+          },
+          {
+            "x": 41,
+            "y": 52
+          },
+          {
+            "x": 80,
+            "y": 52
+          }
+        ],
+        "b": [
+          0,
+          1,
+          0,
+          1
+        ],
+        "cerrado": true,
+        "tipo": "auto",
+        "uid": "kmuvrf8h402ta",
+        "forma": {
+          "tipo": "ranura",
+          "c": {
+            "x": 60.5,
+            "y": 59
+          },
+          "L": 39,
+          "w": 14,
+          "rot": 0
+        }
+      }
+    ],
+    "cotasAjuste": {},
+    "cotasManuales": [],
+    "cfgCotas": {
+      "ver": false,
+      "nivel": "todo",
+      "incl": "proy",
+      "cero": true,
+      "entrada": true,
+      "sentido": true,
+      "centros": true,
+      "cadena": true,
+      "verOcultas": false
+    },
+    "aux": [],
+    "cfgHoja": {
+      "titulo": "",
+      "num": "",
+      "grupo": "",
+      "fecha": "",
+      "material": "Madera",
+      "espesor": "",
+      "herramienta": "",
+      "centro": "",
+      "orient": "h",
+      "prog": "libre",
+      "reqEntrada": false,
+      "reqSentido": false,
+      "enunciado": "Programa en código ISO el contorno de la pieza tomando como origen el cero pieza indicado en el plano.",
+      "tabla": true,
+      "rayado": false,
+      "comp": "g4142"
+    }
+  }
+}

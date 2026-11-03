@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Itinerario del alumno — Suite CNC</title>
+<style>
+  :root { --acento:#005A9C; --suave:rgba(0,90,156,.10); --fondo:#eef2f6; --panel:#fff; --texto:#1d2733; --sec:#5b6878; --borde:#d7dee7; --verde:#00897b; --sombra:0 4px 16px rgba(20,40,70,.08); }
+  @media (prefers-color-scheme: dark) { :root { --acento:#5aa9e6; --suave:rgba(90,169,230,.14); --fondo:#14181d; --panel:#1d232a; --texto:#e6ebf0; --sec:#9aa7b5; --borde:#2e3843; --verde:#4db6ac; --sombra:none; } }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--fondo); color:var(--texto); font-family:'Segoe UI',system-ui,-apple-system,Roboto,Arial,sans-serif; line-height:1.5; }
+  .envoltura { max-width:860px; margin:0 auto; padding:28px 16px 40px; }
+  .volver { color:var(--sec); text-decoration:none; font-size:14px; }
+  h1 { margin:8px 0 4px; font-size:clamp(24px,4vw,32px); letter-spacing:-.01em; }
+  .sub { margin:0 0 16px; color:var(--sec); }
+  .progreso { display:flex; align-items:center; gap:12px; margin-bottom:22px; font-size:14px; color:var(--sec); }
+  .barra { flex:1; height:8px; border-radius:4px; background:var(--borde); overflow:hidden; } .barra i { display:block; height:100%; width:0; background:var(--verde); transition:width .2s; }
+  ol.pasos { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:12px; }
+  .pasoI { background:var(--panel); border:1px solid var(--borde); border-radius:12px; padding:16px 18px; box-shadow:var(--sombra); }
+  .pasoI.hecho { border-color:var(--verde); }
+  .cab { display:flex; align-items:baseline; gap:10px; }
+  .num { flex:0 0 28px; height:28px; border-radius:50%; background:var(--suave); color:var(--acento); font-weight:700; display:flex; align-items:center; justify-content:center; font-size:14px; align-self:center; }
+  .hecho .num { background:var(--verde); color:#fff; }
+  h2 { margin:0; font-size:18px; flex:1; }
+  .marcar { font-size:13px; color:var(--sec); white-space:nowrap; cursor:pointer; display:flex; gap:5px; align-items:center; }
+  .objetivo { margin:8px 0 10px; }
+  .filas { display:grid; grid-template-columns:82px 1fr; gap:6px 10px; font-size:14px; }
+  .et { color:var(--sec); font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:.04em; padding-top:2px; }
+  a { color:var(--acento); }
+  .nota { margin-top:22px; font-size:13.5px; color:var(--sec); }
+  footer { margin-top:26px; text-align:center; font-size:12.5px; color:var(--sec); }
+  @media (max-width:520px) { .filas { grid-template-columns:1fr; gap:1px; } .filas > div:not(.et) { margin-bottom:6px; } .cab { flex-wrap:wrap; } }
+  @media print { .progreso, .marcar, .volver { display:none; } .pasoI { box-shadow:none; break-inside:avoid; } body { background:#fff; } }
+</style>
+</head>
+<body>
+<div class="envoltura">
+  <a class="volver" href="index.html">⌂ Portada</a>
+  <h1>Itinerario del alumno</h1>
+  <p class="sub">Aprende a programar en código ISO (G-code), paso a paso. Sigue el orden: cada paso usa lo del anterior. Lee el apunte, practica con la herramienta y comprueba tu programa.</p>
+  <div class="progreso"><div class="barra"><i id="barra"></i></div><span id="cuenta" aria-live="polite"></span></div>
+  <ol class="pasos" id="pasos">
+    <li class="pasoI"><div class="cab"><span class="num">1</span><h2>Cómo es un programa</h2></div>
+      <p class="objetivo">Lee un programa y entiende qué hace cada línea: el orden de las letras, los ejes, el cero pieza y las alturas.</p>
+      <div class="filas"><div class="et">Lee</div><div><a href="apuntes_iso.html">Códigos ISO</a>, capítulos 1 y 2 · <a href="cabecera_programa.html">La cabecera del programa</a></div>
+      <div class="et">Practica</div><div><a href="tutor.html">Tutor G-Code</a>, 👁 Aprender: abre un ejemplo en 📚 Ejemplos y haz clic en cada línea</div></div></li>
+    <li class="pasoI"><div class="cab"><span class="num">2</span><h2>Rectas en G90</h2></div>
+      <p class="objetivo">Escribe un programa con G0 y G1 en coordenadas absolutas: un contorno exterior y uno interior.</p>
+      <div class="filas"><div class="et">Lee</div><div><a href="apuntes_iso.html">Códigos ISO</a>, capítulos 3 y 4 · <a href="programas_resueltos.html">Programas resueltos</a>, capítulos 1 a 5</div>
+      <div class="et">Practica</div><div><a href="tutor.html">Tutor G-Code</a>, ✍ Practicar, en G90 y con la pieza de rectas</div>
+      <div class="et">Comprueba</div><div><a href="simulador3d.html">Simulador 3D</a>: abre tu programa y revísalo bloque a bloque</div></div></li>
+    <li class="pasoI"><div class="cab"><span class="num">3</span><h2>Rectas inclinadas</h2></div>
+      <p class="objetivo">Calcula las X Y del final de una recta a partir de su longitud y su ángulo.</p>
+      <div class="filas"><div class="et">Lee</div><div><a href="apuntes_iso.html">Códigos ISO</a>, capítulo 7 (polares)</div>
+      <div class="et">Practica</div><div><a href="calculadora.html">Calculadora de taller</a>: recta inclinada y polares · <a href="tutor.html">Tutor G-Code</a>, ✍ Practicar</div></div></li>
+    <li class="pasoI"><div class="cab"><span class="num">4</span><h2>G91 y programación mixta</h2></div>
+      <p class="objetivo">Escribe el mismo programa en incrementales y mezclando G90 y G91, y distingue cuándo X Y es un punto y cuándo un desplazamiento.</p>
+      <div class="filas"><div class="et">Lee</div><div><a href="programas_resueltos.html">Programas resueltos</a>, capítulos 8 a 10</div>
+      <div class="et">Practica</div><div><a href="tutor.html">Tutor G-Code</a>, con Coordenadas en G91 y en mixta · <a href="calculadora.html">Calculadora de taller</a>: G90 ↔ G91</div>
+      <div class="et">Comprueba</div><div><a href="simulador3d.html">Simulador 3D</a></div></div></li>
+    <li class="pasoI"><div class="cab"><span class="num">5</span><h2>Arcos: G2, G3, I y J</h2></div>
+      <p class="objetivo">Decide el sentido del giro y calcula I y J cuando el centro está alineado. Haz un círculo completo en dos semicírculos.</p>
+      <div class="filas"><div class="et">Lee</div><div><a href="apuntes_iso.html">Códigos ISO</a>, capítulo 5 · <a href="programas_resueltos.html">Programas resueltos</a>, capítulos 6 y 7</div>
+      <div class="et">Practica</div><div><a href="arcos_ij.html">Arcos I J</a>, niveles ① Sencillo y ③ Círculo · <a href="calculadora.html">Calculadora de taller</a>: arcos</div></div></li>
+    <li class="pasoI"><div class="cab"><span class="num">6</span><h2>Arcos con Pitágoras</h2></div>
+      <p class="objetivo">Calcula I y J cuando el centro queda fuera de la línea, con un triángulo rectángulo.</p>
+      <div class="filas"><div class="et">Lee</div><div><a href="arcos_pitagoras.html">Arcos con el centro fuera de la línea</a> · <a href="apuntes_iso.html">Códigos ISO</a>, capítulo 6</div>
+      <div class="et">Practica</div><div><a href="arcos_ij.html">Arcos I J</a>, nivel ② Pitágoras</div></div></li>
+    <li class="pasoI"><div class="cab"><span class="num">7</span><h2>Una pieza completa</h2></div>
+      <p class="objetivo">Programa un contorno con rectas y arcos, y aprende a leer un bloque y a encontrar sus errores.</p>
+      <div class="filas"><div class="et">Practica</div><div><a href="arcos_ij.html">Arcos I J</a>, niveles ④ Contorno y ⑤ Leer el bloque · <a href="tutor.html">Tutor G-Code</a>, ✍ Practicar</div>
+      <div class="et">Comprueba</div><div><a href="simulador3d.html">Simulador 3D</a></div></div></li>
+    <li class="pasoI"><div class="cab"><span class="num">8</span><h2>Compensación: G40, G41 y G42</h2></div>
+      <p class="objetivo">Haz que la fresa corte por el lado correcto de la línea, y entra y sal bien del contorno.</p>
+      <div class="filas"><div class="et">Lee</div><div><a href="apuntes_iso.html">Códigos ISO</a>, capítulo 10 · <a href="guia_tutor.html">Guía del Tutor</a>, capítulo 6</div>
+      <div class="et">Practica</div><div><a href="tutor.html">Tutor G-Code</a>, con Compensación en G41 o G42</div>
+      <div class="et">Comprueba</div><div><a href="simulador3d.html">Simulador 3D</a>: mira el camino del centro de la fresa</div></div></li>
+    <li class="pasoI"><div class="cab"><span class="num">9</span><h2>El programa para la máquina</h2></div>
+      <p class="objetivo">Elige revoluciones y avance, reparte la profundidad en varias pasadas y deja el programa completo, listo para entregar.</p>
+      <div class="filas"><div class="et">Lee</div><div><a href="apuntes_iso.html">Códigos ISO</a>, capítulos 8, 9, 11 y 12 · <a href="programas_resueltos.html">Programas resueltos</a>, capítulo 11</div>
+      <div class="et">Practica</div><div><a href="calculadora.html">Calculadora de taller</a>: velocidades de corte · <a href="tutor.html">Tutor G-Code</a>, con varias pasadas</div>
+      <div class="et">Comprueba</div><div><a href="simulador3d.html">Simulador 3D</a>, y 🧾 Entrega para el informe de Aules</div></div></li>
+  </ol>
+  <p class="nota">Las casillas «Hecho» se guardan solo en este navegador. Tu profesor puede desactivar alguna herramienta durante los exámenes y los ejercicios puntuables.</p>
+  <footer>Suite CNC · © 2026 Eloi A.A. · <a href="licencias.html" style="color:inherit">Créditos y licencias</a></footer>
+</div>
+<script>
+(function () {
+  var CLAVE = 'itinerario_hechos', hechos = {};
+  try { hechos = JSON.parse(localStorage.getItem(CLAVE) || '{}') || {}; } catch (e) {}
+  var pasos = [].slice.call(document.querySelectorAll('.pasoI'));
+  function pintar() {
+    var n = pasos.filter(function (p, i) { var h = !!hechos[i + 1]; p.classList.toggle('hecho', h); return h; }).length;
+    document.getElementById('barra').style.width = (100 * n / pasos.length) + '%';
+    document.getElementById('cuenta').textContent = n + ' de ' + pasos.length + ' pasos';
+  }
+  pasos.forEach(function (p, i) {
+    var l = document.createElement('label'); l.className = 'marcar';
+    var c = document.createElement('input'); c.type = 'checkbox'; c.checked = !!hechos[i + 1];
+    c.setAttribute('aria-label', 'Paso ' + (i + 1) + ' hecho');
+    c.addEventListener('change', function () { if (c.checked) hechos[i + 1] = 1; else delete hechos[i + 1]; try { localStorage.setItem(CLAVE, JSON.stringify(hechos)); } catch (e) {} pintar(); });
+    l.appendChild(c); l.appendChild(document.createTextNode('Hecho')); p.querySelector('.cab').appendChild(l);
+  });
+  pintar();
+})();
+</script>
+</body>
+</html>

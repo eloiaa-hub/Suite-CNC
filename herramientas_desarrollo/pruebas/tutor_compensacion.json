@@ -1,0 +1,130 @@
+{
+  "version": 7,
+  "nombre": "calco_sin_nombre",
+  "vertices": [
+    {
+      "x": 152,
+      "y": 176,
+      "seg": "recta",
+      "arcAng": 146.69540054
+    },
+    {
+      "x": 228,
+      "y": 500,
+      "seg": "recta",
+      "arcAng": 180
+    },
+    {
+      "x": 692,
+      "y": 520,
+      "seg": "recta",
+      "arcAng": 180
+    },
+    {
+      "x": 296,
+      "y": 160,
+      "seg": "recta",
+      "arcAng": 180
+    }
+  ],
+  "poligonoListo": true,
+  "segModoCierre": "arco-e",
+  "trazadoTipoActual": "exterior",
+  "entryIdx": 0,
+  "mec": null,
+  "uid": "kmvdweer30cdy",
+  "estrategia": "plano",
+  "wcs": {
+    "x": 0,
+    "y": 0,
+    "activo": true
+  },
+  "trazados": [],
+  "calcador": {
+    "version": 4,
+    "escala": 10,
+    "origen": {
+      "x": 0,
+      "y": 0
+    },
+    "contornos": [
+      {
+        "pts": [
+          {
+            "x": 38,
+            "y": 106
+          },
+          {
+            "x": 57,
+            "y": 25
+          },
+          {
+            "x": 173,
+            "y": 20
+          },
+          {
+            "x": 74,
+            "y": 110
+          }
+        ],
+        "b": [
+          0,
+          0,
+          0,
+          -0.7446672977707944
+        ],
+        "cerrado": true,
+        "tipo": "auto",
+        "uid": "kmvdweer30cdy"
+      }
+    ],
+    "cotasAjuste": {},
+    "cotasManuales": [],
+    "cfgCotas": {
+      "ver": false,
+      "nivel": "todo",
+      "incl": "proy",
+      "cero": true,
+      "entrada": true,
+      "sentido": true,
+      "centros": true,
+      "cadena": true,
+      "verOcultas": false
+    },
+    "aux": [],
+    "cfgHoja": {
+      "titulo": "",
+      "num": "",
+      "grupo": "",
+      "fecha": "",
+      "material": "Madera",
+      "espesor": "",
+      "herramienta": "",
+      "centro": "",
+      "orient": "h",
+      "prog": "libre",
+      "reqEntrada": false,
+      "reqSentido": false,
+      "enunciado": "Programa en código ISO el contorno de la pieza tomando como origen el cero pieza indicado en el plano.",
+      "tabla": true,
+      "rayado": false
+    },
+    "cfgMec": {
+      "T": 101,
+      "F": 1000,
+      "Fz": 300,
+      "F0": 5000,
+      "S": 12000,
+      "zSeg": 20,
+      "prof": 3,
+      "paso": 3,
+      "acab": 0,
+      "coord": "G90",
+      "comp": "G41",
+      "estr": "plano",
+      "unid": "G71",
+      "ancho": true,
+      "orden": "int"
+    }
+  }
+}

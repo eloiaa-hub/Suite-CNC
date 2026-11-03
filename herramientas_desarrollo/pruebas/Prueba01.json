@@ -1,0 +1,214 @@
+{
+  "version": 7,
+  "nombre": "ISO 13",
+  "vertices": [
+    {
+      "x": 320,
+      "y": 240,
+      "seg": "recta",
+      "arcAng": 180
+    },
+    {
+      "x": 520,
+      "y": 240,
+      "seg": "recta",
+      "arcAng": 180
+    },
+    {
+      "x": 600,
+      "y": 320,
+      "seg": "arco-e",
+      "arcAng": 90
+    },
+    {
+      "x": 600,
+      "y": 520,
+      "seg": "recta",
+      "arcAng": 180
+    },
+    {
+      "x": 520,
+      "y": 520,
+      "seg": "recta",
+      "arcAng": 180
+    },
+    {
+      "x": 520,
+      "y": 400,
+      "seg": "recta",
+      "arcAng": 180
+    },
+    {
+      "x": 360,
+      "y": 400,
+      "seg": "arco-i",
+      "arcAng": 180
+    },
+    {
+      "x": 200,
+      "y": 240,
+      "seg": "arco-e",
+      "arcAng": 270
+    }
+  ],
+  "poligonoListo": true,
+  "segModoCierre": "recta",
+  "trazadoTipoActual": "exterior",
+  "entryIdx": 0,
+  "mec": null,
+  "uid": "kmupwjrzb6l8i",
+  "estrategia": "plano",
+  "wcs": {
+    "x": 0,
+    "y": 0,
+    "activo": true
+  },
+  "trazados": [
+    {
+      "vertices": [
+        {
+          "x": 280,
+          "y": 400,
+          "seg": "recta",
+          "arcAng": 180
+        },
+        {
+          "x": 120,
+          "y": 400,
+          "seg": "arco-e",
+          "arcAng": 180
+        }
+      ],
+      "segModoCierre": "arco-e",
+      "tipo": "interior",
+      "entryIdx": 0,
+      "mec": null,
+      "uid": "kmupwjrzb7brm"
+    }
+  ],
+  "calcador": {
+    "version": 4,
+    "escala": 10,
+    "origen": {
+      "x": 0,
+      "y": 0
+    },
+    "contornos": [
+      {
+        "pts": [
+          {
+            "x": 80,
+            "y": 90
+          },
+          {
+            "x": 130,
+            "y": 90
+          },
+          {
+            "x": 150,
+            "y": 70
+          },
+          {
+            "x": 150,
+            "y": 20
+          },
+          {
+            "x": 130,
+            "y": 20
+          },
+          {
+            "x": 130,
+            "y": 50
+          },
+          {
+            "x": 90,
+            "y": 50
+          },
+          {
+            "x": 50,
+            "y": 90
+          }
+        ],
+        "b": [
+          0,
+          -0.41421356237309503,
+          0,
+          0,
+          0,
+          0.9999999999999999,
+          -2.414213562373095,
+          0
+        ],
+        "cerrado": true,
+        "tipo": "auto",
+        "uid": "kmupwjrzb6l8i"
+      },
+      {
+        "pts": [
+          {
+            "x": 70,
+            "y": 50
+          },
+          {
+            "x": 30,
+            "y": 50
+          }
+        ],
+        "b": [
+          -1,
+          -1
+        ],
+        "cerrado": true,
+        "tipo": "auto",
+        "uid": "kmupwjrzb7brm"
+      }
+    ],
+    "cotasAjuste": {},
+    "cotasManuales": [],
+    "cfgCotas": {
+      "ver": true,
+      "nivel": "todo",
+      "incl": "proy",
+      "cero": true,
+      "entrada": true,
+      "sentido": true,
+      "centros": true,
+      "cadena": true,
+      "verOcultas": false
+    },
+    "aux": [],
+    "cfgHoja": {
+      "titulo": "Geometría 13",
+      "num": "13",
+      "grupo": "",
+      "fecha": "",
+      "material": "Madera",
+      "espesor": "",
+      "herramienta": "T101 · Fresa plana Ø6",
+      "centro": "",
+      "orient": "h",
+      "prog": "libre",
+      "reqEntrada": false,
+      "reqSentido": false,
+      "enunciado": "Programa en código ISO el contorno de la pieza tomando como origen el cero pieza indicado en el plano.",
+      "tabla": true,
+      "rayado": false,
+      "comp": "cualquiera"
+    },
+    "cfgMec": {
+      "T": 101,
+      "F": 1000,
+      "F0": 5000,
+      "S": 12000,
+      "zSeg": 20,
+      "prof": 3,
+      "paso": 3,
+      "acab": 0,
+      "coord": "G90",
+      "comp": "auto",
+      "estr": "plano",
+      "unid": "G71",
+      "ancho": true
+    }
+  }
+}

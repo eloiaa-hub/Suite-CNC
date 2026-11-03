@@ -1,0 +1,404 @@
+{
+  "version": 7,
+  "nombre": "ISO GEO 01A",
+  "vertices": [
+    {
+      "x": 0,
+      "y": 600,
+      "seg": "recta",
+      "arcAng": 180
+    },
+    {
+      "x": 640,
+      "y": 600,
+      "seg": "recta",
+      "arcAng": 180
+    },
+    {
+      "x": 640,
+      "y": 520,
+      "seg": "recta",
+      "arcAng": 180
+    },
+    {
+      "x": 560,
+      "y": 520,
+      "seg": "recta",
+      "arcAng": 180
+    },
+    {
+      "x": 560,
+      "y": 320,
+      "seg": "recta",
+      "arcAng": 180
+    },
+    {
+      "x": 440,
+      "y": 320,
+      "seg": "recta",
+      "arcAng": 180
+    },
+    {
+      "x": 440,
+      "y": 400,
+      "seg": "recta",
+      "arcAng": 180
+    },
+    {
+      "x": 520,
+      "y": 400,
+      "seg": "recta",
+      "arcAng": 180
+    },
+    {
+      "x": 520,
+      "y": 560,
+      "seg": "recta",
+      "arcAng": 180
+    },
+    {
+      "x": 400,
+      "y": 560,
+      "seg": "recta",
+      "arcAng": 180
+    },
+    {
+      "x": 320,
+      "y": 440,
+      "seg": "recta",
+      "arcAng": 180
+    },
+    {
+      "x": 240,
+      "y": 560,
+      "seg": "recta",
+      "arcAng": 180
+    },
+    {
+      "x": 120,
+      "y": 560,
+      "seg": "recta",
+      "arcAng": 180
+    },
+    {
+      "x": 120,
+      "y": 400,
+      "seg": "recta",
+      "arcAng": 180
+    },
+    {
+      "x": 200,
+      "y": 400,
+      "seg": "recta",
+      "arcAng": 180
+    },
+    {
+      "x": 200,
+      "y": 320,
+      "seg": "recta",
+      "arcAng": 180
+    },
+    {
+      "x": 80,
+      "y": 320,
+      "seg": "recta",
+      "arcAng": 180
+    },
+    {
+      "x": 80,
+      "y": 520,
+      "seg": "recta",
+      "arcAng": 180
+    },
+    {
+      "x": 0,
+      "y": 520,
+      "seg": "recta",
+      "arcAng": 180
+    }
+  ],
+  "poligonoListo": true,
+  "segModoCierre": "recta",
+  "trazadoTipoActual": "exterior",
+  "entryIdx": 0,
+  "mec": null,
+  "uid": "kmuim1mgu2dsn",
+  "estrategia": "plano",
+  "wcs": {
+    "x": 8,
+    "y": 5,
+    "activo": true
+  },
+  "trazados": [],
+  "calcador": {
+    "version": 4,
+    "escala": 10,
+    "origen": {
+      "x": -80,
+      "y": -50
+    },
+    "contornos": [
+      {
+        "pts": [
+          {
+            "x": -80,
+            "y": -50
+          },
+          {
+            "x": 80,
+            "y": -50
+          },
+          {
+            "x": 80,
+            "y": -30
+          },
+          {
+            "x": 59.99999999999997,
+            "y": -30
+          },
+          {
+            "x": 59.99999999999997,
+            "y": 20
+          },
+          {
+            "x": 30,
+            "y": 20
+          },
+          {
+            "x": 30,
+            "y": 0
+          },
+          {
+            "x": 50,
+            "y": 0
+          },
+          {
+            "x": 50,
+            "y": -40
+          },
+          {
+            "x": 20,
+            "y": -40
+          },
+          {
+            "x": 0,
+            "y": -10
+          },
+          {
+            "x": -20,
+            "y": -40
+          },
+          {
+            "x": -50,
+            "y": -40
+          },
+          {
+            "x": -50,
+            "y": 0
+          },
+          {
+            "x": -30,
+            "y": 0
+          },
+          {
+            "x": -30,
+            "y": 20
+          },
+          {
+            "x": -60,
+            "y": 20
+          },
+          {
+            "x": -60,
+            "y": -30
+          },
+          {
+            "x": -80,
+            "y": -30
+          }
+        ],
+        "b": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "cerrado": true,
+        "tipo": "auto",
+        "uid": "kmuim1mgu2dsn"
+      }
+    ],
+    "cotasAjuste": {
+      "lin|0|3": {
+        "dn": 7.000281557115011,
+        "dt": -4.612666190781513
+      },
+      "lin|0|2": {
+        "dn": 0.9135341365461844,
+        "dt": 0.10622489959839321
+      },
+      "tot|y": {
+        "oculta": true
+      },
+      "proy|0|9|x": {
+        "oculta": true
+      },
+      "lin|0|7": {
+        "oculta": true
+      },
+      "sit|x": {
+        "dn": -0.4987951807228921,
+        "dt": 0.11084337349397488
+      },
+      "tot|x": {
+        "dn": 0.38795180722891587,
+        "dt": 0.9791164658634539
+      },
+      "man|mmuim52tow6c8": {
+        "dn": 3.913669064748202,
+        "dt": -0.9208633093525158
+      }
+    },
+    "cotasManuales": [
+      {
+        "tipo": "v",
+        "p1": {
+          "x": -3,
+          "y": 2
+        },
+        "r1": {
+          "uid": "kmuim1mgu2dsn",
+          "vi": 15
+        },
+        "p2": {
+          "x": -3,
+          "y": 0
+        },
+        "r2": {
+          "uid": "kmuim1mgu2dsn",
+          "vi": 14
+        },
+        "pos": {
+          "x": -1.5706215439316595,
+          "y": 0.3410596821485208
+        },
+        "id": "mmuim52tow6c8",
+        "posRel": {
+          "x": 1.4293784560683405,
+          "y": -1.6589403178514792
+        },
+        "rv": null,
+        "ra": null,
+        "rb": null,
+        "rc": null
+      },
+      {
+        "tipo": "v",
+        "p1": {
+          "x": 3,
+          "y": 0
+        },
+        "r1": {
+          "uid": "kmuim1mgu2dsn",
+          "vi": 6
+        },
+        "p2": {
+          "x": 3,
+          "y": -4
+        },
+        "r2": {
+          "uid": "kmuim1mgu2dsn",
+          "si": 8,
+          "t": 0.6666666666666666
+        },
+        "pos": {
+          "x": 3.860703757273157,
+          "y": -1.450908189337422
+        },
+        "id": "mmuim5tmrpi9e",
+        "posRel": {
+          "x": 0.8607037572731571,
+          "y": -1.450908189337422
+        },
+        "rv": null,
+        "ra": null,
+        "rb": null,
+        "rc": null
+      }
+    ],
+    "cfgCotas": {
+      "ver": true,
+      "nivel": "todo",
+      "incl": "proy",
+      "cero": true,
+      "entrada": true,
+      "sentido": true,
+      "centros": true,
+      "cadena": true,
+      "verOcultas": false
+    },
+    "aux": [
+      {
+        "t": "L",
+        "p": {
+          "x": -79.99456216076653,
+          "y": -47.73119045850311
+        },
+        "d": {
+          "x": 0,
+          "y": -1
+        }
+      }
+    ],
+    "cfgHoja": {
+      "titulo": "",
+      "num": "",
+      "grupo": "",
+      "fecha": "",
+      "material": "Madera",
+      "espesor": "",
+      "herramienta": "",
+      "centro": "",
+      "orient": "h",
+      "prog": "g90",
+      "reqEntrada": true,
+      "reqSentido": true,
+      "enunciado": "Programa en código ISO el contorno de la pieza tomando como origen el cero pieza indicado en el plano.",
+      "rayado": false,
+      "color": false,
+      "comp": "cualquiera"
+    },
+    "cfgMec": {
+      "T": 101,
+      "F": 1000,
+      "Fz": 300,
+      "F0": 5000,
+      "S": 12000,
+      "zSeg": 20,
+      "prof": 3,
+      "paso": 3,
+      "acab": 0,
+      "coord": "G90",
+      "comp": "G40",
+      "estr": "plano",
+      "unid": "G71",
+      "ancho": true,
+      "orden": "int"
+    }
+  }
+}

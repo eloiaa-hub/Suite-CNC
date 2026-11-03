@@ -6,6 +6,10 @@ La versión de la suite es **año.mes** (por ejemplo, 2026.10). Cada programa co
 
 Versiones de los programas: **Calcador v120 · Corrector v65 · Tutor G-Code v6 · Simulador 3D V45 · Calculadora de taller v5 · Arcos I J v3 · Anidador de tableros v8**.
 
+### Itinerario del alumno y pruebas automáticas
+- **Itinerario del alumno** (`itinerario.html`), enlazado desde la portada: nueve pasos, de las primeras rectas al programa para la máquina, con el apunte y la herramienta de cada uno y casillas «Hecho».
+- **Pruebas automáticas**: GitHub lanza las pruebas de la suite en cada envío, en cualquier rama. Los programas de ejemplo de las pruebas ya no llevan nombres de alumnos.
+
 ### Calcador v120 / Corrector v65 / Tutor G-Code v6: la hoja de I J y las pantallas pequeñas
 - **◠ Hoja de I J…** en el Calcador (pestaña 🧩 Ejercicios): el plano con los arcos numerados y una tabla para calcular G2 o G3, X Y e I J, en G90, G91 o mixta, con el centro o sin él. Una hoja por pieza o por cada variante de 🎲 Variantes, y sus soluciones. El Corrector no lleva este botón.
 - **Pantallas pequeñas**: en los portátiles, el recuadro de Coordenadas ya no queda debajo de los botones de zoom, y los botones de vista pasan a otra fila si no caben.

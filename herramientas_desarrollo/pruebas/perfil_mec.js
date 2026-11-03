@@ -1,0 +1,10 @@
+const { lanzar, abrir, fs } = require('./comun');
+(async () => { const b = await lanzar(); const cal = await abrir(b, 'calcador.html');
+  const d = JSON.parse(fs.readFileSync('/mnt/user-data/outputs/Ejercicios_UTN_y_Fagor/UTN Ejercicio 5.json', 'utf8'));
+  console.log(await cal.evaluate(d => { abrirJSONDatos(d); cfgFresa.d = 3; contornos.forEach(k => { if (k.cerrado) k.mec = { op:'cajera', caj:{ estr:'concentrica', paso:50, entrada:'vertical' } }; }); contornos[0].mec = { op:'corte' };
+    Object.assign(cfgMec, { prof:6, paso:0.05, acab:0, coord:'G90', comp:'G40', estr:'plano', zSeg:100 }); abrirMec();
+    const T = {}; ['interpretarISO', 'dibujarMec', 'trazadosParaMecanizar', 'itemsDePrograma', 'muestrasSeg'].forEach(n => { const o = window[n]; window[n] = function () { const t = performance.now(); try { return o.apply(this, arguments); } finally { T[n] = (T[n] || 0) + performance.now() - t; } }; });
+    const o = MEC.generar; MEC.generar = function () { const t = performance.now(); try { return o.apply(this, arguments); } finally { T.motor = performance.now() - t; } };
+    const t0 = performance.now(); generarMec(); T.total = performance.now() - t0;
+    return Object.entries(T).map(([k, v]) => `${k} ${Math.round(v)} ms`).join(' · ') + ` · ${ultimoMec.nc.split('\n').length} líneas`; }, d));
+  await b.close(); })();

@@ -1,0 +1,353 @@
+{
+  "version": 7,
+  "nombre": "Anidado 9-10-2026",
+  "calcador": {
+    "version": 4,
+    "escala": 10,
+    "origen": {
+      "x": 0,
+      "y": 0
+    },
+    "contornos": [
+      {
+        "pts": [
+          {
+            "x": 10,
+            "y": 23.5
+          },
+          {
+            "x": 310,
+            "y": 23.5
+          },
+          {
+            "x": 310,
+            "y": 423.5
+          },
+          {
+            "x": 10,
+            "y": 423.5
+          }
+        ],
+        "b": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "cerrado": true,
+        "tipo": "exterior",
+        "mec": {
+          "op": "corte",
+          "prof": null,
+          "puentes": {
+            "n": 0,
+            "ancho": 5,
+            "alto": 2
+          }
+        },
+        "uid": "n1_1_cah6"
+      },
+      {
+        "pts": [
+          {
+            "x": 320,
+            "y": 259.5
+          },
+          {
+            "x": 443,
+            "y": 259.5
+          },
+          {
+            "x": 443,
+            "y": 423.5
+          },
+          {
+            "x": 320,
+            "y": 423.5
+          }
+        ],
+        "b": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "cerrado": true,
+        "tipo": "exterior",
+        "mec": {
+          "op": "corte",
+          "prof": null,
+          "puentes": {
+            "n": 0,
+            "ancho": 5,
+            "alto": 2
+          }
+        },
+        "uid": "n1_2_obae"
+      },
+      {
+        "pts": [
+          {
+            "x": 471.52,
+            "y": 23.5
+          },
+          {
+            "x": 871.52,
+            "y": 23.5
+          },
+          {
+            "x": 871.52,
+            "y": 223.5
+          },
+          {
+            "x": 471.52,
+            "y": 223.5
+          }
+        ],
+        "b": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "cerrado": true,
+        "tipo": "exterior",
+        "mec": {
+          "op": "corte",
+          "prof": null,
+          "puentes": {
+            "n": 0,
+            "ancho": 5,
+            "alto": 2
+          }
+        },
+        "uid": "n1_3_yyhw"
+      },
+      {
+        "pts": [
+          {
+            "x": 10,
+            "y": 433.5
+          },
+          {
+            "x": 210,
+            "y": 433.5
+          },
+          {
+            "x": 210,
+            "y": 533.5
+          },
+          {
+            "x": 10,
+            "y": 533.5
+          }
+        ],
+        "b": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "cerrado": true,
+        "tipo": "exterior",
+        "mec": {
+          "op": "corte",
+          "prof": null,
+          "puentes": {
+            "n": 0,
+            "ancho": 5,
+            "alto": 2
+          }
+        },
+        "uid": "n1_4_znf1"
+      },
+      {
+        "pts": [
+          {
+            "x": 881.52,
+            "y": 10
+          },
+          {
+            "x": 987.66,
+            "y": 10
+          },
+          {
+            "x": 987.66,
+            "y": 151.52
+          },
+          {
+            "x": 881.52,
+            "y": 151.52
+          }
+        ],
+        "b": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "cerrado": true,
+        "tipo": "exterior",
+        "mec": {
+          "op": "corte",
+          "prof": null,
+          "puentes": {
+            "n": 0,
+            "ancho": 5,
+            "alto": 2
+          }
+        },
+        "uid": "n1_5_6vdq"
+      },
+      {
+        "pts": [
+          {
+            "x": 881.52,
+            "y": 161.52
+          },
+          {
+            "x": 987.66,
+            "y": 161.52
+          },
+          {
+            "x": 987.66,
+            "y": 303.04
+          },
+          {
+            "x": 881.52,
+            "y": 303.04
+          }
+        ],
+        "b": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "cerrado": true,
+        "tipo": "exterior",
+        "mec": {
+          "op": "corte",
+          "prof": null,
+          "puentes": {
+            "n": 0,
+            "ancho": 5,
+            "alto": 2
+          }
+        },
+        "uid": "n1_6_ytli"
+      }
+    ],
+    "cotasAjuste": {},
+    "cotasManuales": [],
+    "cfgCotas": {
+      "ver": false,
+      "cero": true,
+      "entrada": true,
+      "sentido": true
+    },
+    "aux": [
+      {
+        "t": "P",
+        "p": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "t": "P",
+        "p": {
+          "x": 1000,
+          "y": 0
+        }
+      },
+      {
+        "t": "P",
+        "p": {
+          "x": 1000,
+          "y": 600
+        }
+      },
+      {
+        "t": "P",
+        "p": {
+          "x": 0,
+          "y": 600
+        }
+      }
+    ],
+    "cfgHoja": {
+      "titulo": "Anidado 9-10-2026",
+      "material": "Tablero 1000 × 600 × 16 mm",
+      "herramienta": "T101 · Fresa plana Ø6"
+    },
+    "cfgMec": {
+      "prof": 16.5,
+      "T": 101,
+      "F": 1000,
+      "S": 12000,
+      "paso": 3
+    }
+  },
+  "anidador": {
+    "version": 3,
+    "tablero": {
+      "largo": 1000,
+      "ancho": 600,
+      "grosor": 16,
+      "margen": 10,
+      "separacion": 10,
+      "cero": "ii"
+    },
+    "piezas": [
+      {
+        "nombre": "Pieza 1",
+        "x": 10,
+        "y": 23.5,
+        "giro": 270,
+        "escala": 1,
+        "aMano": true
+      },
+      {
+        "nombre": "Pieza 2",
+        "x": 320,
+        "y": 259.5,
+        "giro": 90,
+        "escala": 1,
+        "aMano": true
+      },
+      {
+        "nombre": "Pieza 4",
+        "x": 471.52,
+        "y": 23.5,
+        "giro": 0,
+        "escala": 1,
+        "aMano": true
+      },
+      {
+        "nombre": "Pieza 5",
+        "x": 10,
+        "y": 433.5,
+        "giro": 0,
+        "escala": 1,
+        "aMano": true
+      },
+      {
+        "nombre": "Pieza 3",
+        "x": 881.52,
+        "y": 10,
+        "giro": 90,
+        "escala": 1,
+        "aMano": false
+      },
+      {
+        "nombre": "Pieza 3",
+        "x": 881.52,
+        "y": 161.52,
+        "giro": 90,
+        "escala": 1,
+        "aMano": false
+      }
+    ]
+  }
+}

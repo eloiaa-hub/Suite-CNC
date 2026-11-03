@@ -1,0 +1,17 @@
+const { lanzar, abrir, fs } = require('./comun');
+(async () => { const b = await lanzar(); const cal = await abrir(b, 'calcador.html');
+  const caso = JSON.parse(fs.readFileSync(process.argv[2], 'utf8')); const d = JSON.parse(fs.readFileSync(caso.f, 'utf8')); await cal.evaluate(c => { window.__cfg = c; }, caso.cfg);
+  console.log(await cal.evaluate(d => { abrirJSONDatos(d); cfgFresa.d = 3; const c = window.__cfg; cfgFresa.d = c.d; contornos.forEach((k, j) => { if (!k.cerrado) return; const o = c.ops[j % c.ops.length]; k.mec = { op:o.op, prof:o.prof, caj:{ estr:o.estr, paso:50, entrada:o.entrada }, puentes:o.pz || { n:0, ancho:5, alto:2 } }; });
+    Object.assign(cfgMec, { prof:c.prof, paso:c.paso, acab:c.acab, coord:c.coord, comp:c.comp, estr:c.estr, zSeg:c.zSeg }); abrirMec();
+    const T = {}; ['interpretarISO', 'dibujarMec', 'trazadosParaMecanizar', 'itemsDePrograma', 'muestrasSeg'].forEach(n => { const o = window[n]; window[n] = function () { const t = performance.now(); try { return o.apply(this, arguments); } finally { T[n] = (T[n] || 0) + performance.now() - t; } }; });
+    const o = MEC.generar; MEC.generar = function () { const t = performance.now(); try { return o.apply(this, arguments); } finally { T.motor = performance.now() - t; } };
+    generarMec();
+    const prog = interpretarISO(ultimoMec.nc); const cv = document.getElementById('mecLienzo'), g = cv.getContext('2d');
+    let t = performance.now(); const cortes = prog.segs.filter(s => !s.rapido && s.z1 !== null && s.z1 < -1e-9); T.filtrar = performance.now() - t;
+    t = performance.now(); const ms = cortes.map(s => muestrasSeg(s, 0.5)); T.muestrear = performance.now() - t; T.puntos = ms.reduce((a, m) => a + m.length, 0);
+    t = performance.now(); g.beginPath(); ms.forEach(m => m.forEach((q, k) => k ? g.lineTo(q.x, q.y) : g.moveTo(q.x, q.y))); T.camino = performance.now() - t;
+    t = performance.now(); g.lineWidth = 1.6; g.stroke(); T.trazo_fino = performance.now() - t;
+    t = performance.now(); g.lineWidth = 30; g.lineJoin = 'round'; g.lineCap = 'round'; g.stroke(); T.trazo_ancho = performance.now() - t;
+    const vistos = new Set(); t = performance.now(); const unicos = cortes.filter(s => { const k = [s.p1.x, s.p1.y, s.p2.x, s.p2.y].map(v => v.toFixed(3)).join(); if (vistos.has(k)) return false; vistos.add(k); return true; }).length; T.dedup = performance.now() - t; T.unicos = unicos; T.cortes = cortes.length;
+    return Object.entries(T).map(([k, v]) => `${k} ${Math.round(v)} ms`).join(' · ') + ` · ${ultimoMec.nc.split('\n').length} líneas`; }, d));
+  await b.close(); })();
