@@ -8,6 +8,7 @@ Versiones de los programas: **Calcador v126 · Corrector v71 · Tutor G-Code v6 
 
 ### Arcos I J v6: hojas que combinan niveles
 - **🖨 Hoja**: ahora eliges **cuántos ejercicios de cada nivel**; por ejemplo, 3 de ① Sencillo y 3 de ⑤ Leer el bloque. Se puede mezclar el orden.
+- **Versiones distintas** (hasta 20) para exámenes en papel: cada una con sus ejercicios, numerada, y todas las soluciones al final.
 - **⑤ Leer el bloque ya se puede imprimir**, con sus soluciones.
 - Caben **3 ejercicios por hoja A4** y se evitan los arcos tan pequeños que sus rótulos se pisan.
 - En ⑤, las letras A B C D ya no se pisan con los centros, también en pantalla.

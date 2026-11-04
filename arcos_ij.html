@@ -334,6 +334,9 @@
     .hj-cant-t { font-weight: 600; color: var(--text-main); }
     .hoja-form .hj-cant label { flex-direction: row; align-items: center; justify-content: space-between; gap: 8px; color: var(--text-main); font-size: 12.5px; }
     .hoja-form .hj-cant input { width: 58px; text-align: center; }
+    .hoja-form .hj-vers { flex-direction: row; align-items: center; justify-content: space-between; color: var(--text-main); font-size: 12.5px; }
+    .hoja-form .hj-vers input { width: 58px; text-align: center; }
+    .hj-sol-ver { font-size: 13px; margin: 10px 0 2px; }
     .hj-total { color: var(--text-muted); font-size: 11.5px; }
     .hj-total.mal { color: var(--col-r); font-weight: 600; }
     @media (max-width: 480px) { .hj-cant { grid-template-columns: 1fr; } }
@@ -654,6 +657,7 @@
                     <p class="hj-total" id="hjTotal"></p>
                 </div>
                 <label class="chk largo"><input type="checkbox" id="hjBarajar"> Mezclar el orden de los ejercicios</label>
+                <label class="largo hj-vers"><span>Versiones distintas (para un examen, una por alumno)</span><input type="number" id="hjVers" min="1" max="20" value="1" oninput="totalHoja()"></label>
                 <label class="chk largo"><input type="checkbox" id="hjSol" checked> Añadir las soluciones al final (en otra hoja)</label>
                 <label class="chk largo"><input type="checkbox" id="hjSoloSol"> Imprimir solo las soluciones de la hoja anterior</label>
                 <p class="nota-p largo">Cada nivel usa sus opciones y las cotas elegidas a la izquierda. En el cuadro de impresión puedes elegir «Guardar como PDF».</p>
@@ -2121,9 +2125,23 @@ function cantidadesHoja() {
     camposHoja().forEach(i => { if (i.dataset.hj === 'pieza' && !pieza) return; c[i.dataset.hj] = Math.max(0, Math.min(12, Math.floor(+i.value) || 0)); });
     return c;
 }
+function versionesHoja() { return Math.max(1, Math.min(20, Math.floor(+$('hjVers').value) || 1)); }
+function hojasHoja() {
+    const c = cantidadesHoja(), resto = Object.keys(c).filter(k => k !== 'contorno').reduce((a, k) => a + c[k], 0);
+    return Math.max(1, Math.ceil(resto / 3 + (c.contorno || 0) * .55)) * versionesHoja();
+}
+function huellaHoja(e) {
+    return (e.sub || e.tipo) + JSON.stringify(e.tramos.map(t => [t.a, t.b, t.C, t.g])) + (e.tipo === 'leer' ? '' : e.cotas);
+}
+function generarSinRepetir(niv, vistas, vale) {
+    let e;
+    for (let i = 0; i < 60; i++) { e = generarParaPapel(niv); if (!vistas.has(huellaHoja(e)) && (!vale || vale(e))) break; }
+    vistas.add(huellaHoja(e));
+    return e;
+}
 function totalHoja() {
     const t = Object.values(cantidadesHoja()).reduce((a, b) => a + b, 0), m = $('hjTotal'), mal = t < 1 || t > MAX_HOJA;
-    m.textContent = t < 1 ? 'Pon al menos un ejercicio.' : t > MAX_HOJA ? `Son ${t} ejercicios: el máximo es ${MAX_HOJA}.` : `En total: ${t} ejercicio${t > 1 ? 's' : ''}.`;
+    m.textContent = t < 1 ? 'Pon al menos un ejercicio.' : t > MAX_HOJA ? `Son ${t} ejercicios: el máximo es ${MAX_HOJA}.` : `En total: ${t} ejercicio${t > 1 ? 's' : ''}${versionesHoja() > 1 ? ` por versión · ${versionesHoja()} versiones, unas ${hojasHoja()} hojas sin las soluciones` : ''}.`;
     m.classList.toggle('mal', mal);
     $('hjImprimir').disabled = mal && !$('hjSoloSol').checked;
 }
@@ -2134,6 +2152,7 @@ function abrirHoja() {
     $('hjFilaPieza').style.display = pieza ? '' : 'none';
     camposHoja().forEach(i => { i.value = cantHoja ? (cantHoja[i.dataset.hj] || 0) : (i.dataset.hj === cfg.nivel ? 6 : 0); });
     $('hjSoloSol').onchange = totalHoja;
+    if (ultimaHoja) $('hjVers').value = ultimaHoja.versiones.length;
     totalHoja();
 }
 function svgDe(e, W, H) {
@@ -2209,27 +2228,37 @@ function solucionHoja(e, n) {
 }
 function imprimirHoja() {
     const solo = $('hjSoloSol').checked && ultimaHoja;
-    let lista;
-    if (solo) lista = ultimaHoja.lista;
-    else {
+    if (!solo) {
         const cant = cantidadesHoja();
         const total = Object.values(cant).reduce((a, b) => a + b, 0);
         if (total < 1 || total > MAX_HOJA) { totalHoja(); return; }
         cantHoja = cant;
-        lista = [];
-        Object.keys(cant).forEach(niv => { for (let i = 0; i < cant[niv]; i++) lista.push(generarParaPapel(niv)); });
-        if ($('hjBarajar').checked) lista = barajar(lista);
-        ultimaHoja = { lista, titulo: $('hjTitulo').value };
+        const vistas = new Set(), versiones = [];
+        for (let v = 0, nv = versionesHoja(); v < nv; v++) {
+            let l = [];
+            // ⑤ equilibrado: se alternan los dos tipos de pregunta y como mucho un bloque correcto por versión
+            let bienes = 0; const giro = Math.random() < .5 ? 0 : 1, subs = cfg.leer.length ? cfg.leer : ['cual', 'error'];
+            Object.keys(cant).forEach(niv => { for (let i = 0; i < cant[niv]; i++) {
+                const vale = niv !== 'leer' ? null : e => e.sub === subs[(i + giro) % subs.length] && !(e.errTipo === 'ok' && bienes);
+                const e = generarSinRepetir(niv, vistas, vale);
+                if (e.errTipo === 'ok') bienes++;
+                l.push(e);
+            } });
+            if ($('hjBarajar').checked) l = barajar(l);
+            versiones.push(l);
+        }
+        ultimaHoja = { versiones, lista: [].concat(...versiones), titulo: $('hjTitulo').value };
     }
+    const vs = ultimaHoja.versiones, varias = vs.length > 1;
     const tit = esc(ultimaHoja.titulo || 'Hoja de ejercicios');
     const cab = (sub) => `<div class="hj-cab"><h1>${tit}${sub ? ' — ' + sub : ''}</h1><span class="hj-autor">Arcos I J · Por Eloi A.A.</span></div>`;
     let h = '';
-    if (!solo) {
-        h += cab('') + `<div class="hj-datos"><span>Nombre:</span><span>Curso:</span><span>Fecha:</span></div>`;
+    if (!solo) vs.forEach((lista, v) => {
+        h += `<div class="${v ? 'hj-salto' : ''}">` + cab(varias ? 'Versión ' + (v + 1) : '') + `<div class="hj-datos"><span>Nombre:</span><span>Curso:</span><span>Fecha:</span></div>`;
         h += `<p style="font-size:10.5px;margin-bottom:6px">I = X<sub>centro</sub> − X<sub>inicio</sub> · J = Y<sub>centro</sub> − Y<sub>inicio</sub> (siempre desde el inicio del arco) · G2 horario · G3 antihorario. Si un resultado no es exacto, con 1 decimal.</p>`;
-        h += lista.map((e, i) => tarjetaHoja(e, i + 1)).join('');
-    }
-    if (solo || $('hjSol').checked) h += `<div class="${solo ? '' : 'hj-salto'}">${cab('Soluciones')}${lista.map((e, i) => solucionHoja(e, i + 1)).join('')}</div>`;
+        h += lista.map((e, i) => tarjetaHoja(e, i + 1)).join('') + '</div>';
+    });
+    if (solo || $('hjSol').checked) h += `<div class="${solo ? '' : 'hj-salto'}">${cab('Soluciones')}${vs.map((lista, v) => (varias ? `<h2 class="hj-sol-ver">Versión ${v + 1}</h2>` : '') + lista.map((e, i) => solucionHoja(e, i + 1)).join('')).join('')}</div>`;
     $('hoja').innerHTML = h;
     cerrarModal('modalHoja');
     setTimeout(() => window.print(), 80);
