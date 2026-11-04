@@ -644,7 +644,7 @@
 <body>
 <div class="app-window">
     <header class="top-bar">
-        <a href="index.html" class="ir-portada" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a><span class="top-bar-title">⬡ Calcador de contornos — Por Eloi A.A.<span class="ver-suite" title="Versión del programa" style="font-size:11px;font-weight:600;padding:1px 7px;margin-left:8px;border-radius:9px;background:rgba(0,90,156,.12);color:#005A9C;vertical-align:middle">v121</span></span>
+        <a href="index.html" class="ir-portada" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a><span class="top-bar-title">⬡ Calcador de contornos — Por Eloi A.A.<span class="ver-suite" title="Versión del programa" style="font-size:11px;font-weight:600;padding:1px 7px;margin-left:8px;border-radius:9px;background:rgba(0,90,156,.12);color:#005A9C;vertical-align:middle">v122</span></span>
         <div class="top-bar-right">
             <input class="project-name" id="projectName" type="text" value="calco_sin_nombre" placeholder="Nombre del proyecto">
             <div class="c2-archivo"><button class="btn-manual" onclick="nuevo()" title="Empieza de cero (se puede deshacer)">🗋 Nuevo</button><button class="btn-manual" onclick="document.getElementById('fileJSON').click()" title="Abre un proyecto .json del Calcador o del Corrector">📂 Abrir</button><button class="btn-manual" onclick="exportarJSON()" title="Guarda el proyecto en un archivo JSON: lo abren el Calcador, el Corrector, el Tutor y el Simulador (como plano del ejercicio)">💾 Guardar</button><button class="btn-manual" onclick="abrirBiblioteca()" title="Tus ejercicios: buscar, abrir e imprimir sus hojas">🗂 Biblioteca</button></div>
@@ -1088,11 +1088,31 @@
         </div>
     </div>
 </div>
+<div class="modal-overlay" id="modalPiezaC" onclick="if(event.target===this)cerrarPiezaContorno()">
+    <div class="help-modal var-modal gen-modal">
+        <div class="help-header"><h2>📐 Piezas de contorno (prototipo)</h2><button class="help-close" onclick="cerrarPiezaContorno()">✕</button></div>
+        <div class="var-cuerpo">
+            <div class="var-opciones">
+                <p class="ctx-nota">La pieza se construye como en el nivel Contorno de Arcos I J: un rectángulo con redondeos y entallas o salientes centrados, y las cotas salen de esa construcción. Haz clic en una propuesta.</p>
+                <div class="cr-req-t">La pieza puede llevar</div>
+                <div class="gen-chips">
+                    <label class="gen-chip"><input type="checkbox" id="pcRed" checked onchange="pintarPiezasC()"> Redondeos</label>
+                    <label class="gen-chip"><input type="checkbox" id="pcSemi" checked onchange="pintarPiezasC()"> Semicírculos</label>
+                    <label class="gen-chip"><input type="checkbox" id="pcPit" checked onchange="pintarPiezasC()"> Arcos con Pitágoras</label>
+                </div>
+                <div class="btn-row" style="margin-top:12px"><button class="btn-action" onclick="pcBase = 0; pintarPiezasC()">🎲 Otras propuestas</button></div>
+                <p class="ctx-nota" style="margin-top:12px">Prototipo: aún sin interiores ni colisos, y las variantes de examen no conservan estas cotas.</p>
+            </div>
+            <div class="var-lista" id="pcLista"></div>
+        </div>
+    </div>
+</div>
 <div class="modal-overlay" id="modalGenerador" onclick="if(event.target===this)cerrarGenerador()">
     <div class="help-modal var-modal gen-modal">
         <div class="help-header"><h2>🧩 Ejercicio aleatorio</h2><button class="help-close" onclick="cerrarGenerador()">✕</button></div>
         <div class="var-cuerpo">
             <div class="var-opciones">
+                <button class="btn-action sec" onclick="abrirPiezaContorno()" title="Prototipo: piezas construidas como el nivel Contorno de Arcos I J, con sus cotas" style="margin-bottom:8px">📐 Piezas de contorno (prototipo)…</button>
                 <p class="ctx-nota">Elige el nivel (o los parámetros) y haz clic en la propuesta que quieras: pasa al dibujo, con sus formas editables.</p>
                 <div class="cr-req-t">Nivel</div>
                 <select id="genNivel" onchange="elegirNivel(this.value)" title="Niveles de la progresión de clase: cada uno pone las formas, esquinas y lados que le tocan. Si cambias algo a mano, pasa a «Libre»"></select>
@@ -2434,6 +2454,7 @@ function encuadrar() {
     const unir = b => { if (!b || !isFinite(b.x0)) return; bb = bb ? { x0:Math.min(bb.x0,b.x0), y0:Math.min(bb.y0,b.y0), x1:Math.max(bb.x1,b.x1), y1:Math.max(bb.y1,b.y1) } : b; };
     contornos.forEach(c => unir(bboxPts(c.cerrado ? muestrearContorno(c) : c.pts.concat(muestrearContorno(c)))));
     if (fondo) unir(bboxFondoMundo());
+    if (cotasManuales.some(m => m.cruz)) cotasManuales.forEach(m => { const q = m.pos; if (q) unir({ x0:q.x - 12, y0:q.y - 10, x1:q.x + 12, y1:q.y + 10 }); });   // 📐 Piezas de contorno: que se vean sus cotas
     if (cfgCotas.ver && cfgCotas.cero !== false && bb) unir({ x0:0, y0:0, x1:0, y1:0 });
     if (!bb) bb = { x0:0, y0:0, x1:150, y1:100 };
     const w = Math.max(bb.x1 - bb.x0, 1), h = Math.max(bb.y1 - bb.y0, 1);
@@ -5109,6 +5130,7 @@ function construirCotas(lista, tipos, u, nivel, origen, opts) {
             const tip = add(C, mulv(e, a.r));
             ref.valor = m.tipo === 'radio' ? a.r : 2 * a.r;
             const str = (m.tipo === 'radio' ? 'R' : 'Ø') + fmt(ref.valor);
+            if (m.cruz) ejes(C, 2.5);
             grupo(ref, () => {
                 if (m.tipo === 'radio') { linea(C, tip); flecha(tip, e); }
                 else { const q = sub(C, mulv(e, a.r)); linea(q, tip); flecha(q, mulv(e, -1)); flecha(tip, e); }
@@ -13717,6 +13739,83 @@ function abrirEnGeneradorDesde(hash) {
     const w = window.open('generador.html' + hash, '_blank');
     if (!w) { snack('El navegador ha bloqueado la pestaña nueva: permite las ventanas emergentes para este archivo, o usa «💾 Guardar (.json)»'); return; }
     snack('Abriendo el proyecto en otra pestaña…');
+}
+// ── 📐 Piezas de contorno (prototipo): la pieza sale de una intención, y sus cotas, de esa construcción ──
+let pcBase = 0;
+function pcConstruir(sem, op) {
+    const R = genAleatorio(sem), DIR = [{ x:1, y:0 }, { x:0, y:1 }, { x:-1, y:0 }, { x:0, y:-1 }];
+    const lista = modo => { const o = []; for (let r = 12; r <= 60; r++) { if (modo === 'cuerda') { for (let c = 10; c <= 2 * r - 6; c += 2) { const h = c / 2, dd = Math.sqrt(r * r - h * h); if (dd >= 4 && h >= 5 && Math.abs(dd - Math.round(dd)) < 1e-9) o.push({ R:r, h, d:Math.round(dd) }); } } else { for (let dd = 4; dd <= r - 4; dd++) { const h = Math.sqrt(r * r - dd * dd); if (h >= 5 && Math.abs(h - Math.round(h)) < 1e-9) o.push({ R:r, h:Math.round(h), d:dd }); } } } return o; };
+    for (let n = 0; n < 400; n++) {
+        const W = R.entero(12, 20) * 10, H = R.entero(8, 14) * 10, C = [{ x:0, y:0 }, { x:W, y:0 }, { x:W, y:H }, { x:0, y:H }], r = [0, 0, 0, 0], lados = [null, null, null, null];
+        if (op.red) { for (let i = 0; i < 4; i++) r[i] = R.uno([0, 10, 15, 20, 25, 30].filter(v => v <= Math.min(W, H) / 4)); if (r.every(v => !v)) r[R.entero(0, 3)] = R.uno([10, 15, 20]); }
+        const tipos = [op.semi && 'semi', op.pit && 'pit'].filter(Boolean);
+        if (tipos.length) { const i0 = R.entero(0, 3), ls = R() < .35 || !op.red ? [i0, (i0 + 2) % 4] : [i0];
+            for (const i of ls) { const len = i % 2 === 0 ? W : H, perp = i % 2 === 0 ? H : W, libre = len - r[i] - r[(i + 1) % 4], t = R.uno(tipos);
+                if (t === 'semi') { const o = [10, 15, 20, 25, 30].filter(v => 2 * v <= libre - 20 && v <= perp * .4); if (o.length) { const v = R.uno(o); lados[i] = { t, R:v, h:v, d:0 }; } }
+                else { const sub2 = R.uno(['entalla', 'saliente']), modo = R.uno(['cuerda', 'dist']), o = lista(modo).filter(D => 2 * D.h <= libre - 20 && (sub2 === 'entalla' ? D.R - D.d <= perp * .4 : D.R - D.d <= 35)); if (o.length) { const D = R.uno(o); lados[i] = { t, sub:sub2, modo, R:D.R, h:D.h, d:D.d }; } } } }
+        if (!r.some(Boolean) && !lados.some(Boolean)) continue;
+        // en sentido antihorario, empezando en el lado de abajo
+        const pts = [], b = [], arcos = [], add2 = (p, q) => ({ x:p.x + q.x, y:p.y + q.y }), kp = (p, q, k) => ({ x:p.x + q.x * k, y:p.y + q.y * k });
+        const tramo = (p, bu) => { const u = pts[pts.length - 1]; if (u && Math.hypot(u.x - p.x, u.y - p.y) < 1e-9) { b[b.length - 1] = bu; return; } pts.push(p); b.push(bu); };
+        const ini = kp(C[0], DIR[0], r[0]); pts.push(ini); b.push(0);
+        for (let i = 0; i < 4; i++) { const tg = DIR[i], nL = { x:-tg.y, y:tg.x }, j = (i + 1) % 4, f = lados[i];
+            if (f) { const len = i % 2 === 0 ? W : H, m = kp(C[i], tg, len / 2), pA = kp(m, tg, -f.h), pB = kp(m, tg, f.h); tramo(pA, 0);
+                let Cc, ccw; if (f.t === 'semi') { Cc = m; ccw = false; } else if (f.sub === 'entalla') { Cc = kp(m, nL, -f.d); ccw = false; } else { Cc = kp(m, nL, f.d); ccw = true; }
+                b[b.length - 1] = bulgeAlrededor(pA, pB, Cc, ccw); arcos.push({ c:Cc, r:f.R, f, lado:i, m, pA, pB, nL }); pts.push(pB); b.push(0); }
+            const fin = kp(C[j], tg, -r[j]); tramo(fin, 0);
+            if (r[j]) { const e = kp(C[j], DIR[j], r[j]), Cc = kp(fin, nL, r[j]); b[b.length - 1] = bulgeAlrededor(fin, e, Cc, true); arcos.push({ c:Cc, r:r[j], esquina:j }); if (j === 0) break; pts.push(e); b.push(0); } }
+        // el último punto coincide con el primero: se cierra
+        const u = pts[pts.length - 1]; if (Math.hypot(u.x - ini.x, u.y - ini.y) < 1e-9) { pts.pop(); const bu = b.pop(); b[b.length - 1] = b[b.length - 1] || bu; }
+        const cont = { pts, b, cerrado:true, tipo:'auto' };
+        if (R() < .5) invertirContorno(cont);
+        return { cont, W, H, arcos };
+    }
+    return null;
+}
+function pcOpciones() { const v = id => document.getElementById(id).checked; return { red:v('pcRed'), semi:v('pcSemi'), pit:v('pcPit') }; }
+function abrirPiezaContorno() { cerrarGenerador(); document.getElementById('modalPiezaC').classList.add('visible'); pintarPiezasC(); }
+function cerrarPiezaContorno() { document.getElementById('modalPiezaC').classList.remove('visible'); }
+function pintarPiezasC() {
+    if (!pcBase) pcBase = 10000 + Math.floor(Math.random() * 89990);
+    const op = pcOpciones(), caja = document.getElementById('pcLista');
+    if (!op.red && !op.semi && !op.pit) { caja.innerHTML = '<p class="ctx-nota">Marca al menos una opción.</p>'; return; }
+    caja.innerHTML = Array.from({ length:6 }, (_, k) => { const s = pcBase + k, P = pcConstruir(s, op); return P ? `<div class="var-ficha gen-ficha" data-s="${s}" title="Usar esta pieza"><div class="var-mini">${svgMini({ calcador:{ contornos:[P.cont] } })}</div><div><strong>Nº ${s}</strong><br><span>${P.W} × ${P.H} mm · ${P.arcos.length} arcos</span></div></div>` : ''; }).join('');
+    caja.querySelectorAll('.gen-ficha').forEach(el => el.onclick = () => usarPiezaC(+el.dataset.s));
+}
+function pcCotas(P) {
+    const c = P.cont, id = () => 'm' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), T = tramos(c), out = [];
+    const mete = m => { m.id = id(); fijarPosRel(m); cotasManuales.push(m); };
+    const O = { x:0, y:0 }, lin = (tipo, p1, p2, pos) => mete({ tipo, p1, r1:null, p2, r2:null, pos });
+    const salida = (a) => a.f && a.f.t === 'pit' && a.f.sub === 'saliente' ? a.f.R - a.f.d : a.f && a.f.t === 'semi' ? 0 : 0;
+    // cuánto hay que separar cada lado: lo que sobresale, y las cotas de lo que lleva
+    const sobre = [0, 1, 2, 3].map(i => Math.max(0, ...P.arcos.filter(a => a.lado === i).map(salida)));
+    lin('h', O, { x:P.W, y:0 }, { x:P.W / 2, y:-(sobre[0] + 32) });
+    lin('v', O, { x:0, y:P.H }, { x:-(sobre[3] + 32), y:P.H / 2 });
+    P.arcos.forEach(a => {
+        const si = T.findIndex(t => { if (!t.b) return false; const q = arcoDeBulge(t.p1, t.p2, t.b); return q && Math.hypot(q.c.x - a.c.x, q.c.y - a.c.y) < 1e-6; });
+        if (si < 0) return;
+        const q = arcoDeBulge(T[si].p1, T[si].p2, T[si].b), am = q.a1 + q.theta / 2, off = a.f && a.f.t === 'pit' ? .2 : 0;
+        mete({ tipo:'radio', cruz:true, c:a.c, r:a.r, rc:{ uid:c.uid, si }, pos:{ x:a.c.x + (a.r + 8) * Math.cos(am + off), y:a.c.y + (a.r + 8) * Math.sin(am + off) } });
+        if (!a.f) return;
+        // situación de lo que va centrado en el lado: desde la esquina, hasta el punto medio del lado
+        const hor = a.lado % 2 === 0, sep = sobre[a.lado] + 16, base = a.lado === 0 ? -sep : a.lado === 2 ? P.H + sep : a.lado === 1 ? P.W + sep : -sep;
+        if (hor) lin('h', { x:0, y:a.m.y }, a.m, { x:a.m.x / 2, y:base }); else lin('v', { x:a.m.x, y:0 }, a.m, { x:base, y:a.m.y / 2 });
+        if (a.f.t === 'pit') {
+            if (a.f.modo === 'cuerda') { const m2 = { x:(a.pA.x + a.pB.x) / 2 + a.nL.x * -(a.f.sub === 'entalla' ? -14 : 14), y:(a.pA.y + a.pB.y) / 2 + a.nL.y * -(a.f.sub === 'entalla' ? -14 : 14) }; mete({ tipo:hor ? 'h' : 'v', p1:a.pA, r1:null, p2:a.pB, r2:null, pos:m2 }); }
+            else { const lat = a.f.h + 14, pc = { x:a.c.x + (hor ? lat : 0), y:a.c.y + (hor ? 0 : lat) }; mete({ tipo:hor ? 'v' : 'h', p1:a.m, r1:null, p2:a.c, r2:null, pos:{ x:hor ? a.c.x + lat : (a.m.x + a.c.x) / 2, y:hor ? (a.m.y + a.c.y) / 2 : a.c.y + lat } }); }
+        }
+    });
+}
+function usarPiezaC(s) {
+    const P = pcConstruir(s, pcOpciones()); if (!P) return;
+    if (contornos.length && !confirm('Se sustituye el dibujo actual por la pieza Nº ' + s + ' (puedes deshacer).')) return;
+    guardarUndo();
+    contornos = [P.cont]; aux = []; auxPend = null; fondo = null; sel = -1; selSet = new Set(); cotasAjuste = {}; cotasManuales = []; dib = null; circ = null; ran = null; genUltimo = null;
+    if (typeof requisitosPorDefecto === 'function') requisitosPorDefecto();
+    document.getElementById('projectName').value = 'Pieza de contorno ' + s;
+    cfgCotas.ver = false; cfgCotas.centros = true; sincronizarControlesCotas();
+    asegurarUids(); pcCotas(P); actualizarBotonBorrarCotas(); actualizarPanelFondo(); cerrarPiezaContorno(); refrescar(); encuadrar();
+    snack(`Pieza Nº ${s}: ${P.W} × ${P.H} mm, con ${P.arcos.length} arcos`);
 }
 // ◠ Hoja de I J: los arcos de la pieza en papel. Un arco por fila, numerado en el plano, con 1 decimal como máximo
 function abrirHojaIJ() {
