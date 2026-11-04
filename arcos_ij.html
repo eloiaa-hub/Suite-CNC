@@ -370,7 +370,7 @@
 <div class="app-window">
     <header class="top-bar">
         <a href="index.html" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a>
-        <span class="top-bar-title">◠ Arcos I J — Por Eloi A.A.<span class="ver-suite" title="Versión del programa">v4</span></span>
+        <span class="top-bar-title">◠ Arcos I J — Por Eloi A.A.<span class="ver-suite" title="Versión del programa">v5</span></span>
         <div class="niveles" id="niveles" title="Nivel del ejercicio">
             <button data-n="sencillo" title="Arcos de ¼, ½ o ¾ de vuelta tangentes a las rectas: el centro está alineado con el punto de inicio">① Sencillo</button>
             <button data-n="complejo" title="El centro queda por encima o por debajo de la recta: se calcula con Pitágoras">② Pitágoras</button>
@@ -607,7 +607,7 @@
             <p class="nota-p">Cada tipo de ejercicio sale en varias versiones de dificultad parecida. En Aules se importan como preguntas que se corrigen solas, y cada alumno recibe una versión al azar de cada tipo.</p>
             <div class="hoja-form">
                 <label class="largo">Título<input type="text" id="exTitulo" value="Examen de I J"></label>
-                <label>Versiones de cada tipo<input type="number" id="exN" min="2" max="60" value="18"></label>
+                <label>Versiones de cada tipo<input type="number" id="exN" min="2" max="60" value="20"></label>
                 <label>Coordenadas<select id="exCotas"><option value="G90">G90</option><option value="G91">G91</option><option value="MIX">Mixtas</option></select></label>
                 <label class="chk"><input type="checkbox" id="exSencillo" checked> ① Sencillo</label>
                 <label class="chk"><input type="checkbox" id="exComplejo" checked> ② Pitágoras</label>
@@ -2280,7 +2280,7 @@ function clozeDe(e) {
 }
 function leerExamen() {
     if (examenActual) return examenActual;
-    const tipos = EX_TIPOS.filter(x => $(x.chk).checked), n = Math.max(2, Math.min(60, +$('exN').value || 18)), cotas = $('exCotas').value, semilla = (Date.now() ^ (Math.random() * 1e9)) >>> 0;
+    const tipos = EX_TIPOS.filter(x => $(x.chk).checked), n = Math.max(2, Math.min(60, +$('exN').value || 20)), cotas = $('exCotas').value, semilla = (Date.now() ^ (Math.random() * 1e9)) >>> 0;
     return examenActual = { titulo: $('exTitulo').value.trim() || 'Examen de I J', n, cotas, semilla, grupos: generarExamen(semilla, n, cotas, tipos) };
 }
 async function xmlExamen(E) {

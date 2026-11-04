@@ -4,12 +4,13 @@ La versión de la suite es **año.mes** (por ejemplo, 2026.10). Cada programa co
 
 ## Suite CNC 2026.10
 
-Versiones de los programas: **Calcador v124 · Corrector v69 · Tutor G-Code v6 · Simulador 3D V45 · Calculadora de taller v5 · Arcos I J v4 · Anidador de tableros v8**.
+Versiones de los programas: **Calcador v125 · Corrector v70 · Tutor G-Code v6 · Simulador 3D V45 · Calculadora de taller v5 · Arcos I J v5 · Anidador de tableros v8**.
 
-### Calcador v124 / Corrector v69: 📐 Contornos sencillos
+### Calcador v125 / Corrector v70 / Arcos I J v5: 📐 Contornos sencillos
 - En 🧩 Aleatorio, **📐 Contornos sencillos**: como el nivel Contorno de Arcos I J, un rectángulo con redondeos y entallas o salientes centrados, acotado según se construye.
 - **Esquinas** rectas, redondeadas, con chaflán a 45° o desigual, y cuántas llevan forma. **Cuatro niveles** de dificultad y **tamaño máximo** de la pieza.
-- Con **interiores**: taladros, colisos, huecos rectangulares y cajeras, a múltiplos de 5 mm y con la pared mínima que elijas, situados con cotas desde el cero pieza. Las cajeras no entran en la tabla de soluciones ni en la corrección. Por ahora, las variantes de examen no conservan estas cotas.
+- Con **interiores**: taladros, colisos, huecos rectangulares y cajeras, a múltiplos de 5 mm y con la pared mínima que elijas, situados con cotas desde el cero pieza. Las cajeras no entran en la tabla de soluciones ni en la corrección. **🎲 Variantes** recalcula sus cotas en cada versión, con el cero pieza en una esquina de la pieza.
+- En Arcos I J, el examen para Aules propone 20 versiones de cada tipo.
 
 ### Calcador v121 / Corrector v66 / Arcos I J v4: un examen distinto para cada alumno
 - **🎲 Variantes** llega hasta 26 (antes, 8), para dar a cada alumno la suya.

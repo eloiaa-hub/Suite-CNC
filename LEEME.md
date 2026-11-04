@@ -9,8 +9,8 @@ sin instalar nada y también sin conexión a internet.
 | Archivo | Herramienta | Versión |
 |---|---|---|
 | `index.html` | Portada con enlaces a todo | — |
-| `calcador.html` | Calcador de contornos: diseñar ejercicios, hojas, soluciones, corrección y biblioteca. Escribe el programa de la pieza mientras se dibuja (el de la solución o el de la máquina, ⚙️ Mecanizar) y prepara ejercicios para el Tutor (🎓) | v124 |
-| `corrector.html` | Corrector: el Calcador sin dibujo, para corregir, simular, imprimir, exportar y generar el G-code con ⚙️ Mecanizar (se genera a partir del Calcador) | v69 |
+| `calcador.html` | Calcador de contornos: diseñar ejercicios, hojas, soluciones, corrección y biblioteca. Escribe el programa de la pieza mientras se dibuja (el de la solución o el de la máquina, ⚙️ Mecanizar) y prepara ejercicios para el Tutor (🎓) | v125 |
+| `corrector.html` | Corrector: el Calcador sin dibujo, para corregir, simular, imprimir, exportar y generar el G-code con ⚙️ Mecanizar (se genera a partir del Calcador) | v70 |
 | `manual_calcador.html` / `.pdf` | Manual del Calcador | — |
 | `manual_corrector.html` / `.pdf` | Manual del Corrector (profesorado) | — |
 | `manual_anidador.html` / `.pdf` | Manual del Anidador de tableros (profesorado) | — |
@@ -25,10 +25,10 @@ sin instalar nada y también sin conexión a internet.
 | `simulador3d_profesor.html` | Solo lleva a `simulador3d.html` (para los enlaces antiguos); se puede borrar | — |
 | `tutor.html` | Tutor G-Code: dibujar una pieza y ver cómo se escribe su programa, línea a línea y comentado (👁 Aprender), o escribirlo y que el Tutor corrija cada línea (✍ Practicar); con ejemplos y ejercicios (alumnado; se genera a partir del Calcador) | v6 |
 | `calculadora.html` | Calculadora de taller: recta inclinada, polares, arcos (centro, I J y R), G90 ↔ G91 y velocidades de corte (alumnado) | v5 |
-| `arcos_ij.html` | Arcos I J: aprender a calcular I y J de los arcos G2 y G3, en seis niveles, con corrección, ayudas y paso a paso; recibe los arcos de una pieza desde el Calcador (◠ Practicar I J) (alumnado; con ventana de examen para el profesor) | v4 |
+| `arcos_ij.html` | Arcos I J: aprender a calcular I y J de los arcos G2 y G3, en seis niveles, con corrección, ayudas y paso a paso; recibe los arcos de una pieza desde el Calcador (◠ Practicar I J) (alumnado; con ventana de examen para el profesor) | v5 |
 | `manual_arcos_ij.html` / `.pdf` | Manual de Arcos I J (alumnado) | — |
 | `itinerario.html` | Itinerario del alumno: nueve pasos con el apunte y la herramienta de cada uno (alumnado) | — |
-| `guia_examen.html` / `.pdf` | Un examen distinto para cada alumno: 18 versiones con el Calcador y una tarea de Aules, y un examen de I J que Aules corrige solo (profesorado) | — |
+| `guia_examen.html` / `.pdf` | Un examen distinto para cada alumno: 20 versiones con el Calcador y una tarea de Aules, y un examen de I J que Aules corrige solo (profesorado) | — |
 | `licencias.html` | Créditos y licencias (fuentes y bibliotecas de terceros) | — |
 | `LICENSE` | Licencia de los programas (EUPL-1.2) | — |
 | `LICENCIA-MANUAL.txt` | Licencia del manual (CC BY-SA 4.0) | — |
