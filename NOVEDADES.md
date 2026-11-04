@@ -4,7 +4,13 @@ La versión de la suite es **año.mes** (por ejemplo, 2026.10). Cada programa co
 
 ## Suite CNC 2026.10
 
-Versiones de los programas: **Calcador v126 · Corrector v71 · Tutor G-Code v6 · Simulador 3D V45 · Calculadora de taller v5 · Arcos I J v5 · Anidador de tableros v8**.
+Versiones de los programas: **Calcador v126 · Corrector v71 · Tutor G-Code v6 · Simulador 3D V45 · Calculadora de taller v5 · Arcos I J v6 · Anidador de tableros v8**.
+
+### Arcos I J v6: hojas que combinan niveles
+- **🖨 Hoja**: ahora eliges **cuántos ejercicios de cada nivel**; por ejemplo, 3 de ① Sencillo y 3 de ⑤ Leer el bloque. Se puede mezclar el orden.
+- **⑤ Leer el bloque ya se puede imprimir**, con sus soluciones.
+- Caben **3 ejercicios por hoja A4** y se evitan los arcos tan pequeños que sus rótulos se pisan.
+- En ⑤, las letras A B C D ya no se pisan con los centros, también en pantalla.
 
 ### Calcador v126 / Corrector v71: los datos de la hoja
 - **💾 Guardar datos** en 🖨 Hoja: guarda título, número y demás datos sin imprimir.

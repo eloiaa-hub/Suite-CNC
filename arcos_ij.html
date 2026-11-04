@@ -329,6 +329,14 @@
     .hoja-form label { display: flex; flex-direction: column; gap: 4px; color: var(--text-muted); font-size: 11.5px; }
     .hoja-form input[type=text], .hoja-form select, .hoja-form input[type=number] { background: var(--bg-app); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 4px; padding: 6px 7px; font-size: 12.5px; }
     .hoja-form .largo { grid-column: 1 / -1; }
+    .hj-cant { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 14px; border: 1px solid var(--border-color); border-radius: 6px; padding: 8px 10px; }
+    .hj-cant-t, .hj-total { grid-column: 1 / -1; margin: 0; }
+    .hj-cant-t { font-weight: 600; color: var(--text-main); }
+    .hoja-form .hj-cant label { flex-direction: row; align-items: center; justify-content: space-between; gap: 8px; color: var(--text-main); font-size: 12.5px; }
+    .hoja-form .hj-cant input { width: 58px; text-align: center; }
+    .hj-total { color: var(--text-muted); font-size: 11.5px; }
+    .hj-total.mal { color: var(--col-r); font-weight: 600; }
+    @media (max-width: 480px) { .hj-cant { grid-template-columns: 1fr; } }
     .hoja-form .chk { flex-direction: row; align-items: center; gap: 8px; color: var(--text-main); font-size: 12.5px; }
     @media print {
         @page { size: A4; margin: 11mm; }
@@ -359,6 +367,15 @@
         .hj-ej.grande .hj-fila { flex-direction: column; }
         .hj-ej.grande .hj-resp { width: 100%; flex-direction: row; }
         .hj-ej.grande .hj-resp table { width: 62%; }
+        body.dark-mode .c0 { stroke: #7b4fd6; } body.dark-mode .c1 { stroke: #0e9aa7; } body.dark-mode .c2 { stroke: #c2185b; } body.dark-mode .c3 { stroke: #8a7a00; }
+        body.dark-mode .f0 { fill: #7b4fd6; } body.dark-mode .f1 { fill: #0e9aa7; } body.dark-mode .f2 { fill: #c2185b; } body.dark-mode .f3 { fill: #8a7a00; }
+        #hoja .t-ini, #hoja .t-fin { paint-order: stroke; stroke: #fff; stroke-width: 3.5px; stroke-linejoin: round; }
+        .hj-bloque { font-family: Consolas, 'Courier New', monospace; font-size: 15px; font-weight: 700; color: #111; display: flex; flex-wrap: wrap; gap: 3px 9px; border: 1px solid #999; border-radius: 4px; padding: 7px 8px; }
+        .hj-bloque .n { font-weight: 400; color: #666; }
+        .hj-opc { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; font-size: 11.5px; }
+        .hj-opc .letra { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border: 1.5px solid #333; border-radius: 50%; font-weight: 700; font-size: 12.5px; }
+        .hj-casilla { display: inline-block; width: 12px; height: 12px; border: 1.5px solid #333; border-radius: 2px; vertical-align: -2px; margin-right: 4px; }
+        .hj-lin { font-size: 10.5px; color: #555; border-bottom: 1px solid #999; height: 26px; }
         .hj-salto { break-before: page; page-break-before: always; }
         .hj-sol { break-inside: avoid; page-break-inside: avoid; font-size: 10.5px; border-bottom: 1px solid #ccc; padding: 5px 0; }
         .hj-sol pre { font-family: Consolas, 'Courier New', monospace; font-size: 10.5px; white-space: pre-wrap; margin-top: 2px; }
@@ -370,7 +387,7 @@
 <div class="app-window">
     <header class="top-bar">
         <a href="index.html" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a>
-        <span class="top-bar-title">◠ Arcos I J — Por Eloi A.A.<span class="ver-suite" title="Versión del programa">v5</span></span>
+        <span class="top-bar-title">◠ Arcos I J — Por Eloi A.A.<span class="ver-suite" title="Versión del programa">v6</span></span>
         <div class="niveles" id="niveles" title="Nivel del ejercicio">
             <button data-n="sencillo" title="Arcos de ¼, ½ o ¾ de vuelta tangentes a las rectas: el centro está alineado con el punto de inicio">① Sencillo</button>
             <button data-n="complejo" title="El centro queda por encima o por debajo de la recta: se calcula con Pitágoras">② Pitágoras</button>
@@ -627,21 +644,22 @@
         <div class="help-content">
             <div class="hoja-form">
                 <label class="largo">Título<input type="text" id="hjTitulo" value="Cálculo de I y J en arcos G2 / G3"></label>
-                <label>Nivel<select id="hjNivel">
-                    <option value="actual">El nivel elegido arriba</option>
-                    <option value="sencillo">① Sencillo</option>
-                    <option value="complejo">② Pitágoras</option>
-                    <option value="circulo">③ Círculo completo</option>
-                    <option value="contorno">④ Contorno</option>
-                    <option value="mezcla">Mezcla de ①, ② y ③</option>
-                </select></label>
-                <label>Número de ejercicios<input type="number" id="hjN" min="1" max="12" value="6"></label>
+                <div class="largo hj-cant"><span class="hj-cant-t">Cuántos ejercicios de cada nivel</span>
+                    <label><span>① Sencillo</span><input type="number" min="0" max="12" data-hj="sencillo" oninput="totalHoja()"></label>
+                    <label><span>② Pitágoras</span><input type="number" min="0" max="12" data-hj="complejo" oninput="totalHoja()"></label>
+                    <label><span>③ Círculo</span><input type="number" min="0" max="12" data-hj="circulo" oninput="totalHoja()"></label>
+                    <label><span>④ Contorno</span><input type="number" min="0" max="12" data-hj="contorno" oninput="totalHoja()"></label>
+                    <label><span>⑤ Leer el bloque</span><input type="number" min="0" max="12" data-hj="leer" oninput="totalHoja()"></label>
+                    <label id="hjFilaPieza" style="display:none"><span>⑥ Pieza</span><input type="number" min="0" max="12" data-hj="pieza" oninput="totalHoja()"></label>
+                    <p class="hj-total" id="hjTotal"></p>
+                </div>
+                <label class="chk largo"><input type="checkbox" id="hjBarajar"> Mezclar el orden de los ejercicios</label>
                 <label class="chk largo"><input type="checkbox" id="hjSol" checked> Añadir las soluciones al final (en otra hoja)</label>
                 <label class="chk largo"><input type="checkbox" id="hjSoloSol"> Imprimir solo las soluciones de la hoja anterior</label>
-                <p class="nota-p largo">Usa las opciones del nivel y las cotas elegidas a la izquierda. En el cuadro de impresión puedes elegir «Guardar como PDF».</p>
+                <p class="nota-p largo">Cada nivel usa sus opciones y las cotas elegidas a la izquierda. En el cuadro de impresión puedes elegir «Guardar como PDF».</p>
             </div>
             <div class="btn-row" style="margin-top:14px">
-                <button class="btn-action" onclick="imprimirHoja()">🖨 Generar e imprimir</button>
+                <button class="btn-action" id="hjImprimir" onclick="imprimirHoja()">🖨 Generar e imprimir</button>
                 <button class="btn-action sec" onclick="cerrarModal('modalHoja')">Cancelar</button>
             </div>
         </div>
@@ -1903,16 +1921,33 @@ function dibujarPlano(W, H) {
     return s + capaA + capaT + '<g id="capaMedida"></g>';
 }
 
+function sitioLetra(c, m, a, puestas) {
+    // Fuera del arco si hay sitio; si no, sobre el propio arco, lejos de los centros, los puntos y las otras letras
+    const fijos = [a.C, ej.C2, a.a, a.b].map(S).concat(puestas);
+    const libre = (x, y) => fijos.every(f => Math.hypot(f.x - x, f.y - y) >= 27);
+    const fuera = lado(m, c.C, 22), sm = S(m);
+    let r = { en: m, dx: fuera.dx, dy: fuera.dy, anchor: fuera.anchor };
+    if (!libre(sm.x + fuera.dx, sm.y + fuera.dy)) {
+        let mejor = -1;
+        [.3, .7, .22, .78, .15, .85].forEach(t => {
+            const q = puntoArco(c, t), sq = S(q), d = Math.min(...fijos.map(f => Math.hypot(f.x - sq.x, f.y - sq.y)));
+            if (d > mejor) { mejor = d; r = { en: q, dx: 0, dy: 0, anchor: 'middle' }; }
+        });
+    }
+    const sl = S(r.en); puestas.push(P(sl.x + r.dx, sl.y + r.dy));
+    return r;
+}
 function dibujarCual() {
     const a = ej.tramos[1];
     let s = '';
     s += lineaCentro(a.C, 14) + lineaCentro(ej.C2, 14);
+    const letrasPuestas = [];
     ej.cands.forEach((c, i) => {
         const cls = 'cand c' + i + (ej.sel === i ? ' sel' : '') + (ej.resuelto && i !== ej.correcta ? ' apagado' : '');
         s += `<g data-tip="Arco ${'ABCD'[i]}: ${c.g === 'G2' ? 'horario' : 'antihorario'}, centro ${ptxt(c.C)}"><path class="${cls}" d="${arcoPath(c)}"/><path d="${arcoPath(c)}" stroke="transparent" stroke-width="16" fill="none" style="cursor:pointer" onclick="elegirArco(${i})"/></g>`;
         const m = puntoArco(c, .5), q = puntoArco(c, .52), sm = S(m), sq = S(q), ang = Math.atan2(sq.y - sm.y, sq.x - sm.x);
         s += `<polygon class="f${i}" points="${sm.x + Math.cos(ang) * 8},${sm.y + Math.sin(ang) * 8} ${sm.x - Math.cos(ang) * 6 - Math.sin(ang) * 6},${sm.y - Math.sin(ang) * 6 + Math.cos(ang) * 6} ${sm.x - Math.cos(ang) * 6 + Math.sin(ang) * 6},${sm.y - Math.sin(ang) * 6 - Math.cos(ang) * 6}"${ej.resuelto && i !== ej.correcta ? ' opacity=".25"' : ''}/>`;
-        const l = lado(m, c.C, 22), lc = S(m);
+        const l = sitioLetra(c, m, a, letrasPuestas), lc = S(l.en);
         s += `<g style="cursor:pointer" onclick="elegirArco(${i})"><circle cx="${lc.x + l.dx}" cy="${lc.y + l.dy}" r="12" fill="var(--canvas-bg)" class="c${i}" stroke-width="2"/><text x="${lc.x + l.dx}" y="${lc.y + l.dy + 1}" text-anchor="middle" dominant-baseline="middle" class="f${i}" style="font-weight:800;font-size:14px">${'ABCD'[i]}</text></g>`;
     });
     [a.C, ej.C2].forEach(C => { s += marcaCentro(C, 'Centro de una de las dos circunferencias posibles ' + ptxt(C)); const l = lado(C, P((a.a.x + a.b.x) / 2, (a.a.y + a.b.y) / 2), 14); s += txt(C, ptxt(C), 't-b', l.anchor === 'middle' ? 'start' : l.anchor, l.anchor === 'middle' ? 10 : l.dx, l.dy || -12); });
@@ -2078,7 +2113,29 @@ const INFOS = {
    HOJA DE EJERCICIOS (impresión)
    ========================================================================= */
 let ultimaHoja = null;
-function abrirHoja() { $('modalHoja').classList.add('visible'); $('hjSoloSol').disabled = !ultimaHoja; }
+const MAX_HOJA = 20;   // ejercicios por hoja generada, sumando todos los niveles
+let cantHoja = null;   // lo último elegido en la ventana (se recuerda mientras el programa está abierto)
+function camposHoja() { return [...document.querySelectorAll('#modalHoja [data-hj]')]; }
+function cantidadesHoja() {
+    const c = {};
+    camposHoja().forEach(i => { if (i.dataset.hj === 'pieza' && !pieza) return; c[i.dataset.hj] = Math.max(0, Math.min(12, Math.floor(+i.value) || 0)); });
+    return c;
+}
+function totalHoja() {
+    const t = Object.values(cantidadesHoja()).reduce((a, b) => a + b, 0), m = $('hjTotal'), mal = t < 1 || t > MAX_HOJA;
+    m.textContent = t < 1 ? 'Pon al menos un ejercicio.' : t > MAX_HOJA ? `Son ${t} ejercicios: el máximo es ${MAX_HOJA}.` : `En total: ${t} ejercicio${t > 1 ? 's' : ''}.`;
+    m.classList.toggle('mal', mal);
+    $('hjImprimir').disabled = mal && !$('hjSoloSol').checked;
+}
+function abrirHoja() {
+    $('modalHoja').classList.add('visible');
+    $('hjSoloSol').disabled = !ultimaHoja;
+    if (!ultimaHoja) $('hjSoloSol').checked = false;
+    $('hjFilaPieza').style.display = pieza ? '' : 'none';
+    camposHoja().forEach(i => { i.value = cantHoja ? (cantHoja[i.dataset.hj] || 0) : (i.dataset.hj === cfg.nivel ? 6 : 0); });
+    $('hjSoloSol').onchange = totalHoja;
+    totalHoja();
+}
 function svgDe(e, W, H) {
     const guard = { ej, vista, vistaUsuario, paso };
     ej = e; vistaUsuario = null; paso = -1; impresion = true;
@@ -2087,8 +2144,45 @@ function svgDe(e, W, H) {
     finally { impresion = false; ej = guard.ej; vista = guard.vista; vistaUsuario = guard.vistaUsuario; paso = guard.paso; }
     return s;
 }
+const ALTO_HOJA = 225;   // alto del dibujo: caben tres ejercicios por hoja A4
+function cuerdaEnPapel(e) {
+    // Tamaño del arco ya dibujado; con la recta muy larga y el arco muy corto, los rótulos se pisan
+    if (!['sencillo', 'complejo', 'leer'].includes(e.tipo)) return Infinity;
+    const guard = { ej, impresion }; ej = e; impresion = true;
+    let v; try { v = calcularVista(470, ALTO_HOJA); } finally { ej = guard.ej; impresion = guard.impresion; }
+    const a = e.tramos[1];
+    const ini = e.tramos[0].a, fin = e.tramos[2] && e.tramos[2].b;   // los rótulos de los extremos de las dos rectas tampoco deben pisarse
+    const sep = fin && e.sub !== 'cual' ? Math.hypot(ini.x - fin.x, ini.y - fin.y) * v.k * 2.2 : Infinity;
+    return Math.min(Math.hypot(a.a.x - a.b.x, a.a.y - a.b.y) * v.k, sep);
+}
+function generarParaPapel(niv) {
+    let mejor = null, med = -1;
+    for (let i = 0; i < 40; i++) {
+        const e = generar(niv), m = cuerdaEnPapel(e);
+        if (m > med) { mejor = e; med = m; }
+        if (m >= 95) break;
+    }
+    return mejor;
+}
+function bloqueHoja(e) {
+    const b = e.bloque, ps = ['N40'].concat(modoT(e, 1) === 'inc' ? ['G91'] : [], [b.g, 'X' + fmt(b.x), 'Y' + fmt(b.y), 'I' + fmt(b.i), 'J' + fmt(b.j)]);
+    return `<div class="hj-bloque">${ps.map((p, i) => `<span${i ? '' : ' class="n"'}>${p}</span>`).join('')}</div>`;
+}
+function tarjetaLeerHoja(e, n, h, it) {
+    const cual = e.sub === 'cual';
+    const resp = cual
+        ? `<div class="hj-opc"><b>Arco:</b>${'ABCD'.split('').map(l => `<span class="letra">${l}</span>`).join('')}</div>`
+        : `<div class="hj-opc"><span><i class="hj-casilla"></i>El bloque está bien</span></div><div class="hj-lin">Bloque correcto:</div>`;
+    return `<div class="hj-ej"><h2>Ejercicio ${n} · ${h}</h2><ul>${it.map(x => `<li>${x}</li>`).join('')}</ul><div class="hj-fila">${svgDe(e, 470, ALTO_HOJA)}<div class="hj-resp">${bloqueHoja(e)}${resp}<div class="hj-calc">Cálculos:</div></div></div></div>`;
+}
 function tarjetaHoja(e, n) {
     const { h, it } = textoEnunciado(e);
+    if (e.tipo === 'leer') {
+        const limpio = it.map(x => x.replace(/<b style="color:var\(--col-[a-z]+\)">/g, '<b>')
+            .replace('Elige el correcto.', 'Rodea la letra del correcto.')
+            .replace('Marca las palabras del bloque que están mal, o «El bloque está bien».', 'Rodea las palabras del bloque que están mal y escribe el bloque correcto, o marca «El bloque está bien».'));
+        return tarjetaLeerHoja(e, n, h, limpio);
+    }
     const cont = e.tipo === 'contorno';
     const filas = filasPregunta(e);
     let tabla = `<table><tr><th></th><th>G</th><th>X</th><th>Y</th><th>I</th><th>J</th></tr>`;
@@ -2097,11 +2191,19 @@ function tarjetaHoja(e, n) {
         else tabla += `<tr><td class="lb">${f.et}</td><td></td><td></td><td></td><td class="${f.esArco ? '' : 'nulo'}"></td><td class="${f.esArco ? '' : 'nulo'}"></td></tr>`;
     });
     tabla += '</table>';
-    const svg = svgDe(e, cont ? 760 : 470, cont ? 420 : 280);
+    const svg = svgDe(e, cont ? 760 : 470, cont ? 420 : ALTO_HOJA);
     const limpiar = s => s.replace(/<b style="color:var\(--col-[a-z]+\)">/g, '<b>');
     return `<div class="hj-ej${cont ? ' grande' : ''}"><h2>Ejercicio ${n} · ${h}</h2><ul>${it.map(x => `<li>${limpiar(x)}</li>`).join('')}</ul><div class="hj-fila">${svg}<div class="hj-resp">${tabla}<div class="hj-calc">Cálculos:</div></div></div></div>`;
 }
 function solucionHoja(e, n) {
+    if (e.tipo === 'leer') {
+        const a = e.tramos[1], g91 = modoT(e, 1) === 'inc' ? 'G91 ' : '';
+        if (e.sub === 'cual') return `<div class="hj-sol"><b>Ejercicio ${n}</b> · Arco <b>${'ABCD'[e.correcta]}</b>: ${a.g === 'G2' ? 'horario' : 'antihorario'}, centro ${ptxt(a.C)}</div>`;
+        const c = e.correcto, guard = ej; ej = e;
+        let txt; try { txt = explicacionError(); } finally { ej = guard; }
+        const correcto = e.errTipo === 'ok' ? '' : `<pre>N40 ${g91}${c.g} X${fmt(c.x)} Y${fmt(c.y)} I${fmt(c.i)} J${fmt(c.j)}</pre>`;
+        return `<div class="hj-sol"><b>Ejercicio ${n}</b> · ${txt}${correcto}</div>`;
+    }
     const L = programa(e, true).filter(l => l.cls !== 'cab').map(lineaTexto);
     return `<div class="hj-sol"><b>Ejercicio ${n}</b>${e.askIni ? ` · inicio ${ptxt(e.ini)}` : ''}<pre>${esc(L.join('\n'))}</pre></div>`;
 }
@@ -2110,13 +2212,13 @@ function imprimirHoja() {
     let lista;
     if (solo) lista = ultimaHoja.lista;
     else {
-        const n = Math.max(1, Math.min(12, +$('hjN').value || 6));
-        const sel = $('hjNivel').value;
+        const cant = cantidadesHoja();
+        const total = Object.values(cant).reduce((a, b) => a + b, 0);
+        if (total < 1 || total > MAX_HOJA) { totalHoja(); return; }
+        cantHoja = cant;
         lista = [];
-        for (let i = 0; i < n; i++) {
-            const niv = sel === 'actual' ? (cfg.nivel === 'leer' ? 'sencillo' : cfg.nivel) : sel === 'mezcla' ? ['sencillo', 'complejo', 'circulo'][i % 3] : sel;
-            lista.push(generar(niv));
-        }
+        Object.keys(cant).forEach(niv => { for (let i = 0; i < cant[niv]; i++) lista.push(generarParaPapel(niv)); });
+        if ($('hjBarajar').checked) lista = barajar(lista);
         ultimaHoja = { lista, titulo: $('hjTitulo').value };
     }
     const tit = esc(ultimaHoja.titulo || 'Hoja de ejercicios');
