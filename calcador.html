@@ -644,7 +644,7 @@
 <body>
 <div class="app-window">
     <header class="top-bar">
-        <a href="index.html" class="ir-portada" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a><span class="top-bar-title">⬡ Calcador de contornos — Por Eloi A.A.<span class="ver-suite" title="Versión del programa" style="font-size:11px;font-weight:600;padding:1px 7px;margin-left:8px;border-radius:9px;background:rgba(0,90,156,.12);color:#005A9C;vertical-align:middle">v125</span></span>
+        <a href="index.html" class="ir-portada" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a><span class="top-bar-title">⬡ Calcador de contornos — Por Eloi A.A.<span class="ver-suite" title="Versión del programa" style="font-size:11px;font-weight:600;padding:1px 7px;margin-left:8px;border-radius:9px;background:rgba(0,90,156,.12);color:#005A9C;vertical-align:middle">v126</span></span>
         <div class="top-bar-right">
             <input class="project-name" id="projectName" type="text" value="calco_sin_nombre" placeholder="Nombre del proyecto">
             <div class="c2-archivo"><button class="btn-manual" onclick="nuevo()" title="Empieza de cero (se puede deshacer)">🗋 Nuevo</button><button class="btn-manual" onclick="document.getElementById('fileJSON').click()" title="Abre un proyecto .json del Calcador o del Corrector">📂 Abrir</button><button class="btn-manual" onclick="exportarJSON()" title="Guarda el proyecto en un archivo JSON: lo abren el Calcador, el Corrector, el Tutor y el Simulador (como plano del ejercicio)">💾 Guardar</button><button class="btn-manual" onclick="abrirBiblioteca()" title="Tus ejercicios: buscar, abrir e imprimir sus hojas">🗂 Biblioteca</button></div>
@@ -1759,6 +1759,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.</pre>
             <p class="ctx-nota">El plano sale con las cotas activas (automáticas y manuales), el cero pieza y las entradas, a 1:1 si cabe en A4; si no, ajustado al papel, y en el cajetín pone «Escala: ajustada (las cotas mandan)». La línea del alumno queda en blanco. En color, el plano sale con los colores de la pantalla; si no, en negro. Estos datos se recuerdan para el siguiente ejercicio.</p>
             <div class="btn-row" style="margin-top:10px">
                 <button class="btn-action sec" onclick="cerrarHoja()">Cancelar</button>
+                <button class="btn-action sec" onclick="guardarDatosHoja()" title="Guarda estos datos en el ejercicio sin imprimir: los usan las variantes, las soluciones y el reparto">💾 Guardar datos</button>
                 <button class="btn-action" onclick="imprimirHoja()">🖨 Imprimir</button>
             </div>
         </div>
@@ -4535,6 +4536,7 @@ function usarEjercicio(s) {
     if (!r.contornos.length) { snack('Con estos parámetros no sale ninguna pieza'); return; }
     if (contornos.length && !confirm('Se sustituye el dibujo actual por el ejercicio Nº ' + s + ' (puedes deshacer).')) return;
     guardarUndo();
+    cfgHoja.titulo = ''; cfgHoja.num = '';
     contornos = r.contornos; aux = []; auxPend = null; fondo = null; sel = -1; selSet = new Set(); cotasAjuste = {}; cotasManuales = []; dib = null; circ = null; ran = null;
     if (typeof requisitosPorDefecto === 'function') requisitosPorDefecto();
     genUltimo = { semilla:s, cfg:JSON.parse(JSON.stringify(cfgGen)) };
@@ -9638,6 +9640,7 @@ function hayRequisitos() { return cfgHoja.prog !== 'libre' || cfgHoja.reqEntrada
 function abrirHoja() {
     if (!contornos.some(c => c.pts.length >= 2)) { snack('No hay ninguna pieza dibujada'); return; }
     const hoy = new Date(), dd = n => String(n).padStart(2, '0');
+    hojaAlDia();
     const v = { ...cfgHoja };
     if (!v.titulo) v.titulo = nombreProyecto().replace(/_/g, ' ');
     if (!v.fecha) v.fecha = `${dd(hoy.getDate())}/${dd(hoy.getMonth() + 1)}/${hoy.getFullYear()}`;
@@ -9646,6 +9649,20 @@ function abrirHoja() {
     document.getElementById('modalHoja').classList.add('visible');
 }
 function cerrarHoja() { document.getElementById('modalHoja').classList.remove('visible'); }
+function guardarDatosHoja() { leerHoja(); cerrarHoja(); snack('Datos de la hoja guardados'); }
+// El título sigue al nombre del proyecto hasta que se escriba otro; el de una variante no pasa a otra pieza
+const textoNombre = n => String(n || '').replace(/_/g, ' ').trim();
+function hojaAlDia() {
+    const nom = document.getElementById('projectName').value;
+    if (/\(variante [A-Z]\)\s*$/.test(cfgHoja.titulo || '') && !/variante [A-Z]\s*$/i.test(nom)) { cfgHoja.titulo = ''; cfgHoja.num = String(cfgHoja.num || '').replace(/[A-Z]$/, ''); }
+}
+let nombreHojaPrevio = null;
+function seguirNombreHoja() {
+    const el = document.getElementById('projectName'); if (nombreHojaPrevio === null) nombreHojaPrevio = el.value;
+    if (textoNombre(cfgHoja.titulo) === textoNombre(nombreHojaPrevio)) cfgHoja.titulo = '';
+    nombreHojaPrevio = el.value; hojaAlDia();
+}
+window.addEventListener('DOMContentLoaded', () => { const el = document.getElementById('projectName'); nombreHojaPrevio = el.value; el.addEventListener('focus', () => { nombreHojaPrevio = el.value; }); el.addEventListener('input', seguirNombreHoja); });
 function leerHoja() {
     CAMPOS_HOJA.forEach(k => { const el = document.getElementById('hj_' + k); if (!el) return; cfgHoja[k] = el.type === 'checkbox' ? el.checked : el.value; });
     guardarAutoPronto();
@@ -13891,6 +13908,7 @@ function usarPiezaC(s) {
     const P = pcPieza(s, pcOpciones()); if (!P) return;
     if (contornos.length && !confirm('Se sustituye el dibujo actual por la pieza Nº ' + s + ' (puedes deshacer).')) return;
     guardarUndo();
+    cfgHoja.titulo = ''; cfgHoja.num = '';
     contornos = [P.cont].concat(P.ints.map(i => i.cont)); aux = []; auxPend = null; fondo = null; sel = -1; selSet = new Set(); cotasAjuste = {}; cotasManuales = []; dib = null; circ = null; ran = null; genUltimo = null;
     if (typeof requisitosPorDefecto === 'function') requisitosPorDefecto();
     document.getElementById('projectName').value = 'Contorno sencillo ' + s;
@@ -14498,6 +14516,7 @@ async function descargarCuestionario() {
     snack(`Cuestionario descargado (${(xml.length / 1048576).toLocaleString('es-ES', { maximumFractionDigits:1 })} MB): ${nq} pregunta(s) en ${cuestGen.vars.length} variante(s). En Aules: Banco de preguntas → Importar → Formato Moodle XML`);
 }
 function abrirVariantes() {
+    hojaAlDia();
     if (!contornos.some(c => c.pts.length >= 2)) { snack('Dibuja o abre un ejercicio primero'); return; }
     const g = id => document.getElementById(id);
     g('varN').value = varCfg.n; g('varA').checked = varCfg.aOriginal; g('varEx').checked = varCfg.ex; g('varEy').checked = varCfg.ey; g('varGiro').checked = varCfg.giro; g('varCero').checked = varCfg.cero; g('varEsc').checked = varCfg.escala; g('varFac').value = varCfg.factores;

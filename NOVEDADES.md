@@ -4,7 +4,11 @@ La versión de la suite es **año.mes** (por ejemplo, 2026.10). Cada programa co
 
 ## Suite CNC 2026.10
 
-Versiones de los programas: **Calcador v125 · Corrector v70 · Tutor G-Code v6 · Simulador 3D V45 · Calculadora de taller v5 · Arcos I J v5 · Anidador de tableros v8**.
+Versiones de los programas: **Calcador v126 · Corrector v71 · Tutor G-Code v6 · Simulador 3D V45 · Calculadora de taller v5 · Arcos I J v5 · Anidador de tableros v8**.
+
+### Calcador v126 / Corrector v71: los datos de la hoja
+- **💾 Guardar datos** en 🖨 Hoja: guarda título, número y demás datos sin imprimir.
+- El título sigue al **nombre del proyecto** hasta que escribas otro, y ya no se arrastra el de otra pieza o variante.
 
 ### Calcador v125 / Corrector v70 / Arcos I J v5: 📐 Contornos sencillos
 - En 🧩 Aleatorio, **📐 Contornos sencillos**: como el nivel Contorno de Arcos I J, un rectángulo con redondeos y entallas o salientes centrados, acotado según se construye.
