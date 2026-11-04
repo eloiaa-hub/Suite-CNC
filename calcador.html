@@ -644,7 +644,7 @@
 <body>
 <div class="app-window">
     <header class="top-bar">
-        <a href="index.html" class="ir-portada" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a><span class="top-bar-title">⬡ Calcador de contornos — Por Eloi A.A.<span class="ver-suite" title="Versión del programa" style="font-size:11px;font-weight:600;padding:1px 7px;margin-left:8px;border-radius:9px;background:rgba(0,90,156,.12);color:#005A9C;vertical-align:middle">v126</span></span>
+        <a href="index.html" class="ir-portada" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a><span class="top-bar-title">⬡ Calcador de contornos — Por Eloi A.A.<span class="ver-suite" title="Versión del programa" style="font-size:11px;font-weight:600;padding:1px 7px;margin-left:8px;border-radius:9px;background:rgba(0,90,156,.12);color:#005A9C;vertical-align:middle">v127</span></span>
         <div class="top-bar-right">
             <input class="project-name" id="projectName" type="text" value="calco_sin_nombre" placeholder="Nombre del proyecto">
             <div class="c2-archivo"><button class="btn-manual" onclick="nuevo()" title="Empieza de cero (se puede deshacer)">🗋 Nuevo</button><button class="btn-manual" onclick="document.getElementById('fileJSON').click()" title="Abre un proyecto .json del Calcador o del Corrector">📂 Abrir</button><button class="btn-manual" onclick="exportarJSON()" title="Guarda el proyecto en un archivo JSON: lo abren el Calcador, el Corrector, el Tutor y el Simulador (como plano del ejercicio)">💾 Guardar</button><button class="btn-manual" onclick="abrirBiblioteca()" title="Tus ejercicios: buscar, abrir e imprimir sus hojas">🗂 Biblioteca</button></div>
@@ -876,6 +876,12 @@
                         <label class="toggle"><input type="checkbox" id="chkCotas"><span class="toggle-slider"></span></label></div>
                     <div class="param-line">Detalle
                         <select id="selNivelCotas"><option value="todo" selected>Tramos, radios y totales</option><option value="basico">Solo radios y totales</option></select>
+                    </div>
+                    <div class="param-line">Reparto
+                        <select id="selDist" title="Cómo se organizan las cotas en el dibujo">
+                            <option value="cero" selected>Desde el cero pieza</option>
+                            <option value="lados">Por lados</option>
+                        </select>
                     </div>
                     <div class="param-line">Rectas inclinadas
                         <select id="selIncl" title="Cómo se acotan los tramos rectos que no son horizontales ni verticales">
@@ -1531,6 +1537,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.</pre>
             <p><strong>DXF</strong>: en milímetros, a escala 1:1. Es un DXF R12 completo, que abren AutoCAD, LibreCAD y los demás CAD: «Polilíneas con arcos (R12)» guarda cada contorno como POLYLINE con sus arcos; «Líneas y arcos (R12)», como LINE y ARC sueltos. Capas: PERFIL, INTERIOR, ABIERTO, CAJERA, ISLA y TEXTO. No lleva cero pieza, entradas ni mecanizado: para eso usa el JSON.</p>
             <p><strong>SVG</strong>: a escala 1:1 en mm, con los arcos como arcos reales y grupos PERFIL, INTERIOR y COTAS. Sirve para imprimir o documentar el ejercicio. La vía completa es el JSON.</p>
             <h3>Cotas automáticas</h3>
+            <p>Con <strong>Reparto: Desde el cero pieza</strong> (como en Contornos sencillos), las situaciones van en filas por el lado del cero, de menor a mayor, con los totales fuera; junto a cada elemento, solo lo suyo. <strong>Por lados</strong> es el reparto anterior, y los archivos antiguos lo conservan.</p>
             <p>Activa «Acotar automáticamente» en Dibujo: longitud de cada recta (por fuera de cada contorno; los lados paralelos iguales se acotan una sola vez), radio de cada arco (agrupados como «2×R4»), diámetro de los círculos y medidas totales de ancho y alto. Se actualizan en vivo mientras editas. «Solo radios y totales» deja el plano más limpio. Marca «Cotas en el SVG» para exportarlas.</p>
             <div class="help-tip"><strong>Exterior o interior:</strong> se decide solo por anidamiento (un contorno dentro de otro es interior). Puedes forzarlo en el panel de la derecha.</div>
         </div>
@@ -2326,7 +2333,7 @@ let cfgAux = { modo:'2p', ang:0, dist:10, radio:0 };
 let cfgFresa = { ver:false, d:6, herr:null };
 let cfgMec = { T:101, F:1000, Fz:300, F0:5000, S:12000, zSeg:20, prof:3, paso:3, acab:0, coord:'G90', comp:'G40', estr:'plano', unid:'G71', ancho:true, orden:'int' };   // ⚙️ Mecanizar   // herr: la herramienta de la base elegida (si la hay)
 let fresaRes = null;
-let cfgCotas = { ver:false, nivel:'todo', incl:'proy', cero:true, entrada:true, sentido:true, centros:true, cadena:true, verOcultas:false };
+let cfgCotas = { ver:false, nivel:'todo', dist:'cero', incl:'proy', cero:true, entrada:true, sentido:true, centros:true, cadena:true, verOcultas:false };
 let cotasAjuste = {};   // clave de cota → { oculta, dn, dt, v } (posición manual u ocultación)
 let cotasPantalla = [];   // cajas de los textos de cota en pantalla (para el doble clic)
 let cotaEdit = null, cotaHover = null;
@@ -4806,6 +4813,7 @@ function cotaClave(r) {
         case 'agu': return `agu|${r.ci}|${r.eje}`;
         case 'cen': return `cen|${r.ci}|${r.si}|${r.eje}`;
         case 'man': return `man|${r.id}`;
+        case 'zc': return `zc|${r.eje}|${r.k}`;
         default: return `${r.tipo}|${r.eje || ''}`; // tot, sit
     }
 }
@@ -4999,7 +5007,115 @@ function construirCotas(lista, tipos, u, nivel, origen, opts) {
         }
     };
     const ejes = (C, e) => { eje(add(C, { x:-e, y:0 }), add(C, { x:e, y:0 })); eje(add(C, { x:0, y:-e }), add(C, { x:0, y:e })); };
-    if (!opts.sinAuto) lista.forEach((c, i) => {
+    // ── Reparto desde el cero (como Contornos sencillos): las situaciones, en filas por el lado del cero, de menor a mayor,
+    //    y fuera del todo las medidas totales. Junto a cada elemento, solo lo suyo: radio, chaflán, cuerda, tamaño ──
+    const modoCero = cfgCotas.dist === 'cero' && !!bb && !opts.sinAuto;
+    const cotasDesdeCero = () => {
+        const vivos = lista.map((c, i) => ({ c, i })).filter(o => o.c.pts.length >= 2 && !o.c.texto && !o.c.deTexto);
+        const cand = vivos.filter(o => o.c.cerrado && tipos[o.i] !== 'interior' && !esCirculoContorno(o.c) && !esRanuraContorno(o.c));
+        const area = o => { const q = bboxPts(o.c.pts); return (q.x1 - q.x0) * (q.y1 - q.y0); };
+        const ex = cand.length ? cand.reduce((a, b) => area(b) > area(a) ? b : a) : null;
+        const B = ex ? bboxPts(ex.c.pts) : bb, M = bboxPts([].concat(...vivos.map(o => muestrearContorno(o.c).concat(o.c.pts))));
+        const zx = Math.abs(B.x0 - O.x) <= Math.abs(B.x1 - O.x) ? B.x0 : B.x1, zy = Math.abs(B.y0 - O.y) <= Math.abs(B.y1 - O.y) ? B.y0 : B.y1;
+        const ox = zx === B.x0 ? B.x1 : B.x0, oy = zy === B.y0 ? B.y1 : B.y0, sx = zx === B.x0 ? -1 : 1, sy = zy === B.y0 ? -1 : 1;
+        const Z = { x:zx, y:zy }, cx = (B.x0 + B.x1) / 2, cy = (B.y0 + B.y1) / 2, todo = nivel === 'todo', E = 1e-6;
+        const fueraX = zx === B.x0 ? B.x0 - M.x0 : M.x1 - B.x1, fueraY = zy === B.y0 ? B.y0 - M.y0 : M.y1 - B.y1;
+        const filaX = new Set(), filaY = new Set();
+        const sitX = x => { if (todo && Math.abs(x - zx) > E && Math.abs(x - ox) > E) filaX.add(+x.toFixed(4)); };
+        const sitY = y => { if (todo && Math.abs(y - zy) > E && Math.abs(y - oy) > E) filaY.add(+y.toFixed(4)); };
+        const sit = q => { sitX(q.x); sitY(q.y); };
+        const zc = (eje, k, valor) => ({ tipo:'zc', eje, k, valor });
+        const medH = (A, C, y, k) => { if (todo && Math.abs(A.x - C.x) > E) cotaEntre(A, C, { x:A.x, y }, { x:C.x, y }, fmt(Math.abs(A.x - C.x)), zc('x', k, Math.abs(A.x - C.x)), true); };
+        const medV = (A, C, x, k) => { if (todo && Math.abs(A.y - C.y) > E) cotaEntre(A, C, { x, y:A.y }, { x, y:C.y }, fmt(Math.abs(A.y - C.y)), zc('y', k, Math.abs(A.y - C.y)), true); };
+        const radioCruz = (C, r, ang, ref, cruz2) => {
+            if (cfgCotas.centros !== false) { ejes(C, 2.5); if (cruz2) ejes(cruz2, 2.5); }
+            const e = { x:Math.cos(ang), y:Math.sin(ang) }, tip = add(C, mulv(e, r));
+            grupo(ref, () => { linea(C, tip); flecha(tip, e); conHombro(tip, e, 'R' + fmt(r), ref); });
+        };
+        if (ex) {
+            const ts = tramos(ex.c), n = ts.length, ci = ex.i, cerr = ex.c.cerrado;
+            const vec = (t, o) => { const j = t.i + o; return (j >= 0 && j < n) || cerr ? ts[(j + n) % n] : null; };
+            const esH = t => !t.b && Math.abs(t.p1.y - t.p2.y) < E, esV = t => !t.b && Math.abs(t.p1.x - t.p2.x) < E;
+            const tang = (u1, u2) => { const a = tangenteFinal(u1.p1, u1.p2, u1.b), b = tangenteInicial(u2.p1, u2.p2, u2.b); return Math.abs(cross(a, b)) < .01 && dot(a, b) > 0; };
+            const empalme = t => { const a = vec(t, -1), b = vec(t, 1); return !!t.b && a && b && !a.b && !b.b && tang(a, t) && tang(t, b); };
+            const enLado = t => { const a = vec(t, -1), b = vec(t, 1); if (!t.b || !a || !b) return false; return (esH(a) && esH(b) && Math.abs(a.p1.y - b.p1.y) < E) || (esV(a) && esV(b) && Math.abs(a.p1.x - b.p1.x) < E); };
+            const chaflan = t => { const a = vec(t, -1), b = vec(t, 1); return !t.b && !esH(t) && !esV(t) && a && b && ((esH(a) && esV(b)) || (esV(a) && esH(b))); };
+            const corte = (a, b) => { const r = sub(a.p2, a.p1), q = sub(b.p2, b.p1), dn = cross(r, q); if (Math.abs(dn) < 1e-9) return null; return add(a.p1, mulv(r, cross(sub(b.p1, a.p1), q) / dn)); };
+            ts.forEach(t => {
+                if (!t.b) {
+                    if (chaflan(t)) {
+                        const a = vec(t, -1), b = vec(t, 1), C = corte(a, b), ph = esH(a) ? t.p1 : t.p2, pv = esH(a) ? t.p2 : t.p1, ax = C.x > cx ? 1 : -1, ay = C.y > cy ? 1 : -1;
+                        medH(C, ph, C.y + ay * sep * .6, 'chH' + t.i); medV(C, pv, C.x + ax * sep * .6, 'chV' + t.i);
+                        return;
+                    }
+                    if (esH(t)) sitY(t.p1.y); if (esV(t)) sitX(t.p1.x);
+                    [[-1, t.p1], [1, t.p2]].forEach(([o, fin]) => {
+                        const v = vec(t, o);
+                        if (!v) { sit(fin); return; }
+                        if (enLado(v)) return;
+                        if (empalme(v) || chaflan(v)) { const w = vec(v, o); sit((w && corte(t, w)) || fin); return; }
+                        sit(fin);
+                    });
+                    if (!esH(t) && !esV(t) && todo && cfgCotas.incl !== 'proy') {
+                        const l = dist(t.p1, t.p2), w = norm(sub(t.p2, t.p1)), nOut = mulv({ x:w.y, y:-w.x }, areaFirmada(muestrearContorno(ex.c)) >= 0 ? 1 : -1);
+                        alineada(t.p1, t.p2, nOut, sep, fmt(l), { tipo:'lin', ci, si:t.i, valor:l });
+                        if (cfgCotas.incl === 'ang') anguloTramo(t, ci);
+                    }
+                    return;
+                }
+                const a = arcoDeBulge(t.p1, t.p2, t.b); if (!a) return;
+                const lateral = enLado(t), hor = lateral && Math.abs(t.p1.y - t.p2.y) < E, am = a.a1 + a.theta / 2, descentrado = lateral && Math.abs(hor ? a.c.y - t.p1.y : a.c.x - t.p1.x) > E;
+                radioCruz(a.c, a.r, am + (descentrado ? .2 : 0), { tipo:'rad', ci, sis:[t.i], valor:a.r });
+                if (empalme(t)) return;       // redondeo: basta su radio
+                if (!lateral) { sit(t.p1); sit(t.p2); if (cfgCotas.centros !== false) sit(a.c); return; }
+                const m = { x:(t.p1.x + t.p2.x) / 2, y:(t.p1.y + t.p2.y) / 2 }, d0 = hor ? Math.abs(a.c.y - m.y) : Math.abs(a.c.x - m.x), cuerda = dist(t.p1, t.p2), conCuerda = d0 > E && Math.round(cuerda) % 4 === 0;
+                const extra = sep * (conCuerda ? 1.7 : 1);
+                if (hor) {
+                    if (Math.abs(m.y - oy) < E) { const u0 = m.y > cy ? 1 : -1, sal = u0 > 0 ? M.y1 - B.y1 : B.y0 - M.y0; medH({ x:zx, y:m.y }, m, m.y + u0 * (sal + extra), 'sit' + t.i); } else sitX(m.x);
+                } else {
+                    if (Math.abs(m.x - ox) < E) { const u0 = m.x > cx ? 1 : -1, sal = u0 > 0 ? M.x1 - B.x1 : B.x0 - M.x0; medV({ x:m.x, y:zy }, m, m.x + u0 * (sal + extra), 'sit' + t.i); } else sitY(m.y);
+                }
+                if (d0 > E) {     // Pitágoras: la cuerda o la distancia al centro
+                    const np = hor ? (m.y > cy ? 1 : -1) : (m.x > cx ? 1 : -1), lat = cuerda / 2 + sep * .8;
+                    if (conCuerda) { if (hor) medH(t.p1, t.p2, m.y + np * sep * .8, 'cu' + t.i); else medV(t.p1, t.p2, m.x + np * sep * .8, 'cu' + t.i); }
+                    else if (hor) medV(m, { x:m.x, y:a.c.y }, a.c.x + lat, 'dc' + t.i);
+                    else medH(m, { x:a.c.x, y:m.y }, a.c.y + lat, 'dc' + t.i);
+                }
+            });
+        }
+        vivos.filter(o => o !== ex).forEach(({ c, i }) => {
+            const circ = esCirculoContorno(c), ran = !circ && esRanuraContorno(c);
+            if (circ) {
+                sit(circ.c); if (cfgCotas.centros !== false) ejes(circ.c, 2.5);
+                const ref = { tipo:'diam', ci:i, valor:2 * circ.r }, e = { x:Math.SQRT1_2, y:Math.SQRT1_2 }, q = sub(circ.c, mulv(e, circ.r)), tip = add(circ.c, mulv(e, circ.r));
+                grupo(ref, () => { linea(q, tip); flecha(q, mulv(e, -1)); flecha(tip, e); conHombro(tip, e, 'Ø' + fmt(2 * circ.r), ref); });
+                return;
+            }
+            if (ran) {
+                const Zq = { x:zx, y:zy }, [c1, c2] = dist(ran.c1, Zq) <= dist(ran.c2, Zq) ? [ran.c1, ran.c2] : [ran.c2, ran.c1], hz = Math.abs(c1.y - c2.y) < E;
+                const si = tramos(c).findIndex(t => t.b && dist(arcoDeBulge(t.p1, t.p2, t.b).c, c2) < E);
+                sit(c1); if (cfgCotas.centros !== false) linea(c1, c2);
+                radioCruz(c2, ran.r, hz ? (c2.x >= c1.x ? 0 : Math.PI) : (c2.y >= c1.y ? Math.PI / 2 : -Math.PI / 2), { tipo:'rad', ci:i, sis:[si < 0 ? 1 : si], valor:ran.r }, c1);
+                if (hz) medH(c1, c2, c1.y + ran.r + sep * .6, 'ran' + i); else medV(c1, c2, c1.x + ran.r + sep * .6, 'ran' + i);
+                return;
+            }
+            const q = bboxPts(muestrearContorno(c));
+            sit({ x:Math.abs(q.x0 - zx) <= Math.abs(q.x1 - zx) ? q.x0 : q.x1, y:Math.abs(q.y0 - zy) <= Math.abs(q.y1 - zy) ? q.y0 : q.y1 });
+            medH({ x:q.x0, y:q.y1 }, { x:q.x1, y:q.y1 }, q.y1 + sep * .6, 'an' + i); medV({ x:q.x1, y:q.y0 }, { x:q.x1, y:q.y1 }, q.x1 + sep * .6, 'al' + i);
+            const radios = new Map();
+            tramos(c).forEach(t => { if (!t.b) return; const a = arcoDeBulge(t.p1, t.p2, t.b); if (!a) return; const k = a.r.toFixed(4); if (radios.has(k)) { radios.get(k).n++; radios.get(k).sis.push(t.i); } else radios.set(k, { a, n:1, sis:[t.i] }); });
+            radios.forEach(({ a, n, sis }) => conHombro(a.apice, norm(sub(a.apice, a.c)), (n > 1 ? n + '×' : '') + 'R' + fmt(a.r), { tipo:'rad', ci:i, sis, valor:a.r }));
+        });
+        let dy = fueraY + sep * .9, dx = fueraX + sep * .9; const paso = sep * .85;
+        [...filaX].sort((a, b) => Math.abs(a - zx) - Math.abs(b - zx)).forEach(x => { cotaEntre(Z, { x, y:zy }, { x:zx, y:zy + sy * dy }, { x, y:zy + sy * dy }, fmt(Math.abs(x - zx)), zc('x', 'f' + x.toFixed(3), Math.abs(x - zx)), true); dy += paso; });
+        [...filaY].sort((a, b) => Math.abs(a - zy) - Math.abs(b - zy)).forEach(y => { cotaEntre(Z, { x:zx, y }, { x:zx + sx * dx, y:zy }, { x:zx + sx * dx, y }, fmt(Math.abs(y - zy)), zc('y', 'f' + y.toFixed(3), Math.abs(y - zy)), true); dx += paso; });
+        const piv = { x:B.x0, y:B.y0 };
+        cotaEntre(Z, { x:ox, y:zy }, { x:zx, y:zy + sy * dy }, { x:ox, y:zy + sy * dy }, fmt(B.x1 - B.x0), { tipo:'tot', eje:'x', piv, valor:B.x1 - B.x0 }, true);
+        cotaEntre(Z, { x:zx, y:oy }, { x:zx + sx * dx, y:zy }, { x:zx + sx * dx, y:oy }, fmt(B.y1 - B.y0), { tipo:'tot', eje:'y', piv, valor:B.y1 - B.y0 }, true);
+        return { x:dy, y:dx };
+    };
+    const fueraCero = modoCero ? cotasDesdeCero() : null;
+    if (!opts.sinAuto && !modoCero) lista.forEach((c, i) => {
         if (c.pts.length < 2 || c.texto || c.deTexto) return;
         const circ = esCirculoContorno(c);
         if (circ) {
@@ -5063,7 +5179,8 @@ function construirCotas(lista, tipos, u, nivel, origen, opts) {
         radios.forEach(({ a, n, sis }) => conHombro(a.apice, norm(sub(a.apice, a.c)), (n > 1 ? n + '×' : '') + 'R' + fmt(a.r), { tipo:'rad', ci:i, sis, valor:a.r }));
     });
     const totalesFuera = { x:0, y:0 };
-    if (bb && !opts.sinAuto) {
+    if (fueraCero) { totalesFuera.x = fueraCero.x; totalesFuera.y = fueraCero.y; }
+    if (bb && !opts.sinAuto && !modoCero) {
         const dT = sep * (nivel === 'todo' ? 2.4 : 1.2);
         const dTx = enCadena && filasCadena.b.length ? Math.max(sep * 1.2, sep * (filasCadena.b.length + 1)) : dT;
         const dTy = enCadena && filasCadena.l.length ? Math.max(sep * 1.2, sep * (filasCadena.l.length + 1)) : dT;
@@ -5085,7 +5202,7 @@ function construirCotas(lista, tipos, u, nivel, origen, opts) {
             const pX = muestras.reduce((m, q) => q.x < m.x ? q : m, muestras[0]);
             const pY = muestras.reduce((m, q) => q.y < m.y ? q : m, muestras[0]);
             const extra = sep * (nivel === 'todo' ? 3.6 : 2.4);
-            const extraX = enCadena ? Math.max(extra, totalesFuera.x + sep * 1.2) : extra, extraY = enCadena ? Math.max(extra, totalesFuera.y + sep * 1.2) : extra;
+            const extraX = enCadena || modoCero ? Math.max(extra, totalesFuera.x + sep * 1.2) : extra, extraY = enCadena || modoCero ? Math.max(extra, totalesFuera.y + sep * 1.2) : extra;
             if (Math.abs(bb.x0 - O.x) > 1e-6) {
                 const yL = Math.min(O.y, bb.y0) - extraX;
                 cotaEntre(O, pX, { x:O.x, y:yL }, { x:pX.x, y:yL }, fmt(Math.abs(bb.x0 - O.x)), { tipo:'sit', eje:'x', valor:Math.abs(bb.x0 - O.x), signo:Math.sign(bb.x0 - O.x) });
@@ -5162,7 +5279,7 @@ function construirCotas(lista, tipos, u, nivel, origen, opts) {
             });
         }
     });
-    if (cfgCotas.cadena !== false) evitarSolapesTextos(V.T.filter(t => !t.oculta), h, u);
+    if (cfgCotas.cadena !== false || modoCero) evitarSolapesTextos(V.T.filter(t => !t.oculta), h, u);
     return { L:V.L, T:V.T, F:V.F, E:V.E, ocultas:Hc };
 }
 // Si dos números de cota se pisan, el segundo se desplaza a lo largo de su línea de cota (o hacia arriba
@@ -6462,7 +6579,7 @@ function cargarAutoInterno() {
     if (typeof d.nombre === 'string') document.getElementById('projectName').value = d.nombre;
     contornos = sanearContornos(d.contornos);
     if (esObj(d.view) && isFinite(+d.view.z) && +d.view.z > 0 && isFinite(+d.view.cx) && isFinite(+d.view.cy)) view = { z:+d.view.z, cx:+d.view.cx, cy:+d.view.cy };
-    asignarCfg(snapCfg, d.snapCfg); asignarCfg(cfgCotas, d.cfgCotas);
+    asignarCfg(snapCfg, d.snapCfg); asignarCfg(cfgCotas, d.cfgCotas); if (esObj(d.cfgCotas) && !d.cfgCotas.dist) cfgCotas.dist = 'lados';
     if (Array.isArray(d.aux)) aux = sanearAux(d.aux);
     asignarCfg(cfgAux, d.cfgAux); asignarCfg(cfgFresa, d.cfgFresa); asignarCfg(cfgTr, d.cfgTr);
     cotasAjuste = esObj(d.cotasAjuste) ? d.cotasAjuste : {};
@@ -6800,7 +6917,7 @@ function abrirJSONDatos(d) {
         migrarRefsCotas();
         if (esObj(d.calcador)) {
             // Archivos de la v31 en adelante: opciones de acotado, auxiliares y cajetín
-            if (esObj(d.calcador.cfgCotas)) { asignarCfg(cfgCotas, d.calcador.cfgCotas); sincronizarControlesCotas(); }
+            if (esObj(d.calcador.cfgCotas)) { asignarCfg(cfgCotas, d.calcador.cfgCotas); if (!d.calcador.cfgCotas.dist) cfgCotas.dist = 'lados'; sincronizarControlesCotas(); }
             if (Array.isArray(d.calcador.aux)) aux = sanearAux(d.calcador.aux);
             requisitosPorDefecto();
             if (esObj(d.calcador.cfgHoja)) asignarCfg(cfgHoja, d.calcador.cfgHoja);
@@ -8027,7 +8144,7 @@ function abrirCtxCota(kc, sx, sy) {
     const movida = !!(aj.dn || aj.dt || (aj.v && (aj.v.x || aj.v.y)));
     ctxPanel.innerHTML = `
         <div class="ctx-titulo">Cota ${ref.valor !== undefined ? fmt(ref.valor, 3) + (ref.tipo === 'ang' ? '°' : '') : ''}${aj.oculta ? ' (oculta)' : ''}</div>
-        ${ref.tipo !== 'cen' ? '<button id="ccEditar">✎ Cambiar la medida…</button>' : '<div class="ctx-nota">Cota de referencia (centro de arco)</div>'}
+        ${ref.tipo === 'zc' ? '<div class="ctx-nota">Cota de situación: cambia el punto en el dibujo</div>' : ref.tipo !== 'cen' ? '<button id="ccEditar">✎ Cambiar la medida…</button>' : '<div class="ctx-nota">Cota de referencia (centro de arco)</div>'}
         <button id="ccOcultar">${aj.oculta ? '👁 Mostrar esta cota' : '🚫 Ocultar esta cota'}</button>
         ${movida ? '<button id="ccPos">↺ Volver a su posición automática</button>' : ''}
         ${ref.tipo === 'man' && ref.id !== '_previa' ? '<button id="ccBorrar">✕ Borrar esta cota manual</button>' : ''}
@@ -14743,6 +14860,7 @@ function actualizarNotaEscala() {
 document.getElementById('selEscala').addEventListener('change', () => { actualizarNotaEscala(); guardarAuto(); });
 document.getElementById('chkCotas').addEventListener('change', e => { cfgCotas.ver = e.target.checked; encuadrar(); });
 document.getElementById('selNivelCotas').addEventListener('change', e => { cfgCotas.nivel = e.target.value; render(); guardarAuto(); });
+document.getElementById('selDist').addEventListener('change', e => { cfgCotas.dist = e.target.value; render(); guardarAuto(); });
 document.getElementById('selIncl').addEventListener('change', e => { cfgCotas.incl = e.target.value; render(); guardarAuto(); });
 [['chkCero', 'cero'], ['chkEntrada', 'entrada'], ['chkSentido', 'sentido'], ['chkCentros', 'centros'], ['chkCadena', 'cadena'], ['chkVerOcultas', 'verOcultas']].forEach(([id, k]) =>
     document.getElementById(id).addEventListener('change', e => { cfgCotas[k] = e.target.checked; render(); guardarAuto(); }));
@@ -16085,6 +16203,7 @@ document.getElementById('selPaso').value = String(snapCfg.paso);
 function sincronizarControlesCotas() {
     document.getElementById('chkCotas').checked = !!cfgCotas.ver;
     document.getElementById('selNivelCotas').value = cfgCotas.nivel;
+    document.getElementById('selDist').value = cfgCotas.dist || 'lados';
     document.getElementById('selIncl').value = cfgCotas.incl || 'proy';
     document.getElementById('chkCero').checked = cfgCotas.cero !== false;
     document.getElementById('chkEntrada').checked = cfgCotas.entrada !== false;
@@ -16103,6 +16222,7 @@ HB.marcar(document.getElementById('hbSel'), cfgFresa.herr && cfgFresa.herr.id ||
 document.getElementById('chkFresa').checked = cfgFresa.ver;
 mostrarCamposAux();
 document.getElementById('selNivelCotas').value = cfgCotas.nivel;
+document.getElementById('selDist').value = cfgCotas.dist || 'lados';
 document.getElementById('selIncl').value = cfgCotas.incl || 'proy';
 document.getElementById('chkCero').checked = cfgCotas.cero !== false;
 document.getElementById('chkEntrada').checked = cfgCotas.entrada !== false;
@@ -17086,7 +17206,7 @@ window.addEventListener('load', () => setTimeout(() => {
     if (dibP && !VIS) {
         const det = (cls, titulo) => { const d = document.createElement('details'); d.className = 'c2-opciones ' + cls; d.innerHTML = '<summary>' + titulo + '</summary>'; return d; };
         const cotas = det('c2-cotas', 'Cotas y marcas'), linea = id => { const e = $(id); return e && e.closest('.param-line'); };
-        ['chkCotas', 'selNivelCotas', 'selIncl', 'chkCero', 'chkEntrada', 'chkSentido', 'chkCentros', 'chkCadena', 'chkVerOcultas'].forEach(id => { const l = linea(id); if (l) cotas.appendChild(l); });
+        ['chkCotas', 'selNivelCotas', 'selDist', 'selIncl', 'chkCero', 'chkEntrada', 'chkSentido', 'chkCentros', 'chkCadena', 'chkVerOcultas'].forEach(id => { const l = linea(id); if (l) cotas.appendChild(l); });
         const rest = dibP.querySelector('button[onclick="restaurarCotas()"]'); if (rest) cotas.appendChild(rest);
         const aj = dibP.querySelector('.ajuste-box'), ajuste = det('c2-ajuste', 'Ajustar medidas');
         if (aj) { [...aj.children].forEach(ch => ajuste.appendChild(ch)); aj.remove(); }
