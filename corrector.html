@@ -651,7 +651,7 @@
 <body>
 <div class="app-window">
     <header class="top-bar">
-        <a href="index.html" class="ir-portada" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a><span class="top-bar-title">✅ Corrector — Por Eloi A.A.<span class="ver-suite" title="Versión del programa (generado a partir del Calcador v123)" style="font-size:11px;font-weight:600;padding:1px 7px;margin-left:8px;border-radius:9px;background:rgba(0,90,156,.12);color:#005A9C;vertical-align:middle">v68</span></span>
+        <a href="index.html" class="ir-portada" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a><span class="top-bar-title">✅ Corrector — Por Eloi A.A.<span class="ver-suite" title="Versión del programa (generado a partir del Calcador v124)" style="font-size:11px;font-weight:600;padding:1px 7px;margin-left:8px;border-radius:9px;background:rgba(0,90,156,.12);color:#005A9C;vertical-align:middle">v69</span></span>
         <div class="top-bar-right">
             <input class="project-name" id="projectName" type="text" value="calco_sin_nombre" placeholder="Nombre del proyecto">
             <div class="c2-archivo"><button class="btn-manual" onclick="nuevo()" title="Empieza de cero (se puede deshacer)">🗋 Nuevo</button><button class="btn-manual" onclick="document.getElementById('fileJSON').click()" title="Abre un proyecto .json del Calcador o del Corrector">📂 Abrir</button><button class="btn-manual" onclick="exportarJSON()" title="Guarda el proyecto en un archivo JSON: lo abren el Calcador, el Corrector, el Tutor y el Simulador (como plano del ejercicio)">💾 Guardar</button><button class="btn-manual" onclick="abrirBiblioteca()" title="Tus ejercicios: buscar, abrir e imprimir sus hojas">🗂 Biblioteca</button></div>
@@ -1100,10 +1100,22 @@
         <div class="help-header"><h2>📐 Contornos sencillos</h2><button class="help-close" onclick="cerrarPiezaContorno()">✕</button></div>
         <div class="var-cuerpo">
             <div class="var-opciones">
-                <p class="ctx-nota">La pieza se construye como en el nivel Contorno de Arcos I J: un rectángulo con redondeos y entallas o salientes centrados, y las cotas salen de esa construcción. Haz clic en una propuesta.</p>
-                <div class="cr-req-t">La pieza puede llevar</div>
+                <p class="ctx-nota">La pieza se construye como en el nivel Contorno de Arcos I J: un rectángulo con redondeos, chaflanes y entallas o salientes centrados, y las cotas salen de esa construcción. Haz clic en una propuesta.</p>
+                <div class="cr-req-t">Nivel</div>
+                <select id="pcNivel" onchange="pcElegirNivel(this.value)" title="Pone las opciones de cada nivel; si cambias alguna a mano, pasa a «Libre»"><option value="libre">Libre</option><option value="1">1 · Rectas y chaflanes</option><option value="2">2 · Redondeos y taladros</option><option value="3">3 · Semicírculos y colisos</option><option value="4">4 · Pitágoras y huecos</option></select>
+                <div class="cr-req-t">Tamaño</div>
+                <div class="param-line" title="La pieza sale entre el 60 % y el 100 % de esta medida, de 10 en 10 mm">Ancho máximo (mm) <input type="number" id="pcAncho" min="80" max="2000" step="10" value="200" onchange="pintarPiezasC()"></div>
+                <div class="param-line">Alto máximo (mm) <input type="number" id="pcAlto" min="80" max="2000" step="10" value="140" onchange="pintarPiezasC()"></div>
+                <div class="cr-req-t">Esquinas</div>
                 <div class="gen-chips">
-                    <label class="gen-chip"><input type="checkbox" id="pcRed" checked onchange="pintarPiezasC()"> Redondeos</label>
+                    <label class="gen-chip" title="Si se quita, las cuatro esquinas llevan forma"><input type="checkbox" id="pcRec" checked onchange="pintarPiezasC()"> Rectas</label>
+                    <label class="gen-chip"><input type="checkbox" id="pcRed" checked onchange="pintarPiezasC()"> Redondeadas</label>
+                    <label class="gen-chip" title="Los dos catetos iguales"><input type="checkbox" id="pcC45" checked onchange="pintarPiezasC()"> Chaflán a 45°</label>
+                    <label class="gen-chip" title="Catetos distintos: hay que calcular los dos puntos"><input type="checkbox" id="pcCDes" onchange="pintarPiezasC()"> Chaflán desigual</label>
+                </div>
+                <div class="param-line" title="Cuántas esquinas llevan redondeo o chaflán">Esquinas con forma <span class="gen-rango"><input type="number" id="pcEMin" min="0" max="4" step="1" value="2" onchange="pintarPiezasC()"> a <input type="number" id="pcEMax" min="0" max="4" step="1" value="4" onchange="pintarPiezasC()"></span></div>
+                <div class="cr-req-t">Lados</div>
+                <div class="gen-chips">
                     <label class="gen-chip"><input type="checkbox" id="pcSemi" checked onchange="pintarPiezasC()"> Semicírculos</label>
                     <label class="gen-chip"><input type="checkbox" id="pcPit" checked onchange="pintarPiezasC()"> Arcos con Pitágoras</label>
                 </div>
@@ -13768,29 +13780,32 @@ function pcConstruir(sem, op) {
     const R = genAleatorio(sem), DIR = [{ x:1, y:0 }, { x:0, y:1 }, { x:-1, y:0 }, { x:0, y:-1 }];
     const lista = modo => { const o = []; for (let r = 12; r <= 60; r++) { if (modo === 'cuerda') { for (let c = 10; c <= 2 * r - 6; c += 2) { const h = c / 2, dd = Math.sqrt(r * r - h * h); if (dd >= 4 && h >= 5 && Math.abs(dd - Math.round(dd)) < 1e-9) o.push({ R:r, h, d:Math.round(dd) }); } } else { for (let dd = 4; dd <= r - 4; dd++) { const h = Math.sqrt(r * r - dd * dd); if (h >= 5 && Math.abs(h - Math.round(h)) < 1e-9) o.push({ R:r, h:Math.round(h), d:dd }); } } } return o; };
     for (let n = 0; n < 400; n++) {
-        const W = R.entero(12, 20) * 10, H = R.entero(8, 14) * 10, C = [{ x:0, y:0 }, { x:W, y:0 }, { x:W, y:H }, { x:0, y:H }], r = [0, 0, 0, 0], lados = [null, null, null, null];
-        if (op.red) { for (let i = 0; i < 4; i++) r[i] = R.uno([0, 10, 15, 20, 25, 30].filter(v => v <= Math.min(W, H) / 4)); if (r.every(v => !v)) r[R.entero(0, 3)] = R.uno([10, 15, 20]); }
+        const paso = (M) => R.entero(Math.max(8, Math.ceil(M * .06)), Math.max(8, Math.floor(M / 10))) * 10, W = paso(op.W), H = paso(op.H), C = [{ x:0, y:0 }, { x:W, y:0 }, { x:W, y:H }, { x:0, y:H }], lados = [null, null, null, null], esq = [null, null, null, null];
+        const formas = [op.red && 'r', op.c45 && 'c', op.cd && 'd'].filter(Boolean), lim = Math.min(W, H) / 4, nEsq = !formas.length ? 0 : !op.rec ? 4 : R.entero(Math.min(op.eMin, op.eMax), op.eMax), orden = [0, 1, 2, 3];
+        for (let i = 3; i > 0; i--) { const j = R.entero(0, i); [orden[i], orden[j]] = [orden[j], orden[i]]; }
+        orden.slice(0, nEsq).forEach(i => { const f = R.uno(formas), v = l => R.uno(l.filter(x => x <= lim)); esq[i] = f === 'r' ? { t:'r', a:v([10, 15, 20, 25, 30]) } : f === 'c' ? { t:'c', a:v([10, 15, 20]) } : { t:'c', a:v([10, 15, 20]), b:v([20, 25, 30]) }; const e = esq[i]; e.b = e.b || e.a; if (e.t === 'c' && R() < .5 && e.a !== e.b) [e.a, e.b] = [e.b, e.a]; });
+        const ent = esq.map(e => e ? e.a : 0), sal = esq.map(e => e ? e.b : 0);   // lo que la esquina quita del lado que llega y del que sale
         const tipos = [op.semi && 'semi', op.pit && 'pit'].filter(Boolean);
         if (tipos.length) { const i0 = R.entero(0, 3), ls = R() < .35 || !op.red ? [i0, (i0 + 2) % 4] : [i0];
-            for (const i of ls) { const len = i % 2 === 0 ? W : H, perp = i % 2 === 0 ? H : W, libre = len - r[i] - r[(i + 1) % 4], t = R.uno(tipos);
+            for (const i of ls) { const len = i % 2 === 0 ? W : H, perp = i % 2 === 0 ? H : W, libre = len - sal[i] - ent[(i + 1) % 4], t = R.uno(tipos);
                 if (t === 'semi') { const o = [10, 15, 20, 25, 30].filter(v => 2 * v <= libre - 20 && v <= perp * .4); if (o.length) { const v = R.uno(o); lados[i] = { t, R:v, h:v, d:0 }; } }
                 else { const sub2 = R.uno(['entalla', 'saliente']), modo = R.uno(['cuerda', 'dist']), o = lista(modo).filter(D => 2 * D.h <= libre - 20 && (sub2 === 'entalla' ? D.R - D.d <= perp * .4 : D.R - D.d <= 35)); if (o.length) { const D = R.uno(o); lados[i] = { t, sub:sub2, modo, R:D.R, h:D.h, d:D.d }; } } } }
-        if (!r.some(Boolean) && !lados.some(Boolean)) continue;
         // en sentido antihorario, empezando en el lado de abajo
         const pts = [], b = [], arcos = [], add2 = (p, q) => ({ x:p.x + q.x, y:p.y + q.y }), kp = (p, q, k) => ({ x:p.x + q.x * k, y:p.y + q.y * k });
         const tramo = (p, bu) => { const u = pts[pts.length - 1]; if (u && Math.hypot(u.x - p.x, u.y - p.y) < 1e-9) { b[b.length - 1] = bu; return; } pts.push(p); b.push(bu); };
-        const ini = kp(C[0], DIR[0], r[0]); pts.push(ini); b.push(0);
+        const ini = kp(C[0], DIR[0], sal[0]), chaf = []; pts.push(ini); b.push(0);
         for (let i = 0; i < 4; i++) { const tg = DIR[i], nL = { x:-tg.y, y:tg.x }, j = (i + 1) % 4, f = lados[i];
             if (f) { const len = i % 2 === 0 ? W : H, m = kp(C[i], tg, len / 2), pA = kp(m, tg, -f.h), pB = kp(m, tg, f.h); tramo(pA, 0);
                 let Cc, ccw; if (f.t === 'semi') { Cc = m; ccw = false; } else if (f.sub === 'entalla') { Cc = kp(m, nL, -f.d); ccw = false; } else { Cc = kp(m, nL, f.d); ccw = true; }
                 b[b.length - 1] = bulgeAlrededor(pA, pB, Cc, ccw); arcos.push({ c:Cc, r:f.R, f, lado:i, m, pA, pB, nL }); pts.push(pB); b.push(0); }
-            const fin = kp(C[j], tg, -r[j]); tramo(fin, 0);
-            if (r[j]) { const e = kp(C[j], DIR[j], r[j]), Cc = kp(fin, nL, r[j]); b[b.length - 1] = bulgeAlrededor(fin, e, Cc, true); arcos.push({ c:Cc, r:r[j], esquina:j }); if (j === 0) break; pts.push(e); b.push(0); } }
+            const fin = kp(C[j], tg, -ent[j]); tramo(fin, 0); const E = esq[j];
+            if (E) { const e = kp(C[j], DIR[j], sal[j]); if (E.t === 'r') { const Cc = kp(fin, nL, E.a); b[b.length - 1] = bulgeAlrededor(fin, e, Cc, true); arcos.push({ c:Cc, r:E.a, esquina:j }); } else chaf.push({ C:C[j], fin, e });
+                if (j === 0) break; pts.push(e); b.push(0); } }
         // el último punto coincide con el primero: se cierra
         const u = pts[pts.length - 1]; if (Math.hypot(u.x - ini.x, u.y - ini.y) < 1e-9) { pts.pop(); const bu = b.pop(); b[b.length - 1] = b[b.length - 1] || bu; }
         const cont = { pts, b, cerrado:true, tipo:'auto' };
         if (R() < .5) invertirContorno(cont);
-        return { cont, W, H, arcos };
+        return { cont, W, H, arcos, chaf };
     }
     return null;
 }
@@ -13818,16 +13833,22 @@ function pcInteriores(P, sem, op) {
     }
     return out;
 }
-function pcOpciones() { const v = id => document.getElementById(id).checked, n = (id, d) => { const x = parseInt(document.getElementById(id).value, 10); return isFinite(x) ? x : d; }; return { red:v('pcRed'), semi:v('pcSemi'), pit:v('pcPit'), tal:v('pcTal'), col:v('pcCol'), hue:v('pcHue'), caj:v('pcCaj'), iMin:Math.max(0, Math.min(4, n('pcIMin', 1))), iMax:Math.max(0, Math.min(4, n('pcIMax', 2))), pared:Math.max(4, Math.min(40, n('pcPared', 12))) }; }
+function pcOpciones() { const g = id => document.getElementById(id), v = id => g(id).checked, n = (id, d, lo, hi) => { const x = parseInt(g(id).value, 10); return Math.max(lo, Math.min(hi, isFinite(x) ? x : d)); };
+    return { W:n('pcAncho', 200, 80, 2000), H:n('pcAlto', 140, 80, 2000), rec:v('pcRec'), red:v('pcRed'), c45:v('pcC45'), cd:v('pcCDes'), eMin:n('pcEMin', 2, 0, 4), eMax:n('pcEMax', 4, 0, 4), semi:v('pcSemi'), pit:v('pcPit'), tal:v('pcTal'), col:v('pcCol'), hue:v('pcHue'), caj:v('pcCaj'), iMin:n('pcIMin', 1, 0, 4), iMax:n('pcIMax', 2, 0, 4), pared:n('pcPared', 12, 4, 40) }; }
+const PC_NIVELES = { 1:{ rec:1, red:0, c45:1, cd:0, eMin:1, eMax:3, semi:0, pit:0, tal:0, col:0, hue:0, caj:0, iMin:0, iMax:0 }, 2:{ rec:1, red:1, c45:1, cd:0, eMin:2, eMax:4, semi:0, pit:0, tal:1, col:0, hue:0, caj:0, iMin:1, iMax:1 },
+    3:{ rec:1, red:1, c45:1, cd:1, eMin:2, eMax:4, semi:1, pit:0, tal:1, col:1, hue:0, caj:0, iMin:1, iMax:2 }, 4:{ rec:1, red:1, c45:1, cd:1, eMin:2, eMax:4, semi:1, pit:1, tal:1, col:1, hue:1, caj:0, iMin:2, iMax:3 } };
+const PC_CAMPOS = { rec:'pcRec', red:'pcRed', c45:'pcC45', cd:'pcCDes', semi:'pcSemi', pit:'pcPit', tal:'pcTal', col:'pcCol', hue:'pcHue', caj:'pcCaj', eMin:'pcEMin', eMax:'pcEMax', iMin:'pcIMin', iMax:'pcIMax' };
+function pcElegirNivel(k) { const N = PC_NIVELES[k]; if (!N) return; Object.entries(PC_CAMPOS).forEach(([c, id]) => { const e = document.getElementById(id); if (e.type === 'checkbox') e.checked = !!N[c]; else e.value = N[c]; }); pintarPiezasC(); }
+function pcNivelActual() { const op = pcOpciones(); return Object.keys(PC_NIVELES).find(k => Object.entries(PC_NIVELES[k]).every(([c, v]) => +op[c] === +v)) || 'libre'; }
 function pcPieza(s, op) { let P = null; const pide = Math.min(op.iMin, op.iMax);   // si en una pieza no caben los interiores pedidos, se busca otra (siempre la misma para cada número)
     for (let t = 0; t < 40; t++) { const Q = pcConstruir(s + t * 100003, op); if (!Q) continue; Q.ints = pcInteriores(Q, s + t * 100003, op); if (!P || Q.ints.length > P.ints.length) P = Q; if (P.ints.length >= pide) break; } return P; }
-function abrirPiezaContorno() { cerrarGenerador(); document.getElementById('modalPiezaC').classList.add('visible'); pintarPiezasC(); }
+function abrirPiezaContorno() { try { const o = JSON.parse(localStorage.getItem('calcador_contornos') || 'null'); if (o && typeof o === 'object') { Object.entries(PC_CAMPOS).forEach(([c, id]) => { const e = document.getElementById(id); if (o[c] === undefined) return; if (e.type === 'checkbox') e.checked = !!o[c]; else e.value = o[c]; }); if (o.W) document.getElementById('pcAncho').value = o.W; if (o.H) document.getElementById('pcAlto').value = o.H; if (o.pared) document.getElementById('pcPared').value = o.pared; } } catch (e) {} cerrarGenerador(); document.getElementById('modalPiezaC').classList.add('visible'); pintarPiezasC(); }
 function cerrarPiezaContorno() { document.getElementById('modalPiezaC').classList.remove('visible'); }
 function pintarPiezasC() {
     if (!pcBase) pcBase = 10000 + Math.floor(Math.random() * 89990);
-    const op = pcOpciones(), caja = document.getElementById('pcLista');
-    if (!op.red && !op.semi && !op.pit) { caja.innerHTML = '<p class="ctx-nota">Marca al menos una opción.</p>'; return; }
-    caja.innerHTML = Array.from({ length:6 }, (_, k) => { const s = pcBase + k, P = pcPieza(s, op); return P ? `<div class="var-ficha gen-ficha" data-s="${s}" title="Usar esta pieza"><div class="var-mini">${svgMini({ calcador:{ contornos:[P.cont].concat(P.ints.map(i => i.cont)) } })}</div><div><strong>Nº ${s}</strong><br><span>${P.W} × ${P.H} mm · ${P.arcos.length} arcos · ${P.ints.length} interior${P.ints.length === 1 ? '' : 'es'}</span></div></div>` : ''; }).join('');
+    const op = pcOpciones(), caja = document.getElementById('pcLista'); document.getElementById('pcNivel').value = pcNivelActual();
+    try { localStorage.setItem('calcador_contornos', JSON.stringify(op)); } catch (e) {}
+    caja.innerHTML = Array.from({ length:6 }, (_, k) => { const s = pcBase + k, P = pcPieza(s, op); return P ? `<div class="var-ficha gen-ficha" data-s="${s}" title="Usar esta pieza"><div class="var-mini">${svgMini({ calcador:{ contornos:[P.cont].concat(P.ints.map(i => i.cont)) } })}</div><div><strong>Nº ${s}</strong><br><span>${P.W} × ${P.H} mm · ${P.arcos.length} arco${P.arcos.length === 1 ? '' : 's'} · ${P.chaf.length} ${P.chaf.length === 1 ? 'chaflán' : 'chaflanes'} · ${P.ints.length} interior${P.ints.length === 1 ? '' : 'es'}</span></div></div>` : ''; }).join('');
     caja.querySelectorAll('.gen-ficha').forEach(el => el.onclick = () => usarPiezaC(+el.dataset.s));
 }
 function pcCotas(P) {
@@ -13849,6 +13870,9 @@ function pcCotas(P) {
             else { const lat = a.f.h + 14; mete({ tipo:hor ? 'v' : 'h', p1:a.m, r1:null, p2:a.c, r2:null, pos:{ x:hor ? a.c.x + lat : (a.m.x + a.c.x) / 2, y:hor ? (a.m.y + a.c.y) / 2 : a.c.y + lat } }); }
         }
     });
+    // chaflanes: sus dos catetos, por fuera de la esquina
+    P.chaf.forEach(k => { const sx = k.C.x > 0 ? 1 : -1, sy = k.C.y > 0 ? 1 : -1, [ph, pv] = Math.abs(k.fin.y - k.C.y) < 1e-9 ? [k.fin, k.e] : [k.e, k.fin];
+        lin('h', k.C, ph, { x:(k.C.x + ph.x) / 2, y:k.C.y + sy * 7 }); lin('v', k.C, pv, { x:k.C.x + sx * 7, y:(k.C.y + pv.y) / 2 }); });
     P.ints.forEach(I => { const uid = I.cont.uid;
         if (I.tipo === 'tal') { sitX(I.c.x, I.c.y); sitY(I.c.y, I.c.x); mete({ tipo:'diametro', cruz:true, c:I.c, r:I.r, rc:{ uid, si:-1 }, pos:{ x:I.c.x + (I.r + 8) * .71, y:I.c.y + (I.r + 8) * .71 } }); }
         else if (I.tipo === 'col') { sitX(I.c.x, I.c.y); sitY(I.c.y, I.c.x); const si = tramos(I.cont).findIndex(t => t.b);
