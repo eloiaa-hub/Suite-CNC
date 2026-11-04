@@ -4,10 +4,11 @@ La versión de la suite es **año.mes** (por ejemplo, 2026.10). Cada programa co
 
 ## Suite CNC 2026.10
 
-Versiones de los programas: **Calcador v122 · Corrector v67 · Tutor G-Code v6 · Simulador 3D V45 · Calculadora de taller v5 · Arcos I J v4 · Anidador de tableros v8**.
+Versiones de los programas: **Calcador v123 · Corrector v68 · Tutor G-Code v6 · Simulador 3D V45 · Calculadora de taller v5 · Arcos I J v4 · Anidador de tableros v8**.
 
-### Calcador v122 / Corrector v67: 📐 Piezas de contorno (prototipo)
-- En 🧩 Aleatorio, **📐 Piezas de contorno**: como el nivel Contorno de Arcos I J, un rectángulo con redondeos y entallas o salientes centrados, acotado según se construye. Aún sin interiores, y las variantes de examen no conservan estas cotas.
+### Calcador v123 / Corrector v68: 📐 Contornos sencillos
+- En 🧩 Aleatorio, **📐 Contornos sencillos**: como el nivel Contorno de Arcos I J, un rectángulo con redondeos y entallas o salientes centrados, acotado según se construye.
+- Con **interiores**: taladros, colisos, huecos rectangulares y cajeras, a múltiplos de 5 mm y con la pared mínima que elijas, situados con cotas desde el cero pieza. Las cajeras no entran en la tabla de soluciones ni en la corrección. Por ahora, las variantes de examen no conservan estas cotas.
 
 ### Calcador v121 / Corrector v66 / Arcos I J v4: un examen distinto para cada alumno
 - **🎲 Variantes** llega hasta 26 (antes, 8), para dar a cada alumno la suya.

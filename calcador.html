@@ -644,7 +644,7 @@
 <body>
 <div class="app-window">
     <header class="top-bar">
-        <a href="index.html" class="ir-portada" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a><span class="top-bar-title">⬡ Calcador de contornos — Por Eloi A.A.<span class="ver-suite" title="Versión del programa" style="font-size:11px;font-weight:600;padding:1px 7px;margin-left:8px;border-radius:9px;background:rgba(0,90,156,.12);color:#005A9C;vertical-align:middle">v122</span></span>
+        <a href="index.html" class="ir-portada" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a><span class="top-bar-title">⬡ Calcador de contornos — Por Eloi A.A.<span class="ver-suite" title="Versión del programa" style="font-size:11px;font-weight:600;padding:1px 7px;margin-left:8px;border-radius:9px;background:rgba(0,90,156,.12);color:#005A9C;vertical-align:middle">v123</span></span>
         <div class="top-bar-right">
             <input class="project-name" id="projectName" type="text" value="calco_sin_nombre" placeholder="Nombre del proyecto">
             <div class="c2-archivo"><button class="btn-manual" onclick="nuevo()" title="Empieza de cero (se puede deshacer)">🗋 Nuevo</button><button class="btn-manual" onclick="document.getElementById('fileJSON').click()" title="Abre un proyecto .json del Calcador o del Corrector">📂 Abrir</button><button class="btn-manual" onclick="exportarJSON()" title="Guarda el proyecto en un archivo JSON: lo abren el Calcador, el Corrector, el Tutor y el Simulador (como plano del ejercicio)">💾 Guardar</button><button class="btn-manual" onclick="abrirBiblioteca()" title="Tus ejercicios: buscar, abrir e imprimir sus hojas">🗂 Biblioteca</button></div>
@@ -1090,7 +1090,7 @@
 </div>
 <div class="modal-overlay" id="modalPiezaC" onclick="if(event.target===this)cerrarPiezaContorno()">
     <div class="help-modal var-modal gen-modal">
-        <div class="help-header"><h2>📐 Piezas de contorno (prototipo)</h2><button class="help-close" onclick="cerrarPiezaContorno()">✕</button></div>
+        <div class="help-header"><h2>📐 Contornos sencillos</h2><button class="help-close" onclick="cerrarPiezaContorno()">✕</button></div>
         <div class="var-cuerpo">
             <div class="var-opciones">
                 <p class="ctx-nota">La pieza se construye como en el nivel Contorno de Arcos I J: un rectángulo con redondeos y entallas o salientes centrados, y las cotas salen de esa construcción. Haz clic en una propuesta.</p>
@@ -1100,8 +1100,17 @@
                     <label class="gen-chip"><input type="checkbox" id="pcSemi" checked onchange="pintarPiezasC()"> Semicírculos</label>
                     <label class="gen-chip"><input type="checkbox" id="pcPit" checked onchange="pintarPiezasC()"> Arcos con Pitágoras</label>
                 </div>
+                <div class="cr-req-t">Interiores</div>
+                <div class="gen-chips">
+                    <label class="gen-chip"><input type="checkbox" id="pcTal" checked onchange="pintarPiezasC()"> Taladros</label>
+                    <label class="gen-chip"><input type="checkbox" id="pcCol" checked onchange="pintarPiezasC()"> Colisos</label>
+                    <label class="gen-chip"><input type="checkbox" id="pcHue" checked onchange="pintarPiezasC()"> Huecos rectangulares</label>
+                    <label class="gen-chip" title="Las cajeras no entran en la tabla de soluciones ni en la corrección"><input type="checkbox" id="pcCaj" onchange="pintarPiezasC()"> Cajeras</label>
+                </div>
+                <div class="param-line">Número de interiores <span class="gen-rango"><input type="number" id="pcIMin" min="0" max="4" step="1" value="1" onchange="pintarPiezasC()"> a <input type="number" id="pcIMax" min="0" max="4" step="1" value="2" onchange="pintarPiezasC()"></span></div>
+                <div class="param-line" title="Separación mínima entre un interior y cualquier otro borde">Pared mínima (mm) <input type="number" id="pcPared" min="4" max="40" step="1" value="12" onchange="pintarPiezasC()"></div>
                 <div class="btn-row" style="margin-top:12px"><button class="btn-action" onclick="pcBase = 0; pintarPiezasC()">🎲 Otras propuestas</button></div>
-                <p class="ctx-nota" style="margin-top:12px">Prototipo: aún sin interiores ni colisos, y las variantes de examen no conservan estas cotas.</p>
+                <p class="ctx-nota" style="margin-top:12px">Las cajeras no entran en la tabla de soluciones ni en la corrección. Por ahora, las variantes de examen no conservan estas cotas.</p>
             </div>
             <div class="var-lista" id="pcLista"></div>
         </div>
@@ -1112,7 +1121,7 @@
         <div class="help-header"><h2>🧩 Ejercicio aleatorio</h2><button class="help-close" onclick="cerrarGenerador()">✕</button></div>
         <div class="var-cuerpo">
             <div class="var-opciones">
-                <button class="btn-action sec" onclick="abrirPiezaContorno()" title="Prototipo: piezas construidas como el nivel Contorno de Arcos I J, con sus cotas" style="margin-bottom:8px">📐 Piezas de contorno (prototipo)…</button>
+                <button class="btn-action sec" onclick="abrirPiezaContorno()" title="Piezas construidas como el nivel Contorno de Arcos I J, con sus cotas" style="margin-bottom:8px">📐 Contornos sencillos…</button>
                 <p class="ctx-nota">Elige el nivel (o los parámetros) y haz clic en la propuesta que quieras: pasa al dibujo, con sus formas editables.</p>
                 <div class="cr-req-t">Nivel</div>
                 <select id="genNivel" onchange="elegirNivel(this.value)" title="Niveles de la progresión de clase: cada uno pone las formas, esquinas y lados que le tocan. Si cambias algo a mano, pasa a «Libre»"></select>
@@ -2454,7 +2463,7 @@ function encuadrar() {
     const unir = b => { if (!b || !isFinite(b.x0)) return; bb = bb ? { x0:Math.min(bb.x0,b.x0), y0:Math.min(bb.y0,b.y0), x1:Math.max(bb.x1,b.x1), y1:Math.max(bb.y1,b.y1) } : b; };
     contornos.forEach(c => unir(bboxPts(c.cerrado ? muestrearContorno(c) : c.pts.concat(muestrearContorno(c)))));
     if (fondo) unir(bboxFondoMundo());
-    if (cotasManuales.some(m => m.cruz)) cotasManuales.forEach(m => { const q = m.pos; if (q) unir({ x0:q.x - 12, y0:q.y - 10, x1:q.x + 12, y1:q.y + 10 }); });   // 📐 Piezas de contorno: que se vean sus cotas
+    if (cotasManuales.some(m => m.cruz)) cotasManuales.forEach(m => { const q = m.pos; if (q) unir({ x0:q.x - 12, y0:q.y - 10, x1:q.x + 12, y1:q.y + 10 }); });   // 📐 Contornos sencillos: que se vean sus cotas
     if (cfgCotas.ver && cfgCotas.cero !== false && bb) unir({ x0:0, y0:0, x1:0, y1:0 });
     if (!bb) bb = { x0:0, y0:0, x1:150, y1:100 };
     const w = Math.max(bb.x1 - bb.x0, 1), h = Math.max(bb.y1 - bb.y0, 1);
@@ -5131,6 +5140,7 @@ function construirCotas(lista, tipos, u, nivel, origen, opts) {
             ref.valor = m.tipo === 'radio' ? a.r : 2 * a.r;
             const str = (m.tipo === 'radio' ? 'R' : 'Ø') + fmt(ref.valor);
             if (m.cruz) ejes(C, 2.5);
+            if (m.cruz2) ejes(add(m.cruz2, O), 2.5);
             grupo(ref, () => {
                 if (m.tipo === 'radio') { linea(C, tip); flecha(tip, e); }
                 else { const q = sub(C, mulv(e, a.r)); linea(q, tip); flecha(q, mulv(e, -1)); flecha(tip, e); }
@@ -13740,7 +13750,7 @@ function abrirEnGeneradorDesde(hash) {
     if (!w) { snack('El navegador ha bloqueado la pestaña nueva: permite las ventanas emergentes para este archivo, o usa «💾 Guardar (.json)»'); return; }
     snack('Abriendo el proyecto en otra pestaña…');
 }
-// ── 📐 Piezas de contorno (prototipo): la pieza sale de una intención, y sus cotas, de esa construcción ──
+// ── 📐 Contornos sencillos: la pieza sale de una intención, y sus cotas, de esa construcción ──
 let pcBase = 0;
 function pcConstruir(sem, op) {
     const R = genAleatorio(sem), DIR = [{ x:1, y:0 }, { x:0, y:1 }, { x:-1, y:0 }, { x:0, y:-1 }];
@@ -13772,50 +13782,84 @@ function pcConstruir(sem, op) {
     }
     return null;
 }
-function pcOpciones() { const v = id => document.getElementById(id).checked; return { red:v('pcRed'), semi:v('pcSemi'), pit:v('pcPit') }; }
+// Los interiores: en sitios con pared suficiente, a múltiplos de 5 mm, con otra secuencia del azar (el exterior no cambia)
+function pcInteriores(P, sem, op) {
+    const R = genAleatorio((sem * 2654435761) ^ 0x51ed27), tipos = [op.tal && 'tal', op.col && 'col', op.hue && 'hue', op.caj && 'caj'].filter(Boolean), out = [], pared = op.pared;
+    if (!tipos.length || op.iMax <= 0) return out;
+    const n = R.entero(Math.min(op.iMin, op.iMax), op.iMax), borde = muestrearContorno(P.cont);
+    const dentro = q => { let d = false; for (let i = 0, j = borde.length - 1; i < borde.length; j = i++) { const a = borde[i], b = borde[j]; if ((a.y > q.y) !== (b.y > q.y) && q.x < (b.x - a.x) * (q.y - a.y) / (b.y - a.y) + a.x) d = !d; } return d; };
+    const cabe = c => { if (c.x0 < pared || c.y0 < pared || c.x1 > P.W - pared || c.y1 > P.H - pared) return false;
+        if (!dentro({ x:(c.x0 + c.x1) / 2, y:(c.y0 + c.y1) / 2 })) return false;
+        if (borde.some(q => q.x > c.x0 - pared && q.x < c.x1 + pared && q.y > c.y0 - pared && q.y < c.y1 + pared)) return false;
+        return !out.some(o => c.x0 < o.caja.x1 + pared && c.x1 > o.caja.x0 - pared && c.y0 < o.caja.y1 + pared && c.y1 > o.caja.y0 - pared); };
+    for (let k = 0; k < n; k++) for (let t = 0; t < 80; t++) {
+        const tipo = R.uno(tipos), x = R.entero(2, Math.floor(P.W / 5) - 2) * 5, y = R.entero(2, Math.floor(P.H / 5) - 2) * 5; let I = null;
+        if (tipo === 'tal') { const r = R.uno([6, 8, 10, 12, 15, 20]); I = { tipo, c:{ x, y }, r, caja:{ x0:x - r, y0:y - r, x1:x + r, y1:y + r }, cont:{ pts:[{ x:x + r, y }, { x:x - r, y }], b:[1, 1], cerrado:true, tipo:'auto' } }; }
+        else if (tipo === 'col') { const r = R.uno([6, 8, 10]), L = R.uno([20, 30, 40, 50, 60]), hor = R() < .6, c2 = hor ? { x:x + L, y } : { x, y:y + L };
+            const pts = hor ? [{ x, y:y - r }, { x:c2.x, y:y - r }, { x:c2.x, y:y + r }, { x, y:y + r }] : [{ x:x + r, y }, { x:x + r, y:c2.y }, { x:x - r, y:c2.y }, { x:x - r, y }];
+            I = { tipo, c:{ x, y }, c2, r, L, hor, caja:{ x0:x - r, y0:y - r, x1:c2.x + r, y1:c2.y + r }, cont:{ pts, b:[0, 1, 0, 1], cerrado:true, tipo:'auto' } }; }
+        else { const w = R.entero(4, 10) * 5, h = R.entero(4, 8) * 5, r = R.uno(tipo === 'caj' ? [5, 6, 8] : [0, 4, 5, 6, 8]), k2 = Math.tan(Math.PI / 8), X = x + w, Y = y + h;
+            const pts = r ? [{ x:x + r, y }, { x:X - r, y }, { x:X, y:y + r }, { x:X, y:Y - r }, { x:X - r, y:Y }, { x:x + r, y:Y }, { x, y:Y - r }, { x, y:y + r }] : [{ x, y }, { x:X, y }, { x:X, y:Y }, { x, y:Y }];
+            I = { tipo, x, y, w, h, r, caja:{ x0:x, y0:y, x1:X, y1:Y }, cont:{ pts, b:r ? [0, k2, 0, k2, 0, k2, 0, k2] : [0, 0, 0, 0], cerrado:true, tipo:'auto' } };
+            if (tipo === 'caj') I.cont.mec = { op:'cajera', prof:5, puentes:{ n:0, ancho:5, alto:2 }, caj:{ estr:'espiral', paso:50, entrada:'rampa' } }; }
+        if (I && cabe(I.caja)) { out.push(I); break; }
+    }
+    return out;
+}
+function pcOpciones() { const v = id => document.getElementById(id).checked, n = (id, d) => { const x = parseInt(document.getElementById(id).value, 10); return isFinite(x) ? x : d; }; return { red:v('pcRed'), semi:v('pcSemi'), pit:v('pcPit'), tal:v('pcTal'), col:v('pcCol'), hue:v('pcHue'), caj:v('pcCaj'), iMin:Math.max(0, Math.min(4, n('pcIMin', 1))), iMax:Math.max(0, Math.min(4, n('pcIMax', 2))), pared:Math.max(4, Math.min(40, n('pcPared', 12))) }; }
+function pcPieza(s, op) { const P = pcConstruir(s, op); if (P) P.ints = pcInteriores(P, s, op); return P; }
 function abrirPiezaContorno() { cerrarGenerador(); document.getElementById('modalPiezaC').classList.add('visible'); pintarPiezasC(); }
 function cerrarPiezaContorno() { document.getElementById('modalPiezaC').classList.remove('visible'); }
 function pintarPiezasC() {
     if (!pcBase) pcBase = 10000 + Math.floor(Math.random() * 89990);
     const op = pcOpciones(), caja = document.getElementById('pcLista');
     if (!op.red && !op.semi && !op.pit) { caja.innerHTML = '<p class="ctx-nota">Marca al menos una opción.</p>'; return; }
-    caja.innerHTML = Array.from({ length:6 }, (_, k) => { const s = pcBase + k, P = pcConstruir(s, op); return P ? `<div class="var-ficha gen-ficha" data-s="${s}" title="Usar esta pieza"><div class="var-mini">${svgMini({ calcador:{ contornos:[P.cont] } })}</div><div><strong>Nº ${s}</strong><br><span>${P.W} × ${P.H} mm · ${P.arcos.length} arcos</span></div></div>` : ''; }).join('');
+    caja.innerHTML = Array.from({ length:6 }, (_, k) => { const s = pcBase + k, P = pcPieza(s, op); return P ? `<div class="var-ficha gen-ficha" data-s="${s}" title="Usar esta pieza"><div class="var-mini">${svgMini({ calcador:{ contornos:[P.cont].concat(P.ints.map(i => i.cont)) } })}</div><div><strong>Nº ${s}</strong><br><span>${P.W} × ${P.H} mm · ${P.arcos.length} arcos · ${P.ints.length} interior${P.ints.length === 1 ? '' : 'es'}</span></div></div>` : ''; }).join('');
     caja.querySelectorAll('.gen-ficha').forEach(el => el.onclick = () => usarPiezaC(+el.dataset.s));
 }
 function pcCotas(P) {
-    const c = P.cont, id = () => 'm' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), T = tramos(c), out = [];
-    const mete = m => { m.id = id(); fijarPosRel(m); cotasManuales.push(m); };
+    const c = P.cont, T = tramos(c), id = () => 'm' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), mete = m => { m.id = id(); fijarPosRel(m); cotasManuales.push(m); };
     const O = { x:0, y:0 }, lin = (tipo, p1, p2, pos) => mete({ tipo, p1, r1:null, p2, r2:null, pos });
-    const salida = (a) => a.f && a.f.t === 'pit' && a.f.sub === 'saliente' ? a.f.R - a.f.d : a.f && a.f.t === 'semi' ? 0 : 0;
-    // cuánto hay que separar cada lado: lo que sobresale, y las cotas de lo que lleva
-    const sobre = [0, 1, 2, 3].map(i => Math.max(0, ...P.arcos.filter(a => a.lado === i).map(salida)));
-    lin('h', O, { x:P.W, y:0 }, { x:P.W / 2, y:-(sobre[0] + 32) });
-    lin('v', O, { x:0, y:P.H }, { x:-(sobre[3] + 32), y:P.H / 2 });
+    const sobre = [0, 1, 2, 3].map(i => Math.max(0, ...P.arcos.filter(a => a.lado === i && a.f.t === 'pit' && a.f.sub === 'saliente').map(a => a.f.R - a.f.d)));
+    // situaciones desde el cero, en filas: abajo las X y a la izquierda las Y (sin repetir medidas)
+    const filaX = new Map(), filaY = new Map(), sitX = (x, y) => { if (x > 0 && x < P.W && !filaX.has(x)) filaX.set(x, y); }, sitY = (y, x) => { if (y > 0 && y < P.H && !filaY.has(y)) filaY.set(y, x); };
     P.arcos.forEach(a => {
-        const si = T.findIndex(t => { if (!t.b) return false; const q = arcoDeBulge(t.p1, t.p2, t.b); return q && Math.hypot(q.c.x - a.c.x, q.c.y - a.c.y) < 1e-6; });
-        if (si < 0) return;
+        const si = T.findIndex(t => { if (!t.b) return false; const q = arcoDeBulge(t.p1, t.p2, t.b); return q && Math.hypot(q.c.x - a.c.x, q.c.y - a.c.y) < 1e-6; }); if (si < 0) return;
         const q = arcoDeBulge(T[si].p1, T[si].p2, T[si].b), am = q.a1 + q.theta / 2, off = a.f && a.f.t === 'pit' ? .2 : 0;
         mete({ tipo:'radio', cruz:true, c:a.c, r:a.r, rc:{ uid:c.uid, si }, pos:{ x:a.c.x + (a.r + 8) * Math.cos(am + off), y:a.c.y + (a.r + 8) * Math.sin(am + off) } });
         if (!a.f) return;
-        // situación de lo que va centrado en el lado: desde la esquina, hasta el punto medio del lado
-        const hor = a.lado % 2 === 0, sep = sobre[a.lado] + 16, base = a.lado === 0 ? -sep : a.lado === 2 ? P.H + sep : a.lado === 1 ? P.W + sep : -sep;
-        if (hor) lin('h', { x:0, y:a.m.y }, a.m, { x:a.m.x / 2, y:base }); else lin('v', { x:a.m.x, y:0 }, a.m, { x:base, y:a.m.y / 2 });
+        const hor = a.lado % 2 === 0, sep = sobre[a.lado] + 16;
+        if (a.lado === 0) sitX(a.m.x, a.m.y); else if (a.lado === 3) sitY(a.m.y, a.m.x);
+        else if (hor) lin('h', { x:0, y:a.m.y }, a.m, { x:a.m.x / 2, y:P.H + sep }); else lin('v', { x:a.m.x, y:0 }, a.m, { x:P.W + sep, y:a.m.y / 2 });
         if (a.f.t === 'pit') {
-            if (a.f.modo === 'cuerda') { const m2 = { x:(a.pA.x + a.pB.x) / 2 + a.nL.x * -(a.f.sub === 'entalla' ? -14 : 14), y:(a.pA.y + a.pB.y) / 2 + a.nL.y * -(a.f.sub === 'entalla' ? -14 : 14) }; mete({ tipo:hor ? 'h' : 'v', p1:a.pA, r1:null, p2:a.pB, r2:null, pos:m2 }); }
-            else { const lat = a.f.h + 14, pc = { x:a.c.x + (hor ? lat : 0), y:a.c.y + (hor ? 0 : lat) }; mete({ tipo:hor ? 'v' : 'h', p1:a.m, r1:null, p2:a.c, r2:null, pos:{ x:hor ? a.c.x + lat : (a.m.x + a.c.x) / 2, y:hor ? (a.m.y + a.c.y) / 2 : a.c.y + lat } }); }
+            if (a.f.modo === 'cuerda') { const e = a.f.sub === 'entalla' ? 14 : -14; mete({ tipo:hor ? 'h' : 'v', p1:a.pA, r1:null, p2:a.pB, r2:null, pos:{ x:a.m.x + a.nL.x * e, y:a.m.y + a.nL.y * e } }); }
+            else { const lat = a.f.h + 14; mete({ tipo:hor ? 'v' : 'h', p1:a.m, r1:null, p2:a.c, r2:null, pos:{ x:hor ? a.c.x + lat : (a.m.x + a.c.x) / 2, y:hor ? (a.m.y + a.c.y) / 2 : a.c.y + lat } }); }
         }
     });
+    P.ints.forEach(I => { const uid = I.cont.uid;
+        if (I.tipo === 'tal') { sitX(I.c.x, I.c.y); sitY(I.c.y, I.c.x); mete({ tipo:'diametro', cruz:true, c:I.c, r:I.r, rc:{ uid, si:-1 }, pos:{ x:I.c.x + (I.r + 8) * .71, y:I.c.y + (I.r + 8) * .71 } }); }
+        else if (I.tipo === 'col') { sitX(I.c.x, I.c.y); sitY(I.c.y, I.c.x); const si = tramos(I.cont).findIndex(t => t.b);
+            mete({ tipo:'radio', cruz:true, cruz2:I.c, c:I.c2, r:I.r, rc:{ uid, si }, pos:{ x:I.c2.x + (I.hor ? I.r + 8 : (I.r + 8) * .7), y:I.c2.y + (I.hor ? 0 : (I.r + 8) * .7) } });
+            lin(I.hor ? 'h' : 'v', I.c, I.c2, I.hor ? { x:(I.c.x + I.c2.x) / 2, y:I.c.y + I.r + 7 } : { x:I.c.x + I.r + 7, y:(I.c.y + I.c2.y) / 2 }); }
+        else { sitX(I.x, I.y); sitY(I.y, I.x); const A = { x:I.x, y:I.y + I.h }, B = { x:I.x + I.w, y:I.y + I.h }, Cc = { x:I.x + I.w, y:I.y };
+            lin('h', A, B, { x:I.x + I.w / 2, y:I.y + I.h + 7 }); lin('v', Cc, B, { x:I.x + I.w + 7, y:I.y + I.h / 2 });
+            if (I.r) { const si = tramos(I.cont).findIndex(t => t.b); mete({ tipo:'radio', c:{ x:I.x + I.w - I.r, y:I.y + I.r }, r:I.r, rc:{ uid, si }, pos:{ x:I.x + I.w + 4, y:I.y - 4 } }); } } });
+    let dy = sobre[0] + 14, dx = sobre[3] + 14;
+    [...filaX.entries()].sort((a, b) => a[0] - b[0]).forEach(([x, y]) => { lin('h', { x:0, y:0 }, { x, y }, { x:x / 2, y:-dy }); dy += 10; });
+    [...filaY.entries()].sort((a, b) => a[0] - b[0]).forEach(([y, x]) => { lin('v', { x:0, y:0 }, { x, y }, { x:-dx, y:y / 2 }); dx += 10; });
+    lin('h', O, { x:P.W, y:0 }, { x:P.W / 2, y:-(dy + 4) });
+    lin('v', O, { x:0, y:P.H }, { x:-(dx + 4), y:P.H / 2 });
 }
 function usarPiezaC(s) {
-    const P = pcConstruir(s, pcOpciones()); if (!P) return;
+    const P = pcPieza(s, pcOpciones()); if (!P) return;
     if (contornos.length && !confirm('Se sustituye el dibujo actual por la pieza Nº ' + s + ' (puedes deshacer).')) return;
     guardarUndo();
-    contornos = [P.cont]; aux = []; auxPend = null; fondo = null; sel = -1; selSet = new Set(); cotasAjuste = {}; cotasManuales = []; dib = null; circ = null; ran = null; genUltimo = null;
+    contornos = [P.cont].concat(P.ints.map(i => i.cont)); aux = []; auxPend = null; fondo = null; sel = -1; selSet = new Set(); cotasAjuste = {}; cotasManuales = []; dib = null; circ = null; ran = null; genUltimo = null;
     if (typeof requisitosPorDefecto === 'function') requisitosPorDefecto();
-    document.getElementById('projectName').value = 'Pieza de contorno ' + s;
+    document.getElementById('projectName').value = 'Contorno sencillo ' + s;
     cfgCotas.ver = false; cfgCotas.centros = true; sincronizarControlesCotas();
     asegurarUids(); pcCotas(P); actualizarBotonBorrarCotas(); actualizarPanelFondo(); cerrarPiezaContorno(); refrescar(); encuadrar();
-    snack(`Pieza Nº ${s}: ${P.W} × ${P.H} mm, con ${P.arcos.length} arcos`);
+    snack(`Nº ${s}: ${P.W} × ${P.H} mm, con ${P.arcos.length} arcos y ${P.ints.length} interior${P.ints.length === 1 ? '' : 'es'}`);
 }
 // ◠ Hoja de I J: los arcos de la pieza en papel. Un arco por fila, numerado en el plano, con 1 decimal como máximo
 function abrirHojaIJ() {
