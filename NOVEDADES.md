@@ -4,7 +4,12 @@ La versión de la suite es **año.mes** (por ejemplo, 2026.10). Cada programa co
 
 ## Suite CNC 2026.10
 
-Versiones de los programas: **Calcador v127 · Corrector v72 · Tutor G-Code v6 · Simulador 3D V45 · Calculadora de taller v5 · Arcos I J v6 · Anidador de tableros v8**.
+Versiones de los programas: **Calcador v128 · Corrector v73 · Tutor G-Code v6 · Simulador 3D V45 · Calculadora de taller v5 · Arcos I J v6 · Anidador de tableros v8**.
+
+### Calcador v128 / Corrector v73 / Tutor v7: G91 total y cotas editables
+- **G91 total** en Coordenadas: tras subir a Z de seguridad y colocarse en X0 Y0, todo el programa va en incrementales, también la Z, y termina con G90.
+- La opción de siempre se llama ahora **G91 con la Z en G90**, y genera lo mismo que antes. Los apuntes y los programas resueltos no cambian.
+- **Doble clic** en las cotas «Desde el cero»: ya se puede cambiar su medida; solo queda fuera la situación del centro de un arco.
 
 ### Calcador v127 / Corrector v72: cotas automáticas desde el cero
 - **Reparto** en Cotas y marcas: **Desde el cero pieza** organiza las cotas automáticas como en Contornos sencillos, con filas por el lado del cero y los totales fuera.

@@ -632,7 +632,7 @@
 <body>
 <div class="app-window">
     <header class="top-bar">
-        <a href="index.html" class="ir-portada" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a><span class="top-bar-title">🎓 Tutor G-Code — Por Eloi A.A.<span class="ver-suite" title="Versión del programa (hecho a partir del Calcador v118)" style="font-size:11px;font-weight:600;padding:1px 7px;margin-left:8px;border-radius:9px;background:rgba(0,90,156,.12);color:#005A9C;vertical-align:middle">v6</span></span>
+        <a href="index.html" class="ir-portada" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a><span class="top-bar-title">🎓 Tutor G-Code — Por Eloi A.A.<span class="ver-suite" title="Versión del programa (hecho a partir del Calcador v118)" style="font-size:11px;font-weight:600;padding:1px 7px;margin-left:8px;border-radius:9px;background:rgba(0,90,156,.12);color:#005A9C;vertical-align:middle">v7</span></span>
         <div class="top-bar-right">
             <input class="project-name" id="projectName" type="text" value="calco_sin_nombre" placeholder="Nombre del proyecto">
             <div class="c2-archivo"><button class="btn-manual" onclick="nuevo()" title="Empieza un dibujo nuevo (se puede deshacer). Si estás en un ejercicio, lo deja">🗋 Nuevo</button><button class="btn-manual" onclick="document.getElementById('fileJSON').click()" title="Abre un dibujo guardado o un ejercicio que te ha dado el profesor (.json). Si es un ejercicio, se abre en ✍ Practicar">📂 Abrir</button><button class="btn-manual" onclick="exportarJSON()" title="Guarda tu dibujo en un archivo .json, para seguir otro día o abrirlo en el Simulador">💾 Guardar</button><button class="btn-manual" onclick="tuAbrirEjemplos()" title="Piezas para ver su programa (los programas resueltos) y ejercicios para escribirlo tú (la biblioteca de inicio)">📚 Ejemplos</button></div>
@@ -965,8 +965,8 @@
                 <summary title="Las opciones con las que se escribe el programa">⚙️ Mecanizado</summary>
                 <div class="tu-mec-grid">
                     <label for="tuCoord">Coordenadas</label>
-                    <select id="tuCoord" class="ancho" data-tip="G90: cada punto desde el cero pieza · G91: lo que se mueve la fresa · Mixta: G90 para entrar y cerrar, G91 en el recorrido">
-                        <option value="G90">G90 · absolutas</option><option value="G91">G91 · incrementales</option><option value="mixta">Mixta · G90 y G91</option>
+                    <select id="tuCoord" class="ancho" data-tip="G90: cada punto desde el cero pieza · G91: lo que se mueve la fresa, con la Z en G90 · G91 total: también la Z, tras un punto de partida en G90 · Mixta: G90 para entrar y cerrar, G91 en el recorrido">
+                        <option value="G90">G90 · absolutas</option><option value="G91">G91 · con la Z en G90</option><option value="G91T">G91 · total (también la Z)</option><option value="mixta">Mixta · G90 y G91</option>
                     </select>
                     <label for="tuCompSel">Compensación</label>
                     <select id="tuCompSel" class="ancho" data-tip="G40: el centro de la fresa va por el contorno. Con G41/G42 la fresa va desplazada su radio: por fuera de la pieza y por dentro de los agujeros">
@@ -1623,7 +1623,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.</pre>
                 <div class="param-line" title="Profundidad máxima de cada pasada">Paso en Z (mm) <input type="number" id="mecPaso" min="0.1" step="0.5"></div>
                 <div class="param-line" title="Sobreespesor que dejan las pasadas de desbaste; una última pasada a la profundidad total recorre el contorno exacto. 0 = sin acabado">Acabado (mm) <input type="number" id="mecAcab" min="0" step="0.1"></div>
                 <div class="mec-sec">Recorrido</div>
-                <div class="param-line">Coordenadas <select id="mecCoord"><option value="G90">G90 · absolutas</option><option value="G91">G91 · incrementales</option><option value="mixta" title="G90 en la entrada y el cierre de cada contorno, G91 en el recorrido">G90/G91 · mixta</option></select></div>
+                <div class="param-line">Coordenadas <select id="mecCoord"><option value="G90">G90 · absolutas</option><option value="G91">G91 · con la Z en G90</option><option value="G91T">G91 · total (también la Z)</option><option value="mixta" title="G90 en la entrada y el cierre de cada contorno, G91 en el recorrido">G90/G91 · mixta</option></select></div>
                 <div class="param-line" title="«Según el trazado»: G41 o G42 en cada contorno para que la fresa vaya por fuera de los exteriores y por dentro de los interiores">Compensación <select id="mecComp"><option value="G40">G40 · la fresa por el contorno</option><option value="auto">G41/G42 según el trazado</option><option value="G41">G41 en todos</option><option value="G42">G42 en todos</option></select></div>
                 <div class="param-line" title="Sentido de corte: el dibujado en el plano, o el que da fresado en concordancia u oposición">Estrategia <select id="mecEstr"><option value="plano">Según el plano (sentido dibujado)</option><option value="concordancia">Concordancia</option><option value="oposicion">Oposición</option></select></div>
                 <div class="param-line" title="Qué se corta antes. Interiores primero (lo habitual en madera): los agujeros se cortan con la pieza todavía sujeta al tablero y, al final, el contorno exterior la suelta. Exteriores primero: el orden de las versiones anteriores. Los grabados y las cajeras van siempre antes. Las entradas E1, E2… del plano y la tabla de soluciones siguen este orden">Orden de corte <select id="mecOrden"><option value="int">Interiores primero, después exteriores</option><option value="ext">Exteriores primero, después interiores</option></select></div>
@@ -13503,10 +13503,10 @@ let paraSimulador = null;
 // 🎓 El proyecto marcado como ejercicio para el Tutor G-Code (el alumno no ve su programa)
 function exportarEjercicioTutor() {
     const datos = exportarJSON(true); if (!datos) return;
-    const coord = ['G90', 'G91', 'mixta'].includes(cfgMec.coord) ? cfgMec.coord : 'G90', comp = ['G40', 'G41', 'G42', 'auto'].includes(cfgMec.comp) ? cfgMec.comp : 'G40';
+    const coord = ['G90', 'G91', 'G91T', 'mixta'].includes(cfgMec.coord) ? cfgMec.coord : 'G90', comp = ['G40', 'G41', 'G42', 'auto'].includes(cfgMec.comp) ? cfgMec.comp : 'G40';
     datos.tutor = { ejercicio: true, coord, comp };
     descargar(JSON.stringify(datos, null, 2), nombreProyecto() + ' (Tutor).json', 'application/json');
-    snack(`Ejercicio para el Tutor guardado: en ${coord === 'mixta' ? 'mixta' : coord}, ${comp === 'G40' ? 'sin compensación' : comp === 'auto' ? 'con G41/G42' : 'con ' + comp} (lo de ⚙️ Mecanizar). El alumno lo abre en el Tutor con «📂 Abrir»`);
+    snack(`Ejercicio para el Tutor guardado: en ${coord === 'mixta' ? 'mixta' : coord === 'G91T' ? 'G91 total' : coord}, ${comp === 'G40' ? 'sin compensación' : comp === 'auto' ? 'con G41/G42' : 'con ' + comp} (lo de ⚙️ Mecanizar). El alumno lo abre en el Tutor con «📂 Abrir»`);
 }
 function abrirEnSimulador(programaMaquina, archivo) {
     const datos = exportarJSON(true); if (!datos) return;
@@ -14652,7 +14652,7 @@ function tuArco(p1, p2, b) {
     return { c, r: Math.hypot(p1.x - c.x, p1.y - c.y), g: b > 0 ? 'G3' : 'G2', grados: Math.abs(4 * Math.atan(b)) * 180 / Math.PI };
 }
 // Coordenadas, compensación y opciones: las del ejercicio del profesor o las de ⚙️ Mecanizado
-function tuCoord() { return TU.ejercicio && TU.ejercicio.coord ? TU.ejercicio.coord : (['G90', 'G91', 'mixta'].includes(cfgMec.coord) ? cfgMec.coord : 'G90'); }
+function tuCoord() { return TU.ejercicio && TU.ejercicio.coord ? TU.ejercicio.coord : (['G90', 'G91', 'G91T', 'mixta'].includes(cfgMec.coord) ? cfgMec.coord : 'G90'); }
 function tuComp() { return TU.ejercicio && TU.ejercicio.comp ? TU.ejercicio.comp : (['G40', 'G41', 'G42', 'auto'].includes(cfgMec.comp) ? cfgMec.comp : 'G40'); }
 
 // ── Los trazados, en el orden en que se mecanizan, con su letra ──
@@ -14684,7 +14684,9 @@ function tuGenerar() {
     add(`T${T} M06`, `fresa de Ø${tuF(d)}`);
     add(`S${tuF(S)} M03`, `arranca el husillo a ${tuF(S)} rpm`);
     add(`G0 Z${tuF(zSeg)}`, 'sube a la altura de seguridad');
-    let modal = 'G90', cur = { x: 0, y: 0 };
+    let modal = 'G90', cur = { x: 0, y: 0 }, curZ = zSeg;
+    const isT = coord === 'G91T', inc91 = coord === 'G91' || isT, conG91 = () => modal === 'G91' ? '' : 'G91 ';
+    if (isT && items.length) add('G0 X0 Y0', 'encima del cero pieza: el punto de partida, desde aquí todo es G91');
     const xyAbs = p => `X${tuF(p.x)} Y${tuF(p.y)}`, xyInc = (a, b) => `X${tuF(+tuF(b.x) - +tuF(a.x))} Y${tuF(+tuF(b.y) - +tuF(a.y))}`;   // con los puntos ya redondeados: en G91 no se acumula el error
     items.forEach((it, idx) => {
         const c = it.c, n = c.pts.length, cerrado = c.cerrado, nom = k => it.letra + ((k % n) + 1);
@@ -14724,26 +14726,31 @@ function tuGenerar() {
         puntos.push({ letra: it.letra, clase: it.clase, filas, lado, E, Ap, eNom, apNom, cerrado, debe, mal, ccw, n });
         if (mal) malos.add(it.ci);
         const inicio = Ap || segs[0].p1, inicioNom = Ap ? apNom : segs[0].a;
-        if (idx > 0) { add(modal === 'G91' ? `G90 G0 Z${tuF(zSeg)}` : `G0 Z${tuF(zSeg)}`, 'sube antes de ir al siguiente trazado' + (modal === 'G91' ? ' (la Z, siempre en G90)' : '')); modal = 'G90'; }
+        if (idx > 0 && isT) { add(`G0 Z${tuF(zSeg - curZ)}`, `sube ${tuF(zSeg - curZ)} mm antes de ir al siguiente trazado`); curZ = zSeg; }
+        else if (idx > 0) { add(modal === 'G91' ? `G90 G0 Z${tuF(zSeg)}` : `G0 Z${tuF(zSeg)}`, 'sube antes de ir al siguiente trazado' + (modal === 'G91' ? ' (la Z, siempre en G90)' : '')); modal = 'G90'; }
         const titulo = it.clase === 'interior' ? 'Interior' : it.clase === 'abierto' ? 'Trazo abierto (sin cerrar)' : 'Exterior';
         sep(`── ${titulo}: ${it.letra}1 … ${it.letra}${n}${lado ? ` (entra en ${eNom} con ${lado})` : ''} ──`);
         const irA = (p, pNom, primero) => {
-            if (coord === 'G91' && !primero) { add(`G91 G0 ${xyInc(cur, p)}`, `en rápido hasta ${pNom}, desde donde está la fresa`, { ci: it.ci }); modal = 'G91'; }
+            if (isT) { add(`${conG91()}G0 ${xyInc(cur, p)}`, `en rápido hasta ${pNom}, desde donde está la fresa` + (modal === 'G91' ? '' : ' (pasa a G91)'), { ci: it.ci }); modal = 'G91'; }
+            else if (coord === 'G91' && !primero) { add(`G91 G0 ${xyInc(cur, p)}`, `en rápido hasta ${pNom}, desde donde está la fresa`, { ci: it.ci }); modal = 'G91'; }
             else { add((modal === 'G91' ? 'G90 ' : '') + `G0 ${xyAbs(p)}`, `en rápido hasta encima de ${pNom}` + (Ap && p === Ap ? (mal ? ' (⚠ dentro de la pieza)' : it.clase === 'interior' ? ', dentro del agujero' : ', fuera de la pieza') : '') + (coord !== 'G90' ? ', desde el cero pieza' : ''), { ci: it.ci }); modal = 'G90'; }
             cur = { ...p };
         };
         irA(inicio, inicioNom, idx === 0);
         zs.forEach((z, kp) => {
             if (kp > 0 && !cerrado && !Ap) {     // trazo abierto con varias pasadas: sube y vuelve al principio
-                add(modal === 'G91' ? `G90 G0 Z${tuF(zSeg)}` : `G0 Z${tuF(zSeg)}`, 'sube para volver al principio del trazo'); modal = 'G90';
+                if (isT) { add(`G0 Z${tuF(zSeg - curZ)}`, 'sube para volver al principio del trazo'); curZ = zSeg; }
+                else { add(modal === 'G91' ? `G90 G0 Z${tuF(zSeg)}` : `G0 Z${tuF(zSeg)}`, 'sube para volver al principio del trazo'); modal = 'G90'; }
                 irA(inicio, inicioNom, false);
             }
-            add((modal === 'G91' ? 'G90 ' : '') + `G1 Z${tuF(z)} F${tuF(Fz)}`, (zs.length === 1 ? 'baja despacio a la profundidad' : `pasada ${kp + 1} de ${zs.length}: baja a Z${tuF(z)}`) + (coord !== 'G90' ? ' (la Z, en G90)' : ''), { ci: it.ci });
-            modal = 'G90';
+            if (isT) { add(`${conG91()}G1 Z${tuF(z - curZ)} F${tuF(Fz)}`, (zs.length === 1 ? 'baja despacio' : `pasada ${kp + 1} de ${zs.length}: baja`) + ` ${tuF(curZ - z)} mm, hasta Z${tuF(z)}`, { ci: it.ci }); curZ = z; modal = 'G91'; }
+            else { add((modal === 'G91' ? 'G90 ' : '') + `G1 Z${tuF(z)} F${tuF(Fz)}`, (zs.length === 1 ? 'baja despacio a la profundidad' : `pasada ${kp + 1} de ${zs.length}: baja a Z${tuF(z)}`) + (coord !== 'G90' ? ' (la Z, en G90)' : ''), { ci: it.ci });
+            modal = 'G90'; }
             let pf = ` F${tuF(F)}`;
             if (Ap) {
                 const lTxt = lado === 'G41' ? 'izquierda' : 'derecha';
-                if (coord === 'G91') { add(`G91 ${lado} G1 ${xyInc(cur, E)}${pf}`, `entrada a ${eNom}: activa ${lado} (la fresa va a la ${lTxt} del contorno; pasa a G91)` + (mal ? ` ⚠ aquí va ${debe}` : ''), { ci: it.ci }); modal = 'G91'; }
+                if (isT) add(`${lado} G1 ${xyInc(cur, E)}${pf}`, `entrada a ${eNom}: activa ${lado} (la fresa va a la ${lTxt} del contorno)` + (mal ? ` ⚠ aquí va ${debe}` : ''), { ci: it.ci });
+                else if (coord === 'G91') { add(`G91 ${lado} G1 ${xyInc(cur, E)}${pf}`, `entrada a ${eNom}: activa ${lado} (la fresa va a la ${lTxt} del contorno; pasa a G91)` + (mal ? ` ⚠ aquí va ${debe}` : ''), { ci: it.ci }); modal = 'G91'; }
                 else add(`${lado} G1 ${xyAbs(E)}${pf}`, `entrada a ${eNom}: activa ${lado} (la fresa va a la ${lTxt} del contorno)` + (mal ? ` ⚠ aquí va ${debe}` : ''), { ci: it.ci });
                 cur = { ...E }; pf = '';
             }
@@ -14761,15 +14768,18 @@ function tuGenerar() {
                 pf = ''; cur = { ...s.p2 };
             });
             if (Ap) {
-                if (coord === 'G91') add(`G40 G1 ${xyInc(cur, Ap)}`, `salida a ${apNom}: anula la compensación`, { ci: it.ci });
+                if (inc91) add(`G40 G1 ${xyInc(cur, Ap)}`, `salida a ${apNom}: anula la compensación`, { ci: it.ci });
                 else add((modal === 'G91' ? 'G90 ' : '') + `G40 G1 ${xyAbs(Ap)}`, `salida a ${apNom}: anula la compensación` + (modal === 'G91' ? ' (vuelve a G90)' : ''), { ci: it.ci });
-                if (coord !== 'G91') modal = 'G90';
+                if (!inc91) modal = 'G90';
                 cur = { ...Ap };
             }
         });
     });
+    if (isT && items.length) { add(`G0 Z${tuF(zSeg - curZ)}`, `sube ${tuF(zSeg - curZ)} mm, a la altura de seguridad`); add(`G0 ${xyInc(cur, { x: 0, y: 0 })}`, 'vuelve encima del cero pieza'); add('G90', 'deja la máquina en absolutas para el siguiente programa'); }
+    else {
     add(modal === 'G91' ? `G90 G0 Z${tuF(zSeg)}` : `G0 Z${tuF(zSeg)}`, 'sube a la altura de seguridad' + (modal === 'G91' ? ' (vuelve a absolutas)' : ''));
     if (items.length) add('G0 X0 Y0', 'vuelve encima del cero pieza');
+    }
     add('M05', 'para el husillo');
     add('M30', 'fin del programa');
     const ancho = Math.min(30, Math.max(16, ...L.filter(l => !l.sep && !l.titulo).map(l => l.cod.length + 2)));
@@ -15346,7 +15356,7 @@ function tuPintarEjercicio() {
     if (!TU.ejercicio) { b.hidden = true; return; }
     b.hidden = false;
     const comp = { G40: 'sin compensación (G40)', auto: 'con compensación G41/G42', G41: 'con G41', G42: 'con G42' }[TU.ejercicio.comp] || '';
-    b.innerHTML = `🎓 <b>Ejercicio:</b> ${tuEsc(TU.ejercicio.nombre || '')}<br><span>Escribe tú el programa, en ${TU.ejercicio.coord === 'mixta' ? 'mixta (G90 y G91)' : TU.ejercicio.coord}, ${comp}. Las medidas, en las cotas del plano.</span> <button onclick="tuSalirEjercicio()" title="Deja el ejercicio y vuelve a dibujar libremente">✕ Dejar el ejercicio</button>`;
+    b.innerHTML = `🎓 <b>Ejercicio:</b> ${tuEsc(TU.ejercicio.nombre || '')}<br><span>Escribe tú el programa, en ${TU.ejercicio.coord === 'mixta' ? 'mixta (G90 y G91)' : TU.ejercicio.coord === 'G91T' ? 'G91 total (también la Z)' : TU.ejercicio.coord}, ${comp}. Las medidas, en las cotas del plano.</span> <button onclick="tuSalirEjercicio()" title="Deja el ejercicio y vuelve a dibujar libremente">✕ Dejar el ejercicio</button>`;
 }
 function tuSalirEjercicio() {
     const escrito = TU.practica && Object.keys(TU.practica.estado).length && !TU.practica.fin;
@@ -15448,7 +15458,7 @@ function tuAbrirEjemplos() {
     const m = document.getElementById('tuModalEj'), lista = document.getElementById('tuListaEj');
     const grupos = {}; TU_EJEMPLOS.forEach((e, i) => { (grupos[e.grupo] = grupos[e.grupo] || []).push({ e, i }); });
     lista.innerHTML = Object.entries(grupos).map(([g, xs]) => `<div class="tu-ej-grupo"><h4>${tuEsc(g)}</h4><div class="tu-ej-items">${xs.map(({ e, i }) =>
-        `<button onclick="tuCargarEjemplo(${i})" title="${e.ejercicio ? 'Ejercicio: escribes tú el programa' : 'Ejemplo: ves su programa'} · ${e.coord === 'mixta' ? 'mixta' : e.coord}"><span>${e.ejercicio ? '🎓' : '👁'}</span>${tuEsc(e.nombre)}<small>${e.coord === 'mixta' ? 'mixta' : e.coord}</small></button>`).join('')}</div></div>`).join('');
+        `<button onclick="tuCargarEjemplo(${i})" title="${e.ejercicio ? 'Ejercicio: escribes tú el programa' : 'Ejemplo: ves su programa'} · ${e.coord === 'mixta' ? 'mixta' : e.coord === 'G91T' ? 'G91 total' : e.coord}"><span>${e.ejercicio ? '🎓' : '👁'}</span>${tuEsc(e.nombre)}<small>${e.coord === 'mixta' ? 'mixta' : e.coord === 'G91T' ? 'G91 total' : e.coord}</small></button>`).join('')}</div></div>`).join('');
     m.classList.add('visible');
 }
 function tuCerrarEjemplos() { document.getElementById('tuModalEj').classList.remove('visible'); }
@@ -15467,13 +15477,13 @@ function tuAlAbrirJSON(d) {
     const t = d && typeof d === 'object' ? d.tutor : null;
     TU.practica = null; TU.sel = -1;
     if (t && t.ejercicio) {
-        TU.ejercicio = { coord: ['G90', 'G91', 'mixta'].includes(t.coord) ? t.coord : 'G90', comp: ['G40', 'G41', 'G42', 'auto'].includes(t.comp) ? t.comp : 'G40', nombre: d.nombre || document.getElementById('projectName').value };
+        TU.ejercicio = { coord: ['G90', 'G91', 'G91T', 'mixta'].includes(t.coord) ? t.coord : 'G90', comp: ['G40', 'G41', 'G42', 'auto'].includes(t.comp) ? t.comp : 'G40', nombre: d.nombre || document.getElementById('projectName').value };
         tuGuardarEjercicio(); tuPintarMec(); tuRefrescar(true); tuModo('practicar'); try { encuadrar(); } catch (e) {}
         setHerramienta('medir'); undoStack = []; redoStack = [];
         snack('Ejercicio: escribe tú el programa, línea a línea. Las medidas, en las cotas del plano');
     } else {
         TU.ejercicio = null; tuGuardarEjercicio(); tuCasarHerr(false);
-        if (t && t.coord && ['G90', 'G91', 'mixta'].includes(t.coord)) cfgMec.coord = t.coord;
+        if (t && t.coord && ['G90', 'G91', 'G91T', 'mixta'].includes(t.coord)) cfgMec.coord = t.coord;
         tuPintarMec(); tuRefrescar(true); tuModo(TU.modo === 'practicar' ? 'practicar' : 'aprender'); try { encuadrar(); } catch (e) {}
     }
 }
@@ -16217,7 +16227,7 @@ const MEC = (() => {
             return paso;
         };
         zStep = limitarPaso(zStep);
-        const isMix = P.coord === 'mixta', coordMode = P.coord === 'G91' ? 'G91' : 'G90', compAuto = P.comp === 'auto', compMode = ['G41', 'G42'].includes(P.comp) ? P.comp : 'G40';
+        const isMix = P.coord === 'mixta', esTotal = P.coord === 'G91T', coordMode = P.coord === 'G91' || esTotal ? 'G91' : 'G90', compAuto = P.comp === 'auto', compMode = ['G41', 'G42'].includes(P.comp) ? P.comp : 'G40';
         const strategy = ['concordancia', 'oposicion'].includes(P.estrategia) ? P.estrategia : 'plano';
         const unitsMode = P.unidades === 'G70' ? 'G70' : 'G71', isIncr = coordMode === 'G91';
 
@@ -16277,7 +16287,7 @@ const MEC = (() => {
         let nc = `;; G-code generado por ${P.origen || 'el Calcador de contornos'}\n`;
         nc += `;; Proyecto  : ${P.nombre || 'pieza'}\n`;
         nc += `;; Fecha     : ${new Date().toLocaleString('es')}\n`;
-        nc += `;; Modo      : ${isIncr ? 'Incremental (G91)' : isMix ? 'Mixto (G90 en la entrada y el cierre de cada contorno, G91 en el recorrido)' : 'Absoluto (G90)'}\n`;
+        nc += `;; Modo      : ${esTotal ? 'Incremental total (G91, también la Z)' : isIncr ? 'Incremental (G91)' : isMix ? 'Mixto (G90 en la entrada y el cierre de cada contorno, G91 en el recorrido)' : 'Absoluto (G90)'}\n`;
         nc += `;; Unidades  : ${unitsMode === 'G70' ? 'Pulgadas (G70)' : 'mm (G71)'}\n`;
         nc += multi ? `;; Herramientas: ${grupos.map(g => `T${String(g.h.T).padStart(3, '0')}${g.h.nombre ? ' (' + g.h.nombre + ')' : ''} Ø${fmtNum(+g.h.d)} mm`).join(' · ')} — cambio con M06\n`
                     : `;; Herramienta: T${toolStr}${hActual.nombre ? ' (' + hActual.nombre + ')' : ''}, Ø${fmtNum(2 * toolR)} mm\n`;
@@ -16294,11 +16304,13 @@ const MEC = (() => {
         nc += `G0 Z${fmtNum(zSafe)} F${feedPos}      ; subir a Z seguro\n`;
         nc += `\n; -- Cero Pieza (W): pasa a ser el origen X0 Y0 --\n`;
         nc += `G0 X0 Y0 F${feedPos}   ; -> Cero pieza\n`;
+        if (esTotal) cur = { x:0, y:0, z:zSafe };
         if (isIncr) nc += `G91              ; volver a incremental\n`;
 
         // ── Cajeras ──
         const dentroPol = (p, pol) => { let d = false; for (let i = 0, j = pol.length - 1; i < pol.length; j = i++) { const a = pol[i], b = pol[j]; if ((a.y > p.y) !== (b.y > p.y) && p.x < (b.x - a.x) * (p.y - a.y) / (b.y - a.y) + a.x) d = !d; } return d; };
         const g0Abs = (x, y, txt) => {
+            if (esTotal) { nc += `G0 ${fmtXY(x, y)} F${feedPos}   ; ${txt}\n`; moveCur(x, y); return; }
             if (isIncr) nc += `G90              ; absoluto para posicionamiento\n`;
             nc += `G0 X${fmtNum(x)} Y${fmtNum(y)} F${feedPos}   ; ${txt}\n`; moveCur(x, y);
             if (isIncr) nc += `G91              ; volver a incremental\n`;
@@ -16418,10 +16430,10 @@ const MEC = (() => {
             if (ES && ES.mala) avisos.push(`Trazado ${ti + 1}: no hay sitio para una recta de entrada/salida de la compensación sin tocar el contorno; revisa la entrada (P1)`);
             else if (ES && ES.corta) avisos.push(`Trazado ${ti + 1}: la recta de entrada/salida de la compensación es más corta que Ø + 2 mm (no cabe más)`);
             const pIni = ES ? ES.ap : pE;
-            if (isIncr) nc += `G90              ; absoluto para posicionamiento\n`;
-            nc += `G0 X${fmtNum(pIni.x)} Y${fmtNum(pIni.y)} F${feedPos}   ; -> ${ES ? 'aproximación (fuera del contorno) del' : 'entrada'} trazado ${ti + 1}\n`;
+            if (isIncr && !esTotal) nc += `G90              ; absoluto para posicionamiento\n`;
+            nc += `G0 ${esTotal ? fmtXY(pIni.x, pIni.y) : `X${fmtNum(pIni.x)} Y${fmtNum(pIni.y)}`} F${feedPos}   ; -> ${ES ? 'aproximación (fuera del contorno) del' : 'entrada'} trazado ${ti + 1}\n`;
             moveCur(pIni.x, pIni.y);
-            if (isIncr) nc += `G91              ; volver a incremental\n`;
+            if (isIncr && !esTotal) nc += `G91              ; volver a incremental\n`;
             const entrar = (P1) => { if (!ES) return; nc += `${compT} G1 ${fmtXY(P1.x, P1.y)} F${feed}   ; entrada: activa ${compT} (fresa a la ${compT === 'G41' ? 'izquierda' : 'derecha'})\n`; moveCur(P1.x, P1.y); };
             const salir = (Q) => { if (!ES) return; nc += `G40 G1 ${fmtXY(Q.x, Q.y)} F${feed}   ; salida: anula la compensación\n`; moveCur(Q.x, Q.y); };
             const puntoEn = (sg, d) => {
@@ -16544,9 +16556,9 @@ const MEC = (() => {
         });
 
         // ── Cierre ──
-        if (isIncr) nc += `G90              ; absoluto para retorno\n`;
+        if (isIncr && !esTotal) nc += `G90              ; absoluto para retorno\n`;
         nc += `\n; ── Retorno a Cero Pieza ──\n`;
-        nc += `G0 X0 Y0 F${feedPos}   ; -> Cero pieza\n`;
+        nc += esTotal ? `G0 ${fmtXY(0, 0)} F${feedPos}   ; -> Cero pieza\nG90              ; deja la máquina en absolutas\n` : `G0 X0 Y0 F${feedPos}   ; -> Cero pieza\n`;
         nc += `M05              ; parar el husillo\n`;
         nc += `M30              ; fin de programa\n`;
         if (isMix) nc = aMixta(nc);
