@@ -13813,13 +13813,14 @@ function pcInteriores(P, sem, op) {
         else { const w = R.entero(4, 10) * 5, h = R.entero(4, 8) * 5, r = R.uno(tipo === 'caj' ? [5, 6, 8] : [0, 4, 5, 6, 8]), k2 = Math.tan(Math.PI / 8), X = x + w, Y = y + h;
             const pts = r ? [{ x:x + r, y }, { x:X - r, y }, { x:X, y:y + r }, { x:X, y:Y - r }, { x:X - r, y:Y }, { x:x + r, y:Y }, { x, y:Y - r }, { x, y:y + r }] : [{ x, y }, { x:X, y }, { x:X, y:Y }, { x, y:Y }];
             I = { tipo, x, y, w, h, r, caja:{ x0:x, y0:y, x1:X, y1:Y }, cont:{ pts, b:r ? [0, k2, 0, k2, 0, k2, 0, k2] : [0, 0, 0, 0], cerrado:true, tipo:'auto' } };
-            if (tipo === 'caj') I.cont.mec = { op:'cajera', prof:5, puentes:{ n:0, ancho:5, alto:2 }, caj:{ estr:'espiral', paso:50, entrada:'rampa' } }; }
+            if (tipo === 'caj') I.cont.mec = { op:'cajera', prof:5, puentes:{ n:0, ancho:5, alto:2 }, caj:{ estr:'concentrica', paso:50, entrada:'rampa' } }; }
         if (I && cabe(I.caja)) { out.push(I); break; }
     }
     return out;
 }
 function pcOpciones() { const v = id => document.getElementById(id).checked, n = (id, d) => { const x = parseInt(document.getElementById(id).value, 10); return isFinite(x) ? x : d; }; return { red:v('pcRed'), semi:v('pcSemi'), pit:v('pcPit'), tal:v('pcTal'), col:v('pcCol'), hue:v('pcHue'), caj:v('pcCaj'), iMin:Math.max(0, Math.min(4, n('pcIMin', 1))), iMax:Math.max(0, Math.min(4, n('pcIMax', 2))), pared:Math.max(4, Math.min(40, n('pcPared', 12))) }; }
-function pcPieza(s, op) { const P = pcConstruir(s, op); if (P) P.ints = pcInteriores(P, s, op); return P; }
+function pcPieza(s, op) { let P = null; const pide = Math.min(op.iMin, op.iMax);   // si en una pieza no caben los interiores pedidos, se busca otra (siempre la misma para cada número)
+    for (let t = 0; t < 40; t++) { const Q = pcConstruir(s + t * 100003, op); if (!Q) continue; Q.ints = pcInteriores(Q, s + t * 100003, op); if (!P || Q.ints.length > P.ints.length) P = Q; if (P.ints.length >= pide) break; } return P; }
 function abrirPiezaContorno() { cerrarGenerador(); document.getElementById('modalPiezaC').classList.add('visible'); pintarPiezasC(); }
 function cerrarPiezaContorno() { document.getElementById('modalPiezaC').classList.remove('visible'); }
 function pintarPiezasC() {
