@@ -40,7 +40,8 @@ function corre(txt) {
         ok(`Mecanizar ${n} ${comp} pasada ${paso}: solo el punto de partida en absolutas y vuelve al cero`, lim === 'G0 Z20|G0 X0 Y0' && Math.abs(c.fin.X) < .01 && Math.abs(c.fin.Y) < .01 && c.pts.some(v => Math.abs(v.Z + 3) < .01), lim + ' fin ' + JSON.stringify(c.fin));
       }
       // cotas editables
-      const ed = await p.evaluate(() => {
+      const ed = await p.evaluate(([a0, c0]) => {
+        contornos = [a0, c0].map(x => JSON.parse(JSON.stringify(x))); asegurarUids(); cotasManuales = []; cotasAjuste = {};
         const refs = () => { const r = construirCotas(contornos, tiposResueltos(), 1 / view.z, 'todo', { x:0, y:0 }, {}); return r.T.filter(t => t.ref && t.ref.tipo === 'zc').map(t => t.ref); };
         const res = {}; cfgCotas.dist = 'cero'; cfgCotas.ver = true; guardarUndo = guardarUndo;
         const f = (k, e) => refs().find(r => r.eje === e && r.k.startsWith(k));
@@ -49,7 +50,7 @@ function corre(txt) {
         r = refs().find(x => x.k.startsWith('ran1')) ; res.err2 = aplicarCota(r, 30); res.ran = contornos[1].pts.map(q => q.y).join();
         r = refs().find(x => x.k.startsWith('ran0')); res.err3 = aplicarCota(r, 100); res.ext = contornos[0].pts.map(q => q.x).join();
         deshacer(); res.ext2 = contornos[0].pts.map(q => q.x).join();
-        return res; });
+        return res; }, [ej, in1]);
       ok('cambiar la situación de un agujero lo mueve entero', !ed.err1 && ed.hueco === '40,60,60,40', ed.hueco);
       ok('cambiar la longitud de la ranura la alarga', !ed.err2 && /70/.test(ed.ran), ed.ran);
       ok('cambiar el largo de la ranura exterior, y deshacer', !ed.err3 && ed.ext === '50,150,150,50' && ed.ext2 === '50,180,180,50', ed.ext + ' → ' + ed.ext2);
