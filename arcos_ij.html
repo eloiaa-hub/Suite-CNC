@@ -508,7 +508,7 @@
             <div class="params-box" id="opcTrig">
                 <span class="sub">Tipo de ejercicio</span>
                 <div class="chips" data-grupo="trig">
-                    <span class="chip on" data-v="ang" title="El plano da el centro, el radio y los ángulos del inicio y del final">Arco por ángulos</span><span class="chip on" data-v="tan" title="Una recta inclinada acaba en un arco tangente">Recta inclinada</span><span class="chip on" data-v="esq" title="Redondear una esquina: el plano da el vértice, el giro y el radio">Esquina · trigonometría</span><span class="chip on" data-v="esqP" title="Redondear una esquina sin ángulos: el plano da el vértice, un punto de la recta, el radio y la distancia al centro">Esquina · Pitágoras</span>
+                    <span class="chip on" data-v="ang" title="El plano da el centro, el radio y los ángulos del inicio y del final">Arco por ángulos</span><span class="chip on" data-v="tan" title="Una recta inclinada acaba en un arco tangente">Recta inclinada</span><span class="chip on" data-v="esq" title="Redondear una esquina: el plano da el vértice, el giro y el radio">Esquina · trigonometría</span><span class="chip on" data-v="esqP" title="Redondear una esquina sin ángulos: el plano da el vértice, un punto de la recta, el radio y la distancia al centro">Esquina · Pitágoras</span><span class="chip on" data-v="esqRP" title="Hay que hallar el radio: el plano da el vértice, el inicio y la distancia del vértice al arco">Averiguar R · Pitágoras</span><span class="chip on" data-v="esqRT" title="Hay que hallar el radio con el giro y una distancia">Averiguar R · trigonometría</span>
                 </div>
                 <span class="sub">Ángulos</span>
                 <div class="chips" data-grupo="tang">
@@ -626,6 +626,8 @@
                 <li><b>Recta inclinada:</b> el radio es perpendicular a la recta tangente, y forma un triángulo rectángulo con el mismo ángulo.</li>
                 <li><b>Esquina con trigonometría:</b> del vértice al inicio y al final hay <code>T = R·tan(α ÷ 2)</code>, siendo α lo que gira la dirección.</li>
                 <li><b>Esquina con Pitágoras:</b> sin ángulos. El plano da el vértice V, un punto Q de la recta de salida, R y la distancia de V al centro: <code>T = √(VC² − R²)</code>, y el final se saca con <code>VQ = √(ΔX² + ΔY²)</code> y la proporción T ÷ VQ.</li>
+                <li><b>Averiguar R con Pitágoras:</b> el plano da V, el inicio y la distancia <b>d</b> de V al arco. La hipotenusa es <code>R + d</code>: de <code>(R + d)² = R² + T²</code> sale <code>R = (T² − d²) ÷ (2·d)</code>.</li>
+                <li><b>Averiguar R con trigonometría:</b> con el giro α y d, <code>R = d·cos(α ÷ 2) ÷ (1 − cos(α ÷ 2))</code>; con α y T, <code>R = T ÷ tan(α ÷ 2)</code>.</li>
             </ul>
             <h3>⑤ Leer el bloque</h3>
             <ul>
@@ -749,7 +751,7 @@ const AY0 = { centro: false, vector: false, tri: false, giro: false, medir: fals
 let cfg = {
     nivel: 'sencillo', oscuro: false, acento: '#005A9C',
     cotas: ['G90'], ang: ['90', '180', '270'], dato: ['cuerda', 'dist'], ori: ['h', 'v'], tam: ['menor'], decimal: false, cdato: ['R', 'D'],
-    cont: ['red', 'semi'], leer: ['r', 'cual', 'error'], trig: ['ang', 'tan', 'esq', 'esqP'], tang: ['not'],
+    cont: ['red', 'semi'], leer: ['r', 'cual', 'error'], trig: ['ang', 'tan', 'esq', 'esqP', 'esqRP', 'esqRT'], tang: ['not'],
     ay: Object.assign({}, AY0), marcador: { ok: 0, ayuda: 0, total: 0 }, guiaVista: false
 };
 try { const g = JSON.parse(localStorage.getItem(CLAVE) || 'null'); if (g && typeof g === 'object') { cfg = Object.assign(cfg, g); cfg.ay = Object.assign({}, AY0, g.ay || {}); } } catch (e) {}
@@ -1047,8 +1049,8 @@ function colocarTrig(e, tr, extras) {
     return e;
 }
 function genTrig() {
-    const kind = pick(cfg.trig.length ? cfg.trig : ['ang', 'tan', 'esq', 'esqP']);
-    return ({ ang: genTrigAng, tan: genTrigTan, esq: genTrigEsq, esqP: genTrigEsqP })[kind]();
+    const kind = pick(cfg.trig.length ? cfg.trig : ['ang', 'tan', 'esq', 'esqP', 'esqRP', 'esqRT']);
+    return ({ ang: genTrigAng, tan: genTrigTan, esq: genTrigEsq, esqP: genTrigEsqP, esqRP: genTrigEsqRP, esqRT: genTrigEsqRT })[kind]();
 }
 function genTrigAng() {
     const hab = [30, 45, 60, 120, 135, 150, 210, 225, 240, 300, 315, 330], otros = [15, 20, 25, 35, 40, 50, 55, 65, 70, 75, 105, 110, 160, 200, 250, 290, 340];
@@ -1071,14 +1073,35 @@ function genTrigTan() {
 function esquina(e, R, T, dIn, dOut, s, L0, L2, extras) {
     const n = s > 0 ? P(-dIn.y, dIn.x) : P(dIn.y, -dIn.x), V = P(0, 0), A = mul(dIn, -T), C = suma(A, mul(n, R)), B = mul(dOut, T);
     const tr = [linea(resta(A, mul(dIn, L0)), A), crearArco(A, B, C, s > 0 ? 'G3' : 'G2', { kind: 'trig', q: true, R }), linea(B, mul(dOut, L2))];
-    e.V = V; e.dIn = dIn; e.dOut = dOut; e.T = T; e.askIni = true;
-    if (e.kindT === 'esqP') e.Q = tr[2].b;
+    e.V = V; e.dIn = dIn; e.dOut = dOut; e.T = T; e.askIni = e.askIni !== false;
+    if (e.kindT === 'esqP' || e.kindT === 'esqRP') e.Q = tr[2].b;
     return colocarTrig(e, tr, [V, C].concat(extras || []));
 }
 function genTrigEsq() {
     const alfa = angTrig([30, 45, 60, 90, 120], [20, 40, 50, 70, 80, 100]), R = pick([20, 25, 30, 40]);
     const dIn = pick(DIRS), s = pick([1, -1]), dOut = rot(dIn, s * alfa * GRAD), T = R * Math.tan(alfa / 2 * GRAD);
     return esquina({ tipo: 'trig', kindT: 'esq', alfa }, R, T, dIn, dOut, s, pick([15, 20, 25]), T + pick([15, 20, 25]));
+}
+function genTrigEsqRP() {
+    // (R + d)² = R² + T², con R, T y d enteros
+    const f = pick([{ a: 3, b: 4, c: 5, ks: [5, 6, 8, 10], L: 12.5 }, { a: 4, b: 3, c: 5, ks: [5, 6, 8, 10], L: 12.5 }, { a: 12, b: 5, c: 13, ks: [2, 3], L: 16.9 }, { a: 15, b: 8, c: 17, ks: [2], L: 14.45 }]);
+    const k = pick(f.ks), R = f.a * k, T = f.b * k, co = (f.a * f.a - f.b * f.b) / (f.c * f.c), se = 2 * f.a * f.b / (f.c * f.c);
+    const dIn = pick(DIRS), s = pick([1, -1]), dOut = P(dIn.x * co - s * dIn.y * se, s * dIn.x * se + dIn.y * co);
+    let L = f.L; while (L < T + 15) L += f.L;
+    return esquina({ tipo: 'trig', kindT: 'esqRP', d: (f.c - f.a) * k, ocultaR: true, askIni: false }, R, T, dIn, dOut, s, pick([15, 20, 25]), L);
+}
+function genTrigEsqRT() {
+    // Se parte del dato que se escribe en el plano (d o T), para que R salga exacto desde él
+    const lista = (cfg.tang.length ? cfg.tang : ['not']).includes('otros') ? (cfg.tang.includes('not') ? [60, 90, 120, 40, 50, 70, 80, 100] : [40, 50, 70, 80, 100]) : [60, 90, 120];
+    const conD = Math.random() < .5, dIn = pick(DIRS), s = pick([1, -1]);
+    let alfa, R, d = null, T;
+    for (let i = 0; i < 200; i++) {
+        alfa = pick(lista); const c = Math.cos(alfa / 2 * GRAD), t = Math.tan(alfa / 2 * GRAD);
+        if (conD) { d = pick([2, 3, 4, 5, 6, 8, 10, 12, 15, 20]); R = d * c / (1 - c); T = R * t; }
+        else { T = pick([10, 15, 20, 25, 30, 40]); R = T / t; d = null; }
+        if (R >= 12 && R <= 60 && T <= 70) break;
+    }
+    return esquina({ tipo: 'trig', kindT: 'esqRT', alfa, d, ocultaR: true, askIni: conD, tol: .03 }, R, T, dIn, rot(dIn, s * alfa * GRAD), s, pick([15, 20, 25]), T + pick([15, 20, 25]));
 }
 function genTrigEsqP() {
     // R, T e hipotenusa enteros; el giro sale de tan(α/2) = T/R, así que la recta de salida tiene pendiente exacta
@@ -1163,7 +1186,7 @@ function textoEnunciado(e) {
     const it = []; let h = '';
     const a = e.tramos.find(t => t.q && t.t === 'A') || e.tramos[1];
     if (e.tipo === 'trig') {
-        const Rt = `<b>R${fmt(a.R)}</b>`, dec = 'Da los resultados con <b>2 decimales</b>.';
+        const Rt = e.ocultaR ? '' : `<b>R${fmt(a.R)}</b>`, dec = 'Da los resultados con <b>2 decimales</b>.';
         if (e.kindT === 'ang') {
             h = 'Arco dado por sus ángulos';
             it.push(`Centro: <b>${ptxt(a.C)}</b> · Radio: ${Rt}. Ángulos medidos desde la horizontal hacia la derecha, en sentido antihorario.`);
@@ -1179,6 +1202,16 @@ function textoEnunciado(e) {
             it.push(`Las rectas se cortan en el vértice <b>V ${ptxt(e.V)}</b>; la dirección gira <b>${e.alfa}°</b>.`);
             it.push(`La esquina se redondea con ${Rt}, tangente a las dos rectas.`);
             it.push(`Calcula el <b>punto de inicio</b>, <b>G2/G3</b>, <b>X Y</b> del final e <b>I J</b>. ${dec}`);
+        } else if (e.kindT === 'esqRP') {
+            h = 'Averiguar el radio con Pitágoras';
+            it.push(`Las rectas se cortan en <b>V ${ptxt(e.V)}</b>; la de salida pasa por <b>Q ${ptxt(e.Q)}</b>. El arco empieza en <b style="color:var(--col-ini)">${ptxt(a.a)}</b>.`);
+            it.push(`Del vértice al arco, en línea recta hacia el centro, hay <b>${fmt(e.d)}</b>. El radio no se conoce.`);
+            it.push(`Halla <b>R</b> y calcula <b>G2/G3</b>, <b>X Y</b> del final e <b>I J</b>. ${dec}`);
+        } else if (e.kindT === 'esqRT') {
+            h = 'Averiguar el radio con trigonometría';
+            it.push(`Las rectas se cortan en <b>V ${ptxt(e.V)}</b>; la dirección gira <b>${e.alfa}°</b>.`);
+            it.push(e.d !== null ? `Del vértice al arco, en línea recta hacia el centro, hay <b>${fmt(e.d)}</b>. El radio no se conoce.` : `El arco empieza en <b style="color:var(--col-ini)">${ptxt(a.a)}</b>. El radio no se conoce.`);
+            it.push(`Halla <b>R</b> y calcula ${e.askIni ? 'el <b>punto de inicio</b>, ' : ''}<b>G2/G3</b>, <b>X Y</b> del final e <b>I J</b>. ${dec}`);
         } else {
             h = 'Redondear una esquina con Pitágoras';
             it.push(`Las rectas se cortan en el vértice <b>V ${ptxt(e.V)}</b>; la de salida pasa por <b>Q ${ptxt(e.Q)}</b>.`);
@@ -1326,7 +1359,7 @@ function pintarSeleccionPalabras() {
 }
 
 const leer = id => { const el = $(id); if (!el || el.disabled) return null; const s = el.value.trim().replace(',', '.'); if (s === '') return null; const v = Number(s.replace(/^\+/, '')); return isFinite(v) ? v : NaN; };
-const igual = (u, v) => u !== null && !isNaN(u) && Math.abs(u - v) <= (ej && ej.tipo === 'trig' ? .011 : TOL);
+const igual = (u, v) => u !== null && !isNaN(u) && Math.abs(u - v) <= (ej && ej.tol ? ej.tol : ej && ej.tipo === 'trig' ? .011 : TOL);
 
 function comprobar() {
     if (!ej) return;
@@ -1687,6 +1720,21 @@ function generarPasos() {
             const sA = Math.abs(a.I) >= 0 ? `${R}·sen ${ej.alfa}° = ${f2(a.R * Math.sin(ej.alfa * GRAD))}` : '', cA = `${R}·cos ${ej.alfa}° = ${f2(a.R * Math.cos(ej.alfa * GRAD))}`;
             S.push({ t: (n++) + '. El radio es perpendicular a la recta', ay: ['centro', 'tri'], foco: 1, pul: 'C', h: `<p>El radio llega en ángulo recto a la recta tangente, y por eso forma un triángulo rectángulo con R como hipotenusa y el mismo ángulo de ${ej.alfa}°:</p><div class="calc">${sA}<br>${cA}</div><p>Esos catetos, con su signo, son I y J:</p>` + calcIJ(a), rev: ['I1', 'J1'] });
             S.push({ t: (n++) + '. El final', ay: ['centro'], foco: 1, pul: 'P2', h: `<p>La recta de salida también es tangente: el final está a R del centro, en perpendicular a esa recta.</p><div class="calc">Centro = ${ptxt(a.C)}</div>` + calcXY(1, ''), rev: ['F1'] });
+        } else if (kd === 'esqRP' || kd === 'esqRT') {
+            const T = ej.T, conD = ej.d !== null && ej.d !== undefined;
+            if (kd === 'esqRP') {
+                const hor = Math.abs(a.a.y - ej.V.y) < 1e-6;
+                S.push({ t: (n++) + '. La distancia T', ay: ['tri'], foco: 1, pul: 'P1', h: `<p>V y el inicio están sobre la misma recta:</p><div class="calc">T = |${f2(hor ? ej.V.x : ej.V.y)} − ${f2(hor ? a.a.x : a.a.y)}| = <b>${f2(T)}</b></div>` });
+                S.push({ t: (n++) + '. El radio, con Pitágoras', ay: ['tri'], foco: 1, pul: null, h: `<p>El triángulo V, inicio y centro es rectángulo en el inicio. Sus lados son T, R y la hipotenusa <b>R + d</b>, porque de V al centro hay d hasta el arco y R más hasta el centro:</p><div class="calc">(R + d)² = R² + T²<br>R² + 2·R·d + d² = R² + T²<br>R = (T² − d²) ÷ (2·d) = (${f2(T)}² − ${f2(ej.d)}²) ÷ (2·${f2(ej.d)}) = <b>${f2(a.R)}</b></div>` });
+            } else if (conD) {
+                S.push({ t: (n++) + '. El radio, con el coseno', ay: ['tri'], foco: 1, pul: null, h: `<p>En el triángulo V, inicio y centro, el ángulo en el centro es la mitad del giro: ${ej.alfa / 2}°. El radio es el cateto contiguo y R + d, la hipotenusa:</p><div class="calc">cos(α ÷ 2) = R ÷ (R + d)<br>R = d·cos(α ÷ 2) ÷ (1 − cos(α ÷ 2))<br>R = ${f2(ej.d)}·cos ${ej.alfa / 2}° ÷ (1 − cos ${ej.alfa / 2}°) = <b>${f2(a.R)}</b></div>` });
+                S.push({ t: (n++) + '. La distancia T', ay: ['tri'], foco: 1, pul: null, h: `<div class="calc">T = R·tan(α ÷ 2) = ${f2(a.R)}·tan ${ej.alfa / 2}° = <b>${f2(T)}</b></div>` });
+                S.push({ t: (n++) + '. El inicio', ay: [], foco: 1, pul: 'P1', h: `<p>Sobre la recta que llega, T antes del vértice ${ptxt(ej.V)}:</p><div class="calc">Inicio = <b>${ptxt(a.a)}</b></div>`, rev: ['ini'] });
+            } else {
+                S.push({ t: (n++) + '. El radio, con la tangente', ay: ['tri'], foco: 1, pul: null, h: `<p>T es la distancia de V al inicio, <b>${f2(T)}</b>, y en el triángulo el ángulo en el centro es ${ej.alfa / 2}°:</p><div class="calc">tan(α ÷ 2) = T ÷ R<br>R = T ÷ tan(α ÷ 2) = ${f2(T)} ÷ tan ${ej.alfa / 2}° = <b>${f2(a.R)}</b></div>` });
+            }
+            S.push({ t: (n++) + '. I y J', ay: ['centro', 'vector'], foco: 1, pul: 'C', h: `<p>El centro está a R del inicio, en perpendicular a la recta que llega:</p>` + calcIJ(a), rev: ['I1', 'J1'] });
+            S.push({ t: (n++) + '. El final', ay: [], foco: 1, pul: 'P2', h: `<p>Sobre la recta de salida, a T del vértice.</p>` + calcXY(1, ''), rev: ['F1'] });
         } else {
             const T = ej.T;
             if (kd === 'esq') S.push({ t: (n++) + '. La distancia T', ay: ['tri'], foco: 1, pul: null, h: `<p>El triángulo V, inicio y centro es rectángulo en el inicio, con la mitad del giro en V:</p><div class="calc">T = R·tan(α ÷ 2) = ${R}·tan ${ej.alfa / 2}° = <b>${f2(T)}</b></div>` });
@@ -2018,17 +2066,24 @@ function cotasTrig(verTri, sol) {
         s += segCota(a.a, ej.V) + segCota(ej.V, a.b);
         const sv = S(ej.V); s += `<circle class="p-otro" cx="${sv.x}" cy="${sv.y}" r="4"/>`;
         const lv = lado(ej.V, a.C, 16); t += txt(ej.V, 'V ' + ptxt(ej.V), 't-b', lv.anchor, lv.dx, lv.dy);
-        if (k === 'esq') {
+        const cotaD = () => {   // la distancia del vértice al arco, sobre la línea V–C
+            const u = dist(ej.V, a.C), enArco = P(a.C.x + (ej.V.x - a.C.x) * a.R / u, a.C.y + (ej.V.y - a.C.y) * a.R / u), c1 = S(ej.V), c2 = S(enArco);
+            s += `<line class="cota" x1="${c1.x}" y1="${c1.y}" x2="${c2.x}" y2="${c2.y}"/>` + punta(c1.x, c1.y, c2.x, c2.y, 'cota-p', 9) + punta(c2.x, c2.y, c1.x, c1.y, 'cota-p', 9);
+            const nx = -(c2.y - c1.y) / (Math.hypot(c2.x - c1.x, c2.y - c1.y) || 1), ny = (c2.x - c1.x) / (Math.hypot(c2.x - c1.x, c2.y - c1.y) || 1);
+            t += `<text class="t t-ang" x="${(c1.x + c2.x) / 2 + nx * 14}" y="${(c1.y + c2.y) / 2 + ny * 14 + 4}" text-anchor="middle">${fmt(ej.d)}</text>`;
+        };
+        if (k === 'esq' || k === 'esqRT') {
             s += segCota(ej.V, suma(ej.V, mul(ej.dIn, 40 / vista.k)));
             suma1(angEntre(ej.V, ej.dIn, ej.dOut, 30, ej.alfa + '°'));
+            if (ej.d !== null && ej.d !== undefined) cotaD();
         } else {
             s += segCota(ej.V, a.C);
-            const m = P((ej.V.x + a.C.x) / 2, (ej.V.y + a.C.y) / 2), sm = S(m);
-            t += `<text class="t t-ang" x="${sm.x + 8}" y="${sm.y - 6}">${fmt(ej.VC)}</text>`;
+            if (k === 'esqRP') cotaD();
+            else { const nC = dist(ej.V, a.C), q = P(ej.V.x + (a.C.x - ej.V.x) * .32, ej.V.y + (a.C.y - ej.V.y) * .32), sm = S(q); t += `<text class="t t-ang" x="${sm.x + 9}" y="${sm.y - 7}">VC = ${fmt(ej.VC)}</text>`; }
             const lq = lado(ej.Q, ej.V, 14); t += txt(ej.Q, 'Q ' + ptxt(ej.Q), 't-b', lq.anchor, lq.dx, lq.dy);
             if (verTri) suma1(triTrig(ej.V, P(ej.Q.x, ej.V.y), ej.Q, 'ΔX', 'ΔY', ''));
         }
-        if (verTri) suma1(triTrig(ej.V, a.a, a.C, 'T', 'R', ''));
+        if (verTri) suma1(triTrig(ej.V, a.a, a.C, 'T', ej.ocultaR && !sol ? 'R?' : 'R', k === 'esqRP' || (k === 'esqRT' && ej.d !== null) ? 'R + ' + fmt(ej.d) : ''));
     }
     return { s, t };
 }
@@ -2074,7 +2129,7 @@ function dibujarPlano(W, H) {
         if (circ) return;
         if (t.kind === 'pit') { s += cotaRadio(t, .74) + cotasPit(t); return; }
         if (t.kind === 'redondeo') { s += cotaRadio(t, .5, 'R', true); return; }
-        s += cotaRadio(t, simple && ej.ang === 270 ? .62 : .5);
+        { const cr = cotaRadio(t, simple && ej.ang === 270 ? .62 : .5); s += ej.ocultaR && !sol ? cr.replace(/>R-?[\d.]+</, '>R?<').replace(/R\s?-?[\d.]+/g, m => /^R/.test(m) ? 'R?' : m) : cr; }
     });
     if (ej.tipo === 'trig') { const c = cotasTrig(verTri, sol); s += c.s; capaT += c.t; }
     if (circ) {
@@ -2467,7 +2522,7 @@ function solucionHoja(e, n) {
         return `<div class="hj-sol"><b>Ejercicio ${n}</b> · ${txt}${correcto}</div>`;
     }
     const L = programa(e, true).filter(l => l.cls !== 'cab').map(lineaTexto);
-    return `<div class="hj-sol"><b>Ejercicio ${n}</b>${e.askIni ? ` · inicio ${ptxt(e.ini)}` : ''}<pre>${esc(L.join('\n'))}</pre></div>`;
+    return `<div class="hj-sol"><b>Ejercicio ${n}</b>${e.ocultaR ? ` · <b>R${fmt(e.tramos[1].R)}</b>` : ''}${e.askIni ? ` · inicio ${ptxt(e.ini)}` : ''}<pre>${esc(L.join('\n'))}</pre></div>`;
 }
 function conEjercicio(e, f) { const g = ej; ej = e; try { return f(); } finally { ej = g; } }
 function imprimirHoja() {
