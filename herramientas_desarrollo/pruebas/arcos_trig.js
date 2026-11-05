@@ -32,6 +32,15 @@ const OUT = process.env.OUT || require('os').tmpdir();
       ej = null; } } }
     cfg.tang = ['not']; cfg.trig = ['ang', 'tan', 'esq', 'esqP', 'esqRP', 'esqRT']; return { mal: [...new Set(mal)].slice(0, 8), sal }; });
   ok('2.700 ejercicios: a R del centro, tangentes, 2 decimales, sin NaN', !geo.mal.length, geo.mal.join(' | '));
+  const g90 = await p.evaluate(() => { const mal = [], fin = { n: 0 }; cfg.solo90 = true; for (const k of ['esq', 'esqP', 'esqRP', 'esqRT']) { cfg.trig = [k]; for (let i = 0; i < 150; i++) { const e = generar('trig'), a = e.tramos[1]; ej = e; fin.n++;
+      const u = (q, v) => { const n = Math.hypot(v.x - q.x, v.y - q.y); return { x: (v.x - q.x) / n, y: (v.y - q.y) / n }; }, ui = u(e.tramos[0].a, a.a), uo = u(a.b, e.tramos[2].b); if (Math.abs(ui.x * uo.x + ui.y * uo.y) > .01) mal.push(k + ' no gira 90');
+      const sw = Math.abs(angulosArco(a).sw) * 180 / Math.PI; if (Math.abs(sw - 90) > .2) mal.push(k + ' arco ' + sw);
+      if (k === 'esqP') { const T = Math.sqrt(e.VC * e.VC - a.R * a.R); if (Math.abs(T - e.T) > .03) mal.push('T ' + T + ' ' + e.T); }
+      if (k === 'esqRP') { const R = (e.T * e.T - e.d * e.d) / (2 * e.d); if (Math.abs(R - a.R) > .03) mal.push('R ' + R + ' ' + a.R); }
+      if (k === 'esqRT' && e.d !== null) { const c = Math.SQRT1_2; if (Math.abs(e.d * c / (1 - c) - a.R) > .03) mal.push('RT'); }
+      generarPasos(); if (/undefined|NaN/.test(dibujarPlano(900, 600) + textoEnunciado(e).it.join())) mal.push(k + ' texto'); ej = null; } }
+    cfg.trig = ['ang']; const a0 = generar('trig'); const ok0 = a0.kindT === 'ang'; cfg.solo90 = false; cfg.trig = ['ang', 'tan', 'esq', 'esqP', 'esqRP', 'esqRT']; return { mal: [...new Set(mal)].slice(0, 6), fin, ok0 }; });
+  ok('solo esquinas de 90°: los cuatro tipos giran 90° y las fórmulas cuadran', !g90.mal.length && g90.fin.n === 600 && g90.ok0, g90.mal.join(' | '));
   // ejemplos hechos a mano
   const man = await p.evaluate(() => { const arr = []; ej = null; const mk = (k, a) => { cfg.trig = [k]; let e; for (let i = 0; i < 3000; i++) { e = generar('trig'); if (a(e)) return e; } return null; };
     const e1 = mk('tan', e => e.alfa === 30 && e.tramos[1].R === 30 && e.dOut.x === 1 && e.tramos[1].g === 'G2'); arr.push(e1 && [e1.tramos[1].I, e1.tramos[1].J, r2(e1.tramos[1].b.x - e1.tramos[1].a.x), r2(e1.tramos[1].b.y - e1.tramos[1].a.y)]);

@@ -7,7 +7,7 @@ La versión de la suite es **año.mes** (por ejemplo, 2026.10). Cada programa co
 Versiones de los programas: **Calcador v128 · Corrector v73 · Tutor G-Code v6 · Simulador 3D V45 · Calculadora de taller v5 · Arcos I J v7 · Anidador de tableros v8**.
 
 ### Arcos I J v7: trigonometría, R y -R, y arcos con inicio, final y radio
-- **⑥ Trigonometría**, nivel nuevo con 2 decimales: arco por ángulos, recta inclinada con arco tangente redondeo de esquina con trigonometría o con Pitágoras, y averiguar el radio por los dos caminos.
+- **⑥ Trigonometría**, nivel nuevo con 2 decimales: arco por ángulos, recta inclinada con arco tangente redondeo de esquina con trigonometría o con Pitágoras, y averiguar el radio por los dos caminos. Se puede limitar a esquinas de 90°.
 - **⑤ Leer el bloque** tiene un tipo nuevo, **¿R o -R?**, y una explicación de cuándo usar cada signo.
 - **① Sencillo** añade **Cuerda · <180°** y **Cuerda · >180°**: el plano da inicio, final y radio, y el centro sale con Pitágoras.
 

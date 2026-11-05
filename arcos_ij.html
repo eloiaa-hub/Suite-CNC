@@ -514,6 +514,7 @@
                 <div class="chips" data-grupo="tang">
                     <span class="chip on" data-v="not" title="30°, 45° y 60°">Habituales</span><span class="chip" data-v="otros" title="Ángulos como 15°, 20° o 75°">Otros</span>
                 </div>
+                <label class="param-line" title="Las esquinas a redondear giran siempre 90°. No afecta a Arco por ángulos ni a Recta inclinada.">Solo esquinas de 90° <input type="checkbox" id="chkSolo90" onchange="cfg.solo90 = this.checked; guardar(); nuevoEjercicio();"></label>
             </div>
 
             <div class="section-label" id="lblAyudas">Ayudas visuales <span class="info" data-info="ayudas">i</span></div>
@@ -1078,11 +1079,19 @@ function esquina(e, R, T, dIn, dOut, s, L0, L2, extras) {
     return colocarTrig(e, tr, [V, C].concat(extras || []));
 }
 function genTrigEsq() {
-    const alfa = angTrig([30, 45, 60, 90, 120], [20, 40, 50, 70, 80, 100]), R = pick([20, 25, 30, 40]);
+    const alfa = cfg.solo90 ? 90 : angTrig([30, 45, 60, 90, 120], [20, 40, 50, 70, 80, 100]), R = pick([20, 25, 30, 40]);
     const dIn = pick(DIRS), s = pick([1, -1]), dOut = rot(dIn, s * alfa * GRAD), T = R * Math.tan(alfa / 2 * GRAD);
     return esquina({ tipo: 'trig', kindT: 'esq', alfa }, R, T, dIn, dOut, s, pick([15, 20, 25]), T + pick([15, 20, 25]));
 }
+// A 90° la hipotenusa es R·√2, que no es exacta: se da con 2 decimales y la corrección admite 0,03
+function esquina90(e) {
+    const R = pick([15, 20, 25, 30, 40]), dIn = pick(DIRS), s = pick([1, -1]);
+    if (e.kindT === 'esqP') e.VC = r2(R * Math.SQRT2); else e.d = r2(R * (Math.SQRT2 - 1));
+    e.tol = .03;
+    return esquina(e, R, R, dIn, rot(dIn, s * Math.PI / 2), s, pick([15, 20, 25]), R + pick([15, 20, 25]));
+}
 function genTrigEsqRP() {
+    if (cfg.solo90) return esquina90({ tipo: 'trig', kindT: 'esqRP', ocultaR: true, askIni: false });
     // (R + d)² = R² + T², con R, T y d enteros
     const f = pick([{ a: 3, b: 4, c: 5, ks: [5, 6, 8, 10], L: 12.5 }, { a: 4, b: 3, c: 5, ks: [5, 6, 8, 10], L: 12.5 }, { a: 12, b: 5, c: 13, ks: [2, 3], L: 16.9 }, { a: 15, b: 8, c: 17, ks: [2], L: 14.45 }]);
     const k = pick(f.ks), R = f.a * k, T = f.b * k, co = (f.a * f.a - f.b * f.b) / (f.c * f.c), se = 2 * f.a * f.b / (f.c * f.c);
@@ -1092,7 +1101,7 @@ function genTrigEsqRP() {
 }
 function genTrigEsqRT() {
     // Se parte del dato que se escribe en el plano (d o T), para que R salga exacto desde él
-    const lista = (cfg.tang.length ? cfg.tang : ['not']).includes('otros') ? (cfg.tang.includes('not') ? [60, 90, 120, 40, 50, 70, 80, 100] : [40, 50, 70, 80, 100]) : [60, 90, 120];
+    const lista = cfg.solo90 ? [90] : (cfg.tang.length ? cfg.tang : ['not']).includes('otros') ? (cfg.tang.includes('not') ? [60, 90, 120, 40, 50, 70, 80, 100] : [40, 50, 70, 80, 100]) : [60, 90, 120];
     const conD = Math.random() < .5, dIn = pick(DIRS), s = pick([1, -1]);
     let alfa, R, d = null, T;
     for (let i = 0; i < 200; i++) {
@@ -1104,6 +1113,7 @@ function genTrigEsqRT() {
     return esquina({ tipo: 'trig', kindT: 'esqRT', alfa, d, ocultaR: true, askIni: conD, tol: .03 }, R, T, dIn, rot(dIn, s * alfa * GRAD), s, pick([15, 20, 25]), T + pick([15, 20, 25]));
 }
 function genTrigEsqP() {
+    if (cfg.solo90) return esquina90({ tipo: 'trig', kindT: 'esqP' });
     // R, T e hipotenusa enteros; el giro sale de tan(α/2) = T/R, así que la recta de salida tiene pendiente exacta
     const f = pick([{ a: 3, b: 4, c: 5, ks: [5, 6, 8, 10], L: 12.5 }, { a: 4, b: 3, c: 5, ks: [5, 6, 8, 10], L: 12.5 }, { a: 12, b: 5, c: 13, ks: [2, 3], L: 16.9 }, { a: 15, b: 8, c: 17, ks: [2], L: 14.45 }]);
     const k = pick(f.ks), R = f.a * k, T = f.b * k, VC = f.c * k, co = (f.a * f.a - f.b * f.b) / (f.c * f.c), se = 2 * f.a * f.b / (f.c * f.c);
@@ -2604,6 +2614,7 @@ function guiaMostrar() {
    INTERFAZ: niveles, chips, ayudas, ajustes
    ========================================================================= */
 function ponerNivel(n) {
+    if ($('chkSolo90')) $('chkSolo90').checked = !!cfg.solo90;
     if (NIVEL_FIJO) n = NIVEL_FIJO;
     cfg.nivel = n; guardar();
     document.querySelectorAll('#niveles button').forEach(b => { b.classList.toggle('activo', b.dataset.n === n); b.classList.toggle('bloqueado', !!NIVEL_FIJO && b.dataset.n !== n); b.disabled = !!NIVEL_FIJO && b.dataset.n !== n; });
