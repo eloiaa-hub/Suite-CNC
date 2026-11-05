@@ -27,6 +27,7 @@ sin instalar nada y también sin conexión a internet.
 | `calculadora.html` | Calculadora de taller: recta inclinada, polares, arcos (centro, I J y R), G90 ↔ G91 y velocidades de corte (alumnado) | v5 |
 | `arcos_ij.html` | Arcos I J: aprender a calcular I y J de los arcos G2 y G3, en seis niveles, con corrección, ayudas y paso a paso; recibe los arcos de una pieza desde el Calcador (◠ Practicar I J) (alumnado; con ventana de examen para el profesor) | v7 |
 | `manual_arcos_ij.html` / `.pdf` | Manual de Arcos I J (alumnado) | — |
+| `arcos_trigonometria.html` / `.pdf` | Arcos con trigonometría: un caso resuelto de cada tipo del nivel ⑥ (alumnado) | — |
 | `itinerario.html` | Itinerario del alumno: nueve pasos con el apunte y la herramienta de cada uno (alumnado) | — |
 | `guia_examen.html` / `.pdf` | Un examen distinto para cada alumno: 20 versiones con el Calcador y una tarea de Aules, y un examen de I J que Aules corrige solo (profesorado) | — |
 | `licencias.html` | Créditos y licencias (fuentes y bibliotecas de terceros) | — |
