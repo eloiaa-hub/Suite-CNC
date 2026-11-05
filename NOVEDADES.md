@@ -4,7 +4,12 @@ La versión de la suite es **año.mes** (por ejemplo, 2026.10). Cada programa co
 
 ## Suite CNC 2026.10
 
-Versiones de los programas: **Calcador v128 · Corrector v73 · Tutor G-Code v6 · Simulador 3D V45 · Calculadora de taller v5 · Arcos I J v7 · Anidador de tableros v8**.
+Versiones de los programas: **Calcador v129 · Corrector v74 · Tutor G-Code v6 · Simulador 3D V45 · Calculadora de taller v5 · Arcos I J v8 · Anidador de tableros v8**.
+
+### Calcador v129 / Corrector v74 / Arcos I J v8
+- **Biblioteca**: botón **🗑 Vaciar biblioteca**. Al importar con ejercicios ya guardados, se elige entre **agregar** y **sustituir** toda la biblioteca.
+- **Cotas manuales**: sus opciones pasan a **Dibujo**, en un apartado plegable.
+- **Arcos I J**, ¿R o -R?: el botón elegido se ve en blanco sobre color.
 
 ### Arcos I J v7: trigonometría, R y -R, y arcos con inicio, final y radio
 - **⑥ Trigonometría**, nivel nuevo con 2 decimales: arco por ángulos, recta inclinada con arco tangente redondeo de esquina con trigonometría o con Pitágoras, y averiguar el radio por los dos caminos. Se puede limitar a esquinas de 90°.

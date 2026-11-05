@@ -651,7 +651,7 @@
 <body>
 <div class="app-window">
     <header class="top-bar">
-        <a href="index.html" class="ir-portada" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a><span class="top-bar-title">✅ Corrector — Por Eloi A.A.<span class="ver-suite" title="Versión del programa (generado a partir del Calcador v128)" style="font-size:11px;font-weight:600;padding:1px 7px;margin-left:8px;border-radius:9px;background:rgba(0,90,156,.12);color:#005A9C;vertical-align:middle">v73</span></span>
+        <a href="index.html" class="ir-portada" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a><span class="top-bar-title">✅ Corrector — Por Eloi A.A.<span class="ver-suite" title="Versión del programa (generado a partir del Calcador v129)" style="font-size:11px;font-weight:600;padding:1px 7px;margin-left:8px;border-radius:9px;background:rgba(0,90,156,.12);color:#005A9C;vertical-align:middle">v74</span></span>
         <div class="top-bar-right">
             <input class="project-name" id="projectName" type="text" value="calco_sin_nombre" placeholder="Nombre del proyecto">
             <div class="c2-archivo"><button class="btn-manual" onclick="nuevo()" title="Empieza de cero (se puede deshacer)">🗋 Nuevo</button><button class="btn-manual" onclick="document.getElementById('fileJSON').click()" title="Abre un proyecto .json del Calcador o del Corrector">📂 Abrir</button><button class="btn-manual" onclick="exportarJSON()" title="Guarda el proyecto en un archivo JSON: lo abren el Calcador, el Corrector, el Tutor y el Simulador (como plano del ejercicio)">💾 Guardar</button><button class="btn-manual" onclick="abrirBiblioteca()" title="Tus ejercicios: buscar, abrir e imprimir sus hojas">🗂 Biblioteca</button></div>
@@ -1563,6 +1563,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.</pre>
                 <button class="btn-action sec" onclick="document.getElementById('bibArchivos').click()" title="Ejercicios .json sueltos o una copia de la biblioteca exportada">📄 Importar archivos…</button>
                 <button class="btn-action sec" onclick="anadirAbiertoBib()" title="Guarda en la biblioteca el ejercicio que tienes en pantalla">➕ Añadir el abierto</button>
                 <button class="btn-action sec" onclick="exportarBiblioteca()" title="Copia de seguridad: todos los ejercicios (o los seleccionados) en un archivo, con sus niveles y etiquetas. Se recupera con «Importar archivos…»">⬇ Exportar biblioteca</button>
+                <button class="btn-action sec" id="bibVaciar" onclick="vaciarBiblioteca()" title="Borra todos los ejercicios de la biblioteca de este navegador. Los archivos originales no se tocan">🗑 Vaciar biblioteca</button>
                 <span class="mv-sep"></span>
                 <input type="search" id="bibBuscar" placeholder="🔍 Buscar título, nº, carpeta o etiqueta" oninput="bib.filtro.q = this.value; pintarBiblioteca()">
                 <select id="bibNivel" onchange="bib.filtro.nivel = this.value; pintarBiblioteca()"><option value="">Todos los niveles</option><option value="rectas">Rectas</option><option value="arcos">Arcos</option><option value="varios">Varios contornos</option><option value="texto">Con texto</option><option value="avanzado">Avanzado</option></select>
@@ -8991,8 +8992,9 @@ function mostrarCamposFormas() {
     document.getElementById('fmTang').style.display = h === 'tangente' ? 'flex' : 'none';
     if (h === 'tangente') { document.getElementById('tgModo').value = cfgTang.modo; document.getElementById('tgR').value = cfgTang.R; document.getElementById('tgCortar').checked = cfgTang.cortar; document.getElementById('tgRLinea').style.display = cfgTang.modo === 'arco' ? '' : 'none'; }
     if (h !== 'tangente') tng = null;
-    document.getElementById('fmCota').style.display = h === 'cotaman' ? 'flex' : 'none';
-    if (h === 'cotaman') actualizarBotonBorrarCotas();
+    const fmC = document.getElementById('fmCota'), plegable = fmC.closest('.c2-cotaman');
+    if (plegable) { fmC.style.display = 'flex'; actualizarBotonBorrarCotas(); if (h === 'cotaman') plegable.open = true; }   // en Dibujo, en su apartado
+    else { fmC.style.display = h === 'cotaman' ? 'flex' : 'none'; if (h === 'cotaman') actualizarBotonBorrarCotas(); }
     document.getElementById('fmTexto').style.display = h === 'texto' ? 'flex' : 'none';
     if (h === 'texto') sincronizarPanelTexto();
     document.getElementById('fmNada').style.display = (HERR_FORMAS.includes(h) || h === 'equidistante' || h === 'cotaman' || h === 'texto' || h === 'tangente') ? 'none' : '';
@@ -13889,23 +13891,66 @@ function cerrarBiblioteca() {
     if (bib.elegir) { bib.elegir = false; abrirMasiva(); }
 }
 // ── Importar ──
+const bibVaciarAlmacen = async () => { await bibTx('readwrite', st => st.clear()); bib.lista = []; bib.sel.clear(); };
+async function vaciarBiblioteca() {
+    await bibCargar();
+    const n = bib.lista.length;
+    if (!n) { snack('La biblioteca ya está vacía'); return; }
+    if (!confirm(`¿Borrar ${n === 1 ? 'el ejercicio' : `los ${n} ejercicios`} de la biblioteca?\n\nNo se puede deshacer. Los archivos originales no se tocan, pero lo que solo esté en la biblioteca se pierde: si quieres conservarlo, cancela y usa «Exportar biblioteca».`)) return;
+    await bibVaciarAlmacen(); await bibCargar(); pintarBiblioteca();
+    snack('Biblioteca vaciada');
+}
+// Pregunta qué hacer con lo que ya hay. Devuelve 'agregar', 'sustituir' o null
+function preguntarImportarBib(hay, llegan) {
+    return new Promise(res => {
+        const o = document.createElement('div'); o.className = 'modal-overlay visible'; o.id = 'bibPregunta';
+        const ej = n => n === 1 ? '1 ejercicio' : n + ' ejercicios';
+        o.innerHTML = `<div class="help-modal" style="max-width:480px"><div class="help-header"><h2>Importar a la biblioteca</h2></div>
+            <div style="padding:14px 18px;display:flex;flex-direction:column;gap:10px">
+            <p style="margin:0">La biblioteca ya tiene <strong>${ej(hay)}</strong> y vas a importar <strong>${ej(llegan)}</strong>.</p>
+            <button class="btn-action" data-r="agregar" title="Un ejercicio que ya esté en la biblioteca se actualiza; el resto se queda como está">➕ Agregar a la biblioteca</button>
+            <button class="btn-action sec" data-r="sustituir">🔁 Sustituir toda la biblioteca</button>
+            <div class="ctx-nota">Sustituir borra lo que hay ahora y no se puede deshacer. Si quieres conservarlo, cancela y usa «Exportar biblioteca».</div>
+            <button class="btn-action sec" data-r="">Cancelar</button></div></div>`;
+        const fin = r => { o.remove(); res(r || null); };
+        o.addEventListener('click', e => { if (e.target === o) { fin(null); return; } const b = e.target.closest('button[data-r]'); if (b) fin(b.dataset.r); });
+        document.body.appendChild(o);
+        o.querySelector('button[data-r="agregar"]').focus();
+    });
+}
 async function importarArchivosBib(files) {
     const lista = [...files].filter(f => /\.json$/i.test(f.name) && f.size < 5e6);
     if (!lista.length) { snack('No se ha encontrado ningún archivo .json'); return; }
-    let nuevos = 0, act = 0, malos = 0;
+    let nuevos = 0, act = 0, malos = 0, llegan = 0;
     await bibCargar();
+    const leidos = [];
     for (const f of lista) {
         const t = await leerArchivoTexto(f); let d = null;
         try { d = JSON.parse(t); } catch (e) {}
-        if (esObj(d) && d.tipo === 'biblioteca-calcador' && Array.isArray(d.ejercicios)) { const r = await importarPaqueteBib(d); nuevos += r.nuevos; act += r.act; continue; }
+        if (esObj(d) && d.tipo === 'biblioteca-calcador' && Array.isArray(d.ejercicios)) {
+            const validos = d.ejercicios.filter(x => esObj(x) && esObj(x.datos) && esObj(x.datos.calcador) && Array.isArray(x.datos.calcador.contornos) && entradaDe(x.datos, String(x.ruta || x.archivo || 'importado.json'), String(x.archivo || 'importado.json')).ficha.valido).length;
+            llegan += validos; leidos.push({ paquete: d }); continue;
+        }
         if (!esObj(d) || !esObj(d.calcador) || !Array.isArray(d.calcador.contornos)) { malos++; continue; }
         const e = entradaDe(d, f.webkitRelativePath || f.name, f.name);
         if (!e.ficha.valido) { malos++; continue; }
+        llegan++; leidos.push({ entrada: e });
+    }
+    if (!llegan) { snack(`No se ha importado nada: ${malos ? malos + ' archivo(s) no son ejercicios del Calcador' : 'no hay ejercicios válidos'}`); return; }
+    let modo = 'agregar';
+    if (bib.lista.length) {
+        modo = await preguntarImportarBib(bib.lista.length, llegan);
+        if (!modo) return;
+        if (modo === 'sustituir') await bibVaciarAlmacen();
+    }
+    for (const x of leidos) {
+        if (x.paquete) { const r = await importarPaqueteBib(x.paquete); nuevos += r.nuevos; act += r.act; continue; }
+        const e = x.entrada;
         if (await bibGuardarEntrada(e)) act++; else nuevos++;
-        bib.lista = bib.lista.filter(x => x.id !== e.id); bib.lista.push(e);
+        bib.lista = bib.lista.filter(y => y.id !== e.id); bib.lista.push(e);
     }
     await bibCargar(); pintarBiblioteca();
-    snack(`Biblioteca: ${nuevos} ejercicio(s) nuevo(s)${act ? `, ${act} actualizado(s)` : ''}${malos ? ` · ${malos} archivo(s) no son ejercicios del Calcador` : ''}`);
+    snack(`${modo === 'sustituir' ? 'Biblioteca sustituida' : 'Biblioteca'}: ${nuevos} ejercicio(s) nuevo(s)${act ? `, ${act} actualizado(s)` : ''}${malos ? ` · ${malos} archivo(s) no son ejercicios del Calcador` : ''}`);
 }
 // Copia de seguridad: un único archivo con los ejercicios (todos o los seleccionados), sus niveles y etiquetas
 function exportarBiblioteca() {
@@ -14926,7 +14971,7 @@ function limpiarDegenerados() {
     return cambio;
 }
 function refrescar() {
-    if (herramienta === 'cotaman') actualizarBotonBorrarCotas();
+    actualizarBotonBorrarCotas();
     limpiarDegenerados();
     asegurarUids();
     if (purgarCotasHuerfanas()) snack('Se han borrado las cotas manuales de la forma eliminada');
@@ -17266,8 +17311,11 @@ window.addEventListener('load', () => setTimeout(() => {
         const rest = dibP.querySelector('button[onclick="restaurarCotas()"]'); if (rest) cotas.appendChild(rest);
         const aj = dibP.querySelector('.ajuste-box'), ajuste = det('c2-ajuste', 'Ajustar medidas');
         if (aj) { [...aj.children].forEach(ch => ajuste.appendChild(ch)); aj.remove(); }
+        const cman = det('c2-cotaman', 'Cotas manuales'), fmC = $('fmCota');
+        if (fmC) { cman.appendChild(fmC); fmC.style.display = 'flex'; fmC.style.marginTop = '5px'; }
         cotas.open = true; ajuste.open = true;       // abiertos por defecto (se usan mucho); se pueden plegar
-        dibP.appendChild(cotas); dibP.appendChild(ajuste);
+        dibP.appendChild(cotas); dibP.appendChild(cman); dibP.appendChild(ajuste);
+        actualizarBotonBorrarCotas();
     }
     // 5) Barra de arriba: 🖼 Fondo (junto a Abrir) y ⬇ Exportar ▾ (junto a Guardar); la pestaña Exportar desaparece
     const barra = document.querySelector('.c2-archivo');
