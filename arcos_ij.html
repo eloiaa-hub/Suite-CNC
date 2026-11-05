@@ -154,6 +154,9 @@
     .p-c { stroke: var(--text-main); stroke-width: 1.6; fill: none; }
     .t { font-size: 12.5px; fill: var(--text-main); paint-order: stroke; stroke: var(--canvas-bg); stroke-width: 4px; stroke-linejoin: round; }
     .t-b { font-weight: 700; }
+    .tri-t { fill: var(--accent); fill-opacity: .08; stroke: var(--accent); stroke-width: 1.4; stroke-dasharray: 5 3; }
+    .ang-t { fill: none; stroke: var(--col-r, #c0392b); stroke-width: 1.5; }
+    .t-ang { font-weight: 700; fill: var(--col-r, #c0392b); }
     .t-m { fill: var(--text-muted); font-size: 11.5px; }
     .t-ini { fill: var(--col-ini); font-weight: 700; } .t-fin { fill: var(--col-fin); font-weight: 700; }
     .t-i { fill: var(--col-i); font-weight: 700; font-size: 13.5px; } .t-j { fill: var(--col-j); font-weight: 700; font-size: 13.5px; } .t-r { fill: var(--col-r); font-weight: 700; font-size: 13.5px; }
@@ -402,7 +405,8 @@
             <button data-n="circulo" title="Circunferencia completa en dos semicírculos">③ Círculo</button>
             <button data-n="contorno" title="Una pieza completa: programa todos los tramos, rectas y arcos">④ Contorno</button>
             <button data-n="leer" title="Al revés: te dan el bloque y tienes que interpretarlo">⑤ Leer el bloque</button>
-            <button data-n="pieza" id="btnNivelPieza" style="display:none" title="Los arcos de la pieza que has enviado desde el Calcador">⑥ Pieza</button>
+            <button data-n="trig" title="El plano da ángulos: seno, coseno y tangente, con 2 decimales">⑥ Trigonometría</button>
+            <button data-n="pieza" id="btnNivelPieza" style="display:none" title="Los arcos de la pieza que has enviado desde el Calcador">⑦ Pieza</button>
         </div>
         <div class="top-bar-right">
             <button class="btn-manual lleno" id="btnNuevo" onclick="nuevoEjercicio()" title="Nuevo ejercicio al azar (tecla N)">🎲 Nuevo ejercicio</button>
@@ -499,6 +503,17 @@
                     <span class="chip on" data-v="cual" title="Te dan el bloque: elige cuál de los 4 arcos es">¿Qué arco es?</span><span class="chip on" data-v="error" title="Te dan un bloque que puede tener errores: márcalos">¿Dónde está el error?</span>
                 </div>
                 <details class="expl-r"><summary>¿Cuándo R y cuándo -R?</summary><p>Con <code>G2 X Y R</code> o <code>G3 X Y R</code>, la máquina recibe el final y el radio, pero con ese radio hay <b>dos arcos posibles</b> en ese sentido: el corto y el largo. El signo de R dice cuál:</p><svg viewBox="0 0 240 146" width="100%" role="img" aria-label="Dos arcos entre los mismos puntos: el corto con R positivo y el largo con R negativo" style="max-width:280px;display:block;margin:6px auto"><line x1="84" y1="52" x2="156" y2="52" stroke="currentColor" stroke-dasharray="3 3" opacity=".5"/><path d="M84 52 A44 44 0 0 1 156 52" fill="none" stroke="#0e7c86" stroke-width="3"/><path d="M84 52 A44 44 0 1 0 156 52" fill="none" stroke="#c2185b" stroke-width="3"/><circle cx="84" cy="52" r="4" fill="#1b7f3b"/><circle cx="156" cy="52" r="4" fill="#c0392b"/><text x="120" y="20" text-anchor="middle" font-size="11" font-weight="700" fill="#0e7c86">menos de 180°: R20</text><text x="120" y="141" text-anchor="middle" font-size="11" font-weight="700" fill="#c2185b">más de 180°: R-20</text></svg><ul><li><b>R positivo</b> (<code>R20</code>): el arco de <b>menos de 180°</b>, el corto.</li><li><b>R negativo</b> (<code>R-20</code>): el arco de <b>más de 180°</b>, el largo.</li><li><b>Exactamente 180°</b>: los dos arcos miden lo mismo; se escribe R positivo.</li><li><b>Círculo completo</b>: no se puede con R, porque el inicio y el final coinciden. Se hace con I J o en dos semicírculos.</li></ul><p><b>G2 o G3</b> sigue diciendo el sentido; <b>el signo de R</b> solo dice si es el corto o el largo.</p></details>
+            </div>
+
+            <div class="params-box" id="opcTrig">
+                <span class="sub">Tipo de ejercicio</span>
+                <div class="chips" data-grupo="trig">
+                    <span class="chip on" data-v="ang" title="El plano da el centro, el radio y los ángulos del inicio y del final">Arco por ángulos</span><span class="chip on" data-v="tan" title="Una recta inclinada acaba en un arco tangente">Recta inclinada</span><span class="chip on" data-v="esq" title="Redondear una esquina: el plano da el vértice, el giro y el radio">Esquina · trigonometría</span><span class="chip on" data-v="esqP" title="Redondear una esquina sin ángulos: el plano da el vértice, un punto de la recta, el radio y la distancia al centro">Esquina · Pitágoras</span>
+                </div>
+                <span class="sub">Ángulos</span>
+                <div class="chips" data-grupo="tang">
+                    <span class="chip on" data-v="not" title="30°, 45° y 60°">Habituales</span><span class="chip" data-v="otros" title="Ángulos como 15°, 20° o 75°">Otros</span>
+                </div>
             </div>
 
             <div class="section-label" id="lblAyudas">Ayudas visuales <span class="info" data-info="ayudas">i</span></div>
@@ -604,6 +619,14 @@
             <p>Un círculo completo se programa con <b>dos semicírculos</b>: del punto de inicio al punto opuesto y del punto opuesto otra vez al inicio. En el segundo bloque, I y J se miden desde su propio inicio (el punto opuesto), así que cambian de signo.</p>
             <h3>④ Contorno completo</h3>
             <p>Una pieza entera, con esquinas redondeadas y entallas. Se programa <b>tramo a tramo</b>: cada recta (<code>G1 X Y</code>) y cada arco (<code>G2/G3 X Y I J</code>). El inicio de cada tramo es el final del anterior, así que <b>en cada arco I y J se miden desde su propio inicio</b>. Cuando está resuelto se puede exportar a <code>.nc</code> (💾) y abrir en el Simulador 3D.</p>
+            <h3>⑥ Trigonometría</h3>
+            <p>Cuando el plano da <b>ángulos</b>, se usan seno, coseno y tangente, con <b>2 decimales</b>:</p>
+            <ul>
+                <li><b>Arco por ángulos:</b> un punto del arco es <code>centro + R·(cos α, sen α)</code>.</li>
+                <li><b>Recta inclinada:</b> el radio es perpendicular a la recta tangente, y forma un triángulo rectángulo con el mismo ángulo.</li>
+                <li><b>Esquina con trigonometría:</b> del vértice al inicio y al final hay <code>T = R·tan(α ÷ 2)</code>, siendo α lo que gira la dirección.</li>
+                <li><b>Esquina con Pitágoras:</b> sin ángulos. El plano da el vértice V, un punto Q de la recta de salida, R y la distancia de V al centro: <code>T = √(VC² − R²)</code>, y el final se saca con <code>VQ = √(ΔX² + ΔY²)</code> y la proporción T ÷ VQ.</li>
+            </ul>
             <h3>⑤ Leer el bloque</h3>
             <ul>
                 <li><b>¿Qué arco es?</b> Te dan el bloque y cuatro arcos posibles entre los mismos puntos. Calcula el centro (inicio + I, J) y mira el sentido (G2/G3).</li>
@@ -664,7 +687,8 @@
                     <label><span>③ Círculo</span><input type="number" min="0" max="12" data-hj="circulo" oninput="totalHoja()"></label>
                     <label><span>④ Contorno</span><input type="number" min="0" max="12" data-hj="contorno" oninput="totalHoja()"></label>
                     <label><span>⑤ Leer el bloque</span><input type="number" min="0" max="12" data-hj="leer" oninput="totalHoja()"></label>
-                    <label id="hjFilaPieza" style="display:none"><span>⑥ Pieza</span><input type="number" min="0" max="12" data-hj="pieza" oninput="totalHoja()"></label>
+                    <label><span>⑥ Trigonometría</span><input type="number" min="0" max="12" data-hj="trig" oninput="totalHoja()"></label>
+                    <label id="hjFilaPieza" style="display:none"><span>⑦ Pieza</span><input type="number" min="0" max="12" data-hj="pieza" oninput="totalHoja()"></label>
                     <p class="hj-total" id="hjTotal"></p>
                 </div>
                 <label class="chk largo"><input type="checkbox" id="hjBarajar"> Mezclar el orden de los ejercicios</label>
@@ -694,8 +718,10 @@
    Programa offline de un solo archivo. Por Eloi A.A.
    ========================================================================= */
 const $ = id => document.getElementById(id);
-const r1 = v => { const r = Math.round(v * 10) / 10; return Object.is(r, -0) ? 0 : r; };
-const fmt = v => { v = r1(v); return Number.isInteger(v) ? String(v) : v.toFixed(1); };
+var ej = null;            // ejercicio actual (var: r1 y fmt lo miran para saber los decimales)
+const r2 = v => { const r = Math.round(v * 100) / 100; return Object.is(r, -0) ? 0 : r; };
+const r1 = v => { if (ej && ej.tipo === 'trig') return r2(v); const r = Math.round(v * 10) / 10; return Object.is(r, -0) ? 0 : r; };
+const fmt = v => String(r1(v));
 const rnd = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
 const pick = a => a[Math.floor(Math.random() * a.length)];
 const barajar = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
@@ -708,8 +734,8 @@ const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
 const pr1 = p => P(r1(p.x), r1(p.y));
 const rot = (v, ang) => { const c = Math.round(Math.cos(ang) * 1e12) / 1e12, s = Math.round(Math.sin(ang) * 1e12) / 1e12; return P(v.x * c - v.y * s, v.x * s + v.y * c); };
 const TOL = 0.051;
-const NIVELES = ['sencillo', 'complejo', 'circulo', 'contorno', 'leer'];
-const NOMBRE_NIVEL = { sencillo: 'SENCILLO', complejo: 'PITÁGORAS', circulo: 'CÍRCULO COMPLETO', contorno: 'CONTORNO', leer: 'LEER EL BLOQUE', pieza: 'PIEZA' };
+const NIVELES = ['sencillo', 'complejo', 'circulo', 'contorno', 'leer', 'trig'];
+const NOMBRE_NIVEL = { sencillo: 'SENCILLO', complejo: 'PITÁGORAS', circulo: 'CÍRCULO COMPLETO', contorno: 'CONTORNO', leer: 'LEER EL BLOQUE', trig: 'TRIGONOMETRÍA', pieza: 'PIEZA' };
 
 /* ---------- Parámetros de la dirección (modo examen) ---------- */
 const URLP = new URLSearchParams(location.search);
@@ -723,11 +749,11 @@ const AY0 = { centro: false, vector: false, tri: false, giro: false, medir: fals
 let cfg = {
     nivel: 'sencillo', oscuro: false, acento: '#005A9C',
     cotas: ['G90'], ang: ['90', '180', '270'], dato: ['cuerda', 'dist'], ori: ['h', 'v'], tam: ['menor'], decimal: false, cdato: ['R', 'D'],
-    cont: ['red', 'semi'], leer: ['r', 'cual', 'error'],
+    cont: ['red', 'semi'], leer: ['r', 'cual', 'error'], trig: ['ang', 'tan', 'esq', 'esqP'], tang: ['not'],
     ay: Object.assign({}, AY0), marcador: { ok: 0, ayuda: 0, total: 0 }, guiaVista: false
 };
 try { const g = JSON.parse(localStorage.getItem(CLAVE) || 'null'); if (g && typeof g === 'object') { cfg = Object.assign(cfg, g); cfg.ay = Object.assign({}, AY0, g.ay || {}); } } catch (e) {}
-['cotas', 'ang', 'dato', 'ori', 'tam', 'cdato', 'cont', 'leer'].forEach(k => { if (!Array.isArray(cfg[k])) cfg[k] = []; });
+['cotas', 'ang', 'dato', 'ori', 'tam', 'cdato', 'cont', 'leer', 'trig', 'tang'].forEach(k => { if (!Array.isArray(cfg[k])) cfg[k] = []; });
 /* ---------- ⑥ La pieza enviada desde el Calcador ---------- */
 const CLAVE_PIEZA = 'arcos_ij_pieza', MAX_ARCOS_PIEZA = 16;
 let pieza = null, piezaI = 0;
@@ -753,7 +779,6 @@ if (EXAMEN) cfg.ay = Object.assign({}, AY0);
 function guardar() { try { localStorage.setItem(CLAVE, JSON.stringify(cfg)); } catch (e) {} }
 
 /* ---------- Estado ---------- */
-let ej = null;            // ejercicio actual
 let paso = -1;            // paso a paso: -1 = sin empezar
 let vista = null;         // {k, ox, oy} transformación mundo → pantalla
 let vistaUsuario = null;  // zoom / desplazamiento manual
@@ -1008,6 +1033,62 @@ function genLeer() {
     return base;
 }
 
+/* ---------- ⑥ Trigonometría ---------- */
+const GRAD = Math.PI / 180, dirGr = g => P(Math.cos(g * GRAD), Math.sin(g * GRAD));
+function angTrig(hab, otros) { return pick((cfg.tang.length ? cfg.tang : ['not']).includes('otros') ? (cfg.tang.includes('not') ? hab.concat(otros) : otros) : hab); }
+// Coloca el dibujo con cotas positivas y redondea los puntos a 2 decimales: lo que ve el alumno es lo que se programa
+function colocarTrig(e, tr, extras) {
+    const o0 = colocar(puntosTramos(tr).concat(extras), 20), off = P(Math.ceil(o0.x / 5) * 5, Math.ceil(o0.y / 5) * 5);
+    const rr = p => P(r2(p.x + off.x), r2(p.y + off.y));
+    tr.forEach(t => { t.a = rr(t.a); t.b = rr(t.b); if (t.t === 'A') { t.C = rr(t.C); t.I = r2(t.C.x - t.a.x); t.J = r2(t.C.y - t.a.y); } });
+    tr[0].b = tr[1].a; tr[2].a = tr[1].b;
+    ['V', 'Q'].forEach(k => { if (e[k]) e[k] = rr(e[k]); });
+    e.tramos = tr; e.ini = e.askIni ? tr[1].a : tr[0].a;
+    return e;
+}
+function genTrig() {
+    const kind = pick(cfg.trig.length ? cfg.trig : ['ang', 'tan', 'esq', 'esqP']);
+    return ({ ang: genTrigAng, tan: genTrigTan, esq: genTrigEsq, esqP: genTrigEsqP })[kind]();
+}
+function genTrigAng() {
+    const hab = [30, 45, 60, 120, 135, 150, 210, 225, 240, 300, 315, 330], otros = [15, 20, 25, 35, 40, 50, 55, 65, 70, 75, 105, 110, 160, 200, 250, 290, 340];
+    const lista = (cfg.tang.length ? cfg.tang : ['not']).includes('otros') ? (cfg.tang.includes('not') ? hab.concat(otros) : otros) : hab;
+    let a1, a2, sw, g;
+    for (let i = 0; i < 200; i++) { a1 = pick(lista); a2 = pick(lista); g = pick(['G2', 'G3']); sw = g === 'G3' ? (a2 - a1 + 360) % 360 : (a1 - a2 + 360) % 360; if (sw >= 45 && sw <= 300 && sw !== 180) break; }
+    const R = pick([20, 25, 30, 40, 50]), s = g === 'G3' ? 1 : -1, C = P(0, 0), pa = mul(dirGr(a1), R), pb = mul(dirGr(a2), R);
+    const t1 = dirGr(a1 + s * 90), t2 = dirGr(a2 + s * 90);
+    const tr = [linea(resta(pa, mul(t1, 25)), pa), crearArco(pa, pb, C, g, { kind: 'trig', q: true, R }), linea(pb, suma(pb, mul(t2, 25)))];
+    return colocarTrig({ tipo: 'trig', kindT: 'ang', a1, a2, askIni: true }, tr, [C, suma(C, P(R + 10, 0))]);
+}
+function genTrigTan() {
+    const alfa = angTrig([30, 45, 60], [15, 20, 25, 35, 40, 50, 55, 65, 70, 75]), R = pick([20, 25, 30, 40, 50]);
+    const dOut = pick(DIRS), s = pick([1, -1]), g = s > 0 ? 'G3' : 'G2';
+    const dIn = rot(dOut, -s * alfa * GRAD), n = s > 0 ? P(-dIn.y, dIn.x) : P(dIn.y, -dIn.x), n2 = s > 0 ? P(-dOut.y, dOut.x) : P(dOut.y, -dOut.x);
+    const P1 = P(0, 0), C = mul(n, R), P2 = resta(C, mul(n2, R));
+    const tr = [linea(resta(P1, mul(dIn, pick([30, 40, 50]))), P1), crearArco(P1, P2, C, g, { kind: 'trig', q: true, R }), linea(P2, suma(P2, mul(dOut, pick([25, 35, 45]))))];
+    return colocarTrig({ tipo: 'trig', kindT: 'tan', alfa, dIn, dOut }, tr, [C]);
+}
+function esquina(e, R, T, dIn, dOut, s, L0, L2, extras) {
+    const n = s > 0 ? P(-dIn.y, dIn.x) : P(dIn.y, -dIn.x), V = P(0, 0), A = mul(dIn, -T), C = suma(A, mul(n, R)), B = mul(dOut, T);
+    const tr = [linea(resta(A, mul(dIn, L0)), A), crearArco(A, B, C, s > 0 ? 'G3' : 'G2', { kind: 'trig', q: true, R }), linea(B, mul(dOut, L2))];
+    e.V = V; e.dIn = dIn; e.dOut = dOut; e.T = T; e.askIni = true;
+    if (e.kindT === 'esqP') e.Q = tr[2].b;
+    return colocarTrig(e, tr, [V, C].concat(extras || []));
+}
+function genTrigEsq() {
+    const alfa = angTrig([30, 45, 60, 90, 120], [20, 40, 50, 70, 80, 100]), R = pick([10, 15, 20, 25, 30]);
+    const dIn = pick(DIRS), s = pick([1, -1]), dOut = rot(dIn, s * alfa * GRAD), T = R * Math.tan(alfa / 2 * GRAD);
+    return esquina({ tipo: 'trig', kindT: 'esq', alfa }, R, T, dIn, dOut, s, pick([25, 35, 45]), T + pick([25, 35, 45]));
+}
+function genTrigEsqP() {
+    // R, T e hipotenusa enteros; el giro sale de tan(α/2) = T/R, así que la recta de salida tiene pendiente exacta
+    const f = pick([{ a: 3, b: 4, c: 5, ks: [3, 4, 5, 6, 8, 10], L: 25 }, { a: 4, b: 3, c: 5, ks: [3, 4, 5, 6, 8, 10], L: 25 }, { a: 12, b: 5, c: 13, ks: [2, 3], L: 33.8 }, { a: 15, b: 8, c: 17, ks: [2], L: 28.9 }]);
+    const k = pick(f.ks), R = f.a * k, T = f.b * k, VC = f.c * k, co = (f.a * f.a - f.b * f.b) / (f.c * f.c), se = 2 * f.a * f.b / (f.c * f.c);
+    const dIn = pick(DIRS), s = pick([1, -1]), dOut = P(dIn.x * co - s * dIn.y * se, s * dIn.x * se + dIn.y * co);
+    let L = f.L; while (L < T + 25) L += f.L;
+    return esquina({ tipo: 'trig', kindT: 'esqP', VC }, R, T, dIn, dOut, s, pick([25, 35, 45]), L);
+}
+
 /* ---------- ⑥ Pieza del Calcador ---------- */
 function genPieza() {
     const v = pieza.validos, c = v[piezaI % v.length]; piezaI++;
@@ -1023,6 +1104,7 @@ function genPieza() {
 }
 function recibirPieza(d) {
     if (EXAMEN || NIVEL_FIJO) return;
+    ej = null;
     const p = prepararPieza(d);
     if (!p) { estado('Esta pieza no tiene arcos que se puedan practicar aquí.'); return; }
     pieza = p; piezaI = 0;
@@ -1039,7 +1121,7 @@ function modoT(e, k) {
     if (c === 'G91') return 'inc';
     return e.tramos[k].t === 'A' ? 'inc' : 'abs';
 }
-function esperadoXY(e, k) { const t = e.tramos[k]; return modoT(e, k) === 'abs' ? t.b : pr1(resta(t.b, t.a)); }
+function esperadoXY(e, k) { const t = e.tramos[k]; if (e.tipo === 'trig') return modoT(e, k) === 'abs' ? t.b : P(r2(t.b.x - t.a.x), r2(t.b.y - t.a.y)); return modoT(e, k) === 'abs' ? t.b : pr1(resta(t.b, t.a)); }
 function textoCotas(c) {
     return c === 'G90' ? '<span class="tag-cotas abs">G90</span> cotas absolutas desde el cero pieza'
         : c === 'G91' ? '<span class="tag-cotas inc">G91</span> cotas incrementales: X Y = lo que te desplazas desde el punto anterior'
@@ -1048,9 +1130,11 @@ function textoCotas(c) {
 
 /* ---------- crear un ejercicio ---------- */
 function generar(nivel) {
-    const e = ({ sencillo: genSencillo, complejo: genComplejo, circulo: genCirculo, contorno: genContorno, leer: genLeer, pieza: genPieza })[nivel]();
+    const antes = ej; ej = null;      // al generar, los decimales no dependen del ejercicio anterior
+    const e = ({ sencillo: genSencillo, complejo: genComplejo, circulo: genCirculo, contorno: genContorno, leer: genLeer, pieza: genPieza, trig: genTrig })[nivel]();
     e.cotas = COTAS_FIJAS || pick(cfg.cotas.length ? cfg.cotas : ['G90']);
     if (e.tipo === 'leer') prepararLeer(e);
+    ej = antes;
     e.rev = {}; e.resuelto = false; e.ayuda = false; e.contado = false; e.intentos = 0;
     return e;
 }
@@ -1078,7 +1162,30 @@ function ptxt(p) { return `(${fmt(p.x)}, ${fmt(p.y)})`; }
 function textoEnunciado(e) {
     const it = []; let h = '';
     const a = e.tramos.find(t => t.q && t.t === 'A') || e.tramos[1];
-    if (e.deSencillo) {
+    if (e.tipo === 'trig') {
+        const Rt = `<b>R${fmt(a.R)}</b>`, dec = 'Da los resultados con <b>2 decimales</b>.';
+        if (e.kindT === 'ang') {
+            h = 'Arco dado por sus ángulos';
+            it.push(`Centro: <b>${ptxt(a.C)}</b> · Radio: ${Rt}. Ángulos medidos desde la horizontal hacia la derecha, en sentido antihorario.`);
+            it.push(`El inicio está a <b>${e.a1}°</b> y el final a <b>${e.a2}°</b>. Las flechas indican el sentido.`);
+            it.push(`Calcula el <b>punto de inicio</b>, <b>G2/G3</b>, <b>X Y</b> del final e <b>I J</b>. ${dec}`);
+        } else if (e.kindT === 'tan') {
+            h = 'Recta inclinada con arco tangente';
+            it.push(`La recta llega con <b>${e.alfa}°</b> respecto a la recta de salida y acaba en <b style="color:var(--col-ini)">${ptxt(a.a)}</b>.`);
+            it.push(`Sigue un arco de ${Rt}, tangente a las dos rectas.`);
+            it.push(`Calcula <b>G2/G3</b>, <b>X Y</b> del final e <b>I J</b>. ${dec}`);
+        } else if (e.kindT === 'esq') {
+            h = 'Redondear una esquina con trigonometría';
+            it.push(`Las rectas se cortan en el vértice <b>V ${ptxt(e.V)}</b>; la dirección gira <b>${e.alfa}°</b>.`);
+            it.push(`La esquina se redondea con ${Rt}, tangente a las dos rectas.`);
+            it.push(`Calcula el <b>punto de inicio</b>, <b>G2/G3</b>, <b>X Y</b> del final e <b>I J</b>. ${dec}`);
+        } else {
+            h = 'Redondear una esquina con Pitágoras';
+            it.push(`Las rectas se cortan en el vértice <b>V ${ptxt(e.V)}</b>; la de salida pasa por <b>Q ${ptxt(e.Q)}</b>.`);
+            it.push(`La esquina se redondea con ${Rt}, y el centro está a <b>${fmt(e.VC)}</b> del vértice.`);
+            it.push(`Calcula el <b>punto de inicio</b>, <b>G2/G3</b>, <b>X Y</b> del final e <b>I J</b>. ${dec}`);
+        }
+    } else if (e.deSencillo) {
         h = `Arco de ${a.tam === 'mayor' ? 'más' : 'menos'} de 180° con inicio, final y radio`;
         it.push(`Inicio del arco: <b style="color:var(--col-ini)">${ptxt(a.a)}</b> · Final: <b style="color:var(--col-fin)">${ptxt(a.b)}</b> · Radio: <b>R${fmt(a.R)}</b>`);
         it.push(`Las flechas indican el sentido del recorrido. La cuerda sale de las coordenadas de los dos puntos.`);
@@ -1219,7 +1326,7 @@ function pintarSeleccionPalabras() {
 }
 
 const leer = id => { const el = $(id); if (!el || el.disabled) return null; const s = el.value.trim().replace(',', '.'); if (s === '') return null; const v = Number(s.replace(/^\+/, '')); return isFinite(v) ? v : NaN; };
-const igual = (u, v) => u !== null && !isNaN(u) && Math.abs(u - v) <= TOL;
+const igual = (u, v) => u !== null && !isNaN(u) && Math.abs(u - v) <= (ej && ej.tipo === 'trig' ? .011 : TOL);
 
 function comprobar() {
     if (!ej) return;
@@ -1232,7 +1339,8 @@ function comprobar() {
             const x = leer('f_ini_x'), y = leer('f_ini_y');
             const okx = marca('f_ini_x', igual(x, ej.ini.x)), oky = marca('f_ini_y', igual(y, ej.ini.y));
             if (!okx || !oky) {
-                if (igual(x, ej.C.x) && igual(y, ej.C.y)) msgs.push('El <b>punto de inicio</b> no es el centro: está sobre la circunferencia, a una distancia R del centro.');
+                if (ej.tipo === 'trig') msgs.push('El <b>punto de inicio</b> no es ese. ' + (ej.kindT === 'ang' ? 'Inicio = centro + R·(cos, sen) del ángulo del inicio.' : 'Está sobre la recta que llega, a la distancia T antes del vértice.'));
+                else if (igual(x, ej.C.x) && igual(y, ej.C.y)) msgs.push('El <b>punto de inicio</b> no es el centro: está sobre la circunferencia, a una distancia R del centro.');
                 else msgs.push(`El <b>punto de inicio</b> es el punto ${NOMBRE_U(ej.u)} de la circunferencia: ${ej.u.x ? 'X del centro ' + (ej.u.x > 0 ? '+' : '−') + ' R, la misma Y' : 'la misma X que el centro, Y del centro ' + (ej.u.y > 0 ? '+' : '−') + ' R'}.` + (ej.dato === 'D' ? ' Recuerda que R es la mitad del diámetro.' : '') + ' El G0 de posicionado va siempre en absolutas.');
             } else ej.rev.ini = true;
         }
@@ -1412,7 +1520,7 @@ function programa(e, todo) {
     const L = []; let n = 10;
     const N = () => { const s = { t: 'N' + n, c: 'w-n', tip: TIPS.N }; n += 10; return s; };
     const sol = todo || e.rev.sol;
-    const sabe = (k, que) => sol || !e.tramos[k].q || e.rev[que + k];
+    const sabe = (k, que) => sol || (e.tipo === 'trig' && e.askIni && k === 0 ? !!e.rev.ini : !e.tramos[k].q || e.rev[que + k]);
     const W = (t, c, tip) => ({ t, c, tip });
     const num = (l, v, ok, c, tip) => ok ? W(l + fmt(v), c, (l === 'I' && r1(v) === 0) ? TIPS.I0 : (l === 'J' && r1(v) === 0) ? TIPS.J0 : tip) : W(l + '?', 'w-q', TIPS.q);
     L.push({ ws: [N(), W('T101', 'w-g', TIPS.T), W('M06', 'w-g', TIPS.T)], com: 'cambio de herramienta', cls: 'cab' });
@@ -1422,6 +1530,7 @@ function programa(e, todo) {
     L.push({ ws: [N(), W('G1', 'w-g', TIPS.G1), W('Z-10', 'w-z', TIPS.Z), W('F150', 'w-f', TIPS.F)], com: 'bajada' });
     let modo = 'abs';
     e.tramos.forEach((t, k) => {
+        if (e.tipo === 'trig' && e.askIni && k === 0) return;   // ya se ha llegado en rápido al inicio del arco
         const ws = [N()];
         const m = modoT(e, k);
         if (m !== modo) { ws.push(W(m === 'inc' ? 'G91' : 'G90', 'w-g', m === 'inc' ? TIPS.G91 : TIPS.G90)); modo = m; }
@@ -1464,7 +1573,7 @@ function pintarGcode() {
     $('gcode').innerHTML = programa(ej).map(lineaHTML).join('');
 }
 function textoPrograma(e) {
-    const nombre = { sencillo: 'arco sencillo', complejo: 'arco con Pitágoras', circulo: 'círculo completo', contorno: 'contorno ' + e.W + 'x' + e.H }[e.tipo];
+    const nombre = { sencillo: 'arco sencillo', complejo: 'arco con Pitágoras', circulo: 'círculo completo', contorno: 'contorno ' + e.W + 'x' + e.H, trig: 'arco con trigonometria' }[e.tipo];
     return ['; Arcos I J — ' + nombre + ' — cotas ' + (e.cotas === 'MIX' ? 'G90/G91' : e.cotas), '; Generado con Arcos I J (Por Eloi A.A.)'].concat(programa(e, true).map(lineaTexto)).join('\n') + '\n';
 }
 function copiarGcode() {
@@ -1567,6 +1676,31 @@ function generarPasos() {
         S.push({ t: (n++) + '. I y J del 2.º semicírculo', ay: ['centro', 'vector'], foco: 1, pul: 'P2', h: `<p>El 2.º semicírculo <b>empieza en el punto opuesto</b> ${ptxt(B.a)}: desde ahí el centro está <b>${B.I ? nombreSigno(B.I, 'x') : nombreSigno(B.J, 'y')}</b>, así que <b>I y J cambian de signo</b>.</p>` + calcIJ(B), rev: ['I1', 'J1'] });
         const g = pasoGiro(A, 0, n++); g.rev = ['G0', 'G1']; g.h += '<p>Los dos semicírculos giran en el mismo sentido.</p>'; S.push(g);
         S.push(pasoBloque(n++));
+    } else if (ej.tipo === 'trig') {
+        const a = ej.tramos[1], R = fmt(a.R), g = pasoGiro(a, 1, 0), f2 = v => fmt(v);
+        const kd = ej.kindT;
+        if (kd === 'ang') {
+            S.push({ t: (n++) + '. El inicio', ay: ['centro', 'tri'], foco: 1, pul: 'P1', h: `<p>Un punto de la circunferencia es el centro más R por el coseno y el seno de su ángulo:</p><div class="calc">X = ${f2(a.C.x)} + ${R}·cos ${ej.a1}° = <b>${f2(a.a.x)}</b><br>Y = ${f2(a.C.y)} + ${R}·sen ${ej.a1}° = <b>${f2(a.a.y)}</b></div>`, rev: ['ini'] });
+            S.push({ t: (n++) + '. El final', ay: ['centro'], foco: 1, pul: 'P2', h: `<p>Igual, con el ángulo del final:</p><div class="calc">X = ${f2(a.C.x)} + ${R}·cos ${ej.a2}° = <b>${f2(a.b.x)}</b><br>Y = ${f2(a.C.y)} + ${R}·sen ${ej.a2}° = <b>${f2(a.b.y)}</b></div>` + calcXY(1, ''), rev: ['F1'] });
+            S.push({ t: (n++) + '. I y J', ay: ['centro', 'vector'], foco: 1, pul: 'C', h: `<p>Desde el inicio hasta el centro:</p>` + calcIJ(a), rev: ['I1', 'J1'] });
+        } else if (kd === 'tan') {
+            const sA = Math.abs(a.I) >= 0 ? `${R}·sen ${ej.alfa}° = ${f2(a.R * Math.sin(ej.alfa * GRAD))}` : '', cA = `${R}·cos ${ej.alfa}° = ${f2(a.R * Math.cos(ej.alfa * GRAD))}`;
+            S.push({ t: (n++) + '. El radio es perpendicular a la recta', ay: ['centro', 'tri'], foco: 1, pul: 'C', h: `<p>El radio llega en ángulo recto a la recta tangente, y por eso forma un triángulo rectángulo con R como hipotenusa y el mismo ángulo de ${ej.alfa}°:</p><div class="calc">${sA}<br>${cA}</div><p>Esos catetos, con su signo, son I y J:</p>` + calcIJ(a), rev: ['I1', 'J1'] });
+            S.push({ t: (n++) + '. El final', ay: ['centro'], foco: 1, pul: 'P2', h: `<p>La recta de salida también es tangente: el final está a R del centro, en perpendicular a esa recta.</p><div class="calc">Centro = ${ptxt(a.C)}</div>` + calcXY(1, ''), rev: ['F1'] });
+        } else {
+            const T = ej.T;
+            if (kd === 'esq') S.push({ t: (n++) + '. La distancia T', ay: ['tri'], foco: 1, pul: null, h: `<p>El triángulo V, inicio y centro es rectángulo en el inicio, con la mitad del giro en V:</p><div class="calc">T = R·tan(α ÷ 2) = ${R}·tan ${ej.alfa / 2}° = <b>${f2(T)}</b></div>` });
+            else {
+                const dx = Math.abs(ej.Q.x - ej.V.x), dy = Math.abs(ej.Q.y - ej.V.y);
+                S.push({ t: (n++) + '. La distancia T, con Pitágoras', ay: ['tri'], foco: 1, pul: null, h: `<p>El triángulo V, inicio y centro es rectángulo en el inicio. La hipotenusa es la distancia al centro:</p><div class="calc">T = ${raiz(fmt(ej.VC) + '² − ' + R + '²')} = <b>${f2(T)}</b></div>` });
+                S.push({ t: (n++) + '. La dirección de la salida', ay: ['tri'], foco: 1, pul: null, h: `<p>Con V y Q sale otro triángulo:</p><div class="calc">VQ = ${raiz(fmt(dx) + '² + ' + fmt(dy) + '²')} = <b>${f2(Math.hypot(dx, dy))}</b></div><p>El final está a T de V sobre esa recta: se avanza la parte T ÷ VQ de ΔX y de ΔY (triángulos semejantes).</p>` });
+            }
+            S.push({ t: (n++) + '. El inicio', ay: [], foco: 1, pul: 'P1', h: `<p>Sobre la recta que llega, T antes del vértice ${ptxt(ej.V)}:</p><div class="calc">Inicio = <b>${ptxt(a.a)}</b></div>`, rev: ['ini'] });
+            S.push({ t: (n++) + '. I y J', ay: ['centro', 'vector'], foco: 1, pul: 'C', h: `<p>El centro está a R del inicio, en perpendicular a la recta que llega:</p>` + calcIJ(a), rev: ['I1', 'J1'] });
+            S.push({ t: (n++) + '. El final', ay: [], foco: 1, pul: 'P2', h: `<p>Sobre la recta de salida, a T del vértice${kd === 'esq' ? ': V + T·(cos, sen) de su dirección' : ''}.</p>` + calcXY(1, ''), rev: ['F1'] });
+        }
+        const gi = pasoGiro(a, 1, n++); gi.rev = ['G1']; S.push(gi);
+        S.push(pasoBloque(n++));
     } else if (ej.pieza) {
         S.push({ t: (n++) + '. El recorrido', ay: [], foco: null, pul: 'INI', h: `<p>Se empieza en <b style="color:var(--col-ini)">${ptxt(ej.ini)}</b> y se sigue el sentido de las flechas. <b>Cada arco empieza donde acaba el tramo anterior</b>: desde ese punto se miden I y J.</p>` });
         ej.tramos.forEach((t, k) => {
@@ -1653,6 +1787,7 @@ function arcosAyuda() {
 }
 function cajaMundo(conOrigen) {
     let pts = conOrigen ? [P(0, 0)] : [];
+    if (ej.V) pts.push(ej.V);
     (ej.cands ? [ej.tramos[1]] : ej.tramos.concat(...(ej.enfoque ? [] : ej.otros || []))).forEach(t => { pts.push(t.a, t.b); if (t.t === 'A') { pts.push(t.C); pts = pts.concat(muestrasArco(t, 48)); } });
     if (ej.cands) ej.cands.forEach(c => { pts.push(c.C); pts = pts.concat(muestrasArco(c, 48)); });
     let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
@@ -1667,7 +1802,7 @@ function calcularVista(W, H) {
     const padL = impresion ? (cont ? 70 : 90) : 140, padR = impresion ? (cont ? 40 : 90) : 140, padT = 30 + extraT, padB = impresion ? (cont ? 64 : 34) : (cont ? 86 : 60);
     const escala = b => Math.min((W - padL - padR) / Math.max(b.x1 - b.x0, 10), (H - padT - padB) / Math.max(b.y1 - b.y0, 10));
     const bo = cajaMundo(true), bg = cajaMundo(false);
-    const b = ej.enfoque ? bg : (cont || escala(bo) >= .8 * escala(bg)) ? bo : bg;
+    const b = ej.enfoque || (impresion && ej.tipo === 'trig') ? bg : (cont || escala(bo) >= .8 * escala(bg)) ? bo : bg;
     const bw = Math.max(b.x1 - b.x0, 10), bh = Math.max(b.y1 - b.y0, 10);
     const k = Math.min(escala(b), 12);
     const ox = padL + (W - padL - padR - bw * k) / 2 - b.x0 * k;
@@ -1853,6 +1988,50 @@ function giro(a, k) {
     return `<path class="giro" d="M${p0.x},${p0.y} A${r},${r} 0 1 ${cw ? 1 : 0} ${p1.x},${p1.y}"/>` + punta(p2.x, p2.y, p1.x, p1.y, 'giro-p', 10) + `<text class="t t-acc" x="${c.x}" y="${c.y + r + 15}" text-anchor="middle" data-tip="Sentido de giro alrededor del centro, mirando la pieza desde arriba.">${lbl}</text>`;
 }
 
+function arcoAngulo(V, g1, g2, rpx, etq, enFinal) {
+    // arco de g1 a g2 (grados, antihorario) alrededor de V, con su rótulo
+    const c = S(V), q = g => P(c.x + rpx * Math.cos(g * GRAD), c.y - rpx * Math.sin(g * GRAD)), sw = ((g2 - g1) % 360 + 360) % 360, a = q(g1), b = q(g2), m = enFinal ? g2 - Math.min(14, sw / 2) : g1 + sw / 2, l = P(c.x + (rpx + 15) * Math.cos(m * GRAD), c.y - (rpx + 15) * Math.sin(m * GRAD));
+    return { s: `<path class="ang-t" d="M${a.x},${a.y} A${rpx},${rpx} 0 ${sw > 180 ? 1 : 0} 0 ${b.x},${b.y}"/>`, t: `<text class="t t-ang" x="${l.x}" y="${l.y + 4}" text-anchor="middle">${etq}</text>` };
+}
+function angEntre(V, u1, u2, rpx, etq) {
+    // el ángulo menor entre dos direcciones
+    const g = u => Math.atan2(u.y, u.x) / GRAD, a = g(u1), b = g(u2), ccw = ((b - a) % 360 + 360) % 360;
+    return ccw <= 180 ? arcoAngulo(V, a, a + ccw, rpx, etq) : arcoAngulo(V, b, b + 360 - ccw, rpx, etq);
+}
+function segCota(p, q) { const a = S(p), b = S(q); return `<line class="cota-ext" stroke-dasharray="6 4" x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}"/>`; }
+function triTrig(p1, p2, p3, e12, e23, e31) {
+    const [a, b, c] = [p1, p2, p3].map(S), med = (u, v, t) => t ? `<text class="t t-b" x="${(u.x + v.x) / 2}" y="${(u.y + v.y) / 2 - 5}" text-anchor="middle">${t}</text>` : '';
+    return { s: `<polygon class="tri-t" points="${a.x},${a.y} ${b.x},${b.y} ${c.x},${c.y}"/>`, t: med(a, b, e12) + med(b, c, e23) + med(c, a, e31) };
+}
+function cotasTrig(verTri, sol) {
+    const a = ej.tramos[1], k = ej.kindT; let s = '', t = '';
+    const suma1 = o => { s += o.s; t += o.t; };
+    if (k === 'ang') {
+        s += segCota(a.C, suma(a.C, P(a.R + 12, 0))) + segCota(a.C, a.a) + segCota(a.C, a.b);
+        suma1(arcoAngulo(a.C, 0, ej.a1, 26, ej.a1 + '°', true)); suma1(arcoAngulo(a.C, 0, ej.a2, 44, ej.a2 + '°', true));
+        if (verTri) suma1(triTrig(a.C, P(a.a.x, a.C.y), a.a, 'R·cos', 'R·sen', 'R'));
+    } else if (k === 'tan') {
+        const ref = suma(a.a, mul(ej.dOut, -32 / vista.k * 1.6));
+        s += segCota(a.a, ref); suma1(angEntre(a.a, mul(ej.dOut, -1), mul(ej.dIn, -1), 34, ej.alfa + '°'));
+        if (verTri) suma1(triTrig(a.a, P(a.a.x, a.C.y), a.C, 'cateto', 'cateto', 'R'));
+    } else {
+        s += segCota(a.a, ej.V) + segCota(ej.V, a.b);
+        const sv = S(ej.V); s += `<circle class="p-otro" cx="${sv.x}" cy="${sv.y}" r="4"/>`;
+        const lv = lado(ej.V, a.C, 16); t += txt(ej.V, 'V ' + ptxt(ej.V), 't-b', lv.anchor, lv.dx, lv.dy);
+        if (k === 'esq') {
+            s += segCota(ej.V, suma(ej.V, mul(ej.dIn, 40 / vista.k)));
+            suma1(angEntre(ej.V, ej.dIn, ej.dOut, 30, ej.alfa + '°'));
+        } else {
+            s += segCota(ej.V, a.C);
+            const m = P((ej.V.x + a.C.x) / 2, (ej.V.y + a.C.y) / 2), sm = S(m);
+            t += `<text class="t t-ang" x="${sm.x + 8}" y="${sm.y - 6}">${fmt(ej.VC)}</text>`;
+            const lq = lado(ej.Q, ej.V, 14); t += txt(ej.Q, 'Q ' + ptxt(ej.Q), 't-b', lq.anchor, lq.dx, lq.dy);
+            if (verTri) suma1(triTrig(ej.V, P(ej.Q.x, ej.V.y), ej.Q, 'ΔX', 'ΔY', ''));
+        }
+        if (verTri) suma1(triTrig(ej.V, a.a, a.C, 'T', 'R', ''));
+    }
+    return { s, t };
+}
 function dibujarPlano(W, H) {
     vista = calcularVista(W, H);
     let s = rejilla(W, H);
@@ -1897,6 +2076,7 @@ function dibujarPlano(W, H) {
         if (t.kind === 'redondeo') { s += cotaRadio(t, .5, 'R', true); return; }
         s += cotaRadio(t, simple && ej.ang === 270 ? .62 : .5);
     });
+    if (ej.tipo === 'trig') { const c = cotasTrig(verTri, sol); s += c.s; capaT += c.t; }
     if (circ) {
         const A = ej.tramos[0], B = ej.tramos[1];
         const nA = puntoArco(A, .5), nB = puntoArco(B, .5), la = lado(nA, ej.C, 16), lb = lado(nB, ej.C, 16);
@@ -1914,7 +2094,7 @@ function dibujarPlano(W, H) {
         if (t.t !== 'A') return; const key = t.C.x + ',' + t.C.y; if (vistos.has(key)) return; vistos.add(key);
         s += marcaCentro(t.C, circ ? '<b>Centro</b> ' + ptxt(t.C) : '<b>Centro del arco</b>. I y J dicen dónde está, medido desde el inicio del arco.', cont ? 5 : 7);
         if (circ) { capaT += txt(t.C, 'C ' + ptxt(t.C), 't-b', 'start', 10, ej.u.y === 0 ? 14 : -14); return; }
-        if (verCentro && focos.includes(k) || (sol && !cont) || ej.pieza) {
+        if (verCentro && focos.includes(k) || (sol && !cont) || ej.pieza || ej.kindT === 'ang') {
             const coords = (t.kind !== 'pit') || sol || rv['calc' + k];
             const lc = lado(t.C, P((t.a.x + t.b.x) / 2, (t.a.y + t.b.y) / 2), 16);
             capaT += txt(t.C, 'C' + (coords ? ' ' + ptxt(t.C) : ''), 't-b', lc.anchor === 'middle' ? 'start' : lc.anchor, lc.anchor === 'middle' ? 12 : lc.dx, lc.dy || -12);
@@ -1928,12 +2108,12 @@ function dibujarPlano(W, H) {
         s += `<circle class="p-otro" cx="${s0.x}" cy="${s0.y}" r="4"/>` + hit(P0, 9, 'Inicio de la recta anterior ' + ptxt(P0));
         s += `<circle class="p-otro" cx="${s3.x}" cy="${s3.y}" r="4"/>` + hit(P3, 9, '<b>Final de la recta posterior</b> ' + ptxt(P3));
         const l0 = lado(P0, a.a, 14), l3 = lado(P3, a.b, 14);
-        capaT += txt(P0, ptxt(P0), 't-m', l0.anchor, l0.dx, l0.dy) + txt(P3, ptxt(P3), 't-m', l3.anchor, l3.dx, l3.dy);
+        if (ej.tipo !== 'trig') capaT += txt(P0, ptxt(P0), 't-m', l0.anchor, l0.dx, l0.dy) + txt(P3, ptxt(P3), 't-m', l3.anchor, l3.dx, l3.dy);
         s += `<circle class="p-ini" cx="${s1.x}" cy="${s1.y}" r="6.5"/>` + hit(a.a, 12, '<b>Inicio del arco</b> ' + ptxt(a.a) + '. I y J se miden desde aquí.');
         const finVisto = mostrarFin || sol || rv.F1;
         s += `<circle class="p-fin" cx="${s2.x}" cy="${s2.y}" r="6.5"/>` + hit(a.b, 12, '<b>Fin del arco</b>: son las X Y del bloque G2/G3.' + (finVisto ? ' ' + ptxt(a.b) : ' Tienes que calcularlas.'));
         const o1 = etiquetaFuera(a.a, a.C, P0), o2 = etiquetaFuera(a.b, a.C, P3);
-        capaT += txt(a.a, 'Inicio ' + ptxt(a.a), 't-ini', o1.anchor, o1.dx, o1.dy);
+        capaT += txt(a.a, 'Inicio ' + (!ej.askIni || sol || rv.ini ? ptxt(a.a) : '(X?, Y?)'), 't-ini', o1.anchor, o1.dx, o1.dy);
         capaT += txt(a.b, 'Fin ' + (finVisto ? ptxt(a.b) : '(X?, Y?)'), 't-fin', o2.anchor, o2.dx, o2.dy);
     } else if (circ) {
         const A = ej.tramos[0], s1 = S(A.a), s2 = S(A.b);
@@ -2289,6 +2469,7 @@ function solucionHoja(e, n) {
     const L = programa(e, true).filter(l => l.cls !== 'cab').map(lineaTexto);
     return `<div class="hj-sol"><b>Ejercicio ${n}</b>${e.askIni ? ` · inicio ${ptxt(e.ini)}` : ''}<pre>${esc(L.join('\n'))}</pre></div>`;
 }
+function conEjercicio(e, f) { const g = ej; ej = e; try { return f(); } finally { ej = g; } }
 function imprimirHoja() {
     const solo = $('hjSoloSol').checked && ultimaHoja;
     if (!solo) {
@@ -2318,10 +2499,10 @@ function imprimirHoja() {
     let h = '';
     if (!solo) vs.forEach((lista, v) => {
         h += `<div class="${v ? 'hj-salto' : ''}">` + cab(varias ? 'Versión ' + (v + 1) : '') + `<div class="hj-datos"><span>Nombre:</span><span>Curso:</span><span>Fecha:</span></div>`;
-        h += `<p style="font-size:10.5px;margin-bottom:6px">I = X<sub>centro</sub> − X<sub>inicio</sub> · J = Y<sub>centro</sub> − Y<sub>inicio</sub> (siempre desde el inicio del arco) · G2 horario · G3 antihorario. Si un resultado no es exacto, con 1 decimal.</p>`;
-        h += lista.map((e, i) => tarjetaHoja(e, i + 1)).join('') + '</div>';
+        h += `<p style="font-size:10.5px;margin-bottom:6px">I = X<sub>centro</sub> − X<sub>inicio</sub> · J = Y<sub>centro</sub> − Y<sub>inicio</sub> (siempre desde el inicio del arco) · G2 horario · G3 antihorario. Si un resultado no es exacto, con ${lista.some(e => e.tipo === 'trig') ? '2 decimales' : '1 decimal'}.</p>`;
+        h += lista.map((e, i) => conEjercicio(e, () => tarjetaHoja(e, i + 1))).join('') + '</div>';
     });
-    if (solo || $('hjSol').checked) h += `<div class="${solo ? '' : 'hj-salto'}">${cab('Soluciones')}${vs.map((lista, v) => (varias ? `<h2 class="hj-sol-ver">Versión ${v + 1}</h2>` : '') + lista.map((e, i) => solucionHoja(e, i + 1)).join('')).join('')}</div>`;
+    if (solo || $('hjSol').checked) h += `<div class="${solo ? '' : 'hj-salto'}">${cab('Soluciones')}${vs.map((lista, v) => (varias ? `<h2 class="hj-sol-ver">Versión ${v + 1}</h2>` : '') + lista.map((e, i) => conEjercicio(e, () => solucionHoja(e, i + 1))).join('')).join('')}</div>`;
     $('hoja').innerHTML = h;
     cerrarModal('modalHoja');
     setTimeout(() => window.print(), 80);
@@ -2332,7 +2513,7 @@ window.addEventListener('afterprint', () => { $('hoja').innerHTML = ''; });
    GUÍA (recorrido con bocadillos)
    ========================================================================= */
 const GUIA = [
-    { sel: '#niveles', t: 'Elige el nivel', h: '<b>①</b> centro alineado · <b>②</b> con Pitágoras · <b>③</b> círculo en dos semicírculos · <b>④</b> una pieza entera · <b>⑤</b> al revés: te dan el bloque y lo interpretas.' },
+    { sel: '#niveles', t: 'Elige el nivel', h: '<b>①</b> centro alineado · <b>②</b> con Pitágoras · <b>③</b> círculo en dos semicírculos · <b>④</b> una pieza entera · <b>⑥</b> ángulos: seno, coseno y tangente · <b>⑤</b> al revés: te dan el bloque y lo interpretas.' },
     { sel: '.params-box', t: 'Las cotas', h: 'Elige <b>G90</b>, <b>G91</b> o <b>Mixto</b>. Cambia cómo se escriben X Y, pero <b>I y J se calculan siempre igual</b>: desde el inicio del arco.' },
     { sel: '#zonaPlano', t: 'El plano', h: 'El arco está en color. Las <b>flechas</b> indican el sentido del recorrido. El punto <b style="color:var(--col-ini)">verde</b> es el inicio y el <b style="color:var(--col-fin)">rojo</b>, el final. Pasa el ratón por los puntos y las cotas.' },
     { sel: '#enunciado', t: 'Los datos', h: 'Aquí tienes los datos del ejercicio y lo que tienes que calcular.' },
@@ -2371,9 +2552,9 @@ function ponerNivel(n) {
     if (NIVEL_FIJO) n = NIVEL_FIJO;
     cfg.nivel = n; guardar();
     document.querySelectorAll('#niveles button').forEach(b => { b.classList.toggle('activo', b.dataset.n === n); b.classList.toggle('bloqueado', !!NIVEL_FIJO && b.dataset.n !== n); b.disabled = !!NIVEL_FIJO && b.dataset.n !== n; });
-    const vis = { opcSencillo: 'sencillo', opcComplejo: 'complejo', opcCirculo: 'circulo', opcContorno: 'contorno', opcLeer: 'leer' };
+    const vis = { opcSencillo: 'sencillo', opcComplejo: 'complejo', opcCirculo: 'circulo', opcContorno: 'contorno', opcLeer: 'leer', opcTrig: 'trig' };
     Object.keys(vis).forEach(id => { $(id).style.display = vis[id] === n || (id === 'opcComplejo' && n === 'contorno' && cfg.cont.includes('pit')) ? '' : 'none'; });
-    const triOk = n === 'complejo' || (n === 'sencillo' && (cfg.ang.includes('cm') || cfg.ang.includes('cM'))) || (n === 'contorno' && cfg.cont.includes('pit')) || n === 'leer';
+    const triOk = n === 'complejo' || n === 'trig' || (n === 'sencillo' && (cfg.ang.includes('cm') || cfg.ang.includes('cM'))) || (n === 'contorno' && cfg.cont.includes('pit')) || n === 'leer';
     const tri = document.querySelector('[data-ay="tri"]');
     tri.disabled = !triOk;
     $('filaTri').title = triOk ? '' : 'Solo con arcos de Pitágoras: en los otros el centro está alineado y no hace falta.';
