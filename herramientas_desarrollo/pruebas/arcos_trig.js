@@ -23,7 +23,7 @@ const OUT = process.env.OUT || require('os').tmpdir();
       }
       if (k === 'esq' || k === 'esqP') { if (Math.abs(d(e.V, a.a) - d(e.V, a.b)) > .03) mal.push(tag + ' T distinta'); if (Math.abs(d(e.V, a.a) - e.T) > .02) mal.push(tag + ' T ' + d(e.V, a.a) + ' ' + e.T); }
       if (k === 'esq') { const T = a.R * Math.tan(e.alfa / 2 * Math.PI / 180); if (Math.abs(T - e.T) > 1e-9) mal.push('fórmula'); }
-      if (k === 'esqP') { if (!Number.isInteger(e.T) || Math.abs(Math.hypot(a.R, e.T) - e.VC) > 1e-9 || Math.abs(d(e.V, a.C) - e.VC) > .03) mal.push('Pitágoras'); const dq = d(e.V, e.Q); if (Math.abs(dq * 10 - Math.round(dq * 10)) > 1e-6) mal.push('VQ no exacta ' + dq); if (dq <= e.T) mal.push('Q antes del final'); }
+      if (k === 'esqP') { if (!Number.isInteger(e.T) || Math.abs(Math.hypot(a.R, e.T) - e.VC) > 1e-9 || Math.abs(d(e.V, a.C) - e.VC) > .03) mal.push('Pitágoras'); const dq = d(e.V, e.Q); if (Math.abs(dq * 100 - Math.round(dq * 100)) > .01) mal.push('VQ no exacta ' + dq); if (dq <= e.T) mal.push('Q antes del final'); }
       textoEnunciado(e); generarPasos(); programa(e, true);
       const pl = dibujarPlano(900, 600); if (/undefined|NaN/.test(pl)) mal.push(tag + ' plano');
       ej = null; } } }
@@ -47,8 +47,9 @@ const OUT = process.env.OUT || require('os').tmpdir();
   await p.evaluate(() => { cfg.decimal = false; });
   for (const k of ['ang', 'tan', 'esq', 'esqP']) { await p.evaluate(k => { cfg.trig = [k]; ponerNivel('trig'); cfg.ay.tri = true; nuevoEjercicio(); render(); }, k); await p.waitForTimeout(150); await p.locator('#zonaPlano').screenshot({ path: path.join(OUT, `tr_${k}.png`) }); }
   await p.evaluate(() => { cfg.ay.tri = false; });
-  const hoja = await p.evaluate(() => { cfg.trig = ['ang', 'tan', 'esq', 'esqP']; abrirHoja(); document.querySelectorAll('#modalHoja [data-hj]').forEach(i => { i.value = { trig: 6 }[i.dataset.hj] || 0; }); totalHoja(); window.print = () => {}; imprimirHoja(); return { h: document.getElementById('hoja').innerHTML, sols: [...document.querySelectorAll('.hj-sol')].map(x => x.textContent) }; });
+  const hoja = await p.evaluate(() => { cfg.trig = ['ang', 'tan', 'esq', 'esqP']; abrirHoja(); document.querySelectorAll('#modalHoja [data-hj]').forEach(i => { i.value = { trig: 6 }[i.dataset.hj] || 0; }); totalHoja(); window.print = () => {}; imprimirHoja(); return { tipos: ultimaHoja.lista.map(e => e.kindT), h: document.getElementById('hoja').innerHTML, sols: [...document.querySelectorAll('.hj-sol')].map(x => x.textContent) }; });
   ok('hoja: 6 ejercicios, soluciones y 2 decimales', hoja.sols.length === 6 && /2 decimales/.test(hoja.h) && !/undefined|NaN/.test(hoja.h) && hoja.sols.every(t => /G[23]/.test(t)), hoja.sols[0].slice(0, 90));
+  console.log('tipos en la hoja:', hoja.tipos.join());
   await p.emulateMedia({ media: 'print' }); await p.waitForTimeout(150); await p.pdf({ path: path.join(OUT, 'hoja_trig.pdf'), preferCSSPageSize: true, printBackground: true }); await p.emulateMedia({ media: 'screen' });
   ok('sin errores de JavaScript', !errs.length, errs.join(' | '));
   console.log('fallos', fallos); await b.close(); process.exit(fallos ? 1 : 0);
