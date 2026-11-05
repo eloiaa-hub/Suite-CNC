@@ -4,7 +4,11 @@ La versión de la suite es **año.mes** (por ejemplo, 2026.10). Cada programa co
 
 ## Suite CNC 2026.10
 
-Versiones de los programas: **Calcador v128 · Corrector v73 · Tutor G-Code v6 · Simulador 3D V45 · Calculadora de taller v5 · Arcos I J v6 · Anidador de tableros v8**.
+Versiones de los programas: **Calcador v128 · Corrector v73 · Tutor G-Code v6 · Simulador 3D V45 · Calculadora de taller v5 · Arcos I J v7 · Anidador de tableros v8**.
+
+### Arcos I J v7: R y -R, y arcos con inicio, final y radio
+- **⑤ Leer el bloque** tiene un tipo nuevo, **¿R o -R?**, y una explicación de cuándo usar cada signo.
+- **① Sencillo** añade **Cuerda · <180°** y **Cuerda · >180°**: el plano da inicio, final y radio, y el centro sale con Pitágoras.
 
 ### Calcador v128 / Corrector v73 / Tutor v7: G91 total y cotas editables
 - **G91 total** en Coordenadas: tras subir a Z de seguridad y colocarse en X0 Y0, todo el programa va en incrementales, también la Z, y termina con G90.

@@ -298,6 +298,10 @@
     body.dark-mode .f0 { fill: #a98bff; } body.dark-mode .f1 { fill: #3fd0dc; } body.dark-mode .f2 { fill: #ff6fa8; } body.dark-mode .f3 { fill: #d9c84a; }
     .bloque-grande { font-family: Consolas, 'Courier New', monospace; font-size: 17px; font-weight: 700; background: var(--canvas-bg); border: 1px solid var(--border-color); border-radius: 6px; padding: 8px 10px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
     .bloque-grande .w-n { font-weight: 400; }
+    .expl-r { margin-top: 8px; font-size: 12px; line-height: 1.45; color: var(--text-main); }
+    .expl-r summary { cursor: pointer; font-weight: 600; color: var(--accent); }
+    .expl-r ul { margin: 4px 0 6px 16px; } .expl-r p { margin: 4px 0; }
+    .opc-arco.opc-r { width: auto; min-width: 74px; padding: 0 12px; }
     .opc-arcos { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
     .opc-arco { height: 44px; border-radius: 8px; border: 2px solid var(--border-color); background: var(--bg-panel); cursor: pointer; font-size: 18px; font-weight: 800; color: var(--text-main); }
     .opc-arco:hover { border-color: var(--accent); }
@@ -377,6 +381,7 @@
         .hj-bloque .n { font-weight: 400; color: #666; }
         .hj-opc { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; font-size: 11.5px; }
         .hj-opc .letra { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border: 1.5px solid #333; border-radius: 50%; font-weight: 700; font-size: 12.5px; }
+        .hj-r { display: inline-block; border: 1.5px solid #333; border-radius: 14px; padding: 2px 10px; font-weight: 700; font-family: Consolas, 'Courier New', monospace; }
         .hj-casilla { display: inline-block; width: 12px; height: 12px; border: 1.5px solid #333; border-radius: 2px; vertical-align: -2px; margin-right: 4px; }
         .hj-lin { font-size: 10.5px; color: #555; border-bottom: 1px solid #999; height: 26px; }
         .hj-salto { break-before: page; page-break-before: always; }
@@ -390,7 +395,7 @@
 <div class="app-window">
     <header class="top-bar">
         <a href="index.html" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a>
-        <span class="top-bar-title">◠ Arcos I J — Por Eloi A.A.<span class="ver-suite" title="Versión del programa">v6</span></span>
+        <span class="top-bar-title">◠ Arcos I J — Por Eloi A.A.<span class="ver-suite" title="Versión del programa">v7</span></span>
         <div class="niveles" id="niveles" title="Nivel del ejercicio">
             <button data-n="sencillo" title="Arcos de ¼, ½ o ¾ de vuelta tangentes a las rectas: el centro está alineado con el punto de inicio">① Sencillo</button>
             <button data-n="complejo" title="El centro queda por encima o por debajo de la recta: se calcula con Pitágoras">② Pitágoras</button>
@@ -457,7 +462,7 @@
             <div class="params-box" id="opcSencillo">
                 <span class="sub">Ángulo del arco</span>
                 <div class="chips" data-grupo="ang">
-                    <span class="chip on" data-v="90">¼ · 90°</span><span class="chip on" data-v="180">½ · 180°</span><span class="chip on" data-v="270">¾ · 270°</span>
+                    <span class="chip on" data-v="90">¼ · 90°</span><span class="chip on" data-v="180">½ · 180°</span><span class="chip on" data-v="270">¾ · 270°</span><span class="chip" data-v="cm" title="Te dan inicio, final y radio: el centro sale con Pitágoras">Cuerda · &lt;180°</span><span class="chip" data-v="cM" title="Te dan inicio, final y radio: el centro sale con Pitágoras">Cuerda · &gt;180°</span>
                 </div>
             </div>
             <div class="params-box" id="opcComplejo">
@@ -490,8 +495,10 @@
             <div class="params-box" id="opcLeer">
                 <span class="sub">Tipo de ejercicio</span>
                 <div class="chips" data-grupo="leer">
+                    <span class="chip on" data-v="r" title="Bloques con R en lugar de I J: el signo dice si es el arco corto o el largo">¿R o -R?</span>
                     <span class="chip on" data-v="cual" title="Te dan el bloque: elige cuál de los 4 arcos es">¿Qué arco es?</span><span class="chip on" data-v="error" title="Te dan un bloque que puede tener errores: márcalos">¿Dónde está el error?</span>
                 </div>
+                <details class="expl-r"><summary>¿Cuándo R y cuándo -R?</summary><p>Con <code>G2 X Y R</code> o <code>G3 X Y R</code>, la máquina recibe el final y el radio, pero con ese radio hay <b>dos arcos posibles</b> en ese sentido: el corto y el largo. El signo de R dice cuál:</p><svg viewBox="0 0 240 146" width="100%" role="img" aria-label="Dos arcos entre los mismos puntos: el corto con R positivo y el largo con R negativo" style="max-width:280px;display:block;margin:6px auto"><line x1="84" y1="52" x2="156" y2="52" stroke="currentColor" stroke-dasharray="3 3" opacity=".5"/><path d="M84 52 A44 44 0 0 1 156 52" fill="none" stroke="#0e7c86" stroke-width="3"/><path d="M84 52 A44 44 0 1 0 156 52" fill="none" stroke="#c2185b" stroke-width="3"/><circle cx="84" cy="52" r="4" fill="#1b7f3b"/><circle cx="156" cy="52" r="4" fill="#c0392b"/><text x="120" y="20" text-anchor="middle" font-size="11" font-weight="700" fill="#0e7c86">menos de 180°: R20</text><text x="120" y="141" text-anchor="middle" font-size="11" font-weight="700" fill="#c2185b">más de 180°: R-20</text></svg><ul><li><b>R positivo</b> (<code>R20</code>): el arco de <b>menos de 180°</b>, el corto.</li><li><b>R negativo</b> (<code>R-20</code>): el arco de <b>más de 180°</b>, el largo.</li><li><b>Exactamente 180°</b>: los dos arcos miden lo mismo; se escribe R positivo.</li><li><b>Círculo completo</b>: no se puede con R, porque el inicio y el final coinciden. Se hace con I J o en dos semicírculos.</li></ul><p><b>G2 o G3</b> sigue diciendo el sentido; <b>el signo de R</b> solo dice si es el corto o el largo.</p></details>
             </div>
 
             <div class="section-label" id="lblAyudas">Ayudas visuales <span class="info" data-info="ayudas">i</span></div>
@@ -584,6 +591,7 @@
             <p>En los tres casos <b>I y J se calculan igual</b>: desde el inicio del arco hasta el centro.</p>
             <h3>① Nivel sencillo: centro alineado</h3>
             <p>Cuando el arco es tangente a las rectas (arcos de ¼, ½ o ¾ de vuelta con rectas horizontales y verticales), el centro está en la perpendicular a la recta que llega, a una distancia R. Por eso el centro queda en la misma horizontal o vertical que el inicio: <b>uno de los dos vale 0 y el otro vale ±R</b>.</p>
+            <p>Con las opciones <b>Cuerda · &lt;180°</b> y <b>Cuerda · &gt;180°</b> el plano da el inicio, el final y el radio. El centro ya no está alineado: la cuerda sale de restar las coordenadas de los dos puntos y se sigue como en Pitágoras.</p>
             <h3>② Nivel Pitágoras: el centro por encima o por debajo de la recta</h3>
             <p>Si el arco corta la recta y el centro no está sobre ella, I y J no se ven directamente. Se dibuja un <b>triángulo rectángulo</b>:</p>
             <ul>
@@ -600,7 +608,10 @@
             <ul>
                 <li><b>¿Qué arco es?</b> Te dan el bloque y cuatro arcos posibles entre los mismos puntos. Calcula el centro (inicio + I, J) y mira el sentido (G2/G3).</li>
                 <li><b>¿Dónde está el error?</b> Te dan un bloque que puede tener errores: marca las palabras que están mal o di que está bien.</li>
+                <li><b>¿R o -R?</b> Bloques con el radio en lugar de I J: eliges el signo de R para el arco del plano, o el arco que hace un bloque con R.</li>
             </ul>
+            <h3>R y -R: el arco corto y el largo</h3>
+            <p>Con <code>G2 X Y R</code> o <code>G3 X Y R</code>, la máquina recibe el final y el radio, pero con ese radio hay <b>dos arcos posibles</b> en ese sentido: el corto y el largo. El signo de R dice cuál:</p><svg viewBox="0 0 240 146" width="100%" role="img" aria-label="Dos arcos entre los mismos puntos: el corto con R positivo y el largo con R negativo" style="max-width:280px;display:block;margin:6px auto"><line x1="84" y1="52" x2="156" y2="52" stroke="currentColor" stroke-dasharray="3 3" opacity=".5"/><path d="M84 52 A44 44 0 0 1 156 52" fill="none" stroke="#0e7c86" stroke-width="3"/><path d="M84 52 A44 44 0 1 0 156 52" fill="none" stroke="#c2185b" stroke-width="3"/><circle cx="84" cy="52" r="4" fill="#1b7f3b"/><circle cx="156" cy="52" r="4" fill="#c0392b"/><text x="120" y="20" text-anchor="middle" font-size="11" font-weight="700" fill="#0e7c86">menos de 180°: R20</text><text x="120" y="141" text-anchor="middle" font-size="11" font-weight="700" fill="#c2185b">más de 180°: R-20</text></svg><ul><li><b>R positivo</b> (<code>R20</code>): el arco de <b>menos de 180°</b>, el corto.</li><li><b>R negativo</b> (<code>R-20</code>): el arco de <b>más de 180°</b>, el largo.</li><li><b>Exactamente 180°</b>: los dos arcos miden lo mismo; se escribe R positivo.</li><li><b>Círculo completo</b>: no se puede con R, porque el inicio y el final coinciden. Se hace con I J o en dos semicírculos.</li></ul><p><b>G2 o G3</b> sigue diciendo el sentido; <b>el signo de R</b> solo dice si es el corto o el largo.</p>
             <h3>El bloque completo</h3>
             <p><code>N60 G3 X45 Y55 I0 J25</code>: el orden es N, G, X, Y, I, J (y F si hace falta). Después del arco hay que volver a escribir <code>G1</code>, porque G2 / G3 se quedan activos hasta que se cambian. El programa empieza con el cambio de herramienta (<code>T101 M06</code>), arranca el cabezal (<code>S18000 M03</code>) y termina con <code>M05</code> y <code>M30</code>.</p>
             <h3>Cómo usar el programa</h3>
@@ -712,7 +723,7 @@ const AY0 = { centro: false, vector: false, tri: false, giro: false, medir: fals
 let cfg = {
     nivel: 'sencillo', oscuro: false, acento: '#005A9C',
     cotas: ['G90'], ang: ['90', '180', '270'], dato: ['cuerda', 'dist'], ori: ['h', 'v'], tam: ['menor'], decimal: false, cdato: ['R', 'D'],
-    cont: ['red', 'semi'], leer: ['cual', 'error'],
+    cont: ['red', 'semi'], leer: ['r', 'cual', 'error'],
     ay: Object.assign({}, AY0), marcador: { ok: 0, ayuda: 0, total: 0 }, guiaVista: false
 };
 try { const g = JSON.parse(localStorage.getItem(CLAVE) || 'null'); if (g && typeof g === 'object') { cfg = Object.assign(cfg, g); cfg.ay = Object.assign({}, AY0, g.ay || {}); } } catch (e) {}
@@ -793,7 +804,9 @@ function puntosTramos(tr) { let p = []; tr.forEach(t => { p.push(t.a, t.b); if (
 /* ---------- ① Sencillo ---------- */
 function genSencillo(angsForzados) {
     const angs = angsForzados || (cfg.ang.length ? cfg.ang : ['90', '180', '270']);
-    const ang = +pick(angs);
+    const elegido = pick(angs);
+    if (elegido === 'cm' || elegido === 'cM') return genCuerdaPuntos(elegido === 'cm' ? 'menor' : 'mayor');
+    const ang = +elegido;
     const R = pick([10, 15, 20, 25, 30, 35, 40, 50]);
     const dIn = pick(DIRS);
     const ccw = Math.random() < .5, s = ccw ? 1 : -1;
@@ -832,13 +845,14 @@ function listaPitagoras(modo) {
     }
     return { ent, dec };
 }
+function genCuerdaPuntos(tam) { return Object.assign(genComplejo({ decimal: false, modo: 'puntos', tam, ori: pick(['h', 'v']) }), { deSencillo: true }); }
 function genComplejo(opts) {
     opts = opts || {};
-    const modo = pick(cfg.dato.length ? cfg.dato : ['cuerda', 'dist']);
-    const ori = pick(cfg.ori.length ? cfg.ori : ['h', 'v']);
-    const tam = pick(cfg.tam.length ? cfg.tam : ['menor']);
+    const modo = opts.modo || pick(cfg.dato.length ? cfg.dato : ['cuerda', 'dist']);
+    const ori = opts.ori || pick(cfg.ori.length ? cfg.ori : ['h', 'v']);
+    const tam = opts.tam || pick(cfg.tam.length ? cfg.tam : ['menor']);
     const decimal = opts.decimal === undefined ? cfg.decimal : opts.decimal;
-    const L = listaPitagoras(modo);
+    const L = listaPitagoras(modo === 'puntos' ? 'cuerda' : modo);
     const D = (decimal && Math.random() < .5) ? pick(L.dec) : pick(L.ent);
     const t = ori === 'h' ? pick([P(1, 0), P(-1, 0)]) : pick([P(0, 1), P(0, -1)]);
     const nL = P(-t.y, t.x);
@@ -935,6 +949,8 @@ function genContorno() {
 }
 
 /* ---------- ⑤ Leer el bloque ---------- */
+function arcoLargo(a) { const m = puntoArco(a, .5), c = P((a.a.x + a.b.x) / 2, (a.a.y + a.b.y) / 2); return Math.hypot(m.x - c.x, m.y - c.y) > a.R + 1e-6; }
+function rConSigno(a) { return arcoLargo(a) ? -a.R : a.R; }
 function prepararLeer(e) {
     const a = e.tramos[1];
     if (e.sub === 'cual') {
@@ -948,7 +964,12 @@ function prepararLeer(e) {
         e.correcta = e.cands.findIndex(c => c.ok);
         e.C2 = C2;
         e.bloque = { g: a.g, x: esperadoXY(e, 1).x, y: esperadoXY(e, 1).y, i: a.I, j: a.J };
+        if (e.usaR) { e.bloque.r = rConSigno(a); e.cands.forEach(c => { c.largo = arcoLargo(c); }); }
         e.sel = null;
+    } else if (e.sub === 'r') {
+        e.rBien = rConSigno(a);
+        e.bloque = { g: a.g, x: esperadoXY(e, 1).x, y: esperadoXY(e, 1).y, r: e.rBien };
+        e.opcR = barajar([a.R, -a.R]); e.sel = null;
     } else {
         const ok = { g: a.g, x: esperadoXY(e, 1).x, y: esperadoXY(e, 1).y, i: a.I, j: a.J };
         const inc = modoT(e, 1) === 'inc';
@@ -976,9 +997,14 @@ function prepararLeer(e) {
     }
 }
 function genLeer() {
-    const sub = pick(cfg.leer.length ? cfg.leer : ['cual', 'error']);
-    const base = Math.random() < .5 ? genSencillo(sub === 'cual' ? ['90', '270'] : null) : genComplejo({ decimal: false });
-    base.baseTipo = base.tipo; base.tipo = 'leer'; base.sub = sub;
+    const pedido = pick(cfg.leer.length ? cfg.leer : ['r', 'cual', 'error']);
+    const angulos = (cfg.ang.length ? cfg.ang : ['90', '180', '270']).filter(a => a !== 'cm' && a !== 'cM');
+    const sinMedio = pedido === 'cual' || pedido === 'r';
+    const base = Math.random() < .5 ? genSencillo(sinMedio ? ['90', '270'] : angulos.length ? angulos : ['90', '180', '270'])
+        : pedido === 'r' ? genComplejo({ decimal: false, modo: 'puntos', tam: pick(['menor', 'mayor']) }) : genComplejo({ decimal: false });
+    // ¿R o -R? tiene dos variantes: elegir el signo para el arco del plano, o elegir el arco de un bloque con R
+    base.baseTipo = base.tipo; base.tipo = 'leer'; base.subPedido = pedido;
+    base.sub = pedido === 'r' && Math.random() < .5 ? 'cual' : pedido; base.usaR = pedido === 'r';
     return base;
 }
 
@@ -1052,7 +1078,12 @@ function ptxt(p) { return `(${fmt(p.x)}, ${fmt(p.y)})`; }
 function textoEnunciado(e) {
     const it = []; let h = '';
     const a = e.tramos.find(t => t.q && t.t === 'A') || e.tramos[1];
-    if (e.tipo === 'sencillo') {
+    if (e.deSencillo) {
+        h = `Arco de ${a.tam === 'mayor' ? 'más' : 'menos'} de 180° con inicio, final y radio`;
+        it.push(`Inicio del arco: <b style="color:var(--col-ini)">${ptxt(a.a)}</b> · Final: <b style="color:var(--col-fin)">${ptxt(a.b)}</b> · Radio: <b>R${fmt(a.R)}</b>`);
+        it.push(`Las flechas indican el sentido del recorrido. La cuerda sale de las coordenadas de los dos puntos.`);
+        it.push(`Calcula <b>G2/G3</b>, escribe <b>X Y</b> e <b>I J</b>.`);
+    } else if (e.tipo === 'sencillo') {
         h = `Arco de ${e.ang === 90 ? '¼ de vuelta (90°)' : e.ang === 180 ? '½ vuelta (180°)' : '¾ de vuelta (270°)'} tangente a las rectas`;
         it.push(`Inicio del arco: <b style="color:var(--col-ini)">${ptxt(a.a)}</b> · Radio: <b>R${fmt(a.R)}</b>`);
         it.push(`Las flechas indican el sentido del recorrido.`);
@@ -1083,8 +1114,12 @@ function textoEnunciado(e) {
         if (extras.length) it.push('Lleva ' + extras.join('; ') + '.');
         it.push(`Escribe cada tramo numerado: <b>G1/G2/G3</b>, <b>X Y</b> del final e <b>I J</b> en los arcos.`);
     } else if (e.tipo === 'leer') {
-        if (e.sub === 'cual') {
-            h = '¿Qué arco hace este bloque?';
+        if (e.sub === 'r') {
+            h = '¿R o -R?';
+            it.push(`El arco del plano va de <b style="color:var(--col-ini)">${ptxt(a.a)}</b> a <b style="color:var(--col-fin)">${ptxt(a.b)}</b>, con radio <b>${fmt(a.R)}</b>.`);
+            it.push(`Mira si el arco es de más o de menos de 180° y elige <span style="white-space:nowrap">R${fmt(a.R)}</span> o <span style="white-space:nowrap">R-${fmt(a.R)}</span>.`);
+        } else if (e.sub === 'cual') {
+            h = e.usaR ? '¿Qué arco hace este bloque con R?' : '¿Qué arco hace este bloque?';
             it.push(`La herramienta está en <b style="color:var(--col-ini)">${ptxt(a.a)}</b> y ejecuta el bloque de la derecha.`);
             it.push(`Hay cuatro arcos posibles (A, B, C, D) entre los mismos puntos y con el mismo radio. Elige el correcto.`);
         } else {
@@ -1100,7 +1135,7 @@ function pintarEnunciado() {
     const e = $('enunciado'); const { h, it } = textoEnunciado(ej);
     const pleg = e.classList.contains('plegado');
     e.innerHTML = `<h3>📐 ${h}<button class="plegar" onclick="this.closest('.enunciado').classList.toggle('plegado');this.textContent=this.closest('.enunciado').classList.contains('plegado')?'▾':'▴';render()" title="Plegar / desplegar">${pleg ? '▾' : '▴'}</button></h3><div class="cuerpo"><ul>${it.map(x => `<li>${x}</li>`).join('')}</ul></div>`;
-    $('pillNivel').textContent = (EXAMEN ? 'EXAMEN · ' : '') + NOMBRE_NIVEL[ej.pieza ? 'pieza' : ej.tipo];
+    $('pillNivel').textContent = (EXAMEN ? 'EXAMEN · ' : '') + NOMBRE_NIVEL[ej.pieza ? 'pieza' : ej.deSencillo ? 'sencillo' : ej.tipo];
     $('pillNivel').classList.toggle('pill-examen', EXAMEN);
 }
 function pintarLeyenda() {
@@ -1132,7 +1167,10 @@ function filasPregunta(e) {
 function construirRespuesta() {
     const z = $('zonaResp');
     if (ej.tipo === 'leer') {
-        if (ej.sub === 'cual') {
+        if (ej.sub === 'r') {
+            z.innerHTML = `<div class="nota-p">El bloque, sin el radio:</div>${bloqueGrande(Object.assign({}, ej.bloque, { r: null }), false)}<div class="nota-p" style="margin-top:6px">¿Qué radio lleva?</div>
+                <div class="opc-arcos">${ej.opcR.map((v, i) => `<button class="opc-arco opc-r" data-i="${i}" onclick="elegirArco(${i})">R${fmt(v)}</button>`).join('')}</div>`;
+        } else if (ej.sub === 'cual') {
             z.innerHTML = `<div class="nota-p">El bloque:</div>${bloqueGrande(ej.bloque, false)}<div class="nota-p" style="margin-top:6px">¿Qué arco hace?</div>
                 <div class="opc-arcos">${ej.cands.map((c, i) => `<button class="opc-arco k${i}" data-i="${i}" onclick="elegirArco(${i})">${'ABCD'[i]}</button>`).join('')}</div>`;
         } else {
@@ -1160,7 +1198,7 @@ function construirRespuesta() {
 function bloqueGrande(b, clic) {
     const inc = modoT(ej, 1) === 'inc';
     const pal = (k, txt) => clic ? `<button class="palabra" data-k="${k}" onclick="marcarPalabra('${k}')">${txt}</button>` : `<span class="w ${k === 'g' ? 'w-g' : k === 'i' ? 'w-i' : k === 'j' ? 'w-j' : 'w-xy'}">${txt}</span>`;
-    return `<div class="bloque-grande"><span class="w-n">N40</span>${inc ? '<span class="w-g">G91</span>' : ''}${pal('g', b.g)}${pal('x', 'X' + fmt(b.x))}${pal('y', 'Y' + fmt(b.y))}${pal('i', 'I' + fmt(b.i))}${pal('j', 'J' + fmt(b.j))}</div>`;
+    return `<div class="bloque-grande"><span class="w-n">N40</span>${inc ? '<span class="w-g">G91</span>' : ''}${pal('g', b.g)}${pal('x', 'X' + fmt(b.x))}${pal('y', 'Y' + fmt(b.y))}${b.r !== undefined ? pal('i', b.r === null ? 'R?' : 'R' + fmt(b.r)) : pal('i', 'I' + fmt(b.i)) + pal('j', 'J' + fmt(b.j))}</div>`;
 }
 function elegirArco(i) {
     if (!ej || ej.resuelto) return;
@@ -1271,11 +1309,21 @@ function diagnosticoIJ(a, I, J, nom, okI, okJ, minus) {
 
 function comprobarLeer() {
     const a = ej.tramos[1], msgs = [];
+    if (ej.sub === 'r') {
+        if (ej.sel === null) return { ok: false, msgs: ['Elige R positivo o R negativo.'] };
+        if (ej.opcR[ej.sel] === ej.rBien) { ej.rev.cual = true; return { ok: true, msgs: [`Es un arco de ${ej.rBien < 0 ? 'más' : 'menos'} de 180°: <b>R${fmt(ej.rBien)}</b>.`] }; }
+        return { ok: false, msgs: [`Este arco es de ${ej.rBien < 0 ? 'más' : 'menos'} de 180°. R positivo es el arco corto y R negativo, el largo.`] };
+    }
     if (ej.sub === 'cual') {
         if (ej.sel === null) return { ok: false, msgs: ['Elige una letra: A, B, C o D.'] };
         const c = ej.cands[ej.sel];
         if (c.ok) { ej.rev.cual = true; return { ok: true, msgs }; }
         const L = 'ABCD'[ej.sel];
+        if (ej.usaR) {
+            const sg = c.g === a.g, tm = c.largo === (ej.bloque.r < 0), qt = ej.bloque.r < 0 ? 'más' : 'menos';
+            msgs.push(`El arco <b>${L}</b> ${!sg && !tm ? 'no gira como el bloque ni tiene su tamaño' : !sg ? 'tiene el tamaño correcto, pero gira al revés' : 'gira bien, pero no tiene el tamaño del bloque'}. <b>${a.g}</b> es ${a.g === 'G2' ? 'horario' : 'antihorario'} y <b>R${fmt(ej.bloque.r)}</b> es un arco de ${qt} de 180°.`);
+            return { ok: false, msgs };
+        }
         if (c.tipoErr === 'sentido') msgs.push(`El arco <b>${L}</b> tiene el centro bien, pero gira al revés: <b>${a.g}</b> es ${a.g === 'G2' ? 'horario' : 'antihorario'}.`);
         else if (c.tipoErr === 'centro') msgs.push(`El arco <b>${L}</b> gira bien, pero su centro está en ${ptxt(c.C)}. El centro del bloque es inicio + (I, J) = ${ptxt(a.a)} + (${fmt(a.I)}, ${fmt(a.J)}).`);
         else msgs.push(`El arco <b>${L}</b> no tiene ni el centro ni el sentido del bloque. Centro = inicio + (I, J); y ${a.g} es ${a.g === 'G2' ? 'horario' : 'antihorario'}.`);
@@ -1309,7 +1357,7 @@ function explicacionError() {
     }[ej.errTipo];
 }
 function construirRespuestaResuelta() {
-    if (ej.sub === 'cual') { document.querySelectorAll('.opc-arco').forEach(b => { b.classList.toggle('sel', +b.dataset.i === ej.correcta); }); return; }
+    if (ej.sub === 'r' || ej.sub === 'cual') { const bien = ej.sub === 'r' ? ej.opcR.indexOf(ej.rBien) : ej.correcta; document.querySelectorAll('.opc-arco').forEach(b => { b.classList.toggle('sel', +b.dataset.i === bien); }); return; }
     document.querySelectorAll('.palabra').forEach(b => { const mala = ej.malas.includes(b.dataset.k); b.classList.toggle('marcada', mala); });
     const fb = $('feedback'); if (!EXAMEN) fb.innerHTML += `<div style="margin-top:6px;color:var(--text-main)">${explicacionError()}</div>`;
 }
@@ -1318,7 +1366,8 @@ function verSolucion() {
     if (!ej || EXAMEN) return;
     if (!ej.resuelto) ej.ayuda = true;
     if (ej.tipo === 'leer') {
-        if (ej.sub === 'cual') ej.sel = ej.correcta;
+        if (ej.sub === 'r') ej.sel = ej.opcR.indexOf(ej.rBien);
+        else if (ej.sub === 'cual') ej.sel = ej.correcta;
         else { ej.sel = new Set(ej.malas); ej.selOk = ej.errTipo === 'ok'; }
         comprobar(); return;
     }
@@ -1403,6 +1452,7 @@ function pintarGcode() {
         const a = ej.tramos[1], b = ej.bloque, inc = modoT(ej, 1) === 'inc';
         const ant = { ws: [{ t: 'N30', c: 'w-n', tip: TIPS.N }, { t: 'G1', c: 'w-g', tip: TIPS.G1 }, { t: 'X' + fmt(a.a.x), c: 'w-xy', tip: TIPS.Xa }, { t: 'Y' + fmt(a.a.y), c: 'w-xy', tip: TIPS.Ya }], com: 'recta anterior: la herramienta llega a ' + ptxt(a.a) };
         const blq = { ws: [{ t: 'N40', c: 'w-n', tip: TIPS.N }].concat(inc ? [{ t: 'G91', c: 'w-g', tip: TIPS.G91 }] : []).concat([{ t: b.g, c: 'w-g', tip: TIPS[b.g] }, { t: 'X' + fmt(b.x), c: 'w-xy', tip: inc ? TIPS.Xi : TIPS.Xa }, { t: 'Y' + fmt(b.y), c: 'w-xy', tip: inc ? TIPS.Yi : TIPS.Ya }, { t: 'I' + fmt(b.i), c: 'w-i', tip: TIPS.I }, { t: 'J' + fmt(b.j), c: 'w-j', tip: TIPS.J }]), com: ej.sub === 'cual' ? 'el bloque' : 'bloque a revisar', cls: (ej.sub === 'error' && ej.resuelto && ej.errTipo !== 'ok') ? 'mal-l' : 'arc-l' };
+        if (b.r !== undefined) blq.ws = blq.ws.filter(w => !/^[IJ]/.test(w.t)).concat([{ t: ej.sub === 'r' && !ej.resuelto ? 'R?' : 'R' + fmt(b.r), c: 'w-i', tip: '<b>R</b> = radio. Positivo: arco de menos de 180°. Negativo: arco de más de 180°.' }]);
         let h = lineaHTML(ant) + lineaHTML(blq);
         if (ej.sub === 'error' && ej.resuelto && ej.errTipo !== 'ok') {
             const c = ej.correcto;
@@ -1469,7 +1519,8 @@ function pasosPit(a, k, n0) {
     const legL = hor ? 'I' : 'J', legP = hor ? 'J' : 'I', vL = hor ? a.I : a.J, vP = hor ? a.J : a.I;
     let n = n0;
     S.push({ t: (n++) + '. El centro no está en la recta', ay: ['centro'], foco: k, pul: 'C', h: `<p>El centro está ${hor ? (a.C.y > a.a.y ? 'por <b>encima</b>' : 'por <b>debajo</b>') : (a.C.x > a.a.x ? 'a la <b>derecha</b>' : 'a la <b>izquierda</b>')} de la recta ${hor ? 'horizontal' : 'vertical'}, así que <b>I y J no valen 0</b>. Los sacamos con un triángulo rectángulo:</p><ul style="margin-left:18px"><li><b class="cr">Hipotenusa</b>: el radio, del centro al inicio → <b>R = ${fmt(a.R)}</b>.</li><li><b>Cateto sobre la recta</b>: del inicio al pie de la perpendicular desde el centro (la <b>mitad de la cuerda</b>).</li><li><b>Cateto perpendicular</b>: del centro a la recta (la <b>distancia al centro</b>).</li></ul>` });
-    if (a.modo === 'cuerda') {
+    if (a.modo === 'puntos') S.push({ t: (n++) + '. La cuerda', ay: ['centro'], foco: k, pul: null, h: `<p>El plano da los dos puntos. Como la recta es <b>${hor ? 'horizontal' : 'vertical'}</b>, la cuerda es la diferencia de ${hor ? 'las X' : 'las Y'}:</p><div class="calc">cuerda = |${fmt(hor ? a.b.x : a.b.y)} − ${fmt(hor ? a.a.x : a.a.y)}| = <b>${fmt(2 * D.h)}</b></div>` });
+    if (a.modo === 'cuerda' || a.modo === 'puntos') {
         const exacto = Math.abs(D.dExacto - Math.round(D.dExacto)) < 1e-9;
         S.push({ t: (n++) + '. Pitágoras', ay: ['centro', 'tri'], foco: k, pul: 'C', h: `<p>Cateto sobre la recta = cuerda ÷ 2 = ${fmt(2 * D.h)} ÷ 2 = <b>${fmt(D.h)}</b>. Con R² = a² + b² despejamos el otro:</p><div class="calc">b = ${raiz('R² − a²')} = ${raiz(fmt(a.R) + '² − ' + fmt(D.h) + '²')}<br>b = ${raiz(fmt(a.R * a.R) + ' − ' + fmt(D.h * D.h))} = ${raiz(fmt(a.R * a.R - D.h * D.h))} = <b>${exacto ? fmt(D.d) : D.dExacto.toFixed(3) + '… ≈ ' + fmt(D.d)}</b></div>${exacto ? '' : '<p>No sale exacto: lo <b>redondeamos a 1 decimal</b>.</p>'}<p>Es la distancia del centro a la recta.</p>`, rev: ['calc' + k, 'cL' + k, 'cP' + k] });
     } else {
@@ -1538,7 +1589,12 @@ function generarPasos() {
         S.push(pasoBloque(n++));
     } else if (ej.tipo === 'leer') {
         const a = ej.tramos[1];
-        if (ej.sub === 'cual') {
+        if (ej.sub === 'r' || ej.usaR) {
+            const r = ej.bloque.r, largo = r < 0;
+            S.push({ t: (n++) + '. Qué dice R', ay: [], foco: 1, pul: null, h: `<p>Con el mismo radio hay un arco corto y uno largo en cada sentido. <b>R positivo</b> es el de menos de 180° y <b>R negativo</b>, el de más de 180°.</p>` });
+            if (ej.sub === 'r') S.push({ t: (n++) + '. Este arco', ay: ['centro'], foco: 1, pul: 'C', h: `<p>El arco del plano es de <b>${largo ? 'más' : 'menos'} de 180°</b>: ${largo ? 'pasa por el lado de su centro y da más de media vuelta' : 'da menos de media vuelta'}. Lleva <b>R${fmt(r)}</b>.</p>`, rev: ['sol'] });
+            else S.push({ t: (n++) + '. El sentido y el tamaño', ay: [], foco: 1, pul: null, h: `<p><b>${a.g}</b> es ${a.g === 'G2' ? 'horario' : 'antihorario'} y <b>R${fmt(r)}</b> pide el arco de ${largo ? 'más' : 'menos'} de 180°. Solo el <b>${'ABCD'[ej.correcta]}</b> cumple las dos cosas.</p>`, rev: ['sol'] });
+        } else if (ej.sub === 'cual') {
             const L = 'ABCD'[ej.correcta];
             S.push({ t: (n++) + '. El inicio', ay: [], foco: 1, pul: 'P1', h: `<p>La herramienta está en <b>${ptxt(a.a)}</b>. Desde aquí se miden I y J.</p>` });
             S.push({ t: (n++) + '. El centro', ay: ['vector'], foco: 1, pul: 'C', h: `<p>El centro es el inicio más I y J:</p><div class="calc">X<sub>c</sub> = ${fmt(a.a.x)} ${signoOp(a.I)} = <b>${fmt(a.C.x)}</b><br>Y<sub>c</sub> = ${fmt(a.a.y)} ${signoOp(a.J)} = <b>${fmt(a.C.y)}</b></div><p>Solo dos de los cuatro arcos tienen el centro en ${ptxt(a.C)}.</p>`, rev: ['cent'] });
@@ -1689,7 +1745,9 @@ function cotaRadio(a, frac, pref, dentro) {
 function cotasPit(a) {
     let s = '';
     const t = a.tdir, nL = P(-t.y, t.x), lejos = -a.bulto;
-    if (a.modo === 'cuerda') {
+    if (a.modo === 'puntos') {
+        // el plano da las coordenadas de los dos puntos: sin cota de cuerda
+    } else if (a.modo === 'cuerda') {
         const off = mul(nL, lejos * 22 / vista.k);
         const e1 = S(a.a), e2 = S(a.b), f1 = S(suma(a.a, off)), f2 = S(suma(a.b, off));
         const ext = (e, f) => { const dx = f.x - e.x, dy = f.y - e.y, n = Math.hypot(dx, dy) || 1; return `<line class="cota-ext" x1="${e.x + dx / n * 4}" y1="${e.y + dy / n * 4}" x2="${f.x + dx / n * 6}" y2="${f.y + dy / n * 6}"/>`; };
@@ -1737,7 +1795,7 @@ function triangulo(a, k, sinCatetos) {
     const lh = suma(hipM, mul(nh, sg * 10 / vista.k / nn));
     s += txt(lh, 'R = ' + fmt(a.R), 't-r', (nh.x * sg) > .2 * nn ? 'start' : (nh.x * sg) < -.2 * nn ? 'end' : 'middle', 0, 0, 'Hipotenusa: el radio.');
     if (!sinCatetos) {
-        const conocL = a.modo === 'cuerda' || rv['cL' + k] || sol, conocP = a.modo === 'dist' || rv['cP' + k] || sol, hor = a.ori === 'h';
+        const conocL = a.modo === 'cuerda' || a.modo === 'puntos' || rv['cL' + k] || sol, conocP = a.modo === 'dist' || rv['cP' + k] || sol, hor = a.ori === 'h';
         const mL = P((a.a.x + F.x) / 2, (a.a.y + F.y) / 2), mP = P((F.x + a.C.x) / 2, (F.y + a.C.y) / 2);
         const sideL = resta(F, a.C), nsl = Math.hypot(sideL.x, sideL.y) || 1;
         s += txt(suma(mL, mul(sideL, 12 / vista.k / nsl)), conocL ? fmt(a.D.h) : '?', hor ? 't-i' : 't-j', 'middle', 0, 0, 'Cateto sobre la recta (mitad de la cuerda).' + (hor ? ' Es I.' : ' Es J.'));
@@ -1757,7 +1815,7 @@ function vectoresIJ(a, k, sub, valores) {
     const magn = l => {
         if (a.kind !== 'pit' || valores) return null;
         const hor = a.ori === 'h', sobre = (l === 'I') === hor;
-        const conoce = sobre ? (a.modo === 'cuerda' || rv['cL' + k]) : (a.modo === 'dist' || rv['cP' + k]);
+        const conoce = sobre ? (a.modo === 'cuerda' || a.modo === 'puntos' || rv['cL' + k]) : (a.modo === 'dist' || rv['cP' + k]);
         return conoce ? '±' + fmt(sobre ? a.D.h : a.D.d) : null;
     };
     const et = (l, v) => l + (sub || '') + ' = ' + (valores || sol || rv[l + k] ? fmt(v) : (magn(l) || '?'));
@@ -1804,7 +1862,7 @@ function dibujarPlano(W, H) {
     const verCentro = ayudaActiva('centro'), verVec = ayudaActiva('vector'), verTri = ayudaActiva('tri'), verGiro = ayudaActiva('giro');
     let capaA = '', capaT = '';
     const cont = ej.tipo === 'contorno', circ = ej.tipo === 'circulo', simple = !cont && !circ;
-    const mostrarFin = ej.tipo === 'leer';
+    const mostrarFin = ej.tipo === 'leer' || !!ej.deSencillo;
 
     if (cont) {
         // relleno de la pieza
@@ -2184,12 +2242,14 @@ function generarParaPapel(niv) {
     return mejor;
 }
 function bloqueHoja(e) {
-    const b = e.bloque, ps = ['N40'].concat(modoT(e, 1) === 'inc' ? ['G91'] : [], [b.g, 'X' + fmt(b.x), 'Y' + fmt(b.y), 'I' + fmt(b.i), 'J' + fmt(b.j)]);
+    const b = e.bloque, ps = ['N40'].concat(modoT(e, 1) === 'inc' ? ['G91'] : [], [b.g, 'X' + fmt(b.x), 'Y' + fmt(b.y)], b.r !== undefined ? [e.sub === 'r' ? 'R?' : 'R' + fmt(b.r)] : ['I' + fmt(b.i), 'J' + fmt(b.j)]);
     return `<div class="hj-bloque">${ps.map((p, i) => `<span${i ? '' : ' class="n"'}>${p}</span>`).join('')}</div>`;
 }
 function tarjetaLeerHoja(e, n, h, it) {
     const cual = e.sub === 'cual';
-    const resp = cual
+    const resp = e.sub === 'r'
+        ? `<div class="hj-opc"><b>Radio:</b>${e.opcR.map(v => `<span class="hj-r">R${fmt(v)}</span>`).join('')}</div>`
+        : cual
         ? `<div class="hj-opc"><b>Arco:</b>${'ABCD'.split('').map(l => `<span class="letra">${l}</span>`).join('')}</div>`
         : `<div class="hj-opc"><span><i class="hj-casilla"></i>El bloque está bien</span></div><div class="hj-lin">Bloque correcto:</div>`;
     return `<div class="hj-ej"><h2>Ejercicio ${n} · ${h}</h2><ul>${it.map(x => `<li>${x}</li>`).join('')}</ul><div class="hj-fila">${svgDe(e, 470, ALTO_HOJA)}<div class="hj-resp">${bloqueHoja(e)}${resp}<div class="hj-calc">Cálculos:</div></div></div></div>`;
@@ -2199,6 +2259,7 @@ function tarjetaHoja(e, n) {
     if (e.tipo === 'leer') {
         const limpio = it.map(x => x.replace(/<b style="color:var\(--col-[a-z]+\)">/g, '<b>')
             .replace('Elige el correcto.', 'Rodea la letra del correcto.')
+            .replace('y elige', 'y rodea')
             .replace('Marca las palabras del bloque que están mal, o «El bloque está bien».', 'Rodea las palabras del bloque que están mal y escribe el bloque correcto, o marca «El bloque está bien».'));
         return tarjetaLeerHoja(e, n, h, limpio);
     }
@@ -2217,6 +2278,8 @@ function tarjetaHoja(e, n) {
 function solucionHoja(e, n) {
     if (e.tipo === 'leer') {
         const a = e.tramos[1], g91 = modoT(e, 1) === 'inc' ? 'G91 ' : '';
+        if (e.sub === 'r') return `<div class="hj-sol"><b>Ejercicio ${n}</b> · <b>R${fmt(e.rBien)}</b>: arco de ${e.rBien < 0 ? 'más' : 'menos'} de 180°<pre>N40 ${g91}${e.bloque.g} X${fmt(e.bloque.x)} Y${fmt(e.bloque.y)} R${fmt(e.rBien)}</pre></div>`;
+        if (e.sub === 'cual' && e.usaR) return `<div class="hj-sol"><b>Ejercicio ${n}</b> · Arco <b>${'ABCD'[e.correcta]}</b>: ${a.g === 'G2' ? 'horario' : 'antihorario'}, de ${e.bloque.r < 0 ? 'más' : 'menos'} de 180°</div>`;
         if (e.sub === 'cual') return `<div class="hj-sol"><b>Ejercicio ${n}</b> · Arco <b>${'ABCD'[e.correcta]}</b>: ${a.g === 'G2' ? 'horario' : 'antihorario'}, centro ${ptxt(a.C)}</div>`;
         const c = e.correcto, guard = ej; ej = e;
         let txt; try { txt = explicacionError(); } finally { ej = guard; }
@@ -2237,9 +2300,9 @@ function imprimirHoja() {
         for (let v = 0, nv = versionesHoja(); v < nv; v++) {
             let l = [];
             // ⑤ equilibrado: se alternan los dos tipos de pregunta y como mucho un bloque correcto por versión
-            let bienes = 0; const giro = Math.random() < .5 ? 0 : 1, subs = cfg.leer.length ? cfg.leer : ['cual', 'error'];
+            let bienes = 0; const giro = Math.random() < .5 ? 0 : 1, subs = cfg.leer.length ? cfg.leer : ['r', 'cual', 'error'];
             Object.keys(cant).forEach(niv => { for (let i = 0; i < cant[niv]; i++) {
-                const vale = niv !== 'leer' ? null : e => e.sub === subs[(i + giro) % subs.length] && !(e.errTipo === 'ok' && bienes);
+                const vale = niv !== 'leer' ? null : e => e.subPedido === subs[(i + giro) % subs.length] && !(e.errTipo === 'ok' && bienes);
                 const e = generarSinRepetir(niv, vistas, vale);
                 if (e.errTipo === 'ok') bienes++;
                 l.push(e);
@@ -2310,7 +2373,7 @@ function ponerNivel(n) {
     document.querySelectorAll('#niveles button').forEach(b => { b.classList.toggle('activo', b.dataset.n === n); b.classList.toggle('bloqueado', !!NIVEL_FIJO && b.dataset.n !== n); b.disabled = !!NIVEL_FIJO && b.dataset.n !== n; });
     const vis = { opcSencillo: 'sencillo', opcComplejo: 'complejo', opcCirculo: 'circulo', opcContorno: 'contorno', opcLeer: 'leer' };
     Object.keys(vis).forEach(id => { $(id).style.display = vis[id] === n || (id === 'opcComplejo' && n === 'contorno' && cfg.cont.includes('pit')) ? '' : 'none'; });
-    const triOk = n === 'complejo' || (n === 'contorno' && cfg.cont.includes('pit')) || n === 'leer';
+    const triOk = n === 'complejo' || (n === 'sencillo' && (cfg.ang.includes('cm') || cfg.ang.includes('cM'))) || (n === 'contorno' && cfg.cont.includes('pit')) || n === 'leer';
     const tri = document.querySelector('[data-ay="tri"]');
     tri.disabled = !triOk;
     $('filaTri').title = triOk ? '' : 'Solo con arcos de Pitágoras: en los otros el centro está alineado y no hace falta.';
