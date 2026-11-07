@@ -52,6 +52,12 @@ const { lanzar, abrir, ejercicios, fs, path } = require('./comun');
   ok(difR >= 0 && difR <= 64, `.rld del cuadrado igual que el de Atheon Design (${refRld.length} bytes; ${difR < 0 ? 'distinto tamaño: ' + rl.b.length : difR + ' bytes distintos'})`);
   ok(rl.n > 0 && (rl.n - (refRld.length - 4 * 74)) % 74 === 0, `.rld de una pieza de un contorno: ${(rl.n - (refRld.length - 4 * 74)) / 74} tramos de 74 bytes`);
   ok(/un contorno/.test(rl.varios), '.rld con varios contornos: no se guarda (Atheon Design los uniría con cortes de más)');
+  // 2e) 📚 Parámetros de corte: la de inicio va dentro, «Usar» pone los valores en la capa y el programa lo dice
+  const ini = JSON.parse(fs.readFileSync(path.join(process.env.SUITE || path.join(__dirname, '../..'), 'biblioteca_laser/Parametros_laser_inicio.json'), 'utf8'));
+  const bib = await pg.evaluate(n => { const B = LASER.biblioteca(), e = B.find(x => x.op === 'corte' && x.grosor === 3);
+    LASER.usarEntrada(e); const c = LASER.ajustes().capas[1]; tuFuente('solucion'); tuRefrescar(true);
+    return { n: B.length, ok: c.speed === e.speed && c.pmax === e.pmax && c.passes === e.passes && c.mat === e.material + ' 3 mm', prog: TU.prog.texto.includes('(' + tuSinTildes(c.mat) + ')') }; }, ini.entradas.length);
+  ok(bib.n === ini.entradas.length && bib.ok && bib.prog, `📚 Parámetros de corte: ${bib.n} de inicio (como biblioteca_laser/), «Usar» pone velocidad, potencia y pasadas, y el programa dice el material`);
   // 3) Un programa G-code: G1/G2/G3 cortan y G0 no
   const nc = 'G71 G90\nG0 X0 Y0\nG1 X40\nG3 X40 Y20 I0 J10\nG1 X0\nG1 Y0\nG0 X100 Y100\nM30\n';
   const g = await pg.evaluate(t => { const s = LASER.abrirGcodeTexto(t, 'prueba.nc'); const r = LASER.generarRD(); const res = { n: s.trazados.length, cerrado: s.trazados[0] && s.trazados[0].cerrado, bytes: r.rd.bytes.length }; LASER.volverAlDibujo(); return res; }, nc);

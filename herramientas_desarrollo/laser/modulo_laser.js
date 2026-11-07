@@ -190,6 +190,22 @@ try { const g = JSON.parse(localStorage.getItem(CLAVE) || 'null'); if (g && g.ca
 const guardar = () => { try { localStorage.setItem(CLAVE, JSON.stringify(A)); } catch (e) {} };
 const capa = id => A.capas.find(c => c.id === id);
 
+// ───────── 📚 Biblioteca de parámetros de corte (se guarda en el navegador; se exporta e importa en JSON) ─────────
+const CLAVE_BIB = 'laser_biblioteca';
+const BIB_INICIO = [{"material": "Prueba de Atheon Design (cuadrado 50 × 50)", "grosor": 0, "op": "corte", "speed": 9, "pmin": 60, "pmax": 60, "passes": 2, "air": true, "notas": "Los valores del .rd hecho con Atheon Design en el taller"}, {"material": "DM (MDF)", "grosor": 3, "op": "corte", "speed": 15, "pmin": 55, "pmax": 60, "passes": 1, "air": true, "notas": "Orientativo: compruébalo"}, {"material": "DM (MDF)", "grosor": 5, "op": "corte", "speed": 8, "pmin": 65, "pmax": 70, "passes": 1, "air": true, "notas": "Orientativo: compruébalo"}, {"material": "Contrachapado", "grosor": 3, "op": "corte", "speed": 20, "pmin": 50, "pmax": 55, "passes": 1, "air": true, "notas": "Orientativo: compruébalo"}, {"material": "Contrachapado", "grosor": 5, "op": "corte", "speed": 10, "pmin": 60, "pmax": 65, "passes": 1, "air": true, "notas": "Orientativo: compruébalo"}, {"material": "Metacrilato", "grosor": 3, "op": "corte", "speed": 15, "pmin": 55, "pmax": 60, "passes": 1, "air": true, "notas": "Orientativo: compruébalo"}, {"material": "Cartón", "grosor": 2, "op": "corte", "speed": 40, "pmin": 25, "pmax": 30, "passes": 1, "air": true, "notas": "Orientativo: compruébalo"}, {"material": "Madera (marcar líneas)", "grosor": 0, "op": "marcado", "speed": 150, "pmin": 12, "pmax": 15, "passes": 1, "air": true, "notas": "Orientativo: compruébalo"}, {"material": "Metacrilato (marcar líneas)", "grosor": 0, "op": "marcado", "speed": 200, "pmin": 10, "pmax": 12, "passes": 1, "air": true, "notas": "Orientativo: compruébalo"}];
+let BIB = [];
+try { const g = JSON.parse(localStorage.getItem(CLAVE_BIB) || 'null'); BIB = Array.isArray(g) ? g : BIB_INICIO.map(e => ({ ...e })); } catch (e) { BIB = BIB_INICIO.map(e => ({ ...e })); }
+const guardarBib = () => { try { localStorage.setItem(CLAVE_BIB, JSON.stringify(BIB)); } catch (e) {} };
+const CAMPOS_BIB = ['material', 'grosor', 'op', 'speed', 'pmin', 'pmax', 'passes', 'air', 'notas'];
+function limpiarEntrada(e) {
+    const n = v => { v = parseFloat(String(v).replace(',', '.')); return isFinite(v) ? v : 0; };
+    return { material: String(e.material || '').trim() || 'Sin nombre', grosor: Math.max(0, n(e.grosor)), op: e.op === 'marcado' ? 'marcado' : 'corte',
+        speed: Math.max(0.1, n(e.speed) || 10), pmin: Math.max(0, Math.min(100, n(e.pmin))), pmax: Math.max(0, Math.min(100, n(e.pmax))),
+        passes: Math.max(1, Math.round(n(e.passes) || 1)), air: e.air !== false, notas: String(e.notas || '').trim() };
+}
+const igualEntrada = (a, b) => CAMPOS_BIB.every(k => String(a[k]) === String(b[k]));
+const nombreEntrada = e => e.material + (e.grosor ? ` ${String(e.grosor).replace('.', ',')} mm` : '');
+
 // Fuente de lo que se corta: el dibujo o un programa G-code abierto
 let gcode = null;   // { nombre, trazados, avisos }
 
@@ -319,6 +335,7 @@ html[data-laser="1"] .tu-mec-grid > span:has(#tuHbSel), html[data-laser="1"] but
 .las-mec-tit .punto { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
 .las-mec-tit small { font-weight: 400; color: var(--text-muted); }
 .las-mec-herr { grid-column: 2 / 5; font-weight: 600; }
+.tu-mec-grid .las-mec-mat { grid-column: 2 / 5; }
 .las-mec-nota { grid-column: 1 / 5; font-size: 11px; color: var(--text-muted); margin-top: -2px; }
 .tu-mec-grid .las-mec-aire { grid-column: 1 / 5; display: flex !important; gap: 6px; align-items: center; justify-content: flex-start; text-align: left; font-size: 12px; margin-top: 4px; color: var(--text-main); }
 .tu-mec-grid .las-mec-aire input { width: auto; margin: 0; }
@@ -333,6 +350,18 @@ html[data-laser="1"] .las-mesa-chk { display: inline-flex; align-items: center; 
 .las-mesa-box button { font-size: 12px; padding: 3px 8px; border-radius: 5px; border: 1px solid var(--border-color); background: var(--canvas-bg); color: var(--text-main); cursor: pointer; }
 .las-mesa-box .estado { grid-column: 1 / 5; font-weight: 600; }
 .las-mesa-box .estado.mal { color: #c0392b; } .las-mesa-box .estado.bien { color: #1e8449; }
+.las-bib-lista { display: flex; flex-direction: column; max-height: 260px; overflow-y: auto; margin: 0 -4px; }
+.las-bib-fila { display: grid; grid-template-columns: 12px 1fr auto auto auto; gap: 6px; align-items: center; padding: 5px 4px; border-top: 1px solid var(--border-color); }
+.las-bib-fila:first-child { border-top: 0; }
+.las-bib-fila .punto { width: 10px; height: 10px; border-radius: 50%; }
+.las-bib-fila .mat { line-height: 1.3; min-width: 0; }
+.las-bib-fila button { padding: 3px 7px !important; }
+.las-bib-fila .orient { font-size: 10px; color: #b9772e; border: 1px solid #e0b98a; border-radius: 4px; padding: 0 4px; font-weight: 400; }
+.las-bib-bots { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 5px; }
+.las-bib-bots button { padding: 4px 8px !important; font-size: 12px !important; }
+.las-bib-form { display: grid; grid-template-columns: auto 1fr; gap: 5px 8px; align-items: center; margin-top: 8px; padding: 8px; border: 1px solid var(--accent); border-radius: 6px; }
+.las-bib-form label { color: var(--text-muted); }
+.las-bib-form input[type=text] { font-size: 12.5px; padding: 3px 5px; border: 1px solid var(--border-color); border-radius: 5px; background: var(--bg-panel); color: var(--text-main); }
 #lasPanel { display: none; flex-direction: column; gap: 8px; padding: 8px 10px 14px; overflow-y: auto; flex: 1; min-height: 0; font-size: 12.5px; }
 #tutorPanel.laser #lasPanel { display: flex; }
 .las-caja { border: 1px solid var(--border-color); border-radius: 8px; padding: 8px 9px; background: var(--canvas-bg); }
@@ -391,6 +420,7 @@ function htmlPanel() {
         ${filasCapas}
         <div class="las-nota" style="margin-top:6px">Primero se marca y después se corta; los interiores, antes que el contorno que los rodea. <b>Corte</b>: contornos cerrados. <b>Marcado</b>: abiertos, textos, grabados y cajeras.</div>
     </div>
+    <div class="las-caja" id="lasBib"></div>
     <div class="las-caja" id="lasResumen"></div>
     <div class="las-acciones">
         <button id="lasVer" title="El recorrido del láser, con simulación y las órdenes del archivo">👁 Vista previa…</button>
@@ -418,6 +448,7 @@ function htmlPanel() {
 
 function htmlMec() {
     const fila = L => `<div class="las-mec-tit"><span class="punto" style="background:${L.color}"></span>${esc(L.nombre)} <small>${L.id === 'corte' ? 'contornos cerrados' : 'abiertos, textos y grabados'}</small></div>
+        <label title="Los parámetros guardados en 📚 Parámetros de corte (pestaña 🔥 Láser)">Material</label><select class="las-mec-mat" data-bib="${L.id}"></select>
         <label title="Velocidad de corte, en mm/s (en el programa, F en mm/min)">Velocidad</label><input type="number" data-c="${L.id}" data-k="speed" min="0.1" step="1" title="mm/s">
         <label title="Veces que el láser repasa cada contorno (en lugar de bajar en Z)">Pasadas</label><input type="number" data-c="${L.id}" data-k="passes" min="1" max="50" step="1">
         <label title="Potencia mínima (%): la que usa al frenar en las esquinas">Pot. mín. %</label><input type="number" data-c="${L.id}" data-k="pmin" min="0" max="100" step="1">
@@ -428,6 +459,75 @@ function htmlMec() {
         + `<label class="las-mec-aire"><input type="checkbox" data-c="todas" data-k="air"> Soplado de aire (M08 al empezar, M09 al terminar)</label>`;
 }
 // Escribe los valores de A en todos los campos de las dos pestañas
+function pintarBib() {
+    const caja = $('lasBib'); if (!caja) return;
+    const ord = BIB.map((e, i) => ({ e, i })).sort((a, b) => a.e.op.localeCompare(b.e.op) || a.e.material.localeCompare(b.e.material, 'es') || a.e.grosor - b.e.grosor);
+    const fila = ({ e, i }) => `<div class="las-bib-fila" data-i="${i}" title="${esc(e.notas || '')}">
+        <span class="punto" style="background:${capa(e.op).color}"></span>
+        <span class="mat"><b>${esc(nombreEntrada(e))}</b>${/orientativ/i.test(e.notas) ? ' <span class="orient">orientativo</span>' : ''}<br><span class="las-nota">${e.op === 'corte' ? 'Corte' : 'Marcado'} · ${f1(e.speed)} mm/s · ${f1(e.pmin)}–${f1(e.pmax)} % · ${e.passes} pasada${e.passes > 1 ? 's' : ''}${e.air ? '' : ' · sin aire'}</span></span>
+        <button data-a="usar" title="Poner estos valores en la capa ${e.op === 'corte' ? 'Corte' : 'Marcado'}">Usar</button><button data-a="editar" title="Editar">✎</button><button data-a="borrar" title="Borrar">✕</button></div>`;
+    caja.innerHTML = `<div class="las-tit">📚 Parámetros de corte <span class="las-nota" style="text-transform:none;letter-spacing:0;font-weight:400">${BIB.length} material${BIB.length === 1 ? '' : 'es'}</span></div>
+        <div class="las-bib-lista">${ord.map(fila).join('') || '<div class="las-nota">La biblioteca está vacía. Guarda los valores de una capa o importa un archivo.</div>'}</div>
+        <div id="lasBibForm"></div>
+        <div class="las-bots las-bib-bots"><button data-a="nuevo-corte" title="Guarda la velocidad, potencia y pasadas de Corte como un material nuevo">＋ Guardar Corte</button><button data-a="nuevo-marcado" title="Guarda los valores de Marcado como un material nuevo">＋ Guardar Marcado</button>
+            <button data-a="exportar" title="Descarga la biblioteca en un archivo JSON">⬇ Exportar</button><button data-a="importar" title="Carga una biblioteca desde un archivo JSON">⬆ Importar…</button><button data-a="inicio" title="Añade los parámetros de inicio de la suite (orientativos)">Parámetros de inicio</button></div>
+        <div id="lasBibImp"></div>
+        <input type="file" id="lasBibFile" accept=".json" hidden>`;
+    // los selectores de material del bloque «🔥 Láser» de 📋 Solución
+    document.querySelectorAll('select[data-bib]').forEach(sl => {
+        const id = sl.dataset.bib, Lc = capa(id), ops = BIB.map((e, i) => ({ e, i })).filter(o => o.e.op === id).sort((a, b) => nombreEntrada(a.e).localeCompare(nombreEntrada(b.e), 'es'));
+        sl.innerHTML = `<option value="">${Lc.mat ? '— ' + esc(Lc.mat) + ' (cambiado a mano)' : '— a mano —'}</option>` + ops.map(o => `<option value="${o.i}"${nombreEntrada(o.e) === Lc.mat ? ' selected' : ''}>${esc(nombreEntrada(o.e))}${/orientativ/i.test(o.e.notas) ? ' · orientativo' : ''}</option>`).join('');
+        if (Lc.mat && ops.some(o => nombreEntrada(o.e) === Lc.mat)) sl.options[0].textContent = '— a mano —';
+        sl.onchange = () => { if (sl.value !== '') usarEntrada(BIB[+sl.value]); };
+    });
+    const L = A.capas.map(c => c.mat ? `${c.nombre}: <b>${esc(c.mat)}</b>` : '').filter(Boolean);
+    if (L.length) caja.querySelector('.las-tit').insertAdjacentHTML('afterend', `<div class="las-nota" style="margin:-2px 0 6px">En uso · ${L.join(' · ')}</div>`);
+}
+function formBib(entrada, idx) {
+    const f = $('lasBibForm'), e = entrada;
+    f.innerHTML = `<div class="las-bib-form">
+        <label>Material</label><input type="text" id="bibMat" value="${esc(e.material || '')}" placeholder="DM, contrachapado, metacrilato…">
+        <label>Grosor (mm)</label><input type="number" id="bibGro" value="${e.grosor || ''}" min="0" step="0.5" placeholder="0 = no importa">
+        <label>Capa</label><select id="bibOp"><option value="corte"${e.op === 'corte' ? ' selected' : ''}>Corte</option><option value="marcado"${e.op === 'marcado' ? ' selected' : ''}>Marcado</option></select>
+        <label>Velocidad</label><input type="number" id="bibVel" value="${e.speed}" min="0.1" step="1" title="mm/s">
+        <label>Pot. mín. %</label><input type="number" id="bibMin" value="${e.pmin}" min="0" max="100">
+        <label>Pot. máx. %</label><input type="number" id="bibMax" value="${e.pmax}" min="0" max="100">
+        <label>Pasadas</label><input type="number" id="bibPas" value="${e.passes}" min="1" max="50">
+        <label>Aire</label><label style="color:inherit"><input type="checkbox" id="bibAir"${e.air ? ' checked' : ''}> soplado</label>
+        <label>Notas</label><input type="text" id="bibNot" value="${esc(e.notas || '')}" placeholder="p. ej. probado el 7/11, sale limpio">
+        <span></span><span class="las-bots"><button class="principal" id="bibOk">${idx == null ? 'Guardar en la biblioteca' : 'Guardar cambios'}</button><button id="bibNo">Cancelar</button></span></div>`;
+    $('bibMat').focus();
+    $('bibNo').onclick = () => { f.innerHTML = ''; };
+    $('bibOk').onclick = () => {
+        const n = limpiarEntrada({ material: $('bibMat').value, grosor: $('bibGro').value, op: $('bibOp').value, speed: $('bibVel').value, pmin: $('bibMin').value, pmax: $('bibMax').value, passes: $('bibPas').value, air: $('bibAir').checked, notas: $('bibNot').value });
+        if (n.pmin > n.pmax) n.pmin = n.pmax;
+        if (idx == null) BIB.push(n); else BIB[idx] = n;
+        guardarBib(); pintarBib(); snack(`«${nombreEntrada(n)}» guardado en la biblioteca`);
+    };
+}
+function usarEntrada(e) {
+    const L = capa(e.op);
+    ['speed', 'pmin', 'pmax', 'passes', 'air'].forEach(k => L[k] = e[k]);
+    L.mat = nombreEntrada(e);
+    guardar(); sincronizar(); pintarBib(); pintarResumen();
+    if (typeof tuRefrescar === 'function') tuRefrescar(true);
+    snack(`${L.nombre}: ${nombreEntrada(e)} (${f1(e.speed)} mm/s, ${f1(e.pmax)} %, ${e.passes} pasada${e.passes > 1 ? 's' : ''})${/orientativ/i.test(e.notas) ? '. Son valores orientativos: haz una prueba' : ''}`);
+}
+function importarBib(datos, nombre) {
+    const lista = Array.isArray(datos) ? datos : (datos && Array.isArray(datos.entradas) ? datos.entradas : null);
+    if (!lista || !lista.length) { snack(`${nombre}: no es una biblioteca de parámetros de la láser`); return; }
+    const nuevas = lista.map(limpiarEntrada), imp = $('lasBibImp');
+    imp.innerHTML = `<div class="las-aviso" style="color:inherit;background:var(--canvas-bg);border-color:var(--border-color)">${esc(nombre)}: ${nuevas.length} material${nuevas.length === 1 ? '' : 'es'}.
+        <div class="las-bots" style="margin-top:6px"><button class="principal" id="bibAgr" title="Añade los que no tengas ya">Agregar</button><button id="bibSus" title="Borra tu biblioteca y deja solo la del archivo">Sustituir</button><button id="bibCan">Cancelar</button></div></div>`;
+    $('bibCan').onclick = () => { imp.innerHTML = ''; };
+    $('bibAgr').onclick = () => { let n = 0; nuevas.forEach(e => { if (!BIB.some(b => igualEntrada(b, e))) { BIB.push(e); n++; } }); guardarBib(); pintarBib(); snack(`${n} material${n === 1 ? '' : 'es'} añadido${n === 1 ? '' : 's'}${nuevas.length - n ? ` (${nuevas.length - n} ya estaba${nuevas.length - n === 1 ? '' : 'n'})` : ''}`); };
+    $('bibSus').onclick = () => { BIB = nuevas; guardarBib(); pintarBib(); snack(`Biblioteca sustituida: ${nuevas.length} material${nuevas.length === 1 ? '' : 'es'}`); };
+}
+function exportarBib() {
+    const datos = { tipo: 'parametros_laser', version: 1, nombre: 'Parámetros de corte', fecha: new Date().toISOString().slice(0, 10), entradas: BIB };
+    descargar(JSON.stringify(datos, null, 2), 'Parametros_laser.json', 'application/json');
+    snack(`Biblioteca exportada: ${BIB.length} material${BIB.length === 1 ? '' : 'es'} (Parametros_laser.json)`);
+}
 function sincronizar() {
     document.querySelectorAll('#tutorPanel [data-c][data-k]').forEach(inp => {
         const k = inp.dataset.k, Ls = inp.dataset.c === 'todas' ? A.capas : [capa(inp.dataset.c)];
@@ -465,7 +565,7 @@ function tuGenerarLaser() {
         puntos.push({ letra: it.letra, clase: it.clase, filas, lado: null, E: null, Ap: null, eNom: null, apNom: null, cerrado, debe: null, mal: false, ccw, n });
         const Lc = capa(esMarcado(c) ? 'marcado' : 'corte'), S = Math.round(Lc.pmax * 10), F = Math.round(Lc.speed * 60), np = Math.max(1, Lc.passes | 0);
         const titulo = it.clase === 'interior' ? 'Interior' : it.clase === 'abierto' ? 'Trazo abierto' : 'Exterior';
-        sep(`── ${titulo}: ${it.letra}1 … ${it.letra}${n} · ${Lc.nombre.toLowerCase()}${np > 1 ? `, ${np} pasadas` : ''} ──`);
+        sep(`── ${titulo}: ${it.letra}1 … ${it.letra}${n} · ${Lc.nombre.toLowerCase()}${Lc.mat ? ` (${tuSinTildes(Lc.mat)})` : ''}${np > 1 ? `, ${np} pasadas` : ''} ──`);
         const irA = (p, pNom, primero) => {
             if (isT) { add(`${modal === 'G91' ? '' : 'G91 '}G0 ${xyInc(cur, p)}`, `en rápido hasta ${pNom}, con el láser apagado` + (modal === 'G91' ? '' : ' (pasa a G91)'), { ci: it.ci }); modal = 'G91'; }
             else if (coord === 'G91' && !primero) { add(`${modal === 'G91' ? '' : 'G91 '}G0 ${xyInc(cur, p)}`, `en rápido hasta ${pNom}, con el láser apagado`, { ci: it.ci }); modal = 'G91'; }
@@ -573,6 +673,8 @@ function montar() {
         else { let v = parseFloat(String(inp.value).replace(',', '.')); if (!isFinite(v)) { sincronizar(); return; }
             if (k === 'pmin' || k === 'pmax') v = Math.max(0, Math.min(100, v)); if (k === 'passes') v = Math.max(1, Math.round(v)); if (k === 'speed') v = Math.max(0.1, v);
             Ls.forEach(L => { L[k] = v; if (k === 'pmin' && L.pmax < v) L.pmax = v; if (k === 'pmax' && L.pmin > v) L.pmin = v; }); }
+        if (k !== 'out') Ls.forEach(L => { L.mat = ''; });     // ya no son los valores de la biblioteca
+        pintarBib();
         guardar(); sincronizar(); pintarResumen();
         if (typeof tuRefrescar === 'function') tuRefrescar(true);
     });
@@ -593,6 +695,24 @@ function montar() {
             pintarFuente(); pintarResumen();
             snack(gcode.trazados.length ? `${f.name}: ${gcode.trazados.length} trazado(s) de corte` : `${f.name}: no hay tramos G1, G2 ni G3`);
         };
+        r.readAsText(f);
+    });
+    pintarBib();
+    $('lasBib').addEventListener('click', e => {
+        const b = e.target.closest('button'); if (!b || !b.dataset.a) return;
+        const fila = b.closest('.las-bib-fila'), i = fila ? +fila.dataset.i : null, a = b.dataset.a;
+        if (a === 'usar') usarEntrada(BIB[i]);
+        else if (a === 'editar') formBib(BIB[i], i);
+        else if (a === 'borrar') { const e2 = BIB[i]; BIB.splice(i, 1); guardarBib(); pintarBib(); snack(`«${nombreEntrada(e2)}» borrado de la biblioteca`); }
+        else if (a === 'nuevo-corte' || a === 'nuevo-marcado') { const L = capa(a.slice(6)); formBib({ material: '', grosor: '', op: L.id, speed: L.speed, pmin: L.pmin, pmax: L.pmax, passes: L.passes, air: L.air, notas: '' }, null); }
+        else if (a === 'exportar') exportarBib();
+        else if (a === 'importar') { $('lasBibFile').value = ''; $('lasBibFile').click(); }
+        else if (a === 'inicio') importarBib(BIB_INICIO, 'Parámetros de inicio de la suite');
+    });
+    $('lasBib').addEventListener('change', e => {
+        if (e.target.id !== 'lasBibFile' || !e.target.files[0]) return;
+        const f = e.target.files[0], r = new FileReader();
+        r.onload = () => { try { importarBib(JSON.parse(String(r.result)), f.name); } catch (err) { snack(`${f.name}: no es un JSON válido`); } };
         r.readAsText(f);
     });
     $('lasExp').onclick = exportar;
@@ -806,6 +926,6 @@ window.addEventListener('load', () => setTimeout(montarMesa, 200));
 // si cambia la mesa en ⚙️ Máquina, se vuelve a dibujar
 document.addEventListener('change', e => { if (e.target && /^las(W|H|Origen|Inicio|Ref)$/.test(e.target.id)) { pintarCajaMesa(); render(); } });
 
-window.LASER = { RLD, generarRLD, mesaMundo, fueraDeMesa, centrarEnMesa, RDCore, plan, generarRD, trazadosGcode, trazadosDibujo, ajustes: () => A, abrirGcodeTexto: (texto, nombre) => { const g = trazadosGcode(texto); gcode = { nombre, base: nombre.replace(/\.[^.]+$/, ''), trazados: g.trazados, avisos: g.avisos }; pintarFuente(); pintarResumen(); return gcode; }, volverAlDibujo: () => { gcode = null; pintarFuente(); pintarResumen(); } };
+window.LASER = { biblioteca: () => BIB, usarEntrada, importarBib, RLD, generarRLD, mesaMundo, fueraDeMesa, centrarEnMesa, RDCore, plan, generarRD, trazadosGcode, trazadosDibujo, ajustes: () => A, abrirGcodeTexto: (texto, nombre) => { const g = trazadosGcode(texto); gcode = { nombre, base: nombre.replace(/\.[^.]+$/, ''), trazados: g.trazados, avisos: g.avisos }; pintarFuente(); pintarResumen(); return gcode; }, volverAlDibujo: () => { gcode = null; pintarFuente(); pintarResumen(); } };
 window.addEventListener('load', () => setTimeout(montar, 150));
 })();

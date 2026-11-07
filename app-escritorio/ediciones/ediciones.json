@@ -23,7 +23,8 @@
       "incluir": [
         "*.html",
         "*.pdf",
-        "biblioteca_inicio/"
+        "biblioteca_inicio/",
+        "biblioteca_laser/"
       ],
       "excluir": [
         "simulador3d_profesor.html"
@@ -75,7 +76,9 @@
       "exe": "CalcadorLaser",
       "id": "es.eloiaa.suitecnc.laser",
       "inicio": "laser.html",
-      "incluir": [],
+      "incluir": [
+        "biblioteca_laser/"
+      ],
       "excluir": [
         "arcos_ij.html",
         "manual_arcos_ij.html",

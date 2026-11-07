@@ -12,6 +12,7 @@ sin instalar nada y también sin conexión a internet.
 | `calcador.html` | Calcador de contornos: diseñar ejercicios, hojas, soluciones, corrección y biblioteca. Escribe el programa de la pieza mientras se dibuja (el de la solución o el de la máquina, ⚙️ Mecanizar) y prepara ejercicios para el Tutor (🎓) | v130 |
 | `corrector.html` | Corrector: el Calcador sin dibujo, para corregir, simular, imprimir, exportar y generar el G-code con ⚙️ Mecanizar (se genera a partir del Calcador) | v75 |
 | `laser.html` | Calcador láser: el Calcador para la cortadora láser. Del dibujo, o de un programa G-code (G1/G2/G3 cortan, G0 no), al archivo `.rd` de la máquina (Ruida, formato de Atheon Design), con capas de corte y marcado, vista previa y simulación (profesorado; se genera a partir del Calcador con `herramientas_desarrollo/laser/generar_laser.py`) | v1 |
+| `biblioteca_laser/` | Parámetros de corte de inicio para el Calcador láser (`Parametros_laser_inicio.json`; orientativos) | — |
 | `manual_calcador.html` / `.pdf` | Manual del Calcador | — |
 | `manual_corrector.html` / `.pdf` | Manual del Corrector (profesorado) | — |
 | `manual_anidador.html` / `.pdf` | Manual del Anidador de tableros (profesorado) | — |

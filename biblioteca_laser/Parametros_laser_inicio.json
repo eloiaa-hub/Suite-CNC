@@ -1,0 +1,17 @@
+{
+  "tipo": "parametros_laser",
+  "version": 1,
+  "nombre": "Parámetros de inicio",
+  "nota": "Valores de partida para la láser CO2 del taller. Salvo la prueba de Atheon Design, son ORIENTATIVOS (tubo de unos 80 W): comprueba cada material con una prueba antes de cortar piezas y corrige la entrada.",
+  "entradas": [
+    { "material": "Prueba de Atheon Design (cuadrado 50 × 50)", "grosor": 0, "op": "corte", "speed": 9, "pmin": 60, "pmax": 60, "passes": 2, "air": true, "notas": "Los valores del .rd hecho con Atheon Design en el taller" },
+    { "material": "DM (MDF)", "grosor": 3, "op": "corte", "speed": 15, "pmin": 55, "pmax": 60, "passes": 1, "air": true, "notas": "Orientativo: compruébalo" },
+    { "material": "DM (MDF)", "grosor": 5, "op": "corte", "speed": 8, "pmin": 65, "pmax": 70, "passes": 1, "air": true, "notas": "Orientativo: compruébalo" },
+    { "material": "Contrachapado", "grosor": 3, "op": "corte", "speed": 20, "pmin": 50, "pmax": 55, "passes": 1, "air": true, "notas": "Orientativo: compruébalo" },
+    { "material": "Contrachapado", "grosor": 5, "op": "corte", "speed": 10, "pmin": 60, "pmax": 65, "passes": 1, "air": true, "notas": "Orientativo: compruébalo" },
+    { "material": "Metacrilato", "grosor": 3, "op": "corte", "speed": 15, "pmin": 55, "pmax": 60, "passes": 1, "air": true, "notas": "Orientativo: compruébalo" },
+    { "material": "Cartón", "grosor": 2, "op": "corte", "speed": 40, "pmin": 25, "pmax": 30, "passes": 1, "air": true, "notas": "Orientativo: compruébalo" },
+    { "material": "Madera (marcar líneas)", "grosor": 0, "op": "marcado", "speed": 150, "pmin": 12, "pmax": 15, "passes": 1, "air": true, "notas": "Orientativo: compruébalo" },
+    { "material": "Metacrilato (marcar líneas)", "grosor": 0, "op": "marcado", "speed": 200, "pmin": 10, "pmax": 12, "passes": 1, "air": true, "notas": "Orientativo: compruébalo" }
+  ]
+}
