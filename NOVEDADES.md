@@ -4,6 +4,10 @@ La versión de la suite es **año.mes** (por ejemplo, 2026.10). Cada programa co
 
 ## Suite CNC 2026.11
 
+### Calcador láser v2: líneas comunes y pasadas
+- Las **líneas comunes** a dos contornos (dos piezas pegadas, un borde compartido o solapado en parte) se cortan **una sola vez**. Antes se pasaba dos veces por el mismo borde, que se quemaba y ensanchaba el corte. El Resumen dice cuántos milímetros se ahorran, y la opción **Líneas comunes, una sola vez** de ⚙️ Máquina lo desactiva.
+- Las **pasadas** de cada contorno van **seguidas**: con 2 pasadas, el agujero se acaba antes de cortar el contorno que lo rodea. Antes se repetía la capa entera, y la segunda pasada del agujero podía llegar con la pieza ya suelta. Es el mismo orden que el programa de 📋 Solución.
+
 ### Calcador láser v1 (nuevo)
 - **`laser.html`**: el Calcador para la cortadora láser del taller (Atheon de Nomatech, controladora Ruida). Es el mismo programa con el modo láser activado, como el Corrector.
 - Pestaña **🔥 Láser** en el panel derecho: lo que se dibuja sale como archivo **.rd** para la máquina, con dos capas: **Corte** (contornos cerrados) y **Marcado** (abiertos, textos, grabados y cajeras), cada una con velocidad, potencia mínima y máxima, pasadas y aire.

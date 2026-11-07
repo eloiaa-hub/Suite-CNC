@@ -10,7 +10,7 @@ Uso (desde la raíz de la suite):  python3 herramientas_desarrollo/laser/generar
 """
 import pathlib, re, sys
 
-VERSION_LASER = 'v1'
+VERSION_LASER = 'v2'
 AQUI = pathlib.Path(__file__).resolve().parent
 RAIZ = AQUI.parent.parent
 CALC = RAIZ / 'calcador.html'

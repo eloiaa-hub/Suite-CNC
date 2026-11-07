@@ -79,6 +79,17 @@ const { lanzar, abrir, ejercicios, fs, path } = require('./comun');
   const nc = 'G71 G90\nG0 X0 Y0\nG1 X40\nG3 X40 Y20 I0 J10\nG1 X0\nG1 Y0\nG0 X100 Y100\nM30\n';
   const g = await pg.evaluate(t => { const s = LASER.abrirGcodeTexto(t, 'prueba.nc'); const r = LASER.generarRD(); const res = { n: s.trazados.length, cerrado: s.trazados[0] && s.trazados[0].cerrado, bytes: r.rd.bytes.length }; LASER.volverAlDibujo(); return res; }, nc);
   ok(g.n === 1 && g.cerrado && g.bytes > 300, `G-code → un trazado cerrado (G0 no corta) y un .rd de ${g.bytes} bytes`);
+  // 4) Líneas comunes a dos contornos: se cortan una sola vez; y las pasadas de cada contorno van seguidas (interiores acabados antes)
+  const lc = await pg.evaluate(() => { const A = LASER.ajustes(), copia = JSON.stringify(A), R = (x, y, w, h) => ({ pts: [{ x, y }, { x: x + w, y }, { x: x + w, y: y + h }, { x, y: y + h }], b: [0, 0, 0, 0], cerrado: true, tipo: 'auto' });
+    const lg = s => s.slice(1).reduce((m, q, i) => m + Math.hypot(q[0] - s[i][0], q[1] - s[i][1]), 0), mm = cs => { contornos = cs; refrescar(); const c = LASER.plan().find(o => o.L.id === 'corte'); return Math.round(c.seq.reduce((a, s) => a + lg(s), 0)); };
+    const viejos = contornos; A.capas[1].passes = 1; A.capas[1].out = true; A.unaVez = true;
+    const r = { dos: mm([R(0, 0, 50, 50), R(50, 0, 50, 50)]), parcial: mm([R(0, 0, 100, 100), R(100, 20, 50, 50)]), rejilla: mm([0, 1, 2].flatMap(i => [0, 1].map(j => R(40 * i, 40 * j, 40, 40)))) };
+    A.unaVez = false; r.sin = mm([R(0, 0, 50, 50), R(50, 0, 50, 50)]); A.unaVez = true;
+    A.capas[1].passes = 2; contornos = [R(0, 0, 100, 100), R(40, 40, 20, 20)]; refrescar(); r.orden = LASER.plan().find(o => o.L.id === 'corte').seq.map(s => Math.round(lg(s))).join(',');
+    r.gc = (() => { LASER.abrirGcodeTexto('G90\nG0 X0 Y0\nG1 X50\nG1 Y50\nG1 X0\nG1 Y0\nG1 X50\nM30\n', 'repasa.nc'); A.capas[1].passes = 1; const v = Math.round(LASER.plan()[0].seq.reduce((a, s) => a + lg(s), 0)); LASER.volverAlDibujo(); return v; })();
+    contornos = viejos; Object.assign(A, JSON.parse(copia)); refrescar(); return r; });
+  ok(lc.dos === 350 && lc.parcial === 550 && lc.rejilla === 680 && lc.sin === 400 && lc.gc === 200, `líneas comunes una sola vez: dos cuadrados pegados ${lc.dos} mm (sin la opción ${lc.sin}), solapados en parte ${lc.parcial}, rejilla de 6 piezas ${lc.rejilla}, G-code que repasa ${lc.gc}`);
+  ok(lc.orden === '80,80,400,400', `pasadas seguidas: agujero, agujero, contorno, contorno (${lc.orden})`);
   ok(!pg.errs.length, 'laser.html: sin errores de JavaScript' + (pg.errs.length ? ' · ' + pg.errs.slice(0, 2).join(' | ') : ''));
   console.log(`${n} ejercicios · fallos ${fallos.length}`);
   await b.close(); process.exitCode = fallos.length ? 1 : 0; })();

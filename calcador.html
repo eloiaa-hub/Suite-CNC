@@ -17605,7 +17605,7 @@ const RLD = (function () {
 // ───────── Ajustes (se recuerdan en el navegador) ─────────
 const CLAVE = 'laser_ajustes';
 const POR_DEFECTO = () => ({
-    W: 1000, H: 700, origen: 'tr', mesa: false, cpX: null, cpY: null, inicio: 'current', ref: 'bl', formato: 'atheon', magic: 136, vacio: 200, tol: 0.02, intPrimero: true, optimizar: true,
+    W: 1000, H: 700, origen: 'tr', mesa: false, cpX: null, cpY: null, inicio: 'current', ref: 'bl', formato: 'atheon', magic: 136, vacio: 200, tol: 0.02, intPrimero: true, optimizar: true, unaVez: true,
     capas: [
         { id: 'marcado', nombre: 'Marcado', color: '#0000ff', speed: 100, pmin: 15, pmax: 15, passes: 1, air: true, out: true },
         { id: 'corte', nombre: 'Corte', color: '#000000', speed: 9, pmin: 60, pmax: 60, passes: 2, air: true, out: true }
@@ -17717,10 +17717,54 @@ function plan() {
             if (mejor.t.cerrado) { pts = pts.slice(bi).concat(pts.slice(0, bi)); pts.push(pts[0]); } else if (inv) pts.reverse();
             seq.push(pts); pos = pts[pts.length - 1];
         }
-        let todas = []; for (let n = 0; n < Math.max(1, A.capas.find(c => c.id === id).passes | 0); n++) todas = todas.concat(seq);
-        res.push({ L, seq: todas });
+        // Las líneas que ya ha cortado otro contorno de la capa (dos piezas pegadas, un borde común) no se repiten
+        const hechos = A.unaVez !== false ? new TramosHechos() : null, antes = seq.reduce((a, p) => a + largo(p), 0);
+        const trozos = seq.map(p => hechos ? hechos.quitar(p) : [p]);
+        const quitado = Math.max(0, antes - trozos.reduce((a, t) => a + t.reduce((b, p) => b + largo(p), 0), 0));
+        // Las pasadas de cada contorno, seguidas: así los interiores quedan acabados antes de soltar la pieza
+        const np = Math.max(1, A.capas.find(c => c.id === id).passes | 0), todas = [];
+        trozos.forEach(t => { for (let n = 0; n < np; n++) t.forEach(p => todas.push(p)); });
+        res.push({ L, seq: todas, repetido: quitado > 0.05 ? quitado : 0 });
     });
     return res;
+}
+// Tramos ya cortados de una capa, en una rejilla, para quitar de un trazado lo que coincide con ellos (iguales o solapados en parte)
+function TramosHechos() {
+    const TOL = 0.01, CEL = 10, rej = new Map();
+    const celdas = (a, b, f) => { for (let i = Math.floor(Math.min(a[0], b[0]) / CEL - TOL); i <= Math.floor(Math.max(a[0], b[0]) / CEL + TOL); i++) for (let j = Math.floor(Math.min(a[1], b[1]) / CEL - TOL); j <= Math.floor(Math.max(a[1], b[1]) / CEL + TOL); j++) f(i + ',' + j); };
+    const poner = (a, b) => { const t = [a, b]; celdas(a, b, k => { const l = rej.get(k); if (l) l.push(t); else rej.set(k, [t]); }); };
+    // Partes de a→b (en 0…1) que ya están cortadas
+    const tapado = (a, b) => {
+        const dx = b[0] - a[0], dy = b[1] - a[1], L2 = dx * dx + dy * dy, L = Math.sqrt(L2); if (L < 1e-9) return [[0, 1]];
+        const dist = q => Math.abs((q[0] - a[0]) * dy - (q[1] - a[1]) * dx) / L, par = q => ((q[0] - a[0]) * dx + (q[1] - a[1]) * dy) / L2;
+        const vistos = new Set(), iv = [];
+        celdas(a, b, k => (rej.get(k) || []).forEach(t => { if (vistos.has(t)) return; vistos.add(t);
+            if (dist(t[0]) > TOL || dist(t[1]) > TOL) return;
+            const u = Math.max(0, Math.min(par(t[0]), par(t[1]))), v = Math.min(1, Math.max(par(t[0]), par(t[1])));
+            if ((v - u) * L > TOL) iv.push([u, v]); }));
+        iv.sort((x, y) => x[0] - y[0]);
+        const un = []; iv.forEach(x => { const u = un[un.length - 1]; if (u && x[0] <= u[1] + TOL / L) u[1] = Math.max(u[1], x[1]); else un.push(x.slice()); });
+        return un;
+    };
+    this.quitar = pts => {
+        const out = []; let cur = null;
+        const en = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+        for (let i = 1; i < pts.length; i++) {
+            const a = pts[i - 1], b = pts[i], L = Math.hypot(b[0] - a[0], b[1] - a[1]), tp = tapado(a, b), libres = []; let t0 = 0;
+            tp.forEach(x => { if (x[0] > t0) libres.push([t0, x[0]]); t0 = Math.max(t0, x[1]); }); if (t0 < 1) libres.push([t0, 1]);
+            libres.filter(x => (x[1] - x[0]) * L > TOL).forEach(x => {
+                const p = x[0] <= TOL / Math.max(L, 1e-9) ? a : en(a, b, x[0]), q = x[1] >= 1 - TOL / Math.max(L, 1e-9) ? b : en(a, b, x[1]);
+                if (cur && x[0] <= TOL / Math.max(L, 1e-9) && cur[cur.length - 1] === a) cur.push(q); else { cur = [p, q]; out.push(cur); }
+                if (q !== b) cur = null;
+            });
+            if (!libres.length || libres[libres.length - 1][1] < 1 - TOL / Math.max(L, 1e-9)) cur = null;
+            poner(a, b);
+        }
+        // un contorno cerrado al que le falta un tramo: si el primer trozo empieza donde acaba el último, se juntan
+        if (out.length > 1) { const f = out[0], u = out[out.length - 1], z = u[u.length - 1];
+            if (Math.hypot(f[0][0] - z[0], f[0][1] - z[1]) < 1e-9) { out.pop(); out[0] = u.concat(f.slice(1)); } }
+        return out;
+    };
 }
 // Máquina: el cero pieza está en (cpX, cpY) contado desde el cero máquina, en el sentido de sus ejes
 // (con el cero arriba a la derecha, X hacia la izquierda e Y hacia abajo, como en el panel de la Atheon)
@@ -17884,6 +17928,7 @@ function htmlPanel() {
             <label>Tolerancia arcos</label><span class="las-mesa"><input type="number" id="lasTol" value="${A.tol}" min="0.001" step="0.01"> mm</span>
             <label></label><label style="color:inherit"><input type="checkbox" id="lasInt"${A.intPrimero ? ' checked' : ''}> Interiores primero</label>
             <label></label><label style="color:inherit"><input type="checkbox" id="lasOpt"${A.optimizar ? ' checked' : ''}> Optimizar recorrido y entradas</label>
+            <label></label><label style="color:inherit" title="Dos contornos que comparten un borde (dos piezas pegadas): el borde común se corta solo una vez, para no quemarlo ni ensanchar el corte"><input type="checkbox" id="lasUnaVez"${A.unaVez !== false ? ' checked' : ''}> Líneas comunes, una sola vez</label>
         </div>
         <div class="las-nota" style="margin-top:6px">Con «posición actual» el archivo va referido al cabezal, como los de Atheon Design: la mesa y el origen solo cuentan con «coordenadas de la mesa».</div>
     </details>
@@ -18129,6 +18174,8 @@ function pintarResumen() {
         if (b[2] - b[0] > A.W + 1e-6 || b[3] - b[1] > A.H + 1e-6) h += `<div class="las-aviso" style="margin-top:6px">La pieza (${f1(b[2] - b[0])} × ${f1(b[3] - b[1])} mm) no cabe en la mesa de ${A.W} × ${A.H} mm.</div>`;
         else if (A.mesa || A.inicio === 'absolute') { const f = fueraDeMesa(b), lados = Object.keys(f).filter(k => f[k] > 1e-6);
             if (lados.length) h += `<div class="las-aviso" style="margin-top:6px">La pieza se sale de la mesa: ${lados.map(k => ({ izq: 'por la izquierda', der: 'por la derecha', abajo: 'por abajo', arriba: 'por arriba' })[k] + ' ' + f1(f[k]) + ' mm').join(', ')}. Muévela en «Mesa» (junto al nombre).</div>`; }
+        const rep = p.reduce((a, o) => a + (o.repetido || 0), 0);
+        if (rep) h += `<div class="las-nota" style="margin-top:6px">Hay ${f1(rep)} mm de líneas comunes a dos contornos: se cortan una sola vez.</div>`;
         const abiertosCorte = tr.filter(t => t.capa === 'corte' && !t.cerrado).length;
         if (abiertosCorte) h += `<div class="las-aviso" style="margin-top:6px">${abiertosCorte} trazado(s) de corte no se cierran: la pieza puede no soltarse.</div>`;
     } catch (e) { h += `<div class="las-aviso">${esc(e.message)}</div>`; }
@@ -18187,7 +18234,7 @@ function montar() {
     });
     sincronizar();
     // máquina
-    const campos = { lasW: 'W', lasH: 'H', lasOrigen: 'origen', lasInicio: 'inicio', lasRef: 'ref', lasFormato: 'formato', lasMagic: 'magic', lasVacio: 'vacio', lasTol: 'tol', lasInt: 'intPrimero', lasOpt: 'optimizar' };
+    const campos = { lasW: 'W', lasH: 'H', lasOrigen: 'origen', lasInicio: 'inicio', lasRef: 'ref', lasFormato: 'formato', lasMagic: 'magic', lasVacio: 'vacio', lasTol: 'tol', lasInt: 'intPrimero', lasOpt: 'optimizar', lasUnaVez: 'unaVez' };
     Object.keys(campos).forEach(id => $(id).addEventListener('change', e => {
         const k = campos[id], el = e.target;
         A[k] = el.type === 'checkbox' ? el.checked : (el.tagName === 'SELECT' && !['magic'].includes(k) ? el.value : (parseFloat(el.value) || A[k]));

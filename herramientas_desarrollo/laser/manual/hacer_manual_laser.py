@@ -98,13 +98,15 @@ cap('🔥 Láser: capas y orden de corte', img('laser_capas.jpg', '78%', 'Qué s
 <li><strong>Mín %</strong> y <strong>Máx %:</strong> la potencia. La máxima es la de corte; la mínima, la que usa la máquina al frenar en las esquinas, para que no se quemen. Con el mismo valor en las dos, la potencia no cambia.</li>
 <li><strong>Cortar:</strong> sin marcar, la capa no se envía a la máquina.</li>
 <li><strong>Aire:</strong> el soplado, que limpia el humo y evita que la madera arda.</li>
-<li><strong>Pasadas:</strong> cuántas veces se repite cada contorno. Para grosores que no atraviesa de una vez, es mejor 2 pasadas rápidas que 1 muy lenta.</li>
+<li><strong>Pasadas:</strong> cuántas veces se repite cada contorno. Las pasadas de un contorno van seguidas, antes de pasar al siguiente. Para grosores que no atraviesa de una vez, es mejor 2 pasadas rápidas que 1 muy lenta.</li>
 </ul>
 <h3>El orden</h3>
 <ol>
 <li>Primero la capa <strong>Marcado</strong> y después la <strong>Corte</strong>: si se marcara después, la pieza ya estaría suelta y podría moverse.</li>
 <li>En cada capa, los <strong>interiores</strong> (agujeros) antes que el contorno que los rodea.</li>
 <li>Entre los que pueden ir, el <strong>más cercano</strong>, y se entra por su punto más próximo, para moverse lo menos posible en vacío.</li>
+<li>Cada contorno hace <strong>todas sus pasadas seguidas</strong>: con 2 pasadas, el agujero se corta dos veces y después el contorno exterior, dos veces. Así el agujero queda acabado antes de que la pieza se suelte y pueda moverse.</li>
+<li>Las <strong>líneas comunes</strong> a dos contornos (dos piezas pegadas que comparten un borde) se cortan <strong>una sola vez</strong>: pasar dos veces quema el borde y ensancha el corte. El Resumen dice cuántos milímetros se ahorran. También vale para un programa G-code que repasa un tramo ya cortado.</li>
 </ol>
 ''')
 
@@ -212,7 +214,8 @@ cap('⚙️ Máquina', f'''
 <tr><td><strong>Controlador</strong></td><td>El código con que se cifra el .rd: 0x88 en la Atheon (controladoras RDC644x).</td></tr>
 <tr><td><strong>Vel. en vacío</strong></td><td>Solo para calcular el tiempo aproximado.</td></tr>
 <tr><td><strong>Tolerancia arcos</strong></td><td>Cuánto se pueden separar del arco los tramos rectos con que el .rd hace las curvas (0,02 mm).</td></tr>
-<tr><td><strong>Interiores primero · Optimizar</strong></td><td>El orden de corte del capítulo 5.</td></tr></table>
+<tr><td><strong>Interiores primero · Optimizar</strong></td><td>El orden de corte del capítulo 5.</td></tr>
+<tr><td><strong>Líneas comunes, una sola vez</strong></td><td>Un borde que comparten dos contornos se corta una vez (capítulo 5). Desmárcala solo si quieres que cada pieza se corte entera.</td></tr></table>
 ''')
 
 cap('Antes de cortar y problemas frecuentes', f'''
