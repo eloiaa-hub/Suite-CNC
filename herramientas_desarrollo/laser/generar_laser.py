@@ -44,6 +44,8 @@ las = cambiar(las, '<html lang="es" data-calc2="1">', '<html lang="es" data-calc
 las = cambiar(las, '<title>Calcador de contornos — Por Eloi A.A.</title>', '<title>Calcador láser — Por Eloi A.A.</title>')
 las = cambiar(las, '<span class="top-bar-title">⬡ Calcador de contornos — Por Eloi A.A.', '<span class="top-bar-title">🔥 Calcador láser — Por Eloi A.A.')
 las = re.sub(r'(title="Versión del programa"[^>]*>)v\d+(<)', lambda m: m.group(1) + VERSION_LASER + m.group(2), las, count=1)
+las = cambiar(las, '<a class="btn-manual" href="manual_calcador.html"', '<a class="btn-manual" href="manual_laser.html"')
+las = cambiar(las, '<a href="manual_calcador.html" target="_blank" rel="noopener"><strong>📖 manual completo</strong></a>', '<a href="manual_laser.html" target="_blank" rel="noopener"><strong>📖 manual del Calcador láser</strong></a>')
 las = cambiar(las, "'calcador_estado'", "'laser_estado'", calc.count("'calcador_estado'"))
 las = cambiar(las, "'calcador_estado_danado'", "'laser_estado_danado'", calc.count("'calcador_estado_danado'"))
 SALIDA.write_text(las, encoding='utf-8')

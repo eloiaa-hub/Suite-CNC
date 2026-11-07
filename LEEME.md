@@ -15,6 +15,7 @@ sin instalar nada y también sin conexión a internet.
 | `biblioteca_laser/` | Parámetros de corte de inicio para el Calcador láser (`Parametros_laser_inicio.json`; orientativos) | — |
 | `manual_calcador.html` / `.pdf` | Manual del Calcador | — |
 | `manual_corrector.html` / `.pdf` | Manual del Corrector (profesorado) | — |
+| `manual_laser.html` / `.pdf` | Manual del Calcador láser (profesorado) | — |
 | `manual_anidador.html` / `.pdf` | Manual del Anidador de tableros (profesorado) | — |
 | `manual_calculadora.html` / `.pdf` | Manual de la Calculadora de taller (alumnado) | — |
 | `guia_simulador.html` / `.pdf` | Guía del Simulador 3D (alumnado y profesorado) | — |

@@ -658,7 +658,7 @@
                 <select id="spComp" onchange="cambiarCompSimPlano()" title="Compensación de radio (con el Ø de ⚙️ Mecanizado): G40 la fresa va por el contorno; «Según el trazado» elige G41 o G42 en cada trazado para que vaya por fuera de los exteriores y por dentro de los interiores; G41 a la izquierda del avance y G42 a la derecha en todos"><option value="40">G40</option><option value="auto">G41/G42 según el trazado</option><option value="41">G41 en todos</option><option value="42">G42 en todos</option></select>
             </div>
             <button class="btn-manual" onclick="abrirBiblioteca()" title="Tus ejercicios: buscar, abrir e imprimir sus hojas">🗂 Biblioteca</button>
-            <a class="btn-manual" href="manual_calcador.html" target="_blank" rel="noopener" title="Manual completo paso a paso (se abre en otra pestaña; debe estar en la misma carpeta que el programa)">📖 Manual</a>
+            <a class="btn-manual" href="manual_laser.html" target="_blank" rel="noopener" title="Manual completo paso a paso (se abre en otra pestaña; debe estar en la misma carpeta que el programa)">📖 Manual</a>
             <span class="icon-gear" onclick="abrirAyuda()" title="Ayuda rápida">❓</span>
             <span class="icon-gear" onclick="toggleSettings()" title="Ajustes">⚙️</span>
         </div>
@@ -1366,7 +1366,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.</pre>
     <div class="help-modal">
         <div class="help-header"><h2>❓ Ayuda — Calcador de contornos</h2><button class="help-close" onclick="cerrarAyuda()">✕</button></div>
         <div class="help-content">
-            <div class="help-tip">Esta es la ayuda rápida. El <a href="manual_calcador.html" target="_blank" rel="noopener"><strong>📖 manual completo</strong></a> lo explica todo paso a paso, con imágenes (archivo <em>manual_calcador.html</em>, en la misma carpeta que el programa; también hay versión PDF para imprimir).</div>
+            <div class="help-tip">Esta es la ayuda rápida. El <a href="manual_laser.html" target="_blank" rel="noopener"><strong>📖 manual del Calcador láser</strong></a> lo explica todo paso a paso, con imágenes (archivo <em>manual_calcador.html</em>, en la misma carpeta que el programa; también hay versión PDF para imprimir).</div>
             <p style="margin:6px 0 0;font-size:12.5px">ℹ <a href="#" onclick="abrirCreditos(); return false;">Créditos y licencias</a> (fuentes de grabado, lector de fuentes)</p>
             <h3>Para qué sirve</h3>
             <p>Pones un plano de fondo (foto, imagen, SVG o DXF) y lo calcas dibujando encima contornos hechos solo de rectas y arcos. El resultado se guarda en un proyecto .json con sus medidas y sus arcos exactos, y con ⚙️ Mecanizar se convierte en el programa de la máquina.</p>
@@ -18078,6 +18078,24 @@ function tuGenerarLaser() {
     L.forEach(l => { l.texto = l.sep ? '; ' + l.com : l.titulo ? l.cod : l.com ? l.cod.padEnd(ancho) + '; ' + l.com : l.cod; });
     return { malos: new Set(), ancho, lineas: L, texto: L.map(l => l.texto).join('\n') + '\n', puntos, etiquetas, vacio: !items.length, coord, comp: 'G40', R: 0, nombre };
 }
+// ───────── Las explicaciones del programa, para un láser (sin tocar las del Calcador) ─────────
+// El Calcador las escribe para la fresa; aquí se cambian en pantalla, en el panel derecho
+const MAY = (m, t) => m[0] === m[0].toUpperCase() ? t.charAt(0).toUpperCase() + t.slice(1) : t;
+function laserizar(t) {
+    if (typeof t !== 'string' || !/fresa|husillo|refrigerante/i.test(t)) return t;
+    return t.replace(/[Ee]l husillo gira a ([\d.,]+) vueltas por minuto \(rpm\)\./g, (m, v) => MAY(m, `potencia del láser: ${f1(parseFloat(v.replace(',', '.')) / 10)} % (S va de 0 a 1000).`))
+        .replace(/[Aa]rranca el husillo en sentido horario, a las vueltas de S\./g, m => MAY(m, 'enciende el láser con la potencia de S (S600 = 60 %).'))
+        .replace(/[Aa]rranca el husillo en sentido antihorario[^.]*\.[^.]*M03\./g, m => MAY(m, 'enciende el láser (en la láser, igual que M03).'))
+        .replace(/[Pp]ara el husillo\./g, m => MAY(m, 'apaga el láser.'))
+        .replace(/[Aa]bre el refrigerante\./g, m => MAY(m, 'abre el soplado de aire.')).replace(/[Cc]ierra el refrigerante\./g, m => MAY(m, 'cierra el soplado de aire.'))
+        .replace(/de la fresa/g, 'del láser').replace(/a la fresa/g, 'al láser').replace(/La fresa/g, 'El láser').replace(/la fresa/g, 'el láser').replace(/ X Y Z /g, ' X Y ');
+}
+// Los textos de ayuda del panel derecho que hablan de la fresa
+function laserizarPanel(raiz) {
+    const w = document.createTreeWalker(raiz, NodeFilter.SHOW_TEXT); let n;
+    while ((n = w.nextNode())) { const v = laserizar(n.nodeValue); if (v !== n.nodeValue) n.nodeValue = v; }
+}
+
 if (typeof window.tuGenerar === 'function') {
     window.tuGenerar = tuGenerarLaser;
     const firma = window.tuFirma;
@@ -18141,6 +18159,11 @@ function montar() {
     // los parámetros de la láser están en la pestaña 🔥 Láser y en el bloque «🔥 Láser» de 📋 Solución: los dos a la vez
     const grid = panel.querySelector('.tu-mec-grid'), ancla = grid && grid.querySelector('label[for=tuCompSel]');
     if (grid) { const tmp = document.createElement('div'); tmp.innerHTML = htmlMec(); [...tmp.childNodes].forEach(n => grid.insertBefore(n, ancla || null)); }
+    laserizarPanel(panel);
+    new MutationObserver(ms => ms.forEach(m => {
+        if (m.type === 'characterData') { const n = m.target, v = laserizar(n.nodeValue); if (v !== n.nodeValue) n.nodeValue = v; return; }
+        m.addedNodes.forEach(n => { if (n.nodeType === 1) laserizarPanel(n); else if (n.nodeType === 3) { const v = laserizar(n.nodeValue); if (v !== n.nodeValue) n.nodeValue = v; } });
+    })).observe(panel, { childList: true, subtree: true, characterData: true });
     // Coordenadas: sin Z, las dos G91 de la fresa son una sola
     const sc = $('tuCoord');
     if (sc) {
@@ -18365,7 +18388,7 @@ function dibujarMesa() {
     // el cero pieza, con su posición en la máquina
     const o = aPantalla({ x: 0, y: 0 });
     ctx.fillStyle = colores.acento; ctx.font = '600 11px Segoe UI, sans-serif'; ctx.textAlign = 'left'; ctx.textBaseline = 'top';
-    ctx.textBaseline = 'bottom'; ctx.fillText(`Cero pieza · X ${f1(A.cpX)}  Y ${f1(A.cpY)}`, o.x + 8, o.y - 40);
+    ctx.textAlign = 'right'; ctx.textBaseline = 'bottom'; ctx.fillText(`Cero pieza · X ${f1(A.cpX)}  Y ${f1(A.cpY)}`, o.x - 12, o.y - 8);   // fuera de la pieza (a su izquierda)
     // el cabezal al empezar (con «posición actual»)
     if (b && A.inicio === 'current') {
         const r = A.ref, px = r === 'c' ? (b[0] + b[2]) / 2 : (r[1] === 'l' ? b[0] : b[2]), py = r === 'c' ? (b[1] + b[3]) / 2 : (r[0] === 'b' ? b[1] : b[3]), c = aPantalla({ x: px, y: py });

@@ -14,6 +14,8 @@ La versión de la suite es **año.mes** (por ejemplo, 2026.10). Cada programa co
 - **Desde un programa G-code…**: G1, G2 y G3 cortan y G0 se mueve sin láser, sin Z ni compensación; sirve para cortar en la láser los programas de los alumnos.
 - **Vista previa** con simulación del recorrido, punto del cabezal y las órdenes del archivo.
 - El .rd copia orden por orden el de Atheon Design: coordenadas referidas al cabezal (esquina inferior izquierda de la pieza), código 0x88.
+- Las explicaciones del programa hablan del láser: M03 enciende el láser, la S es la potencia, M08 abre el soplado…
+- **`manual_laser.html` / `.pdf`**: el manual del Calcador láser, con la biblioteca de parámetros, la mesa, el .rd, el G-code de los alumnos y el .rld de Atheon Design.
 - El Calcador, el Corrector y el Tutor no cambian.
 
 ## Suite CNC 2026.10

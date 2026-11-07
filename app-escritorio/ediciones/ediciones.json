@@ -77,6 +77,8 @@
       "id": "es.eloiaa.suitecnc.laser",
       "inicio": "laser.html",
       "incluir": [
+        "manual_laser.html",
+        "manual_laser.pdf",
         "biblioteca_laser/"
       ],
       "excluir": [
