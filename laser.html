@@ -17525,45 +17525,81 @@ const RDCore = (function () {
 })();
 
 // ───────── Proyecto de Atheon Design (.rld, formato RDWorks 8) ─────────
-// Plantilla: un proyecto real de Atheon Design (cuadrado de 50 × 50) con el objeto quitado, comprimido.
-// Se sabe (comparando dos archivos reales): la mesa (0x14), la capa 0 en 0x19C y su copia en 0x499D6
-// (velocidad, potencias, pasadas en +0x120) y el objeto: caja, número de tramos y tramos de 74 bytes.
-// La pieza va como un solo objeto de tramos rectos en la capa 0 (los arcos, en tramos cortos).
-// Comprobado en Atheon Design: un objeto es un recorrido continuo, así que de momento solo piezas de un contorno.
+// Deducido comparando proyectos reales de Atheon Design (referencia_atheon/, con su LEEME):
+//   cabecera (mesa en 0x14 y 0x1C) · tabla de capas (659 bytes por capa: 0 negro, 1 azul, 2 rojo…)
+//   capas en uso: nº + 661 bytes por capa (color COLORREF, velocidad, potencias, pasadas)
+//   objetos: nº + por objeto: cabecera de 13 bytes (nº y color de su capa), caja, cerrado, nº de tramos,
+//   tramos de 74 bytes (00 = recta: 2 puntos · 03 = Bézier: inicio, fin y 2 de control) y 188 bytes de cierre
+// Plantilla: el proyecto real del cuadrado de 50 × 50 sin su capa ni su objeto, comprimido.
 const RLD = (function () {
-    const B64 = 'H4sIAAAAAAAC/+3bTWgcZRgA4PlKUr1IFHLyUCQGwUtIaQkKJZmCSVypURJsWuilvRVySkgJtdIRKpRezLEtNPSoIFLoRY+ePFg8RHoKKfXgXa9b6ZrdbPav2WR2t2mnzvMe9pvZme9nv3l4Z2d3ZmD2o6nCqcnTk7MfjIyOjB6dDq9HlYi/jSvl42+2y3IkZ+IQha2FUFktVLf8PbFdDtfWS6VSZemH725FrdH32+8P/jo8NTcy9/GZ7XfeiVv3uX2rHD9P/Pv9P+ufXvh8onV7aNinvH6sEn9M1Me2e3uNdcrjfO2TL2YKn83ObQ/jSnUcZ+OobfSfXLx4fqFp+LUPNroVlZf6EPo+3IpQG/XO0s5MDbftqd7EUHWfmZZyvFaGKE3UP9X++78ZN5edRtr6M3G7cvcjWW+3vO1Q46bqlscNVsouW9sIzQQaJ2Z8n7KXeLbXQtz83mCcvpXmmt2Ou7N6pYap3H/GuiEZOiK1d9+ha5K9tRtePZLhJZAstCk7qVdqmu6j/+MsmTuSr2yWLEWy5HMiGe1FMsiSKesVk0UknbgzdeKWJZHMFskjqy5vkMwUyRtjA0gimSWSSeLEjWSmSEbJOSRfxBU3kqkvbyZlSSQzRTKOEiSduLNE8un6BpJIZonkvbUikkhmieTDJ3eQRDJTfyiuziOJZJZIbly6iSSSWSJ5fekRkkhmieTy5hKSSGaJ5P27y0gimSWSD6JjSB70vzfBLbwd1Nt6sg1JWTJLJE81Tfe4Z288e/Oyn70JoeHR5J2Hl6PjbcuDz5J79919luytXVnyxd2cFrkTCEkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkUQSSSSRRBJJJJFEEkkkkcwiyYDkcyTZPnbBmW5Y6WM87rYs91OCIO8ISjIBBGUFEOQcQTFZhCD3pwOZAIIjq74Y5h7BjbEBCPKOIEmcDlwdJOcgyP0Xw0mZIPcI4iiBIO8Inq5vQJB3BPfWihDkHcHDJ3cgyP3PxqvzEOQdwcalmxDkHcH1pUcQ5B3B8uYSBHlHcP/uMgRuL/OLIQQQQAABBBBAAAEEEEAAAQQQQAABBBBAAAEEEEAAAQQQQAABBBBAAAEEEEAAAQQQQAABBBBAAAEEEEAAAQQQQAABBBBAAAEEEEAAAQQQQAABBBBAAAEEEEAAAQQQQAABBBBAAAEEEEAAAQQQQAABBBBAAAEEEEAAAQQQQAABBBBAAAEEEEAAAQQQQAABBBBAAAEEEEAAAQQQQAABBBBAAAEEEEAAAQQQQAABBBBAAAEEEEAAAQQQQAABBBBAAAEEEEAAAQQQQAABBBBAAAEEEEAAAQQQQAABBBBAAAEEEEAAAQQQQAABBBBAAAEEEEAAAQQQQAABBBBAAAEEEEAAAQQQQAABBBBAAAEEEEAAAQQQQAABBBBAAAEEEEAAAQQQQAABBBBAAAEEEEAAAQQQQAABBBBAAAEEEEAAAQQQQAABBBBAAAEEEEAAAQQQQAABBBBAAAEEEEAAAQQQQAABBBBAAAEEEEAAAQQQQAABBBBAAAEEEEAAAQQQQAABBBBAAAEEEEAAAQQQQAABBBBAAAEEEEAAAQQQQAABBBBAAAEEEEAAAQQQQAABBBBAAAEEEEAAAQQQQAABBBBAAAEEEEAAAQQQQAABBBBAAAEEEEAAAQQQQAABBBBAAAEEEEAAAQQQQAABBBBAAAEEEEAAAQQQQAABBBBAAAEEEEAAAQQQQAABBBBAAAEEEEAAAQQQQAABBBBAAAEEEEAAAQQQQAABBBBAAAEEEEAAAQQQQAABBBBAAAEEEEAAAQQQQAABBBBAAAEEEEAAAQQQQJAvBFH05eCP039evlYbY+t60wfadXmo2uZMS9kbn6gjPp1G2vozcbtyPz7lbYdS8An7ozmb8qD2Es/2Woib3xuM07fSXLPbcaevt30wQn02S6UTfReHFlaK712NRzeHD/8yfy0+/tbYia/e/bq2fqX4drRw/qcL0yfXlk/09Uf9b4SVhfe32lgJfbdXVn5t7aQ6AclUvOuEJKd7OgwH23pd4dU92/kPP3q3nqidBAA=';
-    const PRE = 302192, TRAMO = 74;
-    let plantilla = null;
-    async function cargar() {
-        if (plantilla) return plantilla;
+    const B64 = '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gAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIIAAAggggAACCCCAAAIIIMgXgij6cvDH6T8vX6uNsXV91wOrLQ1V25tpKXujE3VEp9NIW38mblfuR6e87VAKOmF/MGdTfqC9xLO9FuLm9wbj9K001+x23OnrhfI01meyVDrRd3FoYaX43tV4dHP48C/z1+Ljb42d+Ordr2vrV4pvRwvnf7owfXJt+URff9T/RlhZeH+rlZXQd3tl5dfWLqqHn0zFu05HcrqnD+FgW68bvLpnO/8BnSY0uKKdBAA=';
+    const N_PRE = 0x499C6, N_CAPA = 661, N_CAB = 13, N_TRAMO = 74, N_CIERRE = 188;
+    const RANURA = { 0x000000: 0x190, 0xFF0000: 0x423 };      // en la tabla de capas: negro = 0, azul = 1
+    let T = null;
+    async function plantilla() {
+        if (T) return T;
         if (typeof DecompressionStream !== 'function') throw new Error('Este navegador no puede guardar .rld (falta DecompressionStream)');
         const bin = Uint8Array.from(atob(B64), c => c.charCodeAt(0));
         const st = new Blob([bin]).stream().pipeThrough(new DecompressionStream('gzip'));
-        plantilla = new Uint8Array(await new Response(st).arrayBuffer());
-        return plantilla;
+        const t = new Uint8Array(await new Response(st).arrayBuffer());
+        let k = 0; const corta = n => { const r = t.slice(k, k + n); k += n; return r; };
+        T = { pre: corta(N_PRE), capa: corta(N_CAPA), cab: corta(N_CAB), recta: corta(N_TRAMO), cierre: corta(N_CIERRE), fin: t.slice(k) };
+        return T;
     }
-    // tramos: [[x1, y1, x2, y2], …] en mm, en coordenadas de la mesa · capa: { speed, pmin, pmax, passes } · mesa: { W, H }
-    async function escribir(tramos, capa, mesa) {
-        if (!tramos.length) throw new Error('No hay nada que guardar');
-        const T = await cargar(), pre = T.slice(0, PRE), seg = T.slice(PRE, PRE + TRAMO), suf = T.slice(PRE + TRAMO);
-        const out = new Uint8Array(PRE + 32 + 10 + tramos.length * TRAMO + suf.length), dv = new DataView(out.buffer);
-        out.set(pre, 0);
+    function capaBytes(base, c) {
+        const s = base.slice(), v = new DataView(s.buffer);
+        v.setUint32(4, c.color, true);
+        v.setFloat64(12, c.speed, true); v.setFloat64(20, c.pmin, true); v.setFloat64(28, c.pmax, true);
+        for (let i = 0; i < 4; i++) v.setFloat64(0xE8 + 8 * i, c.pmax, true);
+        v.setUint32(0x128, c.passes > 1 ? 1 : 0, true); v.setUint32(0x12C, Math.max(1, c.passes | 0), true);
+        return s;
+    }
+    // capas: [{ color, speed, pmin, pmax, passes }] en el orden de corte · objetos: [{ color, cerrado, tramos }]
+    // tramo: ['L', x1, y1, x2, y2] o ['B', x1, y1, x2, y2, cx1, cy1, cx2, cy2] en mm de la mesa (origen abajo a la izquierda)
+    async function escribir(capas, objetos, mesa) {
+        if (!objetos.length) throw new Error('No hay nada que guardar');
+        const P = await plantilla(), partes = [];
+        const pre = P.pre.slice(), dv = new DataView(pre.buffer);
         dv.setFloat64(0x14, mesa.W, true); dv.setFloat64(0x1C, mesa.H, true);
-        for (const b of [0x19C, 0x499D6]) {
-            dv.setFloat64(b, capa.speed, true); dv.setFloat64(b + 8, capa.pmin, true); dv.setFloat64(b + 16, capa.pmax, true);
-            for (let i = 0; i < 4; i++) dv.setFloat64(b + 0xDC + 8 * i, capa.pmax, true);
-            dv.setUint32(b + 0x120, Math.max(1, capa.passes | 0), true);
-        }
-        let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
-        tramos.forEach(t => { x0 = Math.min(x0, t[0], t[2]); x1 = Math.max(x1, t[0], t[2]); y0 = Math.min(y0, t[1], t[3]); y1 = Math.max(y1, t[1], t[3]); });
-        let k = PRE;
-        [x0, x1, y0, y1].forEach(v => { dv.setFloat64(k, v, true); k += 8; });
-        dv.setUint32(k, 1, true); dv.setUint32(k + 4, tramos.length, true); k += 10;
-        tramos.forEach(t => { out.set(seg, k); for (let i = 0; i < 4; i++) dv.setFloat64(k + 4 + 8 * i, t[i], true); k += TRAMO; });
-        out.set(suf, k);
+        capas.forEach(c => { const r = RANURA[c.color]; if (r != null) pre.set(capaBytes(pre.slice(r, r + N_CAPA), c), r); });
+        const u32 = n => { const b = new Uint8Array(4); new DataView(b.buffer).setUint32(0, n, true); return b; };
+        partes.push(pre, u32(capas.length), ...capas.map(c => capaBytes(P.capa, c)), u32(objetos.length));
+        objetos.forEach((o, i) => {
+            const cab = P.cab.slice(), cv = new DataView(cab.buffer); cv.setUint32(5, i + 1, true); cv.setUint32(9, o.color, true);
+            let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+            o.tramos.forEach(t => { const n = t[0] === 'B' ? 4 : 2; for (let k = 0; k < n; k++) { const x = t[1 + 2 * k], y = t[2 + 2 * k]; if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; } });
+            if (o.caja) [x0, x1, y0, y1] = o.caja;
+            const cb = new Uint8Array(40), bv = new DataView(cb.buffer);
+            [x0, x1, y0, y1].forEach((v, k) => bv.setFloat64(8 * k, v, true)); bv.setUint32(32, o.cerrado ? 1 : 0, true); bv.setUint32(36, o.tramos.length, true);
+            partes.push(cab, cb);
+            o.tramos.forEach(t => {
+                const b = t[0] === 'B' ? new Uint8Array(N_TRAMO) : P.recta.slice(), tv = new DataView(b.buffer);
+                if (t[0] === 'B') { b.set([3, 0, 0xF1, 0x76, 0x7C, 0]); for (let k = 0; k < 8; k++) tv.setFloat64(6 + 8 * k, t[1 + k], true); }
+                else for (let k = 0; k < 4; k++) tv.setFloat64(6 + 8 * k, t[1 + k], true);
+                partes.push(b);
+            });
+            partes.push(P.cierre);
+        });
+        partes.push(P.fin);
+        const n = partes.reduce((a, p) => a + p.length, 0), out = new Uint8Array(n); let k = 0;
+        partes.forEach(p => { out.set(p, k); k += p.length; });
         return out;
     }
-    return { escribir };
+    // Lee un .rld: capas en uso y objetos (para comprobarlo y para abrir proyectos de Atheon Design)
+    function leer(bytes) {
+        const v = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+        let o = N_PRE; const nc = v.getUint32(o, true), capas = [];
+        for (let i = 0; i < nc; i++) { const s = o + 4 + i * N_CAPA; capas.push({ color: v.getUint32(s + 4, true), speed: v.getFloat64(s + 12, true), pmin: v.getFloat64(s + 20, true), pmax: v.getFloat64(s + 28, true), passes: v.getUint32(s + 0x12C, true) }); }
+        o += 4 + nc * N_CAPA; const no = v.getUint32(o, true); o += 4; const objetos = [];
+        for (let i = 0; i < no; i++) {
+            const color = v.getUint32(o + 9, true), cerrado = v.getUint32(o + 45, true), n = v.getUint32(o + 49, true), tramos = [];
+            let s = o + 53;
+            for (let k = 0; k < n; k++, s += N_TRAMO) { const bz = v.getUint16(s, true) === 3, m = bz ? 8 : 4, t = [bz ? 'B' : 'L']; for (let j = 0; j < m; j++) t.push(v.getFloat64(s + 6 + 8 * j, true)); tramos.push(t); }
+            objetos.push({ color, cerrado: !!cerrado, tramos }); o = s + N_CIERRE;
+        }
+        return { mesa: { W: v.getFloat64(0x14, true), H: v.getFloat64(0x1C, true) }, capas, objetos };
+    }
+    return { escribir, leer };
 })();
 
 // ───────── Ajustes (se recuerdan en el navegador) ─────────
@@ -17612,9 +17648,26 @@ function polilineaContorno(c) {
     if (c.cerrado && pts.length > 2) pts.pop();
     return pts;
 }
+// La geometría exacta de un contorno, para el .rld: rectas y arcos (los arcos, como curvas Bézier de ≤ 90°)
+// tramo: ['L', x1, y1, x2, y2] o ['A', cx, cy, r, a1, ángulo, x2, y2] (se pasa a Bézier al guardar)
+function tramosContorno(c) {
+    return tramos(c).map(t => { const a = t.b ? arcoDeBulge(t.p1, t.p2, t.b) : null;
+        return a ? ['A', t.p1.x, t.p1.y, a.c.x, a.c.y, a.r, a.a1, a.theta, t.p2.x, t.p2.y] : ['L', t.p1.x, t.p1.y, t.p2.x, t.p2.y]; });
+}
+function aBezier(t, dx, dy) {
+    if (t[0] === 'L') return [['L', t[1] + dx, t[2] + dy, t[3] + dx, t[4] + dy]];
+    const [, x0, y0, cx, cy, r, a1, th, x2, y2] = t, n = Math.max(1, Math.ceil(Math.abs(th) / (Math.PI / 2) - 1e-9)), f = th / n, k = 4 / 3 * Math.tan(f / 4), out = [];
+    let px = x0, py = y0;
+    for (let i = 0; i < n; i++) {
+        const a = a1 + f * i, b = a + f, qx = i === n - 1 ? x2 : cx + r * Math.cos(b), qy = i === n - 1 ? y2 : cy + r * Math.sin(b);
+        out.push(['B', px + dx, py + dy, qx + dx, qy + dy, px - k * r * Math.sin(a) + dx, py + k * r * Math.cos(a) + dy, qx + k * r * Math.sin(b) + dx, qy - k * r * Math.cos(b) + dy]);
+        px = qx; py = qy;
+    }
+    return out;
+}
 function esMarcado(c) { return !c.cerrado || !!c.texto || !!c.deTexto || esGrabado(c) || esCajera(c) || esIsla(c); }
 function trazadosDibujo() {
-    return contornos.filter(c => c && c.pts && c.pts.length >= 2).map(c => ({ capa: esMarcado(c) ? 'marcado' : 'corte', cerrado: !!c.cerrado, pts: polilineaContorno(c) })).filter(t => t.pts.length >= 2);
+    return contornos.filter(c => c && c.pts && c.pts.length >= 2).map(c => ({ capa: esMarcado(c) ? 'marcado' : 'corte', cerrado: !!c.cerrado, pts: polilineaContorno(c), geo: tramosContorno(c) })).filter(t => t.pts.length >= 2);
 }
 // G1, G2 y G3 cortan; G0 no. Sin Z ni compensación: el láser sigue el contorno programado
 function trazadosGcode(texto) {
@@ -17623,8 +17676,9 @@ function trazadosGcode(texto) {
     const cerca = (a, b) => Math.abs(a[0] - b.x) < 1e-6 && Math.abs(a[1] - b.y) < 1e-6;
     prog.segs.forEach(s => {
         if (s.rapido) { cur = null; return; }
-        if (!cur || !cerca(cur.pts[cur.pts.length - 1], s.p1)) { cur = { capa: 'corte', cerrado: false, pts: [[s.p1.x, s.p1.y]] }; out.push(cur); }
-        if (s.tipo === 'A' && s.c && s.r > 0) puntosArco(s.c, s.r, s.a1, s.theta, s.p2, cur.pts); else cur.pts.push([s.p2.x, s.p2.y]);
+        if (!cur || !cerca(cur.pts[cur.pts.length - 1], s.p1)) { cur = { capa: 'corte', cerrado: false, pts: [[s.p1.x, s.p1.y]], geo: [] }; out.push(cur); }
+        if (s.tipo === 'A' && s.c && s.r > 0) { puntosArco(s.c, s.r, s.a1, s.theta, s.p2, cur.pts); cur.geo.push(['A', s.p1.x, s.p1.y, s.c.x, s.c.y, s.r, s.a1, s.theta, s.p2.x, s.p2.y]); }
+        else { cur.pts.push([s.p2.x, s.p2.y]); cur.geo.push(['L', s.p1.x, s.p1.y, s.p2.x, s.p2.y]); }
     });
     out.forEach(t => { const p = t.pts, a = p[0], b = p[p.length - 1]; if (p.length > 3 && Math.hypot(a[0] - b[0], a[1] - b[1]) < 1e-4) { t.cerrado = true; p.pop(); } });
     const avisos = (prog.notas || []).filter(n => n.tipo === 'error').map(n => n.msg);
@@ -17815,7 +17869,7 @@ function htmlPanel() {
     <div class="las-acciones">
         <button id="lasVer" title="El recorrido del láser, con simulación y las órdenes del archivo">👁 Vista previa…</button>
         <button id="lasExp" class="principal" title="Descarga el archivo .rd para la máquina">⬇ Exportar .rd</button>
-        <button id="lasRLD" style="grid-column:1 / 3" title="Proyecto para abrir y retocar en Atheon Design (RDWorks). De momento solo piezas de un contorno, en la capa 0, con la velocidad, potencia y pasadas de Corte, en el sitio de la 🟫 Mesa">💾 Guardar proyecto .rld (Atheon Design) · piezas de un contorno</button>
+        <button id="lasRLD" style="grid-column:1 / 3" title="Proyecto para abrir y retocar en Atheon Design (RDWorks): cada contorno es un objeto, los arcos son curvas; Corte en la capa negra y Marcado en la azul, con su velocidad, potencia y pasadas; en el sitio de la 🟫 Mesa">💾 Guardar proyecto .rld (Atheon Design)</button>
     </div>
     <details class="las-caja" id="lasMaq">
         <summary class="las-tit" style="cursor:pointer;margin:0">⚙️ Máquina</summary>
@@ -18119,20 +18173,28 @@ function montar() {
 }
 
 // Todo el dibujo (o el programa abierto) en tramos rectos, en coordenadas de la mesa (mm, origen abajo a la izquierda)
+// Cada contorno, un objeto: Marcado en la capa azul (1) y Corte en la negra (0), con sus parámetros;
+// en el sitio de la 🟫 Mesa (mm, origen abajo a la izquierda, como Atheon Design)
+const COLOR_RLD = { corte: 0x000000, marcado: 0xFF0000 };    // COLORREF: negro y azul
 async function generarRLD() {
-    const tr = trazadosActuales(); if (!tr.length) throw new Error('Dibuja o abre primero la pieza');
-    // Atheon Design une todos los tramos de un objeto en un solo recorrido: con varios contornos cortaría de uno a otro.
-    // Hasta saber cómo guarda varios objetos, el .rld solo admite piezas de un contorno
-    if (tr.length > 1) throw new Error(`El .rld todavía solo guarda piezas de un contorno (esta tiene ${tr.length}): Atheon Design uniría los contornos con cortes de más. Usa ⬇ Exportar .rd`);
-    const m = mesaMundo(), tramos = [];
-    tr.forEach(t => { const p = t.pts.map(q => [q[0] - m.x0, q[1] - m.y0]), n = p.length;
-        for (let i = 0; i < (t.cerrado ? n : n - 1); i++) { const a = p[i], b = p[(i + 1) % n]; if (Math.hypot(b[0] - a[0], b[1] - a[1]) > 1e-9) tramos.push([a[0], a[1], b[0], b[1]]); } });
-    return RLD.escribir(tramos, capa('corte'), { W: A.W, H: A.H });
+    const tr = trazadosActuales().filter(t => capa(t.capa).out); if (!tr.length) throw new Error('Dibuja o abre primero la pieza');
+    const m = mesaMundo(), dx = -m.x0, dy = -m.y0, orden = ['marcado', 'corte'];
+    const usadas = orden.filter(id => tr.some(t => t.capa === id));
+    const capas = usadas.map(id => { const L = capa(id); return { color: COLOR_RLD[id], speed: L.speed, pmin: L.pmin, pmax: L.pmax, passes: L.passes }; });
+    const objetos = [];
+    usadas.forEach(id => tr.filter(t => t.capa === id).forEach(t => {
+        let geo = t.geo;
+        if (!geo || !geo.length) { const p = t.pts, n = p.length; geo = []; for (let i = 0; i < (t.cerrado ? n : n - 1); i++) { const a = p[i], b = p[(i + 1) % n]; geo.push(['L', a[0], a[1], b[0], b[1]]); } }
+        const tramos = [].concat(...geo.map(g => aBezier(g, dx, dy))).filter(g => g[0] === 'B' || Math.hypot(g[3] - g[1], g[4] - g[2]) > 1e-9);
+        const b = cajaPts([t]);
+        if (tramos.length) objetos.push({ color: COLOR_RLD[id], cerrado: t.cerrado, tramos, caja: [b[0] + dx, b[2] + dx, b[1] + dy, b[3] + dy] });
+    }));
+    return RLD.escribir(capas, objetos, { W: A.W, H: A.H });
 }
 async function guardarRLD() {
     try { const b = await generarRLD(), nom = (gcode ? gcode.base : nombreProyecto()) + '.rld';
         descargar(b, nom, 'application/octet-stream');
-        snack(`${nom} guardado para Atheon Design (en pruebas): un objeto en la capa 0 con la velocidad y potencia de Corte`);
+        snack(`${nom} guardado para Atheon Design: cada contorno es un objeto; Corte en la capa negra y Marcado en la azul, con sus parámetros`);
     } catch (e) { snack(e.message); }
 }
 function nombreRD() { return (gcode ? gcode.base : nombreProyecto()) + '.rd'; }

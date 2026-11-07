@@ -39,19 +39,29 @@ const { lanzar, abrir, ejercicios, fs, path } = require('./comun');
     const b = Array.from(LASER.generarRD().rd.bytes); LASER.volverAlDibujo(); Object.assign(A, JSON.parse(copia)); return b; });
   const dif = mio.length === ref.length ? mio.filter((v, i) => v !== ref[i]).length : -1;
   ok(dif >= 0 && dif <= 2, `igual que el .rd de Atheon Design (${ref.length} bytes; ${dif < 0 ? 'distinto tamaño: ' + mio.length : dif + ' bytes distintos, el redondeo de 1 µm'})`);
-  // 2d) .rld: con los tramos del cuadrado de Atheon Design sale su mismo proyecto (salvo 64 bytes de un campo que se deja vacío, como en Default.rld)
-  const refRld = fs.readFileSync(path.join(process.env.SUITE || path.join(__dirname, '../..'), 'herramientas_desarrollo/laser/referencia_atheon/cuadrado_50x50.rld'));
+  // 2d) .rld (proyecto de Atheon Design): los proyectos reales se leen, se vuelven a escribir y quedan iguales
+  const REF = path.join(process.env.SUITE || path.join(__dirname, '../..'), 'herramientas_desarrollo/laser/referencia_atheon');
+  for (const f of ['cuadrado_50x50.rld', 'circulo.rld', 'dos_cuadrados.rld', 'dos_capas.rld']) {
+    const ref = Array.from(fs.readFileSync(path.join(REF, f)));
+    const r = await pg.evaluate(async ref => { const b = new Uint8Array(ref), L = LASER.RLD.leer(b);
+      const o = await LASER.RLD.escribir(L.capas, L.objetos, L.mesa), L2 = LASER.RLD.leer(o);
+      const dif = o.length === b.length ? o.filter((v, i) => i >= 0x499C6 && v !== b[i]).length : -1;
+      return { igual: JSON.stringify(L) === JSON.stringify(L2), n: o.length, dif, capas: L.capas.length, obj: L.objetos.length, tipos: [...new Set([].concat(...L.objetos.map(x => x.tramos.map(t => t[0]))))].join('') }; }, ref);
+    ok(r.igual && r.n === ref.length, `.rld ${f}: ${r.capas} capa(s), ${r.obj} objeto(s), tramos ${r.tipos}; se lee y se vuelve a escribir igual (${r.n} bytes)`);
+  }
+  // el cuadrado escrito desde cero sale como el de Atheon Design (salvo 64 bytes de un campo que se deja vacío)
+  const refRld = fs.readFileSync(path.join(REF, 'cuadrado_50x50.rld'));
   const rl = await pg.evaluate(async () => { const x0 = 498.43615000000005, x1 = 548.43615, y0 = 600.9692500000001, y1 = 650.9692500000001;
-    const t = [[x0, y1, x1, y1], [x1, y1, x1, y0], [x1, y0, x0, y0], [x0, y0, x0, y1]];
-    const b = await LASER.RLD.escribir(t, { speed: 9, pmin: 60, pmax: 60, passes: 2 }, { W: 1000, H: 700 });
-    const varios = await LASER.generarRLD().then(() => '', e => e.message);
-    LASER.abrirGcodeTexto('G90\nG0 X0 Y0\nG1 X30\nG3 X30 Y20 I0 J10\nG1 X0\nG1 Y0\nM30\n', 'uno.nc');
-    const d = await LASER.generarRLD().catch(e => null); LASER.volverAlDibujo();
-    return { b: Array.from(b), n: d ? d.length : 0, varios }; });
+    const t = [['L', x0, y1, x1, y1], ['L', x1, y1, x1, y0], ['L', x1, y0, x0, y0], ['L', x0, y0, x0, y1]];
+    const b = await LASER.RLD.escribir([{ color: 0, speed: 9, pmin: 60, pmax: 60, passes: 2 }], [{ color: 0, cerrado: true, tramos: t }], { W: 1000, H: 700 });
+    // una placa con un agujero redondo (arcos) y una ranura abierta de marcado: un objeto por contorno, cada capa con lo suyo
+    LASER.abrirGcodeTexto('G90\nG0 X0 Y0\nG1 X80\nG1 Y50\nG1 X0\nG1 Y0\nG0 X30 Y25\nG2 X50 Y25 I10 J0\nG2 X30 Y25 I-10 J0\nM30\n', 'placa.nc');
+    const d = LASER.RLD.leer(await LASER.generarRLD()); LASER.volverAlDibujo();
+    return { b: Array.from(b), d }; });
   const difR = rl.b.length === refRld.length ? rl.b.filter((v, i) => v !== refRld[i]).length : -1;
-  ok(difR >= 0 && difR <= 64, `.rld del cuadrado igual que el de Atheon Design (${refRld.length} bytes; ${difR < 0 ? 'distinto tamaño: ' + rl.b.length : difR + ' bytes distintos'})`);
-  ok(rl.n > 0 && (rl.n - (refRld.length - 4 * 74)) % 74 === 0, `.rld de una pieza de un contorno: ${(rl.n - (refRld.length - 4 * 74)) / 74} tramos de 74 bytes`);
-  ok(/un contorno/.test(rl.varios), '.rld con varios contornos: no se guarda (Atheon Design los uniría con cortes de más)');
+  ok(difR >= 0 && difR <= 64, `.rld del cuadrado escrito desde cero igual que el de Atheon Design (${refRld.length} bytes; ${difR < 0 ? 'distinto tamaño: ' + rl.b.length : difR + ' bytes distintos'})`);
+  const circ = rl.d.objetos.find(o => o.tramos.every(t => t[0] === 'B'));
+  ok(rl.d.objetos.length === 2 && circ && circ.tramos.length === 4 && Math.abs(circ.tramos[0][1] - circ.tramos[1][3]) > 1, `.rld de una placa con agujero: 2 objetos (uno por contorno), el agujero en 4 curvas Bézier`);
   // 2e) 📚 Parámetros de corte: la de inicio va dentro, «Usar» pone los valores en la capa y el programa lo dice
   const ini = JSON.parse(fs.readFileSync(path.join(process.env.SUITE || path.join(__dirname, '../..'), 'biblioteca_laser/Parametros_laser_inicio.json'), 'utf8'));
   const bib = await pg.evaluate(n => { const B = LASER.biblioteca(), e = B.find(x => x.op === 'corte' && x.grosor === 3);
