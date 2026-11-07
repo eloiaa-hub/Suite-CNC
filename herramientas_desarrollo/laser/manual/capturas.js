@@ -1,10 +1,11 @@
 const {chromium}=require('playwright');const fs=require('fs');
 const OUT=require('path').join(__dirname,'capturas')+'/';
+const SUITE=require('path').resolve(__dirname,'../../..');
 (async()=>{const b=await chromium.launch();const ctx=await b.newContext({viewport:{width:1500,height:940},deviceScaleFactor:2});const p=await ctx.newPage();
 const errs=[];p.on('pageerror',e=>errs.push(e.message));
-await p.goto('file:///home/claude/Suite-CNC/laser.html');await p.waitForTimeout(1500);
+await p.goto('file://'+SUITE+'/laser.html');await p.waitForTimeout(1500);
 await p.addStyleTag({content:'#snackbar{display:none!important}'});
-const ej=fs.readFileSync('/home/claude/Suite-CNC/biblioteca_inicio/Nivel 3 - Arcos sencillos/10 - Inicio 310 (Nº 3318).json','utf8');
+const ej=fs.readFileSync(SUITE+'/biblioteca_inicio/Nivel 3 - Arcos sencillos/10 - Inicio 310 (Nº 3318).json','utf8');
 await p.evaluate(t=>abrirJSONDatos(JSON.parse(t)),ej);await p.waitForTimeout(600);
 await p.evaluate(()=>{document.getElementById('projectName').value='Placa 310';});
 const shot=async(n,el,pad=0)=>{ if(!el){await p.screenshot({path:OUT+n,type:'jpeg',quality:86});return;}
@@ -49,8 +50,14 @@ await p.click('#lasVer');await p.waitForTimeout(500);
 await p.evaluate(()=>{const r=document.getElementById('lasSimR');r.value=620;r.dispatchEvent(new Event('input'));document.getElementById('lasCmds').hidden=false;});await p.waitForTimeout(300);
 await shot('vista_previa.jpg','#modalLaser .modal',0);
 await p.evaluate(()=>document.getElementById('modalLaser').classList.remove('visible'));
+// 8b) plantilla de prueba
+await p.click('#tuFuenteLaser');await p.waitForTimeout(200);await p.locator('#lasBib button[data-a=plantilla]').scrollIntoViewIfNeeded();await p.click('#lasBib button[data-a=plantilla]');await p.waitForTimeout(300);
+await p.fill('#plMat','DM del taller');await p.fill('#plGro','3');await p.selectOption('#plCas','4');await p.fill('#plMed','9.82');await p.dispatchEvent('#plMed','input');await p.waitForTimeout(200);
+await shot('plantilla.jpg','#modalPlantilla .modal',0);
+await p.click('#plVer');await p.waitForTimeout(600);await shot('plantilla_vista.jpg','#modalLaser .modal',0);
+await p.evaluate(()=>{document.getElementById('modalLaser').classList.remove('visible');document.getElementById('modalPlantilla').classList.remove('visible');});
 // 9) G-code de un alumno
-const nc=fs.readFileSync('/home/claude/Suite-CNC/herramientas_desarrollo/pruebas/ISO GEO 01A - Alumno A.nc','utf8');
+const nc=fs.readFileSync(SUITE+'/herramientas_desarrollo/pruebas/ISO GEO 01A - Alumno A.nc','utf8');
 await p.evaluate(t=>LASER.abrirGcodeTexto(t,'ISO GEO 01A - Alumno A.nc'),nc);await p.waitForTimeout(400);
 await p.evaluate(()=>{document.getElementById('lasPanel').scrollTop=0;});await p.waitForTimeout(200);
 await p.screenshot({path:OUT+'gcode.jpg',type:'jpeg',quality:88,clip:await caja('#lasFuente','#lasFuente')});

@@ -4,6 +4,13 @@ La versión de la suite es **año.mes** (por ejemplo, 2026.10). Cada programa co
 
 ## Suite CNC 2026.11
 
+### Calcador láser v3: ancho de corte, plantilla de prueba y mesa
+- **Ancho de corte (kerf)** en la capa Corte y en cada material de la biblioteca. Con él, el láser va medio ancho **por fuera de la pieza** y **por dentro de los agujeros**, para que salgan a su medida: en el .rd, en el .rld y en la vista previa. Un borde común a dos piezas pegadas se corta por la línea, una sola vez.
+- En **📋 Solución**, con ancho de corte, el programa compensa con **G41/G42** (activados en el G0 de entrada) y **G40**, como las láseres CNC. Un **programa G-code** abierto se compensa según sus G41/G42; sin ellos, el Resumen avisa de que la pieza saldrá más pequeña.
+- **🧪 Plantilla de prueba** (📚 Parámetros de corte): un .rd con una cuadrícula de casillas, cada columna con una velocidad y cada fila con una potencia (hasta 6 × 6). Cada casilla va en su propia capa y las etiquetas se graban. Midiendo el lado de la mejor casilla se calcula el ancho de corte, y se guarda en la biblioteca.
+- **🟫 Mesa**: la ventana se cierra con ✕ sin quitar la mesa, vuelve con 📍 y se mueve arrastrándola por el título. Con la herramienta **Origen**, el clic marca el nuevo cero pieza y la pieza ya no se mueve de la mesa.
+- Las explicaciones de G41, G42 y G40 hablan del ancho de corte, y ya no aparece la Z.
+
 ### Calcador láser v2: líneas comunes y pasadas
 - Las **líneas comunes** a dos contornos (dos piezas pegadas, un borde compartido o solapado en parte) se cortan **una sola vez**. Antes se pasaba dos veces por el mismo borde, que se quemaba y ensanchaba el corte. El Resumen dice cuántos milímetros se ahorran, y la opción **Líneas comunes, una sola vez** de ⚙️ Máquina lo desactiva.
 - Las **pasadas** de cada contorno van **seguidas**: con 2 pasadas, el agujero se acaba antes de cortar el contorno que lo rodea. Antes se repetía la capa entera, y la segunda pasada del agujero podía llegar con la pieza ya suelta. Es el mismo orden que el programa de 📋 Solución.

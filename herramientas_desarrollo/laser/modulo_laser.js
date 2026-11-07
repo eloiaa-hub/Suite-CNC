@@ -215,10 +215,10 @@ const RLD = (function () {
 // ───────── Ajustes (se recuerdan en el navegador) ─────────
 const CLAVE = 'laser_ajustes';
 const POR_DEFECTO = () => ({
-    W: 1000, H: 700, origen: 'tr', mesa: false, cpX: null, cpY: null, inicio: 'current', ref: 'bl', formato: 'atheon', magic: 136, vacio: 200, tol: 0.02, intPrimero: true, optimizar: true, unaVez: true,
+    W: 1000, H: 700, origen: 'tr', mesa: false, cpX: null, cpY: null, inicio: 'current', ref: 'bl', formato: 'atheon', magic: 136, vacio: 200, tol: 0.02, intPrimero: true, optimizar: true, unaVez: true, mesaVentana: true, mesaPos: null,
     capas: [
         { id: 'marcado', nombre: 'Marcado', color: '#0000ff', speed: 100, pmin: 15, pmax: 15, passes: 1, air: true, out: true },
-        { id: 'corte', nombre: 'Corte', color: '#000000', speed: 9, pmin: 60, pmax: 60, passes: 2, air: true, out: true }
+        { id: 'corte', nombre: 'Corte', color: '#000000', speed: 9, pmin: 60, pmax: 60, passes: 2, air: true, out: true, kerf: 0 }
     ]
 });
 let A = POR_DEFECTO();
@@ -232,14 +232,14 @@ const BIB_INICIO = [{"material": "MDF", "grosor": 3, "op": "corte", "speed": 30,
 let BIB = [];
 try { const g = JSON.parse(localStorage.getItem(CLAVE_BIB) || 'null'); BIB = Array.isArray(g) ? g : BIB_INICIO.map(e => ({ ...e })); } catch (e) { BIB = BIB_INICIO.map(e => ({ ...e })); }
 const guardarBib = () => { try { localStorage.setItem(CLAVE_BIB, JSON.stringify(BIB)); } catch (e) {} };
-const CAMPOS_BIB = ['material', 'grosor', 'op', 'speed', 'pmin', 'pmax', 'passes', 'air', 'notas'];
+const CAMPOS_BIB = ['material', 'grosor', 'op', 'speed', 'pmin', 'pmax', 'passes', 'air', 'kerf', 'notas'];
 function limpiarEntrada(e) {
     const n = v => { v = parseFloat(String(v).replace(',', '.')); return isFinite(v) ? v : 0; };
     return { material: String(e.material || '').trim() || 'Sin nombre', grosor: Math.max(0, n(e.grosor)), op: e.op === 'marcado' ? 'marcado' : 'corte',
         speed: Math.max(0.1, n(e.speed) || 10), pmin: Math.max(0, Math.min(100, n(e.pmin))), pmax: Math.max(0, Math.min(100, n(e.pmax))),
-        passes: Math.max(1, Math.round(n(e.passes) || 1)), air: e.air !== false, notas: String(e.notas || '').trim() };
+        passes: Math.max(1, Math.round(n(e.passes) || 1)), air: e.air !== false, kerf: e.op === 'marcado' ? 0 : Math.max(0, Math.min(2, n(e.kerf))), notas: String(e.notas || '').trim() };
 }
-const igualEntrada = (a, b) => CAMPOS_BIB.filter(k => k !== 'notas').every(k => String(a[k]).toLowerCase() === String(b[k]).toLowerCase());   // las notas no cuentan
+const igualEntrada = (a, b) => { a = limpiarEntrada(a); b = limpiarEntrada(b); return CAMPOS_BIB.filter(k => k !== 'notas').every(k => String(a[k]).toLowerCase() === String(b[k]).toLowerCase()); };   // las notas no cuentan
 const nombreEntrada = e => e.material + (e.grosor ? ` ${String(e.grosor).replace('.', ',')} mm` : '');
 
 // Fuente de lo que se corta: el dibujo o un programa G-code abierto
@@ -286,7 +286,8 @@ function trazadosGcode(texto) {
     const cerca = (a, b) => Math.abs(a[0] - b.x) < 1e-6 && Math.abs(a[1] - b.y) < 1e-6;
     prog.segs.forEach(s => {
         if (s.rapido) { cur = null; return; }
-        if (!cur || !cerca(cur.pts[cur.pts.length - 1], s.p1)) { cur = { capa: 'corte', cerrado: false, pts: [[s.p1.x, s.p1.y]], geo: [] }; out.push(cur); }
+        if (!cur || !cerca(cur.pts[cur.pts.length - 1], s.p1)) { cur = { capa: 'corte', cerrado: false, pts: [[s.p1.x, s.p1.y]], geo: [], comp: [] }; out.push(cur); }
+        cur.comp.push(s.comp === 41 || s.comp === 42 ? s.comp : 40);
         if (s.tipo === 'A' && s.c && s.r > 0) { puntosArco(s.c, s.r, s.a1, s.theta, s.p2, cur.pts); cur.geo.push(['A', s.p1.x, s.p1.y, s.c.x, s.c.y, s.r, s.a1, s.theta, s.p2.x, s.p2.y]); }
         else { cur.pts.push([s.p2.x, s.p2.y]); cur.geo.push(['L', s.p1.x, s.p1.y, s.p2.x, s.p2.y]); }
     });
@@ -300,9 +301,89 @@ function cajaPts(lista) { const b = [Infinity, Infinity, -Infinity, -Infinity]; 
 function dentro(p, pol) { let d = false; for (let i = 0, j = pol.length - 1; i < pol.length; j = i++) { const a = pol[i], b = pol[j]; if ((a[1] > p[1]) !== (b[1] > p[1]) && p[0] < (b[0] - a[0]) * (p[1] - a[1]) / (b[1] - a[1]) + a[0]) d = !d; } return d; }
 const largo = p => { let s = 0; for (let i = 1; i < p.length; i++) s += Math.hypot(p[i][0] - p[i - 1][0], p[i][1] - p[i - 1][1]); return s; };
 
+// ───────── Ancho de corte (kerf) ─────────
+// El haz quema una ranura: si va por la línea, la pieza sale medio ancho más pequeña por cada lado y los agujeros, más grandes.
+// Con ancho de corte, cada contorno de Corte se desplaza medio ancho hacia el lado que sobra: hacia fuera de la pieza y hacia dentro
+// de los agujeros (como G41/G42 en una láser o una fresa CNC, con «radio» = medio ancho). En un programa G-code lo deciden sus G41/G42.
+const fK = v => (+(+v).toFixed(3)).toLocaleString('es-ES');   // el ancho de corte, con sus decimales (0,18)
+const kerfDe = () => Math.max(0, Math.min(2, +(capa('corte').kerf) || 0));
+const areaPts = p => { let a = 0; for (let i = 0, j = p.length - 1; i < p.length; j = i++) a += (p[j][0] - p[i][0]) * (p[j][1] + p[i][1]); return a / 2; };
+function ptsDeGeo(geo, cerrado) {
+    const pts = [];
+    geo.forEach((g, k) => { if (k === 0) pts.push([g[1], g[2]]); if (g[0] === 'L') pts.push([g[3], g[4]]); else puntosArco({ x: g[3], y: g[4] }, g[5], g[6], g[7], { x: g[8], y: g[9] }, pts); });
+    if (cerrado && pts.length > 2) pts.pop();
+    return pts;
+}
+// Corte de dos tramos desplazados (rectas o circunferencias completas), el más cercano al vértice V
+function corteElems(a, b, V) {
+    const C = [], linea = e => ({ p: e.p1, d: [e.p2[0] - e.p1[0], e.p2[1] - e.p1[1]] });
+    const lc = (l, c) => { const fx = l.p[0] - c.c[0], fy = l.p[1] - c.c[1], A2 = l.d[0] ** 2 + l.d[1] ** 2, B = 2 * (fx * l.d[0] + fy * l.d[1]), D = B * B - 4 * A2 * (fx * fx + fy * fy - c.r * c.r);
+        if (A2 < 1e-18 || D < 0) return; const q = Math.sqrt(D); [(-B - q) / (2 * A2), (-B + q) / (2 * A2)].forEach(t => C.push([l.p[0] + l.d[0] * t, l.p[1] + l.d[1] * t])); };
+    if (a.t === 'L' && b.t === 'L') { const A1 = linea(a), B1 = linea(b), den = A1.d[0] * B1.d[1] - A1.d[1] * B1.d[0]; if (Math.abs(den) < 1e-12) return null;
+        const t = ((B1.p[0] - A1.p[0]) * B1.d[1] - (B1.p[1] - A1.p[1]) * B1.d[0]) / den; return [A1.p[0] + A1.d[0] * t, A1.p[1] + A1.d[1] * t]; }
+    if (a.t === 'L') lc(linea(a), b); else if (b.t === 'L') lc(linea(b), a);
+    else { const dx = b.c[0] - a.c[0], dy = b.c[1] - a.c[1], d = Math.hypot(dx, dy); if (d > 1e-12 && d <= a.r + b.r && d >= Math.abs(a.r - b.r)) {
+        const x = (a.r * a.r - b.r * b.r + d * d) / (2 * d), h = Math.sqrt(Math.max(0, a.r * a.r - x * x)), mx = a.c[0] + dx * x / d, my = a.c[1] + dy * x / d;
+        C.push([mx - dy * h / d, my + dx * h / d], [mx + dy * h / d, my - dx * h / d]); } }
+    let m = null, md = Infinity; C.forEach(q => { const e = Math.hypot(q[0] - V[0], q[1] - V[1]); if (e < md) { md = e; m = q; } }); return m;
+}
+// Desplaza cada tramo de geo ds[i] mm a la izquierda de su avance (negativo: a la derecha) y vuelve a unir las esquinas
+function desplazarGeo(geo, ds, cerrado) {
+    const O = geo.map((g, i) => {
+        const d = ds[i] || 0;
+        if (g[0] === 'L') { const dx = g[3] - g[1], dy = g[4] - g[2], L = Math.hypot(dx, dy) || 1, nx = -dy / L * d, ny = dx / L * d;
+            return { t: 'L', p1: [g[1] + nx, g[2] + ny], p2: [g[3] + nx, g[4] + ny], v2: [g[3], g[4]] }; }
+        const c = [g[3], g[4]], th = g[7], r = g[5] - Math.sign(th) * d;
+        if (r < 1e-3) return { t: 'L', p1: [g[1], g[2]], p2: [g[8], g[9]], v2: [g[8], g[9]] };      // un arco más pequeño que el desplazamiento: su cuerda
+        const u = (x, y) => { const a = Math.atan2(y - c[1], x - c[0]); return [c[0] + r * Math.cos(a), c[1] + r * Math.sin(a)]; };
+        return { t: 'A', c, r, th, p1: u(g[1], g[2]), p2: u(g[8], g[9]), v2: [g[8], g[9]] };
+    });
+    const n = O.length;
+    for (let i = 0; i < (cerrado ? n : n - 1); i++) {
+        const a = O[i], b = O[(i + 1) % n];
+        if (Math.hypot(a.p2[0] - b.p1[0], a.p2[1] - b.p1[1]) < 1e-7) { b.p1 = a.p2; continue; }
+        const lim = 4 * Math.max(Math.abs(ds[i] || 0), Math.abs(ds[(i + 1) % n] || 0)) + 1e-6, X = corteElems(a, b, a.v2);
+        if (X && Math.hypot(X[0] - a.v2[0], X[1] - a.v2[1]) <= lim) { a.p2 = X; b.p1 = X; } else a.puente = true;   // esquina muy aguda: se unen con una recta
+    }
+    const out = [];
+    O.forEach((e, i) => {
+        if (e.t === 'L') { if (Math.hypot(e.p2[0] - e.p1[0], e.p2[1] - e.p1[1]) > 1e-9) out.push(['L', e.p1[0], e.p1[1], e.p2[0], e.p2[1]]); }
+        else { const a1 = Math.atan2(e.p1[1] - e.c[1], e.p1[0] - e.c[0]), a2 = Math.atan2(e.p2[1] - e.c[1], e.p2[0] - e.c[0]);
+            let d = a2 - a1 - e.th; d -= 2 * Math.PI * Math.round(d / (2 * Math.PI)); const th = e.th + d;
+            if (Math.abs(th) > 1e-9) out.push(['A', e.p1[0], e.p1[1], e.c[0], e.c[1], e.r, a1, th, e.p2[0], e.p2[1]]); }
+        if (e.puente) { const b = O[(i + 1) % n]; out.push(['L', e.p2[0], e.p2[1], b.p1[0], b.p1[1]]); }
+    });
+    return out.length ? out : geo;
+}
+const desplazarTrazado = (t, ds) => { const geo = desplazarGeo(t.geo, ds, t.cerrado); return { ...t, geo, pts: ptsDeGeo(geo, t.cerrado), nominal: t.pts }; };
+// ¿Coincide la recta g con una recta de otro contorno (más de la mitad de su largo)? Ese borde común no se desplaza: se corta una vez, por la línea
+function tramoComun(g, otros) {
+    if (g[0] !== 'L') return false;
+    const dx = g[3] - g[1], dy = g[4] - g[2], L = Math.hypot(dx, dy); if (L < 1e-6) return false;
+    const dist = (x, y) => Math.abs((x - g[1]) * dy - (y - g[2]) * dx) / L, par = (x, y) => ((x - g[1]) * dx + (y - g[2]) * dy) / (L * L);
+    let cub = 0;
+    otros.forEach(o => o.geo.forEach(h => { if (h[0] !== 'L' || dist(h[1], h[2]) > 0.01 || dist(h[3], h[4]) > 0.01) return;
+        const u = Math.max(0, Math.min(par(h[1], h[2]), par(h[3], h[4]))), v = Math.min(1, Math.max(par(h[1], h[2]), par(h[3], h[4]))); if (v > u) cub += (v - u) * L; }));
+    return cub >= L / 2;
+}
+function conKerf(tr) {
+    const k = kerfDe() / 2; if (!(k > 0)) return tr;
+    if (gcode) return tr.map(t => t.capa === 'corte' && t.comp && t.comp.some(c => c !== 40) && t.geo && t.geo.length ? desplazarTrazado(t, t.comp.map(c => c === 41 ? k : c === 42 ? -k : 0)) : t);
+    const cer = tr.filter(t => t.capa === 'corte' && t.cerrado && t.geo && t.geo.length && t.pts.length > 2), caja = new Map(cer.map(t => [t, cajaPts([t])]));
+    return tr.map(t => {
+        if (!caja.has(t)) return t;
+        const b = caja.get(t), q = t.pts[0];
+        // cuántos contornos lo rodean: 0, 2… es pieza (crece); 1, 3… es agujero (encoge)
+        const prof = cer.filter(o => o !== t && (() => { const c = caja.get(o); return c[0] <= b[0] && c[1] <= b[1] && c[2] >= b[2] && c[3] >= b[3] && dentro(q, o.pts); })()).length;
+        const izq = areaPts(t.pts) > 0 ? -1 : 1, s = (prof % 2 === 0 ? 1 : -1) * izq * k;   // antihorario: fuera = a la derecha del avance
+        const otros = cer.filter(o => o !== t && (() => { const c = caja.get(o); return c[0] <= b[2] + 0.02 && c[2] >= b[0] - 0.02 && c[1] <= b[3] + 0.02 && c[3] >= b[1] - 0.02; })());
+        return desplazarTrazado(t, t.geo.map(g => otros.length && tramoComun(g, otros) ? 0 : s));
+    });
+}
+
 // Orden de corte: primero Marcado y después Corte; interiores antes que el contorno que los rodea; el más cercano
 function plan() {
-    const todos = trazadosActuales(), res = [];
+    const todos = conKerf(trazadosActuales()), res = [];
     // como Atheon Design: se empieza por la esquina de la pieza más cercana al cero máquina
     let pos = null;
     if (todos.length) { const b = cajaPts(todos); pos = [A.origen[1] === 'r' ? b[2] : b[0], A.origen[0] === 't' ? b[3] : b[1]]; }
@@ -398,8 +479,8 @@ function centrarEnMesa(sinGuardar) {
 }
 // ¿Cabe la pieza? Devuelve lo que se sale por cada lado (mm)
 function fueraDeMesa(b) { const m = mesaMundo(); return { izq: Math.max(0, m.x0 - b[0]), der: Math.max(0, b[2] - m.x1), abajo: Math.max(0, m.y0 - b[1]), arriba: Math.max(0, b[3] - m.y1) }; }
-function generarRD() {
-    const p = plan();
+function generarRD(pp) {
+    const p = pp || plan();
     if (!p.length) throw new Error(gcode ? 'El programa no tiene tramos de corte (G1, G2 o G3)' : 'Dibuja o abre primero la pieza');
     const job = { layers: p.map(o => ({ color: parseInt(o.L.color.slice(1), 16), speed: o.L.speed, pmin: o.L.pmin, pmax: o.L.pmax, air: o.L.air, paths: o.seq.map(s => s.map(q => aMaquina(q[0], q[1]))) })) };
     if (A.inicio === 'current') {   // coordenadas relativas al punto que queda bajo el cabezal (como Atheon Design)
@@ -440,7 +521,11 @@ html[data-laser="1"] .tu-mec-grid > span:has(#tuHbSel), html[data-laser="1"] but
 html[data-laser="1"] .las-mesa-chk { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 600; margin-left: 8px; cursor: pointer; user-select: none; white-space: nowrap; }
 .las-mesa-box { position: absolute; left: 12px; top: 50px; z-index: 6; background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 8px; box-shadow: var(--shadow); padding: 8px 10px; font-size: 12px; display: grid; grid-template-columns: auto auto auto auto; gap: 5px 6px; align-items: center; max-width: 330px; }
 .las-mesa-box[hidden] { display: none; }
-.las-mesa-box .tit { grid-column: 1 / 5; font-weight: 700; display: flex; justify-content: space-between; gap: 8px; }
+.las-mesa-box .tit { grid-column: 1 / 5; font-weight: 700; display: flex; justify-content: space-between; align-items: center; gap: 8px; cursor: move; user-select: none; touch-action: none; }
+.las-mesa-box .tit .x { border: 0; background: none; padding: 0 2px; font-size: 15px; line-height: 1; cursor: pointer; color: var(--text-muted); }
+.las-mesa-box .tit .x:hover { color: var(--text-main); }
+html[data-laser="1"] .las-mesa-btn { font-size: 12px; padding: 2px 7px; margin-left: 4px; border-radius: 5px; border: 1px solid var(--border-color); background: var(--canvas-bg); color: var(--text-main); cursor: pointer; white-space: nowrap; }
+html[data-laser="1"] .las-mesa-btn[hidden] { display: none; }
 .las-mesa-box .nota { grid-column: 1 / 5; color: var(--text-muted); font-size: 11px; line-height: 1.35; }
 .las-mesa-box input { width: 64px; font-size: 12px; padding: 2px 4px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--canvas-bg); color: var(--text-main); }
 .las-mesa-box label { color: var(--text-muted); }
@@ -459,6 +544,15 @@ html[data-laser="1"] .las-mesa-chk { display: inline-flex; align-items: center; 
 .las-bib-bots button { padding: 4px 8px !important; font-size: 12px !important; }
 .las-bib-form { display: grid; grid-template-columns: auto 1fr; gap: 5px 8px; align-items: center; margin-top: 8px; padding: 8px; border: 1px solid var(--accent); border-radius: 6px; }
 .las-bib-form label { color: var(--text-muted); }
+#modalPlantilla .modal { width: min(620px, 96vw); max-height: 94vh; overflow-y: auto; padding: 14px 16px; }
+#modalPlantilla .pl-grid { display: grid; grid-template-columns: auto auto auto auto auto auto; gap: 6px 8px; align-items: center; font-size: 13px; margin: 10px 0; }
+#modalPlantilla .pl-grid label { color: var(--text-muted); }
+#modalPlantilla input[type=number], #modalPlantilla input[type=text], #modalPlantilla select { font-size: 13px; padding: 3px 5px; border: 1px solid var(--border-color); border-radius: 5px; background: var(--canvas-bg); color: var(--text-main); }
+#modalPlantilla input[type=number] { width: 70px; }
+#modalPlantilla .pl-info { font-weight: 600; margin: 6px 0; }
+#modalPlantilla .pl-guardar { display: grid; grid-template-columns: auto 1fr; gap: 6px 8px; align-items: center; font-size: 13px; border-top: 1px solid var(--border-color); padding-top: 10px; margin-top: 10px; }
+#modalPlantilla .pl-guardar label { color: var(--text-muted); }
+#modalPlantilla .las-bots { display: flex; gap: 6px; flex-wrap: wrap; }
 .las-bib-form input[type=text] { font-size: 12.5px; padding: 3px 5px; border: 1px solid var(--border-color); border-radius: 5px; background: var(--bg-panel); color: var(--text-main); }
 #lasPanel { display: none; flex-direction: column; gap: 8px; padding: 8px 10px 14px; overflow-y: auto; flex: 1; min-height: 0; font-size: 12.5px; }
 #tutorPanel.laser #lasPanel { display: flex; }
@@ -466,9 +560,9 @@ html[data-laser="1"] .las-mesa-chk { display: inline-flex; align-items: center; 
 .las-tit { font-weight: 700; font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .4px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
 .las-fuente b { color: var(--accent); }
 .las-fuente .las-bots { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
-#lasPanel button, #modalLaser button { font-size: 12.5px; padding: 5px 9px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-panel); color: var(--text-main); cursor: pointer; }
-#lasPanel button:hover, #modalLaser button:hover { border-color: var(--accent); }
-#lasPanel button.principal, #modalLaser button.principal { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 600; }
+#lasPanel button, #modalLaser button, #modalPlantilla button { font-size: 12.5px; padding: 5px 9px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-panel); color: var(--text-main); cursor: pointer; }
+#lasPanel button:hover, #modalLaser button:hover, #modalPlantilla button:hover { border-color: var(--accent); }
+#lasPanel button.principal, #modalLaser button.principal, #modalPlantilla button.principal { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 600; }
 .las-capa { display: grid; grid-template-columns: 16px 1fr 58px 50px 50px; gap: 4px 6px; align-items: center; padding: 6px 0; border-top: 1px solid var(--border-color); }
 .las-capa:first-of-type { border-top: 0; }
 .las-capa .punto { width: 12px; height: 12px; border-radius: 50%; }
@@ -487,6 +581,7 @@ html[data-laser="1"] .las-mesa-chk { display: inline-flex; align-items: center; 
 body.dark-mode .las-aviso { color: #f1948a; }
 .las-acciones { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
 .las-acciones button { padding: 8px 6px !important; font-size: 13px !important; }
+#modalLaser { z-index: 2600; }   /* la vista previa, delante de la plantilla de prueba */
 #modalLaser .modal { width: min(1100px, 96vw); max-height: 94vh; display: flex; flex-direction: column; gap: 8px; padding: 14px 16px; }
 #lasCanvas { width: 100%; height: min(62vh, 640px); border: 1px solid var(--border-color); border-radius: 8px; background: var(--canvas-bg); display: block; cursor: grab; }
 .las-sim { display: flex; align-items: center; gap: 8px; }
@@ -508,7 +603,8 @@ function htmlPanel() {
             <input type="number" data-c="${L.id}" data-k="pmax" value="${L.pmax}" min="0" max="100" step="1" title="Potencia máxima (%): a la velocidad de corte">
             <div class="opc"><label title="Enviar esta capa a la máquina"><input type="checkbox" data-c="${L.id}" data-k="out"${L.out ? ' checked' : ''}> Cortar</label>
                 <label><input type="checkbox" data-c="${L.id}" data-k="air"${L.air ? ' checked' : ''}> Aire</label>
-                <label>Pasadas <input type="number" data-c="${L.id}" data-k="passes" value="${L.passes}" min="1" max="50" step="1" style="width:46px"></label></div>
+                <label>Pasadas <input type="number" data-c="${L.id}" data-k="passes" value="${L.passes}" min="1" max="50" step="1" style="width:46px"></label>${L.id === 'corte' ? `
+                <label title="Ancho de corte (kerf): lo que quema el haz. El láser va medio ancho por fuera de la pieza y por dentro de los agujeros, para que salgan a su medida. 0 = por la línea">Ancho de corte <input type="number" data-c="corte" data-k="kerf" value="${L.kerf || 0}" min="0" max="2" step="0.01" style="width:54px"> mm</label>` : ''}</div>
         </div>`).join('');
     return `
     <div class="las-caja las-fuente" id="lasFuente"></div>
@@ -551,7 +647,8 @@ function htmlMec() {
         <label title="Velocidad de corte, en mm/s (en el programa, F en mm/min)">Velocidad</label><input type="number" data-c="${L.id}" data-k="speed" min="0.1" step="1" title="mm/s">
         <label title="Veces que el láser repasa cada contorno (en lugar de bajar en Z)">Pasadas</label><input type="number" data-c="${L.id}" data-k="passes" min="1" max="50" step="1">
         <label title="Potencia mínima (%): la que usa al frenar en las esquinas">Pot. mín. %</label><input type="number" data-c="${L.id}" data-k="pmin" min="0" max="100" step="1">
-        <label title="Potencia de corte (%): en el programa, S = potencia × 10">Pot. máx. %</label><input type="number" data-c="${L.id}" data-k="pmax" min="0" max="100" step="1">`;
+        <label title="Potencia de corte (%): en el programa, S = potencia × 10">Pot. máx. %</label><input type="number" data-c="${L.id}" data-k="pmax" min="0" max="100" step="1">`
+        + (L.id === 'corte' ? `<label title="Ancho de corte (kerf), en mm: con él, el programa usa G41/G42 para llevar el haz medio ancho hacia el lado que sobra">Ancho corte</label><input type="number" data-c="corte" data-k="kerf" min="0" max="2" step="0.01" title="mm">` : '');
     return `<label>Herramienta</label><span class="las-mec-herr">🔥 Láser CO2</span>
         <div class="las-mec-nota">Velocidad en mm/s (F en mm/min en el programa) · potencia en % (S de 0 a 1000) · sin Z: las pasadas repiten el contorno</div>`
         + fila(capa('corte')) + fila(capa('marcado'))
@@ -563,13 +660,13 @@ function pintarBib() {
     const ord = BIB.map((e, i) => ({ e, i })).sort((a, b) => a.e.op.localeCompare(b.e.op) || a.e.material.localeCompare(b.e.material, 'es') || a.e.grosor - b.e.grosor);
     const fila = ({ e, i }) => `<div class="las-bib-fila" data-i="${i}" title="${esc(e.notas || '')}">
         <span class="punto" style="background:${capa(e.op).color}"></span>
-        <span class="mat"><b>${esc(nombreEntrada(e))}</b>${/orientativ/i.test(e.notas) ? ' <span class="orient">orientativo</span>' : ''}<br><span class="las-nota">${e.op === 'corte' ? 'Corte' : 'Marcado'} · ${f1(e.speed)} mm/s · ${f1(e.pmin)}–${f1(e.pmax)} % · ${e.passes} pasada${e.passes > 1 ? 's' : ''}${e.air ? '' : ' · sin aire'}</span></span>
+        <span class="mat"><b>${esc(nombreEntrada(e))}</b>${/orientativ/i.test(e.notas) ? ' <span class="orient">orientativo</span>' : ''}<br><span class="las-nota">${e.op === 'corte' ? 'Corte' : 'Marcado'} · ${f1(e.speed)} mm/s · ${f1(e.pmin)}–${f1(e.pmax)} %${e.kerf > 0 ? ' · ancho ' + fK(e.kerf) + ' mm' : ''} · ${e.passes} pasada${e.passes > 1 ? 's' : ''}${e.air ? '' : ' · sin aire'}</span></span>
         <button data-a="usar" title="Poner estos valores en la capa ${e.op === 'corte' ? 'Corte' : 'Marcado'}">Usar</button><button data-a="editar" title="Editar">✎</button><button data-a="borrar" title="Borrar">✕</button></div>`;
     caja.innerHTML = `<div class="las-tit">📚 Parámetros de corte <span class="las-nota" style="text-transform:none;letter-spacing:0;font-weight:400">${BIB.length} material${BIB.length === 1 ? '' : 'es'}</span></div>
         <div class="las-bib-lista">${ord.map(fila).join('') || '<div class="las-nota">La biblioteca está vacía. Guarda los valores de una capa o importa un archivo.</div>'}</div>
         <div id="lasBibForm"></div>
         <div class="las-bots las-bib-bots"><button data-a="nuevo-corte" title="Guarda la velocidad, potencia y pasadas de Corte como un material nuevo">＋ Guardar Corte</button><button data-a="nuevo-marcado" title="Guarda los valores de Marcado como un material nuevo">＋ Guardar Marcado</button>
-            <button data-a="exportar" title="Descarga la biblioteca en un archivo JSON">⬇ Exportar</button><button data-a="exportar-lib" title="Descarga la biblioteca como Param.lib, el formato de la biblioteca de parámetros de Atheon Design (las pasadas van en la nota)">⬇ Atheon (.lib)</button><button data-a="importar" title="Carga una biblioteca: un JSON del Calcador láser o el Param.lib de Atheon Design">⬆ Importar…</button><button data-a="inicio" title="Añade los parámetros de inicio de la suite (orientativos)">Parámetros de inicio</button></div>
+            <button data-a="exportar" title="Descarga la biblioteca en un archivo JSON">⬇ Exportar</button><button data-a="exportar-lib" title="Descarga la biblioteca como Param.lib, el formato de la biblioteca de parámetros de Atheon Design (las pasadas van en la nota)">⬇ Atheon (.lib)</button><button data-a="importar" title="Carga una biblioteca: un JSON del Calcador láser o el Param.lib de Atheon Design">⬆ Importar…</button><button data-a="inicio" title="Añade los parámetros de inicio de la suite (orientativos)">Parámetros de inicio</button><button data-a="plantilla" title="Un .rd con una cuadrícula de casillas, cada una con una velocidad y una potencia: para ajustar un material nuevo en un solo corte y medir su ancho de corte">🧪 Plantilla de prueba…</button></div>
         <div id="lasBibImp"></div>
         <input type="file" id="lasBibFile" accept=".json,.lib" hidden>`;
     // los selectores de material del bloque «🔥 Láser» de 📋 Solución
@@ -593,12 +690,13 @@ function formBib(entrada, idx) {
         <label>Pot. máx. %</label><input type="number" id="bibMax" value="${e.pmax}" min="0" max="100">
         <label>Pasadas</label><input type="number" id="bibPas" value="${e.passes}" min="1" max="50">
         <label>Aire</label><label style="color:inherit"><input type="checkbox" id="bibAir"${e.air ? ' checked' : ''}> soplado</label>
+        <label title="Ancho de corte (kerf): mídelo con la 🧪 Plantilla de prueba. Solo para Corte">Ancho corte</label><input type="number" id="bibKerf" value="${e.kerf || 0}" min="0" max="2" step="0.01" title="mm (0 = sin medir)">
         <label>Notas</label><input type="text" id="bibNot" value="${esc(e.notas || '')}" placeholder="p. ej. probado el 7/11, sale limpio">
         <span></span><span class="las-bots"><button class="principal" id="bibOk">${idx == null ? 'Guardar en la biblioteca' : 'Guardar cambios'}</button><button id="bibNo">Cancelar</button></span></div>`;
     $('bibMat').focus();
     $('bibNo').onclick = () => { f.innerHTML = ''; };
     $('bibOk').onclick = () => {
-        const n = limpiarEntrada({ material: $('bibMat').value, grosor: $('bibGro').value, op: $('bibOp').value, speed: $('bibVel').value, pmin: $('bibMin').value, pmax: $('bibMax').value, passes: $('bibPas').value, air: $('bibAir').checked, notas: $('bibNot').value });
+        const n = limpiarEntrada({ material: $('bibMat').value, grosor: $('bibGro').value, op: $('bibOp').value, speed: $('bibVel').value, pmin: $('bibMin').value, pmax: $('bibMax').value, passes: $('bibPas').value, air: $('bibAir').checked, kerf: $('bibKerf').value, notas: $('bibNot').value });
         if (n.pmin > n.pmax) n.pmin = n.pmax;
         if (idx == null) BIB.push(n); else BIB[idx] = n;
         guardarBib(); pintarBib(); snack(`«${nombreEntrada(n)}» guardado en la biblioteca`);
@@ -607,6 +705,7 @@ function formBib(entrada, idx) {
 function usarEntrada(e) {
     const L = capa(e.op);
     ['speed', 'pmin', 'pmax', 'passes', 'air'].forEach(k => L[k] = e[k]);
+    if (L.id === 'corte') L.kerf = +e.kerf || 0;     // el ancho de corte es del material (0 si no se ha medido)
     L.mat = nombreEntrada(e);
     guardar(); sincronizar(); pintarBib(); pintarResumen();
     if (typeof tuRefrescar === 'function') tuRefrescar(true);
@@ -633,7 +732,8 @@ function leerLib(texto) {
         let mat = nombre.replace(/^\s*(cutting|cut|corte)\s+/i, '');
         if (g) mat = mat.replace(g[0], '').replace(/\s+/g, ' ').trim();
         out.push(limpiarEntrada({ material: mat || nombre, grosor: g ? g[1].replace(',', '.') : 0, op: scan || /^\s*(engrav|mark)/i.test(nombre) ? 'marcado' : 'corte',
-            speed: kv.COM_Speed, pmin: kv.COM_Pmin1, pmax: kv.COM_Pmax1, passes: 1, air: !/^no/i.test(kv.COM_Blow || 'Yes'),
+            speed: kv.COM_Speed, pmin: kv.COM_Pmin1, pmax: kv.COM_Pmax1, passes: (/(\d+) pasadas/.exec(kv.Note || '') || [0, 1])[1], air: !/^no/i.test(kv.COM_Blow || 'Yes'),
+            kerf: (/ancho de corte ([\d.]+) mm/.exec(kv.Note || '') || [0, 0])[1],
             notas: ['De Atheon Design: «' + nombre + '»' + (scan ? ' (grabado por barrido)' : ''), kv.Note].filter(Boolean).join(' · ') }));
     });
     return out;
@@ -642,7 +742,7 @@ function escribirLib() {
     const linea = (k, v) => k + '=' + v, f6 = v => Number(v).toFixed(6), ascii = t => (typeof tuSinTildes === 'function' ? tuSinTildes(t) : t).replace(/[^\x20-\x7E]/g, '');
     return BIB.map(e => {
         const nom = e.op === 'corte' ? `Cutting ${e.grosor ? String(e.grosor) + 'mm ' : ''}${e.material}` : `Marking ${e.material}`;
-        return [`[${ascii(nom)}]`, linea('Note', ascii([e.passes > 1 ? e.passes + ' pasadas' : '', e.notas].filter(Boolean).join(' - '))),
+        return [`[${ascii(nom)}]`, linea('Note', ascii([e.passes > 1 ? e.passes + ' pasadas' : '', e.kerf > 0 ? 'ancho de corte ' + e.kerf + ' mm' : '', e.notas].filter(Boolean).join(' - '))),
             'COM_Type=Vector', 'COM_Output=Yes', linea('COM_Speed', f6(e.speed)), 'COM_SpeedDefault=No',
             linea('COM_Pmin1', f6(e.pmin)), linea('COM_Pmax1', f6(e.pmax)), 'COM_Pmin2=30.000000', 'COM_Pmax2=30.000000', 'COM_PowerDefault=No',
             linea('COM_Blow', e.air ? 'Yes' : 'No'), 'COM_EnLaser1=Yes', 'COM_EnLaser2=No', 'COM_EnZ=No', 'COM_EnZDown=No', 'COM_ZDownPos=0.000000', 'COM_EnZUp=No', 'COM_ZUpPos=0.000000',
@@ -662,13 +762,14 @@ function exportarBib() {
 function sincronizar() {
     document.querySelectorAll('#tutorPanel [data-c][data-k]').forEach(inp => {
         const k = inp.dataset.k, Ls = inp.dataset.c === 'todas' ? A.capas : [capa(inp.dataset.c)];
-        if (inp.type === 'checkbox') inp.checked = Ls.every(L => L[k]); else if (document.activeElement !== inp) inp.value = Ls[0][k];
+        if (inp.type === 'checkbox') inp.checked = Ls.every(L => L[k]); else if (document.activeElement !== inp) inp.value = Ls[0][k] == null ? 0 : Ls[0][k];
     });
 }
 
 // ───────── El programa de 📋 Solución, escrito para el láser ─────────
 // Como el del Calcador (G90, G91, G91 total o mixta; los mismos puntos y comentarios), pero sin fresa:
-// sin T M06, sin Z ni G41/G42; M03 S… enciende el láser (S = % × 10), M05 lo apaga, y las pasadas repiten el contorno
+// sin T M06 ni Z; M03 S… enciende el láser (S = % × 10), M05 lo apaga, y las pasadas repiten el contorno.
+// Con ancho de corte, G41/G42 llevan el haz medio ancho hacia el lado que sobra, como en las láseres CNC (y G40 la anula)
 function tuGenerarLaser() {
     const coord = tuCoord() === 'G91T' ? 'G91' : tuCoord(), isT = false;     // sin Z: «G91 total» es lo mismo que G91
     const L = [], puntos = [], etiquetas = [];
@@ -681,6 +782,8 @@ function tuGenerarLaser() {
     const aire = items.some(o => capa(esMarcado(o.c) ? 'marcado' : 'corte').air);
     add(`(${tuSinTildes(nombre).toUpperCase().replace(/[()]/g, '')})`, '', { titulo: true });
     add('G71 G90', coord === 'G90' ? 'milímetros y coordenadas absolutas' : 'milímetros; empezamos en absolutas');
+    const kf = kerfDe(), compK = kf > 0 && items.some(o => !esMarcado(o.c) && o.c.cerrado);
+    if (compK) sep(`Ancho de corte ${tuF(kf)} mm: G41/G42 llevan el haz ${tuF(kf / 2)} mm hacia el lado que sobra`);
     if (aire && items.length) add('M08', 'abre el soplado de aire');
     let modal = 'G90', cur = { x: 0, y: 0 };
     const xyAbs = p => `X${tuF(p.x)} Y${tuF(p.y)}`, xyInc = (a, b) => `X${tuF(+tuF(b.x) - +tuF(a.x))} Y${tuF(+tuF(b.y) - +tuF(a.y))}`;
@@ -697,14 +800,20 @@ function tuGenerarLaser() {
         const Lc = capa(esMarcado(c) ? 'marcado' : 'corte'), S = Math.round(Lc.pmax * 10), F = Math.round(Lc.speed * 60), np = Math.max(1, Lc.passes | 0);
         const titulo = it.clase === 'interior' ? 'Interior' : it.clase === 'abierto' ? 'Trazo abierto' : 'Exterior';
         sep(`── ${titulo}: ${it.letra}1 … ${it.letra}${n} · ${Lc.nombre.toLowerCase()}${Lc.mat ? ` (${tuSinTildes(Lc.mat)})` : ''}${np > 1 ? `, ${np} pasadas` : ''} ──`);
+        // con ancho de corte, la compensación: el haz, del lado que sobra (fuera de la pieza, dentro de los agujeros)
+        const ladoK = compK && cerrado && !esMarcado(c) ? ((it.clase === 'interior') === ccw ? 'G41' : 'G42') : '';
         const irA = (p, pNom, primero) => {
+            if (ladoK && kp0 === 0) { const cod = (modal === 'G91' ? 'G90 ' : '') + `${ladoK} G0 ${xyAbs(p)}`;
+                add(cod, `en rápido hasta ${pNom}, con el láser apagado; ${ladoK}: el haz ${tuF(kf / 2)} mm a la ${ladoK === 'G41' ? 'izquierda' : 'derecha'} del recorrido, ${it.clase === 'interior' ? 'dentro del agujero' : 'fuera de la pieza'}` + (modal === 'G91' ? ' (vuelve a G90)' : ''), { ci: it.ci }); modal = 'G90'; cur = { ...p }; return; }
             if (isT) { add(`${modal === 'G91' ? '' : 'G91 '}G0 ${xyInc(cur, p)}`, `en rápido hasta ${pNom}, con el láser apagado` + (modal === 'G91' ? '' : ' (pasa a G91)'), { ci: it.ci }); modal = 'G91'; }
             else if (coord === 'G91' && !primero) { add(`${modal === 'G91' ? '' : 'G91 '}G0 ${xyInc(cur, p)}`, `en rápido hasta ${pNom}, con el láser apagado`, { ci: it.ci }); modal = 'G91'; }
             else { add((modal === 'G91' ? 'G90 ' : '') + `G0 ${xyAbs(p)}`, `en rápido hasta ${pNom}, con el láser apagado` + (modal === 'G91' ? ' (vuelve a G90)' : ''), { ci: it.ci }); modal = 'G90'; }
             cur = { ...p };
         };
+        let kp0 = 0;
         irA(segs[0].p1, segs[0].a, idx === 0);
         for (let kp = 0; kp < np; kp++) {
+            kp0 = kp;
             if (kp > 0 && !cerrado) irA(segs[0].p1, segs[0].a, false);    // trazo abierto: vuelve al principio para repasarlo
             add(`M03 S${S}`, (np > 1 ? `pasada ${kp + 1} de ${np}: ` : '') + `enciende el láser al ${tuF(Lc.pmax)} %`, { ci: it.ci });
             let pf = ` F${F}`;
@@ -724,6 +833,7 @@ function tuGenerarLaser() {
             });
             add('M05', 'apaga el láser', { ci: it.ci });
         }
+        if (ladoK) add('G40', 'anula la compensación', { ci: it.ci });
     });
     if (isT && items.length) { add(`G0 ${xyInc(cur, { x: 0, y: 0 })}`, 'vuelve encima del cero pieza'); add('G90', 'deja la máquina en absolutas para el siguiente programa'); }
     else if (items.length) add((modal === 'G91' ? 'G90 ' : '') + 'G0 X0 Y0', 'vuelve al cero pieza' + (modal === 'G91' ? ' (vuelve a absolutas)' : ''));
@@ -738,12 +848,14 @@ function tuGenerarLaser() {
 const MAY = (m, t) => m[0] === m[0].toUpperCase() ? t.charAt(0).toUpperCase() + t.slice(1) : t;
 function laserizar(t) {
     if (typeof t !== 'string' || !/fresa|husillo|refrigerante/i.test(t)) return t;
-    return t.replace(/[Ee]l husillo gira a ([\d.,]+) vueltas por minuto \(rpm\)\./g, (m, v) => MAY(m, `potencia del láser: ${f1(parseFloat(v.replace(',', '.')) / 10)} % (S va de 0 a 1000).`))
+    return t.replace(/[Cc]ompensación de radio/g, m => MAY(m, 'compensación del ancho de corte'))
+        .replace(/la fresa va desplazada su radio/g, 'el haz va desplazado medio ancho de corte').replace(/el centro de la fresa pasa por/g, 'el haz pasa por')
+        .replace(/[Ee]l husillo gira a ([\d.,]+) vueltas por minuto \(rpm\)\./g, (m, v) => MAY(m, `potencia del láser: ${f1(parseFloat(v.replace(',', '.')) / 10)} % (S va de 0 a 1000).`))
         .replace(/[Aa]rranca el husillo en sentido horario, a las vueltas de S\./g, m => MAY(m, 'enciende el láser con la potencia de S (S600 = 60 %).'))
         .replace(/[Aa]rranca el husillo en sentido antihorario[^.]*\.[^.]*M03\./g, m => MAY(m, 'enciende el láser (en la láser, igual que M03).'))
         .replace(/[Pp]ara el husillo\./g, m => MAY(m, 'apaga el láser.'))
         .replace(/[Aa]bre el refrigerante\./g, m => MAY(m, 'abre el soplado de aire.')).replace(/[Cc]ierra el refrigerante\./g, m => MAY(m, 'cierra el soplado de aire.'))
-        .replace(/de la fresa/g, 'del láser').replace(/a la fresa/g, 'al láser').replace(/La fresa/g, 'El láser').replace(/la fresa/g, 'el láser').replace(/ X Y Z /g, ' X Y ');
+        .replace(/de la fresa/g, 'del láser').replace(/a la fresa/g, 'al láser').replace(/La fresa/g, 'El láser').replace(/la fresa/g, 'el láser').replace(/ X Y Z /g, ' X Y ').replace(/(Y-?\d+(?:[.,]\d+)?) Z-?\d+(?:[.,]\d+)?/g, '$1');   // sin Z
 }
 // Los textos de ayuda del panel derecho que hablan de la fresa
 function laserizarPanel(raiz) {
@@ -784,6 +896,10 @@ function pintarResumen() {
         if (b[2] - b[0] > A.W + 1e-6 || b[3] - b[1] > A.H + 1e-6) h += `<div class="las-aviso" style="margin-top:6px">La pieza (${f1(b[2] - b[0])} × ${f1(b[3] - b[1])} mm) no cabe en la mesa de ${A.W} × ${A.H} mm.</div>`;
         else if (A.mesa || A.inicio === 'absolute') { const f = fueraDeMesa(b), lados = Object.keys(f).filter(k => f[k] > 1e-6);
             if (lados.length) h += `<div class="las-aviso" style="margin-top:6px">La pieza se sale de la mesa: ${lados.map(k => ({ izq: 'por la izquierda', der: 'por la derecha', abajo: 'por abajo', arriba: 'por arriba' })[k] + ' ' + f1(f[k]) + ' mm').join(', ')}. Muévela en «Mesa» (junto al nombre).</div>`; }
+        const kf = kerfDe();
+        if (kf > 0 && !gcode && n('corte')) h += `<div class="las-nota" style="margin-top:6px">Ancho de corte ${fK(kf)} mm: el láser va ${fK(kf / 2)} mm por fuera de la pieza y por dentro de los agujeros, para que salgan a su medida.</div>`;
+        if (kf > 0 && gcode) { const sin = tr.filter(t => t.capa === 'corte' && t.cerrado && !(t.comp || []).some(c => c !== 40)).length;
+            if (sin) h += `<div class="las-aviso" style="margin-top:6px">${sin} contorno(s) sin G41/G42: el láser va por la línea y la pieza sale ${fK(kf)} mm más pequeña (los agujeros, más grandes).</div>`; }
         const rep = p.reduce((a, o) => a + (o.repetido || 0), 0);
         if (rep) h += `<div class="las-nota" style="margin-top:6px">Hay ${f1(rep)} mm de líneas comunes a dos contornos: se cortan una sola vez.</div>`;
         const abiertosCorte = tr.filter(t => t.capa === 'corte' && !t.cerrado).length;
@@ -835,7 +951,7 @@ function montar() {
         const k = inp.dataset.k, Ls = inp.dataset.c === 'todas' ? A.capas : [capa(inp.dataset.c)];
         if (inp.type === 'checkbox') Ls.forEach(L => L[k] = inp.checked);
         else { let v = parseFloat(String(inp.value).replace(',', '.')); if (!isFinite(v)) { sincronizar(); return; }
-            if (k === 'pmin' || k === 'pmax') v = Math.max(0, Math.min(100, v)); if (k === 'passes') v = Math.max(1, Math.round(v)); if (k === 'speed') v = Math.max(0.1, v);
+            if (k === 'pmin' || k === 'pmax') v = Math.max(0, Math.min(100, v)); if (k === 'passes') v = Math.max(1, Math.round(v)); if (k === 'speed') v = Math.max(0.1, v); if (k === 'kerf') v = Math.max(0, Math.min(2, v));
             Ls.forEach(L => { L[k] = v; if (k === 'pmin' && L.pmax < v) L.pmax = v; if (k === 'pmax' && L.pmin > v) L.pmin = v; }); }
         if (k !== 'out') Ls.forEach(L => { L.mat = ''; });     // ya no son los valores de la biblioteca
         pintarBib();
@@ -868,11 +984,12 @@ function montar() {
         if (a === 'usar') usarEntrada(BIB[i]);
         else if (a === 'editar') formBib(BIB[i], i);
         else if (a === 'borrar') { const e2 = BIB[i]; BIB.splice(i, 1); guardarBib(); pintarBib(); snack(`«${nombreEntrada(e2)}» borrado de la biblioteca`); }
-        else if (a === 'nuevo-corte' || a === 'nuevo-marcado') { const L = capa(a.slice(6)); formBib({ material: '', grosor: '', op: L.id, speed: L.speed, pmin: L.pmin, pmax: L.pmax, passes: L.passes, air: L.air, notas: '' }, null); }
+        else if (a === 'nuevo-corte' || a === 'nuevo-marcado') { const L = capa(a.slice(6)); formBib({ material: '', grosor: '', op: L.id, speed: L.speed, pmin: L.pmin, pmax: L.pmax, passes: L.passes, air: L.air, kerf: L.kerf || 0, notas: '' }, null); }
         else if (a === 'exportar') exportarBib();
         else if (a === 'exportar-lib') exportarLib();
         else if (a === 'importar') { $('lasBibFile').value = ''; $('lasBibFile').click(); }
         else if (a === 'inicio') importarBib(BIB_INICIO, 'Parámetros de inicio de la suite');
+        else if (a === 'plantilla') abrirPlantilla();
     });
     $('lasBib').addEventListener('change', e => {
         if (e.target.id !== 'lasBibFile' || !e.target.files[0]) return;
@@ -900,7 +1017,7 @@ function montar() {
 // en el sitio de la 🟫 Mesa (mm, origen abajo a la izquierda, como Atheon Design)
 const COLOR_RLD = { corte: 0x000000, marcado: 0xFF0000 };    // COLORREF: negro y azul
 async function generarRLD() {
-    const tr = trazadosActuales().filter(t => capa(t.capa).out); if (!tr.length) throw new Error('Dibuja o abre primero la pieza');
+    const tr = conKerf(trazadosActuales()).filter(t => capa(t.capa).out); if (!tr.length) throw new Error('Dibuja o abre primero la pieza');
     const m = mesaMundo(), dx = -m.x0, dy = -m.y0, orden = ['marcado', 'corte'];
     const usadas = orden.filter(id => tr.some(t => t.capa === id));
     const capas = usadas.map(id => { const L = capa(id); return { color: COLOR_RLD[id], speed: L.speed, pmin: L.pmin, pmax: L.pmax, passes: L.passes }; });
@@ -927,10 +1044,118 @@ function exportar() {
     snack(`${nombreRD()} exportado (${g.rd.bytes.length} bytes). Pruébalo primero con poca potencia o con el marco del panel`);
 }
 
+// ───────── 🧪 Plantilla de prueba de parámetros ─────────
+// Una cuadrícula de casillas cuadradas: cada columna, una velocidad; cada fila, una potencia. Cada casilla va en su propia capa del .rd
+// (con su velocidad y su potencia), y las etiquetas se graban con la capa Marcado. Después de cortarla se elige la casilla que sale mejor
+// y, midiendo su lado con el calibre, se sabe el ancho de corte: lado − medida.
+const MAX_CAS = 6, CLAVE_PL = 'laser_plantilla';
+let PL = { op: 'corte', v0: 10, v1: 30, nv: 3, p0: 40, p1: 80, np: 3, pasadas: 1, aire: true, lado: 10, sep: 5, etiquetas: true };
+try { const g = JSON.parse(localStorage.getItem(CLAVE_PL) || 'null'); if (g && typeof g === 'object') PL = Object.assign(PL, g); } catch (e) {}
+function valoresPl(a, b, n) { n = Math.max(1, Math.min(MAX_CAS, Math.round(+n) || 1)); a = +a; b = +b; if (n === 1) return [a]; return Array.from({ length: n }, (_, i) => +(a + (b - a) * i / (n - 1)).toFixed(1)); }
+function colorCasilla(k) { const h = (k * 137.5) % 360, f = n => { const x = (n + h / 30) % 12, v = 0.45 - 0.35 * Math.max(-1, Math.min(x - 3, 9 - x, 1)); return Math.round(v * 255).toString(16).padStart(2, '0'); }; return '#' + f(0) + f(8) + f(4); }
+function planPlantilla(cfg) {
+    cfg = cfg || PL;
+    const V = valoresPl(Math.max(0.1, cfg.v0), Math.max(0.1, cfg.v1), cfg.nv), P = valoresPl(Math.max(0, Math.min(100, cfg.p0)), Math.max(0, Math.min(100, cfg.p1)), cfg.np);
+    const l = Math.max(2, Math.min(100, +cfg.lado || 10)), g = Math.max(1, Math.min(50, +cfg.sep || 5)), np = Math.max(1, Math.min(10, Math.round(+cfg.pasadas || 1))), res = [];
+    const mg = cfg.etiquetas ? 13 : 0, alto = 3;
+    if (cfg.etiquetas) {
+        const M = capa('marcado'), trz = [];
+        const t = (texto, x, y, alin) => componerTexto({ texto, fuente: 'readability', altura: alto, esp: 0, inter: 1.6, alin, ang: 0, pos: { x, y } }).trazos
+            .forEach(q => { const pts = polilineaContorno({ pts: q.pts, b: q.b, cerrado: false }); if (pts.length >= 2) trz.push(pts); });
+        V.forEach((v, i) => t(f1(v), mg + i * (l + g) + l / 2, 2, 'centro'));
+        P.forEach((p, j) => t(f1(p) + '%', mg - 2, -j * (l + g) - l / 2 - alto / 2, 'der'));
+        t('mm/s', mg + V.length * (l + g) - g + 2, 2, 'izq');
+        if (trz.length) res.push({ L: { id: 'marcado', nombre: 'Etiquetas', color: '#0000ff', speed: M.speed, pmin: M.pmin, pmax: M.pmax, air: M.air }, seq: trz });
+    }
+    P.forEach((p, j) => V.forEach((v, i) => {
+        const x = mg + i * (l + g), y = -j * (l + g) - l, sq = [[x, y + l], [x + l, y + l], [x + l, y], [x, y], [x, y + l]], seq = [];
+        for (let k = 0; k < np; k++) seq.push(sq);
+        res.push({ L: { id: 'casilla', nombre: `${f1(v)} mm/s · ${f1(p)} %`, color: colorCasilla(j * V.length + i), speed: v, pmin: p, pmax: p, air: !!cfg.aire }, seq, v, p, fila: j, col: i });
+    }));
+    return res;
+}
+function nombrePlantilla() { return `Plantilla_${PL.op}_${f1(PL.v0)}-${f1(PL.v1)}mms_${f1(PL.p0)}-${f1(PL.p1)}pc.rd`.replace(/,/g, '.'); }
+function abrirPlantilla() {
+    let ov = $('modalPlantilla');
+    if (!ov) {
+        ov = document.createElement('div'); ov.className = 'modal-overlay'; ov.id = 'modalPlantilla';
+        const num = (id, min, max, step, t) => `<input type="number" id="${id}" min="${min}" max="${max}" step="${step}"${t ? ` title="${t}"` : ''}>`;
+        ov.innerHTML = `<div class="modal"><div style="display:flex;align-items:center;gap:10px"><h3 style="margin:0;flex:1">🧪 Plantilla de prueba de parámetros</h3><button onclick="document.getElementById('modalPlantilla').classList.remove('visible')" title="Cerrar">✕</button></div>
+            <div class="las-nota" style="margin-top:6px">Una cuadrícula de casillas: cada columna, una velocidad; cada fila, una potencia. Córtala en un trozo del tablero nuevo y quédate con la casilla que sale mejor.</div>
+            <div class="pl-grid">
+                <label>Prueba de</label><select id="plOp" style="grid-column:2 / 7;width:max-content"><option value="corte">Corte (atravesar el tablero)</option><option value="marcado">Marcado (marcar la superficie)</option></select>
+                <label>Velocidad</label>${num('plV0', 0.1, 1000, 1, 'mm/s')}<label>hasta</label>${num('plV1', 0.1, 1000, 1, 'mm/s')}<label>columnas</label>${num('plNv', 1, MAX_CAS, 1)}
+                <label>Potencia %</label>${num('plP0', 0, 100, 1)}<label>hasta</label>${num('plP1', 0, 100, 1)}<label>filas</label>${num('plNp', 1, MAX_CAS, 1)}
+                <label>Casilla</label>${num('plLado', 2, 100, 1, 'Lado del cuadrado, en mm')}<label>separación</label>${num('plSep', 1, 50, 1, 'mm')}<label>pasadas</label>${num('plPas', 1, 10, 1)}
+                <label></label><label style="color:inherit;grid-column:2 / 4"><input type="checkbox" id="plAire"> Soplado de aire</label><label style="color:inherit;grid-column:4 / 7"><input type="checkbox" id="plEtq"> Etiquetas grabadas (capa Marcado)</label>
+            </div>
+            <div id="plInfo" class="pl-info"></div>
+            <div class="las-nota">Cada casilla va en su propia capa del .rd, con su velocidad y su potencia (la mínima igual que la máxima). La primera vez, prueba una plantilla pequeña (3 × 3) con el marco del panel antes de cortar.</div>
+            <div class="las-bots" style="margin-top:8px"><button id="plVer">👁 Vista previa…</button><button id="plExp" class="principal">⬇ Exportar .rd</button></div>
+            <div class="pl-guardar">
+                <span style="grid-column:1 / 3;font-weight:700">Guardar el resultado en 📚 Parámetros de corte</span>
+                <label>Casilla</label><select id="plCas"></select>
+                <label>Material</label><input type="text" id="plMat" placeholder="DM, contrachapado, metacrilato…">
+                <label>Grosor (mm)</label><input type="number" id="plGro" min="0" step="0.5">
+                <label title="Mide con el calibre el lado del cuadrado que ha salido">Lado medido</label><span><input type="number" id="plMed" min="0" step="0.01"> mm <span id="plKerf" class="las-nota"></span></span>
+                <span></span><span class="las-bots"><button id="plGuardar" class="principal">Guardar en la biblioteca</button></span>
+            </div></div>`;
+        ov.onclick = e => { if (e.target === ov) ov.classList.remove('visible'); };
+        document.body.appendChild(ov);
+        const campos = { plOp: 'op', plV0: 'v0', plV1: 'v1', plNv: 'nv', plP0: 'p0', plP1: 'p1', plNp: 'np', plLado: 'lado', plSep: 'sep', plPas: 'pasadas', plAire: 'aire', plEtq: 'etiquetas' };
+        Object.keys(campos).forEach(id => $(id).addEventListener('change', e => {
+            const k = campos[id], el = e.target;
+            if (el.type === 'checkbox') PL[k] = el.checked; else if (el.tagName === 'SELECT') PL[k] = el.value; else { const v = parseFloat(String(el.value).replace(',', '.')); if (isFinite(v)) PL[k] = v;
+                const lim = { nv: [1, MAX_CAS, 1], np: [1, MAX_CAS, 1], pasadas: [1, 10, 1], lado: [2, 100], sep: [1, 50], p0: [0, 100], p1: [0, 100], v0: [0.1, 1000], v1: [0.1, 1000] }[k];
+                if (lim) { PL[k] = Math.max(lim[0], Math.min(lim[1], +PL[k])); if (lim[2]) PL[k] = Math.round(PL[k]); } el.value = PL[k]; }
+            if (k === 'op') { const L = capa(PL.op); PL.v0 = +(L.speed * 0.6).toFixed(1); PL.v1 = +(L.speed * 1.4).toFixed(1); PL.p0 = Math.max(0, L.pmax - 20); PL.p1 = Math.min(100, L.pmax + 20); PL.pasadas = L.passes; PL.aire = L.air; }
+            try { localStorage.setItem(CLAVE_PL, JSON.stringify(PL)); } catch (e2) {}
+            pintarPlantilla();
+        }));
+        $('plMed').addEventListener('input', pintarKerfPl);
+        $('plVer').onclick = () => { let g; try { g = generarRD(planPlantilla()); } catch (e) { snack(e.message); return; } abrirVista(g, exportarPlantilla); };
+        $('plExp').onclick = exportarPlantilla;
+        $('plGuardar').onclick = guardarPlantilla;
+    }
+    pintarPlantilla();
+    ov.classList.add('visible');
+}
+function pintarPlantilla() {
+    const set = (id, v) => { const e = $(id); if (e.type === 'checkbox') e.checked = !!v; else if (document.activeElement !== e) e.value = v; };
+    set('plOp', PL.op); set('plV0', PL.v0); set('plV1', PL.v1); set('plNv', PL.nv); set('plP0', PL.p0); set('plP1', PL.p1); set('plNp', PL.np);
+    set('plLado', PL.lado); set('plSep', PL.sep); set('plPas', PL.pasadas); set('plAire', PL.aire); set('plEtq', PL.etiquetas);
+    const p = planPlantilla(), cas = p.filter(o => o.L.id === 'casilla'), b = cajaPts([].concat(...p.map(o => o.seq.map(q => ({ pts: q }))))), r = resumen(p);
+    $('plInfo').textContent = `${cas.length} casillas (${Math.max(...cas.map(o => o.col)) + 1} velocidades × ${Math.max(...cas.map(o => o.fila)) + 1} potencias) · ${f1(b[2] - b[0])} × ${f1(b[3] - b[1])} mm · ${fmtT(r.t)} (aprox.)`;
+    const sel = $('plCas'), prev = sel.value;
+    sel.innerHTML = cas.map((o, k) => `<option value="${k}">Fila ${o.fila + 1}, columna ${o.col + 1}: ${f1(o.v)} mm/s · ${f1(o.p)} %</option>`).join('');
+    if (prev && +prev < cas.length) sel.value = prev;
+    $('plMed').closest('span').parentElement.querySelectorAll('label[title^="Mide"], #plMed, #plKerf').forEach(e => { e.style.opacity = PL.op === 'corte' ? '' : '.45'; });
+    $('plMed').disabled = PL.op !== 'corte';
+    pintarKerfPl();
+}
+function kerfPlantilla() { const m = parseFloat(String($('plMed').value).replace(',', '.')), l = Math.max(2, Math.min(100, +PL.lado || 10)); return PL.op === 'corte' && m > 0 ? +(l - m).toFixed(3) : null; }
+function pintarKerfPl() {
+    const k = kerfPlantilla(), e = $('plKerf'); if (!e) return;
+    e.textContent = k == null ? (PL.op === 'corte' ? `(el lado dibujado es ${f1(Math.max(2, Math.min(100, +PL.lado || 10)))} mm)` : '') : k < 0 || k > 2 ? '⚠ revisa la medida: el ancho de corte saldría ' + fK(k) + ' mm' : `→ ancho de corte ${fK(k)} mm`;
+}
+function exportarPlantilla() {
+    let g; try { g = generarRD(planPlantilla()); } catch (e) { snack(e.message); return; }
+    descargar(g.rd.bytes, nombrePlantilla(), 'application/octet-stream');
+    snack(`${nombrePlantilla()} exportado. Pruébalo primero con el marco del panel`);
+}
+function guardarPlantilla() {
+    const cas = planPlantilla().filter(o => o.L.id === 'casilla'), o = cas[+$('plCas').value || 0], k = kerfPlantilla();
+    if (!o) return;
+    if (k != null && (k < 0 || k > 2)) { snack('Revisa el lado medido: el ancho de corte tiene que estar entre 0 y 2 mm'); return; }
+    const e = limpiarEntrada({ material: $('plMat').value, grosor: $('plGro').value, op: PL.op, speed: o.v, pmin: o.p, pmax: o.p, passes: PL.pasadas, air: PL.aire, kerf: k || 0,
+        notas: `Plantilla de prueba del ${new Date().toLocaleDateString('es-ES')}` + (k != null ? ` (lado medido ${fK(Math.max(2, Math.min(100, +PL.lado || 10)) - k)} mm)` : '') });
+    BIB.push(e); guardarBib(); pintarBib();
+    snack(`«${nombreEntrada(e)}» guardado: ${f1(e.speed)} mm/s, ${f1(e.pmax)} %${e.kerf ? `, ancho de corte ${fK(e.kerf)} mm` : ''}`);
+}
 // ───────── Vista previa con simulación ─────────
 let V = null;
-function abrirVista() {
-    let g; try { g = generarRD(); } catch (e) { snack(e.message); return; }
+function abrirVista(gDado, alExportar) {
+    let g; try { g = gDado && gDado.rd ? gDado : generarRD(); } catch (e) { snack(e.message); return; }
     let ov = $('modalLaser');
     if (!ov) {
         ov = document.createElement('div'); ov.className = 'modal-overlay'; ov.id = 'modalLaser';
@@ -950,7 +1175,6 @@ function abrirVista() {
             V.anim = requestAnimationFrame(paso);
         };
         $('lasVerCmds').onclick = () => { const c = $('lasCmds'); c.hidden = !c.hidden; };
-        $('lasExp2').onclick = exportar;
         const cv = $('lasCanvas');
         cv.addEventListener('wheel', e => { e.preventDefault(); const r = cv.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top, wx = (mx - V.ox) / V.s, wy = (V.oy - my) / V.s, k = Math.exp(-e.deltaY * 0.0015); V.s *= k; V.ox = mx - wx * V.s; V.oy = my + wy * V.s; dibujarVista(); }, { passive: false });
         let arr = null;
@@ -959,6 +1183,7 @@ function abrirVista() {
         cv.addEventListener('pointerup', () => { arr = null; });
     }
     ov.classList.add('visible');
+    $('lasExp2').onclick = typeof alExportar === 'function' ? alExportar : exportar;
     const s = resumen(g.plan);
     $('lasVistaInfo').textContent = `${f1(s.corte)} mm con láser · ${fmtT(s.t)} · ${g.rd.bytes.length} bytes`;
     const d = RDCore.decode(g.rd.bytes, +A.magic);
@@ -1056,7 +1281,9 @@ function dibujarMesa() {
 }
 function pintarCajaMesa() {
     const caja = $('lasMesaBox'); if (!caja) return;
-    caja.hidden = !A.mesa; if (!A.mesa) return;
+    const bt = $('lasMesaAbrir'); if (bt) { bt.hidden = !A.mesa; bt.classList.toggle('activo', A.mesa && A.mesaVentana !== false); }
+    caja.hidden = !A.mesa || A.mesaVentana === false; if (caja.hidden) return;
+    colocarCajaMesa();
     asegurarCero();
     const xs = A.origen[1] === 'r' ? '←' : '→', ys = A.origen[0] === 't' ? '↓' : '↑';
     if (document.activeElement !== $('lasCpX')) $('lasCpX').value = A.cpX;
@@ -1069,6 +1296,12 @@ function pintarCajaMesa() {
         else { est = `✓ La pieza (${f1(b[2] - b[0])} × ${f1(b[3] - b[1])} mm) cabe en la mesa`; cl = 'bien'; } } } catch (e) {}
     const e = $('lasMesaEstado'); e.textContent = est; e.className = 'estado ' + cl;
 }
+// La ventana se arrastra por su título y se queda donde se suelta (dentro del lienzo)
+function colocarCajaMesa() {
+    const caja = $('lasMesaBox'), pa = caja && caja.parentNode; if (!caja || !A.mesaPos) return;
+    const x = Math.max(0, Math.min(pa.clientWidth - caja.offsetWidth, A.mesaPos.x)), y = Math.max(0, Math.min(pa.clientHeight - caja.offsetHeight, A.mesaPos.y));
+    caja.style.left = x + 'px'; caja.style.top = y + 'px';
+}
 function verMesa() {
     const m = mesaMundo(), w = m.x1 - m.x0, h = m.y1 - m.y0;
     view.z = Math.min((W - 80) / w, (H - 80) / h); view.cx = (m.x0 + m.x1) / 2; view.cy = (m.y0 + m.y1) / 2; render();
@@ -1078,16 +1311,36 @@ function montarMesa() {
     const lab = document.createElement('label'); lab.className = 'las-mesa-chk'; lab.title = 'Enseña la mesa de la láser (superficie útil), el cero máquina y dónde está la pieza con su cero pieza';
     lab.innerHTML = `<input type="checkbox" id="lasMesa"${A.mesa ? ' checked' : ''}> 🟫 Mesa`;
     nom.after(lab);
+    const abrir = document.createElement('button'); abrir.className = 'las-mesa-btn'; abrir.id = 'lasMesaAbrir'; abrir.type = 'button'; abrir.textContent = '📍';
+    abrir.title = 'Abre o cierra la ventana de la mesa: dónde está el cero pieza en la máquina'; lab.after(abrir);
     const caja = document.createElement('div'); caja.className = 'las-mesa-box'; caja.id = 'lasMesaBox'; caja.hidden = true;
-    caja.innerHTML = `<div class="tit"><span>🟫 Mesa de la láser</span><span id="lasMesaEjes" class="nota" style="grid-column:auto"></span></div>
+    caja.innerHTML = `<div class="tit" title="Arrastra para mover la ventana"><span>🟫 Mesa de la láser</span><span id="lasMesaEjes" class="nota" style="grid-column:auto;margin-left:auto"></span><button class="x" id="lasMesaCerrar" title="Cerrar la ventana (la mesa sigue a la vista; se vuelve a abrir con 📍, junto a «Mesa»)">✕</button></div>
         <div class="nota">Cero pieza desde el cero máquina (como en el panel de la máquina):</div>
         <label for="lasCpX">X</label><input type="number" id="lasCpX" step="1"><label for="lasCpY">Y</label><input type="number" id="lasCpY" step="1">
         <div class="bots"><button id="lasCentrar" title="Coloca la pieza en el centro de la mesa">Centrar la pieza</button><button id="lasVerMesa" title="Encuadra toda la mesa">⤢ Ver la mesa</button></div>
         <div id="lasMesaEstado" class="estado"></div>
+        <div class="nota">Con la herramienta Origen (tecla O), el clic marca el cero pieza: la pieza no se mueve de la mesa.</div>
         <div class="nota">La mesa, su tamaño y el cero máquina se cambian en 🔥 Láser → ⚙️ Máquina.</div>`;
     cv.parentNode.appendChild(caja);
     const cambio = () => { guardar(); pintarCajaMesa(); pintarResumen(); render(); };
-    $('lasMesa').addEventListener('change', e => { A.mesa = e.target.checked; asegurarCero(); cambio(); if (A.mesa) verMesa(); });
+    $('lasMesa').addEventListener('change', e => { A.mesa = e.target.checked; if (A.mesa) A.mesaVentana = true; asegurarCero(); cambio(); if (A.mesa) verMesa(); });
+    abrir.onclick = () => { A.mesaVentana = A.mesaVentana === false; guardar(); pintarCajaMesa(); };
+    $('lasMesaCerrar').onclick = () => { A.mesaVentana = false; guardar(); pintarCajaMesa(); };
+    { const tit = caja.querySelector('.tit'); let arr = null;
+      tit.addEventListener('pointerdown', e => { if (e.target.closest('button')) return; arr = { x: e.clientX - caja.offsetLeft, y: e.clientY - caja.offsetTop }; tit.setPointerCapture(e.pointerId); e.preventDefault(); });
+      tit.addEventListener('pointermove', e => { if (!arr) return; A.mesaPos = { x: e.clientX - arr.x, y: e.clientY - arr.y }; colocarCajaMesa(); });
+      tit.addEventListener('pointerup', () => { if (arr) { arr = null; guardar(); } }); }
+    window.addEventListener('resize', colocarCajaMesa);
+    // Herramienta Origen: el punto marcado pasa a ser el cero pieza y la pieza se queda en su sitio de la mesa
+    const fo = window.fijarOrigen;
+    if (typeof fo === 'function') window.fijarOrigen = function (p) {
+        const r = fo.apply(this, arguments);
+        if (p && A.cpX != null && A.cpY != null && isFinite(p.x) && isFinite(p.y)) {
+            A.cpX = +(A.origen[1] === 'r' ? A.cpX - p.x : A.cpX + p.x).toFixed(3); A.cpY = +(A.origen[0] === 't' ? A.cpY - p.y : A.cpY + p.y).toFixed(3);
+            guardar(); pintarCajaMesa(); pintarResumen();
+        }
+        return r;
+    };
     ['lasCpX', 'lasCpY'].forEach(id => $(id).addEventListener('change', e => { const v = parseFloat(String(e.target.value).replace(',', '.')); if (isFinite(v)) A[id === 'lasCpX' ? 'cpX' : 'cpY'] = v; cambio(); }));
     $('lasCentrar').onclick = () => { centrarEnMesa(); cambio(); };
     $('lasVerMesa').onclick = verMesa;
@@ -1101,6 +1354,6 @@ window.addEventListener('load', () => setTimeout(montarMesa, 200));
 // si cambia la mesa en ⚙️ Máquina, se vuelve a dibujar
 document.addEventListener('change', e => { if (e.target && /^las(W|H|Origen|Inicio|Ref)$/.test(e.target.id)) { pintarCajaMesa(); render(); } });
 
-window.LASER = { leerLib, escribirLib, biblioteca: () => BIB, usarEntrada, importarBib, RLD, generarRLD, mesaMundo, fueraDeMesa, centrarEnMesa, RDCore, plan, generarRD, trazadosGcode, trazadosDibujo, ajustes: () => A, abrirGcodeTexto: (texto, nombre) => { const g = trazadosGcode(texto); gcode = { nombre, base: nombre.replace(/\.[^.]+$/, ''), trazados: g.trazados, avisos: g.avisos }; pintarFuente(); pintarResumen(); return gcode; }, volverAlDibujo: () => { gcode = null; pintarFuente(); pintarResumen(); } };
+window.LASER = { planPlantilla, conKerf, desplazarGeo, kerfDe, leerLib, escribirLib, biblioteca: () => BIB, usarEntrada, importarBib, RLD, generarRLD, mesaMundo, fueraDeMesa, centrarEnMesa, RDCore, plan, generarRD, trazadosGcode, trazadosDibujo, ajustes: () => A, abrirGcodeTexto: (texto, nombre) => { const g = trazadosGcode(texto); gcode = { nombre, base: nombre.replace(/\.[^.]+$/, ''), trazados: g.trazados, avisos: g.avisos }; pintarFuente(); pintarResumen(); return gcode; }, volverAlDibujo: () => { gcode = null; pintarFuente(); pintarResumen(); } };
 window.addEventListener('load', () => setTimeout(montar, 150));
 })();

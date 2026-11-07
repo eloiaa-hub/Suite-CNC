@@ -90,6 +90,38 @@ const { lanzar, abrir, ejercicios, fs, path } = require('./comun');
     contornos = viejos; Object.assign(A, JSON.parse(copia)); refrescar(); return r; });
   ok(lc.dos === 350 && lc.parcial === 550 && lc.rejilla === 680 && lc.sin === 400 && lc.gc === 200, `líneas comunes una sola vez: dos cuadrados pegados ${lc.dos} mm (sin la opción ${lc.sin}), solapados en parte ${lc.parcial}, rejilla de 6 piezas ${lc.rejilla}, G-code que repasa ${lc.gc}`);
   ok(lc.orden === '80,80,400,400', `pasadas seguidas: agujero, agujero, contorno, contorno (${lc.orden})`);
+  // 5) Ancho de corte: el haz va medio ancho por fuera de la pieza y por dentro de los agujeros; la 📋 Solución lo escribe con G41/G42
+  const kf = await pg.evaluate(() => { const A = LASER.ajustes(), copia = JSON.stringify(A), viejos = contornos;
+    const R = (x, y, w, h) => ({ pts: [{ x, y }, { x: x + w, y }, { x: x + w, y: y + h }, { x, y: y + h }], b: [0, 0, 0, 0], cerrado: true, tipo: 'auto' }), C = (cx, cy, r) => ({ pts: [{ x: cx - r, y: cy }, { x: cx + r, y: cy }], b: [1, 1], cerrado: true, tipo: 'auto' });
+    const caja = s => { const b = [1e9, 1e9, -1e9, -1e9]; s.forEach(q => { b[0] = Math.min(b[0], q[0]); b[1] = Math.min(b[1], q[1]); b[2] = Math.max(b[2], q[0]); b[3] = Math.max(b[3], q[1]); }); return b.map(v => +v.toFixed(2)).join(' '); };
+    const lg = s => s.slice(1).reduce((m, q, i) => m + Math.hypot(q[0] - s[i][0], q[1] - s[i][1]), 0);
+    A.capas[1].passes = 1; A.capas[1].kerf = 0.2; A.unaVez = true;
+    contornos = [R(0, 0, 100, 60), R(20, 20, 20, 20), C(70, 30, 8)]; refrescar();
+    const c = LASER.plan().find(o => o.L.id === 'corte'), r = { cajas: c.seq.map(caja) };
+    tuFuente('solucion'); tuRefrescar(true); const sol = TU.prog.texto; r.g41 = /^G41 G0/m.test(sol); r.g42 = /^G42 G0/m.test(sol); r.g40 = (sol.match(/^G40/gm) || []).length;
+    const d = c.seq.reduce((a, s) => a + lg(s), 0); const g = LASER.abrirGcodeTexto(sol, 'sol.nc'); r.avisos = g.avisos.length; r.igual = Math.abs(LASER.plan()[0].seq.reduce((a, s) => a + lg(s), 0) - d) < 0.01; LASER.volverAlDibujo();
+    contornos = [R(0, 0, 50, 50), R(50, 0, 50, 50)]; refrescar(); r.pegadas = LASER.plan().find(o => o.L.id === 'corte').seq.map(caja).join(' / ');
+    A.capas[1].kerf = 0; contornos = [R(0, 0, 50, 50)]; refrescar(); r.cero = caja(LASER.plan().find(o => o.L.id === 'corte').seq[0]);
+    contornos = viejos; Object.assign(A, JSON.parse(copia)); refrescar(); return r; });
+  { const esp = ['-0.1 -0.1 100.1 60.1', '20.1 20.1 39.9 39.9', '62.1 22.1 77.9 37.9'].map(s => s.split(' ').map(Number)), tiene = kf.cajas.map(s => s.split(' ').map(Number));
+    ok(esp.every(e => tiene.some(c => c.every((v, i) => Math.abs(v - e[i]) < 0.03))), `ancho de corte 0,2: pieza 100,2 × 60,2, agujero de 19,8 y círculo de Ø15,8 (${kf.cajas.join(' / ')})`); }
+  ok(kf.g41 && kf.g42 && kf.g40 === 3 && kf.avisos === 0 && kf.igual, `📋 Solución con G41/G42 y G40; leída como G-code corta lo mismo que el dibujo (${JSON.stringify(kf).slice(0, 120)})`);
+  ok(kf.pegadas === '50 -0.1 100.1 50.1 / -0.1 -0.1 50 50.1' && kf.cero === '0 0 50 50', `piezas pegadas: el borde común por la línea (${kf.pegadas}); con ancho 0, por la línea`);
+  // 6) 🧪 Plantilla de prueba: una capa por casilla, con etiquetas, y un .rd válido
+  const pt = await pg.evaluate(() => { const p = LASER.planPlantilla({ op: 'corte', v0: 10, v1: 30, nv: 3, p0: 40, p1: 80, np: 3, pasadas: 1, aire: true, lado: 10, sep: 5, etiquetas: true }), g = LASER.generarRD(p), d = LASER.RDCore.decode(g.rd.bytes);
+    const cas = p.filter(o => o.L.id === 'casilla'); return { capas: p.length, cas: cas.map(o => o.v + '/' + o.p).join(' '), colores: new Set(cas.map(o => o.L.color)).size, fin: d.cmds[d.cmds.length - 1].hex, magic: d.magic, max: LASER.planPlantilla({ nv: 9, np: 9, v0: 1, v1: 9, p0: 10, p1: 90, lado: 10, sep: 5 }).length }; });
+  ok(pt.capas === 10 && pt.cas === '10/40 20/40 30/40 10/60 20/60 30/60 10/80 20/80 30/80' && pt.colores === 9 && pt.fin === 'D7' && pt.magic === 0x88 && pt.max === 36, `🧪 plantilla 3 × 3: 9 casillas, cada una en su capa y color, más las etiquetas; .rd válido; como mucho 6 × 6 (${JSON.stringify(pt)})`);
+  // 7) 🟫 Mesa: la ventana se cierra sin quitar la mesa y vuelve con 📍; la herramienta Origen mueve el cero pieza, no la pieza
+  const ms = await pg.evaluate(async () => { const A = LASER.ajustes(), copia = JSON.stringify(A), viejos = contornos, esp = () => new Promise(r => setTimeout(r, 100));
+    document.getElementById('lasMesa').click(); await esp(); const r = { abierta: !document.getElementById('lasMesaBox').hidden };
+    document.getElementById('lasMesaCerrar').click(); await esp(); r.cerrada = document.getElementById('lasMesaBox').hidden && A.mesa;
+    document.getElementById('lasMesaAbrir').click(); await esp(); r.otraVez = !document.getElementById('lasMesaBox').hidden;
+    contornos = [{ pts: [{ x: 100, y: 100 }, { x: 150, y: 100 }, { x: 150, y: 150 }, { x: 100, y: 150 }], b: [0, 0, 0, 0], cerrado: true, tipo: 'auto' }]; refrescar();
+    A.inicio = 'absolute'; A.cpX = 500; A.cpY = 350; const a = Array.from(LASER.generarRD().rd.bytes); fijarOrigen({ x: 100, y: 100 }); const b = Array.from(LASER.generarRD().rd.bytes);
+    r.cp = [A.cpX, A.cpY].join(','); r.mismo = a.length === b.length && a.every((v, i) => v === b[i]);
+    contornos = viejos; Object.assign(A, JSON.parse(copia)); document.getElementById('lasMesa').checked = A.mesa; refrescar(); return r; });
+  ok(ms.abierta && ms.cerrada && ms.otraVez, '🟫 Mesa: ✕ cierra la ventana y la mesa sigue; 📍 la vuelve a abrir');
+  ok(ms.cp === '400,250' && ms.mismo, `herramienta Origen: el cero pieza pasa a X400 Y250 y la pieza no se mueve de la mesa (mismo .rd: ${ms.mismo})`);
   ok(!pg.errs.length, 'laser.html: sin errores de JavaScript' + (pg.errs.length ? ' · ' + pg.errs.slice(0, 2).join(' | ') : ''));
   console.log(`${n} ejercicios · fallos ${fallos.length}`);
   await b.close(); process.exitCode = fallos.length ? 1 : 0; })();

@@ -70,7 +70,8 @@ cap('📋 Solución: el programa para láser', f'''
 <p>La pestaña {B('📋 Solución')} escribe el <strong>programa ISO de la pieza para una láser</strong> mientras se dibuja, comentado línea a línea, como en el Calcador. En el bloque <strong>🔥 Láser</strong>:</p>
 <ul>
 <li><strong>Coordenadas:</strong> G90 (absolutas), G91 (incrementales, con el primer desplazamiento en G90) o mixta (G90 para entrar y salir, G91 en el recorrido).</li>
-<li><strong>Herramienta:</strong> el láser. No hay fresa, compensación ni Z.</li>
+<li><strong>Herramienta:</strong> el láser. No hay fresa ni Z.</li>
+<li><strong>Ancho corte</strong> (capa Corte): el ancho de corte del material. Con él, el programa usa <strong>G41/G42</strong> (ver más abajo).</li>
 <li><strong>Corte</strong> y <strong>Marcado:</strong> el <strong>material</strong> de la biblioteca, la <strong>velocidad</strong>, las <strong>pasadas</strong> y la <strong>potencia</strong> mínima y máxima.</li>
 <li><strong>Soplado de aire</strong> y el <strong>orden</strong> de los contornos.</li>
 </ul>
@@ -84,7 +85,10 @@ cap('📋 Solución: el programa para láser', f'''
 <tr><td><code>M03 S600</code></td><td>Enciende el láser. <strong>S</strong> es la potencia de 0 a 1000: S600 = 60 %.</td></tr>
 <tr><td><code>G1</code> / <code>G2</code> / <code>G3 … F1800</code></td><td>Corta en recta o en arco. <strong>F</strong> va en mm/min: F1800 = 30 mm/s.</td></tr>
 <tr><td><code>M05</code></td><td>Apaga el láser.</td></tr>
-<tr><td>Pasadas</td><td>En lugar de bajar en Z, el láser repite el contorno: cada pasada empieza con su <code>M03</code> y acaba con su <code>M05</code>.</td></tr></table>
+<tr><td>Pasadas</td><td>En lugar de bajar en Z, el láser repite el contorno: cada pasada empieza con su <code>M03</code> y acaba con su <code>M05</code>.</td></tr>
+<tr><td><code>G41</code> / <code>G42</code> … <code>G40</code></td><td>Solo con ancho de corte: compensación, como en la fresa, con medio ancho de corte en lugar del radio. Se activa en el <code>G0</code> de entrada y <code>G40</code> la anula al acabar el contorno.</td></tr></table>
+<h3>G41 y G42 en la láser</h3>
+<p>Las láseres CNC que leen G-code (las industriales de chapa, por ejemplo) compensan el ancho de corte igual que una fresa compensa su radio: el ancho se guarda en la máquina y el programa dice con <code>G41</code> (a la izquierda del avance) o <code>G42</code> (a la derecha) de qué lado va el haz. El Calcador láser lo escribe así: <strong>fuera de la pieza</strong> en los contornos exteriores y <strong>dentro</strong> de los agujeros, según el sentido en que se recorren. Es la misma regla que en la fresa, con un «radio» de décimas de milímetro.</p>
 <p>Primero se marca y después se corta; los agujeros, antes que el contorno que los rodea. Con {B('⬇ Guardar .nc')} se guarda el programa.</p>
 <div class="par"><div>{img('explicacion.jpg', pie='Al pulsar una línea, el panel explica qué hace cada código.')}</div><div>
 <p>Como en el Calcador, <strong>al pulsar una línea</strong> (o avanzar con ▶▏) el panel explica qué hace cada código y el láser se mueve sobre el dibujo: el <strong>M03</strong> enciende el láser, la <strong>S</strong> es la potencia, el <strong>G0</strong> se mueve con el láser apagado…</p></div></div>
@@ -98,6 +102,7 @@ cap('🔥 Láser: capas y orden de corte', img('laser_capas.jpg', '78%', 'Qué s
 <li><strong>Mín %</strong> y <strong>Máx %:</strong> la potencia. La máxima es la de corte; la mínima, la que usa la máquina al frenar en las esquinas, para que no se quemen. Con el mismo valor en las dos, la potencia no cambia.</li>
 <li><strong>Cortar:</strong> sin marcar, la capa no se envía a la máquina.</li>
 <li><strong>Aire:</strong> el soplado, que limpia el humo y evita que la madera arda.</li>
+<li><strong>Ancho de corte</strong> (solo en Corte): lo que quema el haz, en mm (en el DM, unas décimas). Con 0, el láser va por la línea y la pieza sale un poco más pequeña. Con su valor, el láser va <strong>medio ancho por fuera de la pieza</strong> y <strong>por dentro de los agujeros</strong>, para que salgan a su medida: en el .rd, en el .rld y en la vista previa. Un borde común a dos piezas pegadas se corta por la línea, una sola vez. Se mide con la 🧪 Plantilla de prueba (capítulo 6).</li>
 <li><strong>Pasadas:</strong> cuántas veces se repite cada contorno. Las pasadas de un contorno van seguidas, antes de pasar al siguiente. Para grosores que no atraviesa de una vez, es mejor 2 pasadas rápidas que 1 muy lenta.</li>
 </ul>
 <h3>El orden</h3>
@@ -124,8 +129,9 @@ cap('📚 Parámetros de corte', f'''
 <p>Cuando unos valores corten bien, pulsa {B('＋ Guardar Corte')} (o {B('＋ Guardar Marcado')}): se abre el formulario con los valores de la capa. Escribe el material, el grosor y una nota (cuándo lo probaste, cómo salió) y guárdalo.</p></div></div>
 <h3>Exportar e importar</h3>
 <ul>
+<li>Cada material guarda también su <strong>ancho de corte</strong>, y {B('Usar')} lo pone en la capa Corte (0 si no se ha medido).</li>
 <li>{B('⬇ Exportar')} descarga la biblioteca en un JSON, para llevarla a otro ordenador o compartirla con el departamento. {B('⬆ Importar…')} la carga: <strong>Agregar</strong> añade los materiales que no tengas, y <strong>Sustituir</strong> deja solo los del archivo.</li>
-<li>{B('⬆ Importar…')} también lee el <strong>Param.lib</strong> de Atheon Design, su biblioteca de parámetros: los cortes pasan a la capa Corte y los grabados a Marcado. {B('⬇ Atheon (.lib)')} guarda la nuestra en ese formato (las pasadas, que Param.lib no tiene, van en la nota).</li>
+<li>{B('⬆ Importar…')} también lee el <strong>Param.lib</strong> de Atheon Design, su biblioteca de parámetros: los cortes pasan a la capa Corte y los grabados a Marcado. {B('⬇ Atheon (.lib)')} guarda la nuestra en ese formato (las pasadas y el ancho de corte, que Param.lib no tiene, van en la nota, y se recuperan al importarla de nuevo).</li>
 <li>{B('Parámetros de inicio')} añade los de la suite (archivo <code>biblioteca_laser/Parametros_laser_inicio.json</code>):</li>
 </ul>
 <table class="tabla"><tr><th>Material</th><th>Grosor</th><th>Velocidad</th><th>Potencia</th><th>Origen</th></tr>
@@ -137,7 +143,18 @@ cap('📚 Parámetros de corte', f'''
 <tr><td>Acrílico</td><td>5 mm</td><td>16 mm/s</td><td>60 %</td><td>Interpolado · orientativo</td></tr>
 <tr><td>Acrílico</td><td>10 mm</td><td>4 mm/s</td><td>60 %</td><td>Biblioteca de fábrica de Atheon</td></tr>
 <tr><td>MDF, marcar líneas</td><td>—</td><td>200 mm/s</td><td>14 %</td><td>Del grabado de Atheon · orientativo</td></tr></table>
-<div class="nota clase"><strong>👩‍🏫 En el taller.</strong> Cada tablero es distinto (humedad, cola, densidad). Corta una tira de prueba con los parámetros de la biblioteca y ajústalos: si no atraviesa, baja la velocidad o añade una pasada; si quema el borde, sube la velocidad.</div>
+<h3>🧪 Plantilla de prueba</h3>
+<div class="par"><div>{img('plantilla.jpg', pie='La plantilla de prueba: 3 velocidades × 3 potencias, y el resultado para guardarlo.')}</div><div>
+<p>{B('🧪 Plantilla de prueba…')} prepara un .rd con una <strong>cuadrícula de casillas cuadradas</strong>: cada <strong>columna</strong>, una velocidad, y cada <strong>fila</strong>, una potencia (hasta 6 × 6). Las velocidades y las potencias se graban encima y a la izquierda con la capa Marcado. Así se ajusta un tablero nuevo en un solo corte.</p></div></div>
+{img('plantilla_vista.jpg', '82%', 'La vista previa de la plantilla: una casilla por capa, cada una de un color, con las etiquetas grabadas.')}
+<ul>
+<li>Elige si pruebas <strong>Corte</strong> o <strong>Marcado</strong>, las velocidades y potencias (desde, hasta y cuántas), el lado de la casilla, la separación y las pasadas.</li>
+<li>{B('👁 Vista previa…')} y {B('⬇ Exportar .rd')}. Cada casilla va en <strong>su propia capa</strong> del .rd, con su velocidad y su potencia (la mínima igual que la máxima).</li>
+<li>Después de cortarla, elige la casilla que <strong>se suelta limpia</strong> con el borde menos quemado. Mide su lado con el calibre y escríbelo en <strong>Lado medido</strong>: el <strong>ancho de corte</strong> es el lado dibujado menos el medido (10 − 9,82 = 0,18 mm).</li>
+<li>{B('Guardar en la biblioteca')} la guarda como material, con su velocidad, su potencia y su ancho de corte.</li>
+</ul>
+<div class="nota atencion"><strong>⚠️ La primera vez.</strong> Una plantilla con muchas casillas lleva muchas capas. Empieza por una pequeña (3 × 3), compruébala con el marco del panel y mira que la máquina la acepta antes de hacer otras más grandes.</div>
+<div class="nota clase"><strong>👩‍🏫 En el taller.</strong> Cada tablero es distinto (humedad, cola, densidad). Con la plantilla, o con una tira de prueba, ajusta los parámetros: si no atraviesa, baja la velocidad o añade una pasada; si quema el borde, sube la velocidad.</div>
 ''')
 
 cap('🟫 La mesa', img('mesa.jpg', '82%', 'La mesa de la Atheon con la pieza centrada.') + f'''
@@ -149,7 +166,12 @@ cap('🟫 La mesa', img('mesa.jpg', '82%', 'La mesa de la Atheon con la pieza ce
 <li>el <strong>cero pieza</strong>, con su posición en la máquina, y dónde estará el <strong>cabezal al empezar</strong>.</li>
 </ul>
 ''' + img('mesa_detalle.jpg', '82%', 'La pieza en la mesa: el cero pieza y el cabezal al empezar.') + f'''
-<p>En el recuadro <strong>Mesa de la láser</strong> se escribe dónde está el cero pieza, en <strong>X</strong> e <strong>Y</strong> desde el cero máquina. {B('Centrar la pieza')} la pone en el centro de la mesa y {B('⤢ Ver la mesa')} la encuadra entera.</p>
+<p>En la ventana <strong>Mesa de la láser</strong> se escribe dónde está el cero pieza, en <strong>X</strong> e <strong>Y</strong> desde el cero máquina. {B('Centrar la pieza')} la pone en el centro de la mesa y {B('⤢ Ver la mesa')} la encuadra entera.</p>
+<ul>
+<li>La ventana se <strong>mueve</strong> arrastrándola por su título, y se queda donde la dejes.</li>
+<li>{B('✕')} la cierra y la mesa sigue a la vista. Se vuelve a abrir con {B('📍')}, junto a la casilla Mesa.</li>
+<li>Con la herramienta <strong>Origen</strong> del Calcador (tecla <strong>O</strong>), el clic marca el <strong>nuevo cero pieza</strong>, por ejemplo en una esquina de la pieza. La pieza se queda en su sitio de la mesa: lo que cambia son las X e Y del cero pieza.</li>
+</ul>
 <div class="nota"><strong>💡 ¿Cuándo importa la posición?</strong> Con el inicio en <strong>posición actual del cabezal</strong> (el normal, capítulo 12), la pieza se corta donde pongas el cabezal y la mesa sirve para ver si cabe y planificar el tablero. Con <strong>coordenadas de la mesa</strong>, la máquina corta la pieza exactamente donde la ves.</div>
 ''')
 
@@ -182,7 +204,8 @@ cap('Desde un programa G-code', img('gcode.jpg', '62%', 'Un programa de un alumn
 <p>{B('📂 Desde un programa G-code…')}, en <strong>Qué se corta</strong>, abre un programa ISO (<code>.nc</code>, <code>.iso</code>, <code>.txt</code>…) y lo prepara para la láser:</p>
 <ul>
 <li><strong>G1, G2 y G3 cortan</strong> y <strong>G0</strong> se mueve sin láser.</li>
-<li>No se tienen en cuenta la <strong>Z</strong> ni la <strong>compensación</strong> G41/G42: el láser sigue el contorno programado, que es la pieza a su medida.</li>
+<li>No se tiene en cuenta la <strong>Z</strong>.</li>
+<li><strong>G41/G42</strong>: con ancho de corte en la capa Corte, desplazan el haz medio ancho a la izquierda o a la derecha del avance, como en una láser CNC. Sin G41/G42, el láser va por la línea, y el Resumen avisa de que la pieza saldrá más pequeña. Si el alumno se equivoca de lado, la pieza sale más pequeña y los agujeros, más grandes.</li>
 <li>Entiende lo mismo que el resto de la suite: G90/G91, arcos con I J o con R, polares, G70/G71…</li>
 <li>Todo va a la capa <strong>Corte</strong>, con sus parámetros.</li>
 </ul>
@@ -230,6 +253,7 @@ cap('Antes de cortar y problemas frecuentes', f'''
 </ul>
 <dl class="faq">
 <dt>La pieza no se suelta del tablero.</dt><dd>Falta potencia o sobra velocidad para ese grosor: baja la velocidad o pon una pasada más, y guarda el material corregido en la biblioteca. Comprueba también el enfoque.</dd>
+<dt>Las piezas salen un poco más pequeñas y no encajan.</dt><dd>Falta el <strong>ancho de corte</strong> en la capa Corte. Mídelo con la 🧪 Plantilla de prueba y guárdalo en el material.</dd>
 <dt>El borde sale quemado.</dt><dd>Sube la velocidad, baja la potencia mínima (la de las esquinas) o comprueba que el aire está abierto.</dd>
 <dt>La pieza sale en otro sitio o en espejo.</dt><dd>Revisa el <strong>Inicio</strong>, la <strong>Referencia</strong> y el <strong>Origen</strong> en ⚙️ Máquina. Con «posición actual», el cabezal marca la esquina inferior izquierda de la pieza.</dd>
 <dt>Corta una línea que no está en el dibujo.</dt><dd>Si es un programa G-code, el alumno se mueve con G1 donde debía ir con G0. En la vista previa los desplazamientos en vacío salen en discontinua: lo que sale continuo, se corta.</dd>
