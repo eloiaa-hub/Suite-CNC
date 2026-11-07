@@ -625,7 +625,7 @@ function sincronizar() {
 // Como el del Calcador (G90, G91, G91 total o mixta; los mismos puntos y comentarios), pero sin fresa:
 // sin T M06, sin Z ni G41/G42; M03 S… enciende el láser (S = % × 10), M05 lo apaga, y las pasadas repiten el contorno
 function tuGenerarLaser() {
-    const coord = tuCoord(), isT = coord === 'G91T';
+    const coord = tuCoord() === 'G91T' ? 'G91' : tuCoord(), isT = false;     // sin Z: «G91 total» es lo mismo que G91
     const L = [], puntos = [], etiquetas = [];
     const add = (cod, com, extra) => L.push({ cod, com, ...(extra || {}) });
     const sep = com => L.push({ cod: '', com, sep: true });
@@ -751,6 +751,14 @@ function montar() {
     // los parámetros de la láser están en la pestaña 🔥 Láser y en el bloque «🔥 Láser» de 📋 Solución: los dos a la vez
     const grid = panel.querySelector('.tu-mec-grid'), ancla = grid && grid.querySelector('label[for=tuCompSel]');
     if (grid) { const tmp = document.createElement('div'); tmp.innerHTML = htmlMec(); [...tmp.childNodes].forEach(n => grid.insertBefore(n, ancla || null)); }
+    // Coordenadas: sin Z, las dos G91 de la fresa son una sola
+    const sc = $('tuCoord');
+    if (sc) {
+        const t = sc.querySelector('option[value=G91T]'); if (t) t.remove();
+        const g = sc.querySelector('option[value=G91]'); if (g) g.textContent = 'G91 · incrementales';
+        sc.setAttribute('data-tip', 'G90: cada punto desde el cero pieza · G91: lo que se mueve el láser desde el punto anterior (el primer desplazamiento, en G90) · Mixta: G90 para entrar y salir, G91 en el recorrido');
+        if (typeof cfgMec === 'object' && cfgMec.coord === 'G91T') { cfgMec.coord = 'G91'; sc.value = 'G91'; sc.dispatchEvent(new Event('change', { bubbles: true })); }
+    }
     const sum = panel.querySelector('#tuMec > summary'); if (sum) { sum.textContent = '🔥 Láser'; sum.title = 'La herramienta es el láser: velocidad, potencia y pasadas de cada capa, y las coordenadas del programa'; }
     panel.addEventListener('change', e => {
         const inp = e.target; if (!inp.dataset || !inp.dataset.c || !inp.dataset.k) return;
