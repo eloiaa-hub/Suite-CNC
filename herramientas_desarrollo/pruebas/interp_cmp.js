@@ -21,12 +21,16 @@ const { chromium } = require('playwright'); const fs = require('fs'); const { la
       if (x.z !== null && y.z !== null && Math.abs(x.z - y.z) > tol) { msg = `línea ${x.l}: Z ${x.z} en el Calcador y ${y.z} en el Simulador`; break; }
       if (!!x.mid !== !!y.mid) { msg = `línea ${x.l}: arco en ${x.mid ? 'el Calcador' : 'el Simulador'} y recta en el otro`; break; }
       if (x.mid) { const P = y.mid; let d = Infinity; for (let q = 0; q + 1 < P.length; q++) { const a = P[q], c = P[q + 1], ab = { x:c.x - a.x, y:c.y - a.y }, L = ab.x * ab.x + ab.y * ab.y || 1, t = Math.max(0, Math.min(1, ((x.mid.x - a.x) * ab.x + (x.mid.y - a.y) * ab.y) / L)); d = Math.min(d, Math.hypot(x.mid.x - a.x - t * ab.x, x.mid.y - a.y - t * ab.y)); }
-        if (d > (process.env.TOLARC ? +process.env.TOLARC : 0.05)) { msg = `línea ${x.l}: el arco del Calcador pasa por (${x.mid.x.toFixed(2)}, ${x.mid.y.toFixed(2)}), a ${d.toFixed(2)} mm del arco del Simulador (¿sentido o centro distinto?)`; break; } }
+        if (d > (process.env.TOLARC ? +process.env.TOLARC : /polar/.test(p.n) ? 0.15 : 0.05))   // en polares, el redondeo mueve el centro de un semicírculo con R
+          { msg = `línea ${x.l}: el arco del Calcador pasa por (${x.mid.x.toFixed(2)}, ${x.mid.y.toFixed(2)}), a ${d.toFixed(2)} mm del arco del Simulador (¿sentido o centro distinto?)`; break; } }
     }
     if (msg) difs.push(`${p.n}: ${msg}`); else iguales++;
   });
   console.log(`${progs.length} programas · iguales ${iguales} · con diferencias ${difs.length}`);
   const grupos = {}; difs.forEach(d => { const k = d.split(': ').slice(1).join(': ').replace(/-?\d+(\.\d+)?/g, '#').slice(0, 60); (grupos[k] = grupos[k] || []).push(d); });
   Object.entries(grupos).sort((a, b) => b[1].length - a[1].length).forEach(([k, v]) => console.log(`\n[${v.length}] ${v.slice(0, 2).join('\n     ')}`));
-  fs.writeFileSync(require('path').join(__dirname, 'interp_difs.json'), JSON.stringify(difs, null, 1));
-  await b.close(); })();
+  if (process.env.OUT) fs.writeFileSync(require('path').join(process.env.OUT, 'interp_difs.json'), JSON.stringify(difs, null, 1));
+  await b.close();
+  const corpus = JSON.parse(fs.readFileSync(require('path').join(__dirname, 'interp_corpus.json'), 'utf8'));
+  if (!corpus.length) { console.log('✗ interp_corpus.json está vacío: no se ha comparado ningún programa de tabla'); process.exit(1); }
+  if (difs.length) { console.log(`✗ ${difs.length} programas se leen distinto en el Calcador y en el Simulador`); process.exit(1); } })();

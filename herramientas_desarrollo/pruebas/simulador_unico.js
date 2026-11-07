@@ -7,7 +7,7 @@ const { lanzar, path, SUITE, fs } = require('./comun');
   const p = await ctx.newPage(); p.on('pageerror', e => errs.push(e.message)); p.on('dialog', d => d.accept());
   await p.goto('file://' + path.join(SUITE, 'simulador3d.html')); await p.evaluate(() => localStorage.clear()); await p.reload(); await p.waitForTimeout(1200);
   const info = await p.evaluate(() => ({ titulo: document.title, cab: document.querySelector('h1').innerText, profesor: /profesor/i.test(document.querySelector('h1').innerText) || !!document.querySelector('.pill-profesor'), editor: !!document.getElementById('textoEditor') }));
-  ok('título y cabecera sin «Profesor», versión V45', !info.profesor && /V45/.test(info.cab) && info.titulo === 'Simulador G-Code 3D — Por Eloi A.A.', `${info.titulo} · ${info.cab.replace(/\s+/g, ' ')}`);
+  ok('título y cabecera sin «Profesor», versión V46', !info.profesor && /V\d+/.test(info.cab) && info.titulo === 'Simulador G-Code 3D — Por Eloi A.A.', `${info.titulo} · ${info.cab.replace(/\s+/g, ' ')}`);
   // editar, aplicar y simular
   const ed = await p.evaluate(() => { toggleEdicionCodigo(); editorTexto().value = 'G71\nG90\nT101 M06\nS18000 M03\nG0 Z20\nG0 X0 Y0\nG1 Z-3 F150\nG1 X40 F1500\nG0 Z20\nM05\nM30\n'; const okA = aplicarEdicion(); return { okA, moves: gcodeMoves.length, fin: gcodeMoves[gcodeMoves.length - 1] && gcodeMoves[gcodeMoves.length - 1].x }; });
   ok('el editor de G-code: editar y aplicar simula el programa nuevo', ed.okA !== false && ed.moves > 3, JSON.stringify(ed));

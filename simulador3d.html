@@ -271,7 +271,7 @@
 <body>
 <div id="app">
     <header>
-        <h1><a href="index.html" class="ir-portada" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a>🎥<span class="tit-largo"> Simulador G-Code 3D — Por Eloi A.A.</span><span class="ver-suite" title="Versión del programa" style="font-size:11px;font-weight:600;padding:1px 7px;margin-left:8px;border-radius:9px;background:rgba(0,90,156,.12);color:#005A9C;vertical-align:middle">V45</span></h1>
+        <h1><a href="index.html" class="ir-portada" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a>🎥<span class="tit-largo"> Simulador G-Code 3D — Por Eloi A.A.</span><span class="ver-suite" title="Versión del programa" style="font-size:11px;font-weight:600;padding:1px 7px;margin-left:8px;border-radius:9px;background:rgba(0,90,156,.12);color:#005A9C;vertical-align:middle">V46</span></h1>
         <span class="filename" id="filenameLabel">Sin archivo cargado</span>
         <div class="sep"></div>
         <button class="principal" onclick="document.getElementById('fileInput').click()" title="Un programa G-code (.nc, .txt…) o el plano del ejercicio (.json del Calcador) para comprobar el programa con él">📂 Cargar<span class="lbl2"> G-code / plano</span></button>
@@ -1862,6 +1862,48 @@ M30
 // arcos por I/J o por R (con la ambigüedad radio corto/largo resuelta por
 // el signo de R, convención habitual Fanuc/LinuxCNC).
 const Z_SEGURIDAD = 10;   // mm: altura inicial de la fresa antes del primer movimiento
+// Quita los comentarios, también los que llevan paréntesis dentro: (RANURA (COLISA) G91) no es un G91
+function sinComentarios(t) { let a; do { a = t; t = t.replace(/\([^()]*\)/g, ''); } while (t !== a); return t; }
+// Revisa cómo está escrita una línea (ya sin comentarios). Devuelve el primer error o null.
+// El simulador sigue leyendo lo que entiende, pero el alumno tiene que ver el error: la máquina no lo aceptaría.
+const LETRAS_ISO = 'NGXYZIJKRFSTMDHPQL';
+const O_POR_CERO = /^[Oo](?=$|[\s.\d]|[A-Za-z][-+.\d])/;   // «XO», «XO Y20», «XOY20», «X1O5»; no «HOLA»
+function errorSintaxisLinea(l) {
+    if (l.includes('(') || l.includes(')')) return 'Paréntesis sin cerrar: los comentarios se escriben entre ( y ), en la misma línea.';
+    const t = l.replace(/^\//, '').trim();
+    const NUM = /^[-+]?(?:[0-9]+\.?[0-9]*|\.[0-9]+)/, vistas = new Set();
+    let i = 0, primera = true;
+    while (i < t.length) {
+        if (/\s/.test(t[i])) { i++; continue; }
+        const trozo = t.slice(i).split(/\s/)[0];
+        const c = t[i].toUpperCase();
+        if (!/[A-Z]/.test(c) || t[i].charCodeAt(0) > 127) {
+            if (/[-+.\d]/.test(t[i])) return `«${trozo}»: falta la letra delante del número (por ejemplo, X25).`;
+            return `No se entiende «${trozo}»: cada palabra es una letra seguida de un número (por ejemplo, X25 o G1).`;
+        }
+        i++;
+        const resto = t.slice(i), m = resto.match(NUM);
+        if (!m) {
+            const sig = resto.replace(/^\s+/, '');
+            if (O_POR_CERO.test(sig) && c !== 'O') return `«${c}${sig[0]}»: has escrito la letra O en lugar del número 0 (cero). Escribe ${c}0.`;
+            if (/^[-+]{2,}/.test(resto)) return `«${trozo}»: el número lleva dos signos. Escribe solo uno.`;
+            if (LETRAS_ISO.includes(c)) { if (/^[A-Za-z]/.test(resto)) return `No se entiende «${trozo}»: cada palabra es una letra seguida de un número (por ejemplo, X25 o G1).`; return `«${c}» sin número: después de la letra tiene que ir su valor (por ejemplo, ${c}25).`; }
+            return `No se entiende «${trozo}»: cada palabra es una letra seguida de un número (por ejemplo, X25 o G1).`;
+        }
+        i += m[0].length;
+        const tras = t.slice(i);
+        if (O_POR_CERO.test(tras)) return `«${c}${m[0]}${tras[0]}»: has escrito la letra O en lugar del número 0 (cero). Escribe ${c}${m[0]}0.`;
+        if (/^\.\d/.test(tras) || /^\./.test(tras)) return `«${trozo}»: el número tiene más de un punto decimal.`;
+        if (/^[eE][-+]?\d/.test(tras)) return `«${trozo}»: el control no admite números con exponente. Escribe el número completo.`;
+        if (tras && !/^[\sA-Za-z]/.test(tras)) return `No se entiende «${trozo}»: cada palabra es una letra seguida de un número (por ejemplo, X25 o G1).`;
+        if (c === 'O') { if (!primera && !(vistas.size === 1 && vistas.has('N'))) return `«O${m[0]}»: el número de programa (O) va al principio de la línea. Si querías un cero, escribe el número 0.`; primera = false; continue; }
+        if (!LETRAS_ISO.includes(c)) return `«${c}${m[0]}»: la letra ${c} no es una palabra de este control (se usan N G X Y Z I J K R F S T M).`;
+        if ((c === 'G' || c === 'M') && !/^\d+$/.test(m[0])) return `«${c}${m[0]}»: el número de ${c} es entero y sin signo (por ejemplo, ${c === 'G' ? 'G1' : 'M3'}).`;
+        if (c !== 'G' && c !== 'M' && vistas.has(c)) return `La letra ${c} está dos veces en la línea: escríbela solo una vez.`;
+        vistas.add(c); primera = false;
+    }
+    return null;
+}
 function parsearGcode3D(texto) {
     const lineas = texto.split(/\r?\n/);
     const moves = [];
@@ -1874,16 +1916,16 @@ function parsearGcode3D(texto) {
     let ultimoGMocion = null;
     let comp = 40;        // G40 / G41 / G42 (modal)
     let husillo = false;  // M3/M4 en marcha, M5 parado
-    const meta = { lineaComp: null, compFinal: 40, fin: false, comaDecimal: [], noSoportados: [], ciclosIncr: null, cambios: [], g28: null, numeros: [], arranque: null };
+    const meta = { lineaComp: null, compFinal: 40, fin: false, sintaxis: [], comaDecimal: [], noSoportados: [], ciclosIncr: null, cambios: [], g28: null, numeros: [], arranque: null };
     // Herramienta: con M06 en el programa, la T se cambia en el M06 (T102 M06); sin M06, vale la T escrita
-    const usaM06 = /(^|[^A-Z0-9])M0?6(?![0-9])/i.test(texto.replace(/\([^)]*\)/g, ' ').replace(/;.*$/gm, ' '));
+    const usaM06 = /(^|[^A-Z0-9])M0?6(?![0-9])/i.test(texto.split(/\r?\n/).map(sinComentarios).join('\n').replace(/;.*$/gm, ' '));
     let tSel = null, tAct = null, tras06 = false;
     let ciclo = null;          // ciclo fijo activo (G81, G82, G83, G73, G85, G86, G89)
     let retornoCiclo = 98;     // G98 = volver al plano inicial, G99 = volver al plano R
     const noSoportado = (codigo, linea, msg) => { if (!meta.noSoportados.some(n => n.codigo === codigo)) meta.noSoportados.push({ codigo, linea, msg }); };
 
     lineas.forEach((linea, idx) => {
-        let l = linea.replace(/\(.*?\)/g, '').split(';')[0].trim();
+        let l = sinComentarios(linea).split(';')[0].trim();
         if (!l) return;
         if (l.startsWith('%')) return;
         // Instrucciones después del fin de programa (M02/M30): la máquina no las ejecuta
@@ -1892,6 +1934,7 @@ function parsearGcode3D(texto) {
         if (/\d,\d/.test(l)) { meta.comaDecimal.push(idx+1); l = l.replace(/(\d),(\d)/g, '$1.$2'); }
         // Espacios entre la letra y el número ("X 25") → "X25"
         l = l.replace(/([A-Za-z])\s+(?=[-+.\d])/g, '$1').replace(/([-+])\s+(?=[.\d])/g, '$1');
+        { const e = errorSintaxisLinea(l); if (e) meta.sintaxis.push({ linea: idx+1, msg: e }); }
         const palabras = l.match(/[A-Za-z][-+]?(?:[0-9]+\.?[0-9]*|\.[0-9]+)/g) || [];
         { const nW = palabras.find(p => /^N/i.test(p)); if (nW) meta.numeros.push({ n: parseFloat(nW.slice(1)), linea: idx+1, et: 'N' + nW.slice(1) }); }
         const letras = {};
@@ -1916,7 +1959,7 @@ function parsearGcode3D(texto) {
             else if (g === 28) { if (!meta.g28) meta.g28 = idx+1; }
             else if (g === 30) noSoportado('G30', idx+1, 'G30 (vuelta a referencia) no se simula: la fresa no se mueve en esta línea.');
             else if (![4, 17, 43, 44, 49, 53, 54, 55, 56, 57, 58, 59, 61, 64, 94, 95].includes(g))
-                noSoportado('G' + g, idx+1, 'Código G' + g + ' no reconocido por el simulador: se ignora.');
+                meta.sintaxis.push({ linea: idx+1, msg: 'Código G' + g + ' no existe en este control: se ignora.' });
         });
 
         // G70/G71 con X Y Z antes del primer movimiento (como en TpaCAD): las medidas de la pieza (largo, ancho, grosor), no un movimiento
@@ -1938,6 +1981,8 @@ function parsearGcode3D(texto) {
         });
         if ('F' in letras) ultimoF = letras.F * unidadFactor;   // modal; en G20 pulg/min → mm/min
 
+        if (!ciclo && palabras.some(p => /^G0*(98|99)$/i.test(p)) && (('X' in letras) || ('Y' in letras) || ('Z' in letras)))
+            meta.sintaxis.push({ linea: idx+1, msg: 'G98 y G99 solo sirven con un ciclo de taladrado: aquí no hay ninguno activo. ¿Querías otro código?' });
         // ── Ciclos fijos de taladrado ──
         if (ciclo) {
             if ('R' in letras) ciclo.r = letras.R * unidadFactor;
@@ -2534,7 +2579,7 @@ function leerHerramientaDelPrograma(texto) {
     // si los comentarios no dicen el diámetro, la T del programa se busca en la base de herramientas
     let hT = null;
     if (!(diam > 0)) {
-        const sinCom = texto.replace(/\([^)]*\)/g, ' ').replace(/;.*$/gm, ' ');
+        const sinCom = texto.split(/\r?\n/).map(sinComentarios).join('\n').replace(/;.*$/gm, ' ');
         const mT = sinCom.match(/(?:^|[^A-Z0-9])T\s*0*(\d{1,3})(?![\d.])/im);
         if (mT && (hT = HB.porT(+mT[1]))) { diam = hT.d; if (!tipo) { tipo = hT.tipo; ang = hT.angulo; } }
     }
@@ -3860,6 +3905,8 @@ function revisarPrograma() {
         if (fuera) add(gcodeMoves[fuera.movIdx].linea, 'aviso', 'El recorrido de corte sale del bloque de material: revisa el origen X0 Y0 o las medidas del bloque.');
     }
     // 7) Sintaxis y códigos no simulados
+    { const S = meta.sintaxis || [], MAX = 40; S.slice(0, MAX).forEach(e => add(e.linea, 'error', e.msg));
+      if (S.length > MAX) add(S[MAX].linea, 'error', 'Y ' + (S.length - MAX) + ' líneas más mal escritas. ¿Es un programa de G-code?'); }
     (meta.comaDecimal || []).slice(0, 1).forEach(l => add(l, 'error', 'Coma decimal (p. ej. X10,5): el control CNC no la entiende, usa punto (X10.5).' + (meta.comaDecimal.length > 1 ? ' Hay ' + meta.comaDecimal.length + ' líneas así.' : '') + ' Se ha simulado como si fuera un punto.'));
     (meta.noSoportados || []).forEach(n => add(n.linea, 'aviso', n.msg));
     if (meta.ciclosIncr) add(meta.ciclosIncr, 'aviso', 'Ciclo de taladrado en incremental (G91): R se toma desde el plano inicial y Z desde R. Comprueba que es lo que quieres.');
@@ -3997,7 +4044,7 @@ function explicarPrograma(texto, moves) {
         const n = idx + 1, f = [];      // f: { cod, txt }
         const ex = { frases: f, incr: false, abs: null, resultado: null, notas: [] };
         const com = (linea.match(/\(([^)]*)\)/g) || []).map(c => c.slice(1, -1).trim()).concat(linea.includes(';') ? [linea.slice(linea.indexOf(';') + 1).replace(/\([^)]*\)/g, '').trim()] : []).filter(Boolean);
-        let l = linea.replace(/\(.*?\)/g, '').split(';')[0].trim();
+        let l = sinComentarios(linea).split(';')[0].trim();
         if (!l) {
             if (com.length) f.push({ cod: '', txt: 'Línea de comentario: la máquina no la ejecuta. Sirve para explicar el programa a quien lo lee.' });
             else f.push({ cod: '', txt: 'Línea vacía: la máquina no hace nada.' });

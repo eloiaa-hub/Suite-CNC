@@ -644,7 +644,7 @@
 <body>
 <div class="app-window">
     <header class="top-bar">
-        <a href="index.html" class="ir-portada" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a><span class="top-bar-title">⬡ Calcador de contornos — Por Eloi A.A.<span class="ver-suite" title="Versión del programa" style="font-size:11px;font-weight:600;padding:1px 7px;margin-left:8px;border-radius:9px;background:rgba(0,90,156,.12);color:#005A9C;vertical-align:middle">v129</span></span>
+        <a href="index.html" class="ir-portada" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a><span class="top-bar-title">⬡ Calcador de contornos — Por Eloi A.A.<span class="ver-suite" title="Versión del programa" style="font-size:11px;font-weight:600;padding:1px 7px;margin-left:8px;border-radius:9px;background:rgba(0,90,156,.12);color:#005A9C;vertical-align:middle">v130</span></span>
         <div class="top-bar-right">
             <input class="project-name" id="projectName" type="text" value="calco_sin_nombre" placeholder="Nombre del proyecto">
             <div class="c2-archivo"><button class="btn-manual" onclick="nuevo()" title="Empieza de cero (se puede deshacer)">🗋 Nuevo</button><button class="btn-manual" onclick="document.getElementById('fileJSON').click()" title="Abre un proyecto .json del Calcador o del Corrector">📂 Abrir</button><button class="btn-manual" onclick="exportarJSON()" title="Guarda el proyecto en un archivo JSON: lo abren el Calcador, el Corrector, el Tutor y el Simulador (como plano del ejercicio)">💾 Guardar</button><button class="btn-manual" onclick="abrirBiblioteca()" title="Tus ejercicios: buscar, abrir e imprimir sus hojas">🗂 Biblioteca</button></div>
@@ -10022,21 +10022,68 @@ let cfgCorr = { tol:0.02 };
 let corr = null; // último resultado { segs, hallazgos, ... }
 
 // ── Intérprete ISO (Fanuc estándar, plano XY) ──
+// Quita los comentarios, también los que llevan paréntesis dentro: (RANURA (COLISA) G91) no es un G91
+function sinComentarios(t) { let a; do { a = t; t = t.replace(/\([^()]*\)/g, ''); } while (t !== a); return t; }
+// Revisa cómo está escrita una línea (ya sin comentarios). Devuelve el primer error o null.
+// El simulador sigue leyendo lo que entiende, pero el alumno tiene que ver el error: la máquina no lo aceptaría.
+const LETRAS_ISO = 'NGXYZIJKRFSTMDHPQL';
+const O_POR_CERO = /^[Oo](?=$|[\s.\d]|[A-Za-z][-+.\d])/;   // «XO», «XO Y20», «XOY20», «X1O5»; no «HOLA»
+function errorSintaxisLinea(l) {
+    if (l.includes('(') || l.includes(')')) return 'Paréntesis sin cerrar: los comentarios se escriben entre ( y ), en la misma línea.';
+    const t = l.replace(/^\//, '').trim();
+    const NUM = /^[-+]?(?:[0-9]+\.?[0-9]*|\.[0-9]+)/, vistas = new Set();
+    let i = 0, primera = true;
+    while (i < t.length) {
+        if (/\s/.test(t[i])) { i++; continue; }
+        const trozo = t.slice(i).split(/\s/)[0];
+        const c = t[i].toUpperCase();
+        if (!/[A-Z]/.test(c) || t[i].charCodeAt(0) > 127) {
+            if (/[-+.\d]/.test(t[i])) return `«${trozo}»: falta la letra delante del número (por ejemplo, X25).`;
+            return `No se entiende «${trozo}»: cada palabra es una letra seguida de un número (por ejemplo, X25 o G1).`;
+        }
+        i++;
+        const resto = t.slice(i), m = resto.match(NUM);
+        if (!m) {
+            const sig = resto.replace(/^\s+/, '');
+            if (O_POR_CERO.test(sig) && c !== 'O') return `«${c}${sig[0]}»: has escrito la letra O en lugar del número 0 (cero). Escribe ${c}0.`;
+            if (/^[-+]{2,}/.test(resto)) return `«${trozo}»: el número lleva dos signos. Escribe solo uno.`;
+            if (LETRAS_ISO.includes(c)) { if (/^[A-Za-z]/.test(resto)) return `No se entiende «${trozo}»: cada palabra es una letra seguida de un número (por ejemplo, X25 o G1).`; return `«${c}» sin número: después de la letra tiene que ir su valor (por ejemplo, ${c}25).`; }
+            return `No se entiende «${trozo}»: cada palabra es una letra seguida de un número (por ejemplo, X25 o G1).`;
+        }
+        i += m[0].length;
+        const tras = t.slice(i);
+        if (O_POR_CERO.test(tras)) return `«${c}${m[0]}${tras[0]}»: has escrito la letra O en lugar del número 0 (cero). Escribe ${c}${m[0]}0.`;
+        if (/^\.\d/.test(tras) || /^\./.test(tras)) return `«${trozo}»: el número tiene más de un punto decimal.`;
+        if (/^[eE][-+]?\d/.test(tras)) return `«${trozo}»: el control no admite números con exponente. Escribe el número completo.`;
+        if (tras && !/^[\sA-Za-z]/.test(tras)) return `No se entiende «${trozo}»: cada palabra es una letra seguida de un número (por ejemplo, X25 o G1).`;
+        if (c === 'O') { if (!primera && !(vistas.size === 1 && vistas.has('N'))) return `«O${m[0]}»: el número de programa (O) va al principio de la línea. Si querías un cero, escribe el número 0.`; primera = false; continue; }
+        if (!LETRAS_ISO.includes(c)) return `«${c}${m[0]}»: la letra ${c} no es una palabra de este control (se usan N G X Y Z I J K R F S T M).`;
+        if ((c === 'G' || c === 'M') && !/^\d+$/.test(m[0])) return `«${c}${m[0]}»: el número de ${c} es entero y sin signo (por ejemplo, ${c === 'G' ? 'G1' : 'M3'}).`;
+        if (c !== 'G' && c !== 'M' && vistas.has(c)) return `La letra ${c} está dos veces en la línea: escríbela solo una vez.`;
+        vistas.add(c); primera = false;
+    }
+    return null;
+}
 function interpretarISO(texto) {
     const segs = [], notas = [], ignorados = new Map(), movZ = [];
-    const comaDecimal = [];
+    const comaDecimal = [], malEscritas = [];
     let orden = 0;                 // orden de cada movimiento (para la simulación)
     const est = { mov:null, abs:true, polar:false, pulg:false, plano:17, comp:40, compPend:null, compRun:0, T:null, Tsel:null, husillo:null, tras06:false };
     // Herramienta: con M06 en el programa, la T se cambia en el M06 (T102 M06); sin M06, vale la T escrita (programas de una herramienta)
-    const usaM06 = /(^|[^A-Z0-9])M0?6(?![0-9])/i.test(texto.replace(/\([^)]*\)/g, ' ').replace(/;.*$/gm, ' '));
-    let pos = { x:0, y:0 }, z = null, hayZ = /(^|[^A-Z(])Z\s*[-+.\d]/i.test(texto.replace(/\([^)]*\)/g, '').replace(/;.*$/gm, ''));
+    const sinCom = texto.split(/\r?\n/).map(sinComentarios).join('\n').replace(/;.*$/gm, ' ');
+    const usaM06 = /(^|[^A-Z0-9])M0?6(?![0-9])/i.test(sinCom);
+    let pos = { x:0, y:0 }, z = null, hayZ = /(^|[^A-Z(])Z\s*[-+.\d]/i.test(sinCom);
     let hayF = false, avisoF = false;
     const fin = { m:null, li:null, et:'', husillo:false, despues:null, arranque:null, numeros:[] };   // el final del programa y los números de bloque
     const lineas = texto.replace(/\r/g, '').split('\n');
     const nota = (tipo, linea, msg, extra) => notas.push(Object.assign({ tipo, linea, msg }, extra || {}));
     const ignorar = (cod, linea, n) => { if (!ignorados.has(cod)) ignorados.set(cod, []); ignorados.get(cod).push(n || ('línea ' + (linea + 1))); };
     lineas.forEach((original, li) => {
-        let t = original.replace(/\([^)]*\)/g, ' ').replace(/;.*$/, ' ').toUpperCase();
+        const sinC = sinComentarios(original).replace(/;.*$/, ' ');
+        let t = sinC.toUpperCase();
+        // Línea mal escrita (letra O por cero, X1.2.3, HOLA…): error, como en el Simulador; se sigue leyendo lo que se entiende
+        { const lEsc = sinC.trim().replace(/(\d),(\d)/g, '$1.$2').replace(/([A-Za-z])\s+(?=[-+.\d])/g, '$1').replace(/([-+])\s+(?=[.\d])/g, '$1');
+          if (lEsc && !lEsc.startsWith('%')) { const e = errorSintaxisLinea(lEsc); if (e) malEscritas.push({ li, msg:e }); } }
         // coma decimal (X10,5): el control no la acepta; se lee como punto y se avisa (como en el Simulador)
         if (/\d,\d/.test(t)) { comaDecimal.push(li); t = t.replace(/(\d),(\d)/g, '$1.$2'); }
         if (/^\s*[%O]/.test(t) && !/[GXYZ]/.test(t.replace(/^\s*O\d+/, ''))) return; // % o número de programa
@@ -10069,9 +10116,12 @@ function interpretarISO(texto) {
             else if (g === 92) ignorar('G92 (cambio de origen)', li, etiqueta);
             else if (g === 28) nota('aviso', li, `${etiqueta}: G28 depende del control (en Fanuc vuelve al punto de referencia; en Fagor es otra cosa). Para subir antes de un cambio de herramienta, usa G0 Z… (por ejemplo, G0 Z20).`, { cat:'herramienta' });
             else if (g === 30) ignorar('G30 (vuelta a referencia)', li, etiqueta);
-            else ignorar('G' + g, li, etiqueta);
+            else if ([53, 73, 98, 99].includes(g)) ignorar('G' + g, li, etiqueta);
+            else if (Number.isInteger(g)) malEscritas.push({ li, msg:`Código G${g} no existe en este control: se ignora.` });
         });
         if (palabras.some(w => w.l === 'G' && Math.round(w.v) === 80)) est.ciclo = false;
+        if (!est.ciclo && palabras.some(w => w.l === 'G' && (w.v === 98 || w.v === 99)) && palabras.some(w => 'XYZ'.includes(w.l)))
+            malEscritas.push({ li, msg:'G98 y G99 solo sirven con un ciclo de taladrado: aquí no hay ninguno activo. ¿Querías otro código?' });
         // Herramienta y husillo (T, M03, M04, M05, M06), en el orden en que actúan en el bloque
         { const Tw = palabras.filter(w => w.l === 'T'), Ms = palabras.filter(w => w.l === 'M').map(w => Math.round(w.v));
           if (Tw.length) { est.Tsel = normT(Tw[Tw.length - 1].v); if (!usaM06) est.T = est.Tsel; }
@@ -10154,6 +10204,8 @@ function interpretarISO(texto) {
         pos = p1; z = z1;
     });
     ignorados.forEach((donde, cod) => nota('aviso', null, `${cod} no se interpreta (${donde.slice(0, 4).join(', ')}${donde.length > 4 ? '…' : ''}); si define parte del recorrido, esa parte no se ha comparado.`));
+    { const MAX = 40; malEscritas.slice(0, MAX).forEach(e => nota('error', e.li, `línea ${e.li + 1}: ${e.msg}`, { cat:'escritura' }));
+      if (malEscritas.length > MAX) nota('error', malEscritas[MAX].li, `Y ${malEscritas.length - MAX} líneas más mal escritas. ¿Es un programa de G-code?`, { cat:'escritura' }); }
     if (comaDecimal.length) nota('aviso', comaDecimal[0], `Coma decimal en ${comaDecimal.length === 1 ? 'la línea ' + (comaDecimal[0] + 1) : comaDecimal.length + ' líneas (la primera, la ' + (comaDecimal[0] + 1) + ')'} (por ejemplo «X10,5»): el control no la acepta, hay que escribir punto (X10.5). Se ha leído como punto.`);
     // ── El final del programa ──
     const ultimaLinea = (() => { for (let k = lineas.length - 1; k >= 0; k--) if (lineas[k].replace(/\([^)]*\)/g, '').replace(/;.*$/, '').trim()) return k; return null; })();
@@ -10364,7 +10416,7 @@ function corregirPrograma(texto) {
     hall.push(...comp.fis);
     // 3) Requisitos del ejercicio: programación pedida, entrada y sentido
     const req = comprobarRequisitos(cortes, orden, solTramos, tol, paso, idxSol).concat(comp.req);
-    const piezaOk = !hall.some(h => h.tipo === 'error');
+    const piezaOk = !hall.some(h => h.tipo === 'error' && h.cat !== 'escritura');   // una línea mal escrita no dice nada de la geometría
     hall.push(...req, ...herrH);
     // 4) Pistas: en cada bloque con error se prueban las equivocaciones típicas
     const fitSol = seg => { const m = muestrasSeg(seg, paso); return m.length && m.every(q => idxSol.cerca(q).some(t => distASeg(q, t) <= tol * 1.5)); };
@@ -10697,9 +10749,9 @@ function pintarResultadoCorr() {
     if (!r) { el.innerHTML = ''; return; }
     const orden = h => (h.tipo === 'error' ? 0 : 1) * 1e6 + (h.linea === null ? 5e5 : h.linea);
     const lista = r.hallazgos.slice().sort((a, b) => orden(a) - orden(b));
-    const cat = { geometria:'Geometría', seguridad:'Seguridad', fuera:'Zona que sobra', requisito:'Lo pedido', compensacion:'Compensación', herramienta:'Herramienta' };
+    const cat = { escritura:'Escritura', geometria:'Geometría', seguridad:'Seguridad', fuera:'Zona que sobra', requisito:'Lo pedido', compensacion:'Compensación', herramienta:'Herramienta' };
     el.innerHTML = `
-        <div class="cr-veredicto ${r.ok ? 'ok' : r.piezaOk ? 'medio' : 'mal'}">${r.ok ? '✅ La pieza sale bien' + (hayRequisitos() ? ' y cumple lo pedido' : '') : r.piezaOk ? `⚠️ La pieza sale bien, pero no cumple lo pedido (${r.errores} incumplimiento${r.errores === 1 ? '' : 's'})` : `❌ La pieza no sale bien: ${r.errores} error${r.errores === 1 ? '' : 'es'}`}${r.avisos ? ` · ${r.avisos} aviso${r.avisos === 1 ? '' : 's'}` : ''}</div>
+        <div class="cr-veredicto ${r.ok ? 'ok' : r.piezaOk ? 'medio' : 'mal'}">${r.ok ? '✅ La pieza sale bien' + (hayRequisitos() ? ' y cumple lo pedido' : '') : r.piezaOk ? (r.hallazgos.every(h => h.tipo !== 'error' || h.cat === 'escritura') ? `⚠️ La geometría sale bien, pero hay ${r.errores} línea${r.errores === 1 ? '' : 's'} mal escrita${r.errores === 1 ? '' : 's'}: el control no la${r.errores === 1 ? '' : 's'} aceptaría` : `⚠️ La pieza sale bien, pero no cumple lo pedido (${r.errores} incumplimiento${r.errores === 1 ? '' : 's'})`) : `❌ La pieza no sale bien: ${r.errores} error${r.errores === 1 ? '' : 'es'}`}${r.avisos ? ` · ${r.avisos} aviso${r.avisos === 1 ? '' : 's'}` : ''}</div>
         <div class="cr-datos">Se pide: ${textoPide()}${r.modoComp === 'centro' ? ` · comparado con el camino del centro de la fresa (Ø${fmt(2 * r.R, 2)}, en G40)` : ''}</div>
         <div class="cr-datos">${r.resumen.cortes} movimientos de corte · ${r.resumen.rapidos} rápidos${r.resumen.hayZ ? ` · profundidad máxima Z${fmt(r.resumen.zMin, 3)}` : ' · sin Z: todo G1/G2/G3 cuenta como corte'} · tolerancia ${fmt(cfgCorr.tol, 3)} mm</div>
         ${lista.map((h, k) => `<div class="cr-item ${h.tipo}" data-k="${r.hallazgos.indexOf(h)}"><span class="cr-cat">${h.tipo === 'error' ? (cat[h.cat] || 'Error') : (cat[h.cat] || 'Aviso')}</span>${h.msg.replace(/&/g, '&amp;').replace(/</g, '&lt;')}${h.pista ? `<div class="cr-pista">💡 Pista: ${h.pista.replace(/&/g, '&amp;').replace(/</g, '&lt;')}</div>` : ''}</div>`).join('')}
@@ -12365,7 +12417,7 @@ function imprimirInformes(ks) {
     const N = critNota(), hoy = new Date().toLocaleDateString('es-ES');
     const pide = textoPide();
     const titulo = `${cfgHoja.titulo || nombreProyecto()}${cfgHoja.num ? ' · Ejercicio nº ' + cfgHoja.num : ''}`;
-    const cat = { geometria:'Geometría', seguridad:'Seguridad', fuera:'Zona que sobra', requisito:'Lo pedido', compensacion:'Compensación', herramienta:'Herramienta' };
+    const cat = { escritura:'Escritura', geometria:'Geometría', seguridad:'Seguridad', fuera:'Zona que sobra', requisito:'Lo pedido', compensacion:'Compensación', herramienta:'Herramienta' };
     const pagina = k => {
         const it = masiva.lista[k], r = it.r || {}, v = it.v;
         const H = (r.hallazgos || []).filter(h => v.veredicto !== 'vacio' || !/^Falta mecanizar/.test(h.msg)).sort((a, b) => (a.tipo === 'error' ? 0 : 1) - (b.tipo === 'error' ? 0 : 1) || ((a.linea ?? 1e9) - (b.linea ?? 1e9)));
@@ -13116,7 +13168,7 @@ function erroresClase(items) {
     });
     return [...G.values()].sort((a, b) => b.alumnos.length - a.alumnos.length || (a.tipo === 'error' ? -1 : 1) - (b.tipo === 'error' ? -1 : 1));
 }
-const CAT_ERR = { geometria: 'Geometría', compensacion: 'Compensación', requisito: 'Lo pedido', herramienta: 'Herramienta', seguridad: 'Seguridad', clase: 'Códigos de clase' };
+const CAT_ERR = { escritura: 'Escritura', geometria: 'Geometría', compensacion: 'Compensación', requisito: 'Lo pedido', herramienta: 'Herramienta', seguridad: 'Seguridad', clase: 'Códigos de clase' };
 function tablaErroresClase(sel, max) {
     const its = (sel || masiva.lista.map((_, k) => k)).map(k => masiva.lista[k]).filter(Boolean), E = erroresClase(its).filter(e => e.alumnos.length >= 2).slice(0, max || 12);
     if (!E.length) return '';

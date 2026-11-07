@@ -2,8 +2,8 @@ const { chromium } = require('playwright'); const fs = require('fs'); const { la
 (async () => {
   const b = await lanzar();
   const cal = await b.newPage(); cal.on('dialog', d => d.accept()); await cal.goto('file://' + require('./comun').SUITE + '/calcador.html'); await cal.evaluate(() => localStorage.clear()); await cal.reload(); await cal.waitForTimeout(500);
-  const dirs = ['/mnt/user-data/outputs/Ejercicios_UTN_y_Fagor', '/mnt/user-data/outputs/ISO_Geometrias_09-15', '/mnt/user-data/outputs/Ejercicios_Dossier_ISO/Dossier 03 - Ejercicios 16 a 30', '/mnt/user-data/outputs/Ejercicios_Dossier_ISO/Dossier 02 - Ejercicios 1 a 14', '/mnt/user-data/outputs/Ejercicios_Avanzados', '/mnt/user-data/outputs/Ejercicios_16-25'];
-  const files = dirs.flatMap(d => fs.existsSync(d) ? fs.readdirSync(d).filter(f => f.endsWith('.json')).map(f => d + '/' + f) : []);
+  // Se regenera a mano cuando cambie el formato de la tabla: node interp_corpus.js
+  const files = require('./comun').ejercicios();
   const progs = [];
   for (const f of files) {
     const datos = JSON.parse(fs.readFileSync(f, 'utf8'));

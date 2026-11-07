@@ -4,7 +4,16 @@ La versión de la suite es **año.mes** (por ejemplo, 2026.10). Cada programa co
 
 ## Suite CNC 2026.10
 
-Versiones de los programas: **Calcador v129 · Corrector v74 · Tutor G-Code v6 · Simulador 3D V45 · Calculadora de taller v5 · Arcos I J v8 · Anidador de tableros v8**.
+Versiones de los programas: **Calcador v130 · Corrector v75 · Tutor G-Code v7 · Simulador 3D V46 · Calculadora de taller v5 · Arcos I J v8 · Anidador de tableros v8**.
+
+### Calcador v130 / Corrector v75: las líneas mal escritas también son errores al corregir
+- Corregir detecta lo mismo que el Simulador: la **letra O en lugar del cero**, una letra sin número, números mal escritos, letras repetidas, letras y códigos G que no existen y paréntesis sin cerrar. Salen en un apartado nuevo, **Escritura**, también en la corrección masiva y en los errores de la clase.
+- Estos errores cambian el veredicto, pero no restan de la nota por sí solos.
+- Un comentario con paréntesis dentro ya no se lee como una instrucción.
+
+### Simulador 3D V46: las líneas mal escritas son errores
+- La revisión marca como **error** lo que el control no aceptaría: la **letra O en lugar del cero** (`G1 XO Y20`, `GO X10`), una letra sin número, números mal escritos (`X1.2.3`, `X--5`, `X1e400`), una letra repetida (`X10 X20`), letras y códigos G que no existen, y paréntesis sin cerrar. Antes se ignoraban sin avisar.
+- Un comentario con paréntesis dentro, como `(RANURA (COLISA) G91)`, ya no se lee como un G91.
 
 ### Calcador v129 / Corrector v74 / Arcos I J v8
 - **Biblioteca**: botón **🗑 Vaciar biblioteca**. Al importar con ejercicios ya guardados, se elige entre **agregar** y **sustituir** toda la biblioteca.
