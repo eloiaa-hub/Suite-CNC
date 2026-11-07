@@ -228,7 +228,7 @@ const capa = id => A.capas.find(c => c.id === id);
 
 // ───────── 📚 Biblioteca de parámetros de corte (se guarda en el navegador; se exporta e importa en JSON) ─────────
 const CLAVE_BIB = 'laser_biblioteca';
-const BIB_INICIO = [{"material": "Prueba de Atheon Design (cuadrado 50 × 50)", "grosor": 0, "op": "corte", "speed": 9, "pmin": 60, "pmax": 60, "passes": 2, "air": true, "notas": "Los valores del .rd hecho con Atheon Design en el taller"}, {"material": "DM (MDF)", "grosor": 3, "op": "corte", "speed": 15, "pmin": 55, "pmax": 60, "passes": 1, "air": true, "notas": "Orientativo: compruébalo"}, {"material": "DM (MDF)", "grosor": 5, "op": "corte", "speed": 8, "pmin": 65, "pmax": 70, "passes": 1, "air": true, "notas": "Orientativo: compruébalo"}, {"material": "Contrachapado", "grosor": 3, "op": "corte", "speed": 20, "pmin": 50, "pmax": 55, "passes": 1, "air": true, "notas": "Orientativo: compruébalo"}, {"material": "Contrachapado", "grosor": 5, "op": "corte", "speed": 10, "pmin": 60, "pmax": 65, "passes": 1, "air": true, "notas": "Orientativo: compruébalo"}, {"material": "Metacrilato", "grosor": 3, "op": "corte", "speed": 15, "pmin": 55, "pmax": 60, "passes": 1, "air": true, "notas": "Orientativo: compruébalo"}, {"material": "Cartón", "grosor": 2, "op": "corte", "speed": 40, "pmin": 25, "pmax": 30, "passes": 1, "air": true, "notas": "Orientativo: compruébalo"}, {"material": "Madera (marcar líneas)", "grosor": 0, "op": "marcado", "speed": 150, "pmin": 12, "pmax": 15, "passes": 1, "air": true, "notas": "Orientativo: compruébalo"}, {"material": "Metacrilato (marcar líneas)", "grosor": 0, "op": "marcado", "speed": 200, "pmin": 10, "pmax": 12, "passes": 1, "air": true, "notas": "Orientativo: compruébalo"}];
+const BIB_INICIO = [{"material": "MDF", "grosor": 3, "op": "corte", "speed": 30, "pmin": 60, "pmax": 60, "passes": 1, "air": true, "notas": "Biblioteca de fábrica de Atheon (Param.lib)"}, {"material": "MDF", "grosor": 4, "op": "corte", "speed": 23, "pmin": 60, "pmax": 60, "passes": 1, "air": true, "notas": "Interpolado (orientativo) de la biblioteca de Atheon: 3 mm a 30 mm/s y 5 mm a 17 mm/s"}, {"material": "MDF", "grosor": 5, "op": "corte", "speed": 17, "pmin": 60, "pmax": 60, "passes": 1, "air": true, "notas": "Biblioteca de fábrica de Atheon (Param.lib)"}, {"material": "MDF", "grosor": 10, "op": "corte", "speed": 7, "pmin": 60, "pmax": 60, "passes": 1, "air": true, "notas": "Interpolado (orientativo) de la biblioteca de Atheon: 9 mm a 9 mm/s y 12 mm a 4 mm/s"}, {"material": "Acrílico", "grosor": 3, "op": "corte", "speed": 30, "pmin": 60, "pmax": 60, "passes": 1, "air": true, "notas": "Biblioteca de fábrica de Atheon (Param.lib)"}, {"material": "Acrílico", "grosor": 5, "op": "corte", "speed": 16, "pmin": 60, "pmax": 60, "passes": 1, "air": true, "notas": "Interpolado (orientativo) de la biblioteca de Atheon: 4,5 mm a 18 mm/s y 6 mm a 12 mm/s"}, {"material": "Acrílico", "grosor": 10, "op": "corte", "speed": 4, "pmin": 60, "pmax": 60, "passes": 1, "air": true, "notas": "Biblioteca de fábrica de Atheon (Param.lib)"}, {"material": "MDF (marcar líneas)", "grosor": 0, "op": "marcado", "speed": 200, "pmin": 14, "pmax": 14, "passes": 1, "air": true, "notas": "De «Engrave MDF low power» de Atheon, que es grabado por barrido: para marcar líneas es orientativo, compruébalo"}];
 let BIB = [];
 try { const g = JSON.parse(localStorage.getItem(CLAVE_BIB) || 'null'); BIB = Array.isArray(g) ? g : BIB_INICIO.map(e => ({ ...e })); } catch (e) { BIB = BIB_INICIO.map(e => ({ ...e })); }
 const guardarBib = () => { try { localStorage.setItem(CLAVE_BIB, JSON.stringify(BIB)); } catch (e) {} };
@@ -239,7 +239,7 @@ function limpiarEntrada(e) {
         speed: Math.max(0.1, n(e.speed) || 10), pmin: Math.max(0, Math.min(100, n(e.pmin))), pmax: Math.max(0, Math.min(100, n(e.pmax))),
         passes: Math.max(1, Math.round(n(e.passes) || 1)), air: e.air !== false, notas: String(e.notas || '').trim() };
 }
-const igualEntrada = (a, b) => CAMPOS_BIB.every(k => String(a[k]) === String(b[k]));
+const igualEntrada = (a, b) => CAMPOS_BIB.filter(k => k !== 'notas').every(k => String(a[k]).toLowerCase() === String(b[k]).toLowerCase());   // las notas no cuentan
 const nombreEntrada = e => e.material + (e.grosor ? ` ${String(e.grosor).replace('.', ',')} mm` : '');
 
 // Fuente de lo que se corta: el dibujo o un programa G-code abierto
@@ -524,9 +524,9 @@ function pintarBib() {
         <div class="las-bib-lista">${ord.map(fila).join('') || '<div class="las-nota">La biblioteca está vacía. Guarda los valores de una capa o importa un archivo.</div>'}</div>
         <div id="lasBibForm"></div>
         <div class="las-bots las-bib-bots"><button data-a="nuevo-corte" title="Guarda la velocidad, potencia y pasadas de Corte como un material nuevo">＋ Guardar Corte</button><button data-a="nuevo-marcado" title="Guarda los valores de Marcado como un material nuevo">＋ Guardar Marcado</button>
-            <button data-a="exportar" title="Descarga la biblioteca en un archivo JSON">⬇ Exportar</button><button data-a="importar" title="Carga una biblioteca desde un archivo JSON">⬆ Importar…</button><button data-a="inicio" title="Añade los parámetros de inicio de la suite (orientativos)">Parámetros de inicio</button></div>
+            <button data-a="exportar" title="Descarga la biblioteca en un archivo JSON">⬇ Exportar</button><button data-a="exportar-lib" title="Descarga la biblioteca como Param.lib, el formato de la biblioteca de parámetros de Atheon Design (las pasadas van en la nota)">⬇ Atheon (.lib)</button><button data-a="importar" title="Carga una biblioteca: un JSON del Calcador láser o el Param.lib de Atheon Design">⬆ Importar…</button><button data-a="inicio" title="Añade los parámetros de inicio de la suite (orientativos)">Parámetros de inicio</button></div>
         <div id="lasBibImp"></div>
-        <input type="file" id="lasBibFile" accept=".json" hidden>`;
+        <input type="file" id="lasBibFile" accept=".json,.lib" hidden>`;
     // los selectores de material del bloque «🔥 Láser» de 📋 Solución
     document.querySelectorAll('select[data-bib]').forEach(sl => {
         const id = sl.dataset.bib, Lc = capa(id), ops = BIB.map((e, i) => ({ e, i })).filter(o => o.e.op === id).sort((a, b) => nombreEntrada(a.e).localeCompare(nombreEntrada(b.e), 'es'));
@@ -576,6 +576,38 @@ function importarBib(datos, nombre) {
     $('bibCan').onclick = () => { imp.innerHTML = ''; };
     $('bibAgr').onclick = () => { let n = 0; nuevas.forEach(e => { if (!BIB.some(b => igualEntrada(b, e))) { BIB.push(e); n++; } }); guardarBib(); pintarBib(); snack(`${n} material${n === 1 ? '' : 'es'} añadido${n === 1 ? '' : 's'}${nuevas.length - n ? ` (${nuevas.length - n} ya estaba${nuevas.length - n === 1 ? '' : 'n'})` : ''}`); };
     $('bibSus').onclick = () => { BIB = nuevas; guardarBib(); pintarBib(); snack(`Biblioteca sustituida: ${nuevas.length} material${nuevas.length === 1 ? '' : 'es'}`); };
+}
+// La biblioteca de parámetros de Atheon Design / RDWorks (Param.lib): texto con una sección por material
+function leerLib(texto) {
+    const out = [];
+    texto.split(/\r?\n(?=\[)/).forEach(sec => {
+        const m = /^\s*\[(.*?)\]/.exec(sec); if (!m) return;
+        const kv = {}; sec.split(/\r?\n/).forEach(l => { const i = l.indexOf('='); if (i > 0) kv[l.slice(0, i).trim()] = l.slice(i + 1).trim(); });
+        if (!kv.COM_Speed) return;
+        const nombre = m[1].trim(), g = /(\d+(?:[.,]\d+)?)\s*mm/i.exec(nombre), scan = /scan/i.test(kv.COM_WorkType || '');
+        let mat = nombre.replace(/^\s*(cutting|cut|corte)\s+/i, '');
+        if (g) mat = mat.replace(g[0], '').replace(/\s+/g, ' ').trim();
+        out.push(limpiarEntrada({ material: mat || nombre, grosor: g ? g[1].replace(',', '.') : 0, op: scan || /^\s*(engrav|mark)/i.test(nombre) ? 'marcado' : 'corte',
+            speed: kv.COM_Speed, pmin: kv.COM_Pmin1, pmax: kv.COM_Pmax1, passes: 1, air: !/^no/i.test(kv.COM_Blow || 'Yes'),
+            notas: ['De Atheon Design: «' + nombre + '»' + (scan ? ' (grabado por barrido)' : ''), kv.Note].filter(Boolean).join(' · ') }));
+    });
+    return out;
+}
+function escribirLib() {
+    const linea = (k, v) => k + '=' + v, f6 = v => Number(v).toFixed(6), ascii = t => (typeof tuSinTildes === 'function' ? tuSinTildes(t) : t).replace(/[^\x20-\x7E]/g, '');
+    return BIB.map(e => {
+        const nom = e.op === 'corte' ? `Cutting ${e.grosor ? String(e.grosor) + 'mm ' : ''}${e.material}` : `Marking ${e.material}`;
+        return [`[${ascii(nom)}]`, linea('Note', ascii([e.passes > 1 ? e.passes + ' pasadas' : '', e.notas].filter(Boolean).join(' - '))),
+            'COM_Type=Vector', 'COM_Output=Yes', linea('COM_Speed', f6(e.speed)), 'COM_SpeedDefault=No',
+            linea('COM_Pmin1', f6(e.pmin)), linea('COM_Pmax1', f6(e.pmax)), 'COM_Pmin2=30.000000', 'COM_Pmax2=30.000000', 'COM_PowerDefault=No',
+            linea('COM_Blow', e.air ? 'Yes' : 'No'), 'COM_EnLaser1=Yes', 'COM_EnLaser2=No', 'COM_EnZ=No', 'COM_EnZDown=No', 'COM_ZDownPos=0.000000', 'COM_EnZUp=No', 'COM_ZUpPos=0.000000',
+            'COM_ZSpeed=100.000000', 'COM_DotInterval=0.000000', 'COM_WorkType=Cut', 'Cut_Close=0.000000', 'Cut_OnDelay=0.000000', 'Cut_OffDelay=0.000000',
+            'Cut_EnSew=No', 'Cut_SewDir=0', 'Cut_SewWidth=0.100000', 'Cut_ThroughMode=0', 'Cut_ThroughPower=50.000000', ''].join('\r\n');
+    }).join('\r\n') + '\r\n';
+}
+function exportarLib() {
+    descargar(escribirLib(), 'Param_calcador_laser.lib', 'text/plain');
+    snack(`Biblioteca guardada para Atheon Design: ${BIB.length} material${BIB.length === 1 ? '' : 'es'} (Param_calcador_laser.lib)`);
 }
 function exportarBib() {
     const datos = { tipo: 'parametros_laser', version: 1, nombre: 'Parámetros de corte', fecha: new Date().toISOString().slice(0, 10), entradas: BIB };
@@ -760,14 +792,17 @@ function montar() {
         else if (a === 'borrar') { const e2 = BIB[i]; BIB.splice(i, 1); guardarBib(); pintarBib(); snack(`«${nombreEntrada(e2)}» borrado de la biblioteca`); }
         else if (a === 'nuevo-corte' || a === 'nuevo-marcado') { const L = capa(a.slice(6)); formBib({ material: '', grosor: '', op: L.id, speed: L.speed, pmin: L.pmin, pmax: L.pmax, passes: L.passes, air: L.air, notas: '' }, null); }
         else if (a === 'exportar') exportarBib();
+        else if (a === 'exportar-lib') exportarLib();
         else if (a === 'importar') { $('lasBibFile').value = ''; $('lasBibFile').click(); }
         else if (a === 'inicio') importarBib(BIB_INICIO, 'Parámetros de inicio de la suite');
     });
     $('lasBib').addEventListener('change', e => {
         if (e.target.id !== 'lasBibFile' || !e.target.files[0]) return;
         const f = e.target.files[0], r = new FileReader();
-        r.onload = () => { try { importarBib(JSON.parse(String(r.result)), f.name); } catch (err) { snack(`${f.name}: no es un JSON válido`); } };
-        r.readAsText(f);
+        r.onload = () => { const t = String(r.result);
+            if (/\.lib$/i.test(f.name) || /^\s*\[/.test(t)) { const L = leerLib(t); if (L.length) importarBib(L, f.name); else snack(`${f.name}: no tiene parámetros de Atheon Design`); return; }
+            try { importarBib(JSON.parse(t), f.name); } catch (err) { snack(`${f.name}: no es un JSON ni un Param.lib válido`); } };
+        r.readAsText(f, /\.lib$/i.test(f.name) ? 'windows-1252' : 'utf-8');
     });
     $('lasExp').onclick = exportar;
     $('lasRLD').onclick = guardarRLD;
@@ -988,6 +1023,6 @@ window.addEventListener('load', () => setTimeout(montarMesa, 200));
 // si cambia la mesa en ⚙️ Máquina, se vuelve a dibujar
 document.addEventListener('change', e => { if (e.target && /^las(W|H|Origen|Inicio|Ref)$/.test(e.target.id)) { pintarCajaMesa(); render(); } });
 
-window.LASER = { biblioteca: () => BIB, usarEntrada, importarBib, RLD, generarRLD, mesaMundo, fueraDeMesa, centrarEnMesa, RDCore, plan, generarRD, trazadosGcode, trazadosDibujo, ajustes: () => A, abrirGcodeTexto: (texto, nombre) => { const g = trazadosGcode(texto); gcode = { nombre, base: nombre.replace(/\.[^.]+$/, ''), trazados: g.trazados, avisos: g.avisos }; pintarFuente(); pintarResumen(); return gcode; }, volverAlDibujo: () => { gcode = null; pintarFuente(); pintarResumen(); } };
+window.LASER = { leerLib, escribirLib, biblioteca: () => BIB, usarEntrada, importarBib, RLD, generarRLD, mesaMundo, fueraDeMesa, centrarEnMesa, RDCore, plan, generarRD, trazadosGcode, trazadosDibujo, ajustes: () => A, abrirGcodeTexto: (texto, nombre) => { const g = trazadosGcode(texto); gcode = { nombre, base: nombre.replace(/\.[^.]+$/, ''), trazados: g.trazados, avisos: g.avisos }; pintarFuente(); pintarResumen(); return gcode; }, volverAlDibujo: () => { gcode = null; pintarFuente(); pintarResumen(); } };
 window.addEventListener('load', () => setTimeout(montar, 150));
 })();

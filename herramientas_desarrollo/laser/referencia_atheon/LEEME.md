@@ -8,6 +8,7 @@ Un cuadrado de 50 × 50 mm hecho con Atheon Design (el programa de la cortadora 
 | `cuadrado_50x50.plt` | El mismo cuadrado en HPGL (40 unidades por mm) |
 | `cuadrado_50x50.rld` | El proyecto de Atheon Design (formato RDWorks 8) |
 | `placa_un_objeto_exportada.plt` | Una placa con agujeros escrita como un solo objeto, abierta en Atheon Design y exportada: los contornos salen unidos en un recorrido |
+| `Param.lib` | La biblioteca de parámetros de fábrica de Atheon Design (texto INI, una sección por material) |
 | `default_rdworks.rld` | Otro proyecto de RDWorks (mesa de 1200 × 800, un rectángulo de 441 × 318) |
 
 | `circulo.rld` / `.plt` | Un círculo (4 curvas Bézier) |

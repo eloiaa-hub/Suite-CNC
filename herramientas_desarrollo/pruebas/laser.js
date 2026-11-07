@@ -68,6 +68,13 @@ const { lanzar, abrir, ejercicios, fs, path } = require('./comun');
     LASER.usarEntrada(e); const c = LASER.ajustes().capas[1]; tuFuente('solucion'); tuRefrescar(true);
     return { n: B.length, ok: c.speed === e.speed && c.pmax === e.pmax && c.passes === e.passes && c.mat === e.material + ' 3 mm', prog: TU.prog.texto.includes('(' + tuSinTildes(c.mat) + ')') }; }, ini.entradas.length);
   ok(bib.n === ini.entradas.length && bib.ok && bib.prog, `📚 Parámetros de corte: ${bib.n} de inicio (como biblioteca_laser/), «Usar» pone velocidad, potencia y pasadas, y el programa dice el material`);
+  // 2f) Param.lib de Atheon Design: se importa (Cut → Corte, Scan → Marcado) y la nuestra se guarda en ese formato y se vuelve a leer igual
+  const lib = fs.readFileSync(path.join(REF, 'Param.lib'), 'latin1');
+  const pl = await pg.evaluate(t => { const L = LASER.leerLib(t), mdf3 = L.find(e => e.material === 'MDF' && e.grosor === 3);
+    const ida = LASER.leerLib(LASER.escribirLib()), B = LASER.biblioteca();
+    const igual = ida.length === B.length && ida.every((e, i) => ['op', 'grosor', 'speed', 'pmin', 'pmax', 'air'].every(k => e[k] === B[i][k]));
+    return { n: L.length, corte: L.filter(e => e.op === 'corte').length, mdf3: mdf3 && mdf3.speed === 30 && mdf3.pmax === 60, igual }; }, lib);
+  ok(pl.n === 19 && pl.corte === 16 && pl.mdf3 && pl.igual, `Param.lib de Atheon: ${pl.n} materiales (${pl.corte} de corte; MDF 3 mm a 30 mm/s y 60 %); la biblioteca se guarda como .lib y se vuelve a leer igual`);
   // 3) Un programa G-code: G1/G2/G3 cortan y G0 no
   const nc = 'G71 G90\nG0 X0 Y0\nG1 X40\nG3 X40 Y20 I0 J10\nG1 X0\nG1 Y0\nG0 X100 Y100\nM30\n';
   const g = await pg.evaluate(t => { const s = LASER.abrirGcodeTexto(t, 'prueba.nc'); const r = LASER.generarRD(); const res = { n: s.trazados.length, cerrado: s.trazados[0] && s.trazados[0].cerrado, bytes: r.rd.bytes.length }; LASER.volverAlDibujo(); return res; }, nc);

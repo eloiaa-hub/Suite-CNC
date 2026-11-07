@@ -2,16 +2,95 @@
   "tipo": "parametros_laser",
   "version": 1,
   "nombre": "Parámetros de inicio",
-  "nota": "Valores de partida para la láser CO2 del taller. Salvo la prueba de Atheon Design, son ORIENTATIVOS (tubo de unos 80 W): comprueba cada material con una prueba antes de cortar piezas y corrige la entrada.",
+  "nota": "Los materiales del taller con los valores de la biblioteca de fábrica de Atheon (Param.lib): todos los cortes al 60 % y la velocidad según el grosor. Los grosores que Atheon no trae están interpolados (orientativos). Haz una prueba antes de cortar piezas.",
   "entradas": [
-    { "material": "Prueba de Atheon Design (cuadrado 50 × 50)", "grosor": 0, "op": "corte", "speed": 9, "pmin": 60, "pmax": 60, "passes": 2, "air": true, "notas": "Los valores del .rd hecho con Atheon Design en el taller" },
-    { "material": "DM (MDF)", "grosor": 3, "op": "corte", "speed": 15, "pmin": 55, "pmax": 60, "passes": 1, "air": true, "notas": "Orientativo: compruébalo" },
-    { "material": "DM (MDF)", "grosor": 5, "op": "corte", "speed": 8, "pmin": 65, "pmax": 70, "passes": 1, "air": true, "notas": "Orientativo: compruébalo" },
-    { "material": "Contrachapado", "grosor": 3, "op": "corte", "speed": 20, "pmin": 50, "pmax": 55, "passes": 1, "air": true, "notas": "Orientativo: compruébalo" },
-    { "material": "Contrachapado", "grosor": 5, "op": "corte", "speed": 10, "pmin": 60, "pmax": 65, "passes": 1, "air": true, "notas": "Orientativo: compruébalo" },
-    { "material": "Metacrilato", "grosor": 3, "op": "corte", "speed": 15, "pmin": 55, "pmax": 60, "passes": 1, "air": true, "notas": "Orientativo: compruébalo" },
-    { "material": "Cartón", "grosor": 2, "op": "corte", "speed": 40, "pmin": 25, "pmax": 30, "passes": 1, "air": true, "notas": "Orientativo: compruébalo" },
-    { "material": "Madera (marcar líneas)", "grosor": 0, "op": "marcado", "speed": 150, "pmin": 12, "pmax": 15, "passes": 1, "air": true, "notas": "Orientativo: compruébalo" },
-    { "material": "Metacrilato (marcar líneas)", "grosor": 0, "op": "marcado", "speed": 200, "pmin": 10, "pmax": 12, "passes": 1, "air": true, "notas": "Orientativo: compruébalo" }
+    {
+      "material": "MDF",
+      "grosor": 3,
+      "op": "corte",
+      "speed": 30,
+      "pmin": 60,
+      "pmax": 60,
+      "passes": 1,
+      "air": true,
+      "notas": "Biblioteca de fábrica de Atheon (Param.lib)"
+    },
+    {
+      "material": "MDF",
+      "grosor": 4,
+      "op": "corte",
+      "speed": 23,
+      "pmin": 60,
+      "pmax": 60,
+      "passes": 1,
+      "air": true,
+      "notas": "Interpolado (orientativo) de la biblioteca de Atheon: 3 mm a 30 mm/s y 5 mm a 17 mm/s"
+    },
+    {
+      "material": "MDF",
+      "grosor": 5,
+      "op": "corte",
+      "speed": 17,
+      "pmin": 60,
+      "pmax": 60,
+      "passes": 1,
+      "air": true,
+      "notas": "Biblioteca de fábrica de Atheon (Param.lib)"
+    },
+    {
+      "material": "MDF",
+      "grosor": 10,
+      "op": "corte",
+      "speed": 7,
+      "pmin": 60,
+      "pmax": 60,
+      "passes": 1,
+      "air": true,
+      "notas": "Interpolado (orientativo) de la biblioteca de Atheon: 9 mm a 9 mm/s y 12 mm a 4 mm/s"
+    },
+    {
+      "material": "Acrílico",
+      "grosor": 3,
+      "op": "corte",
+      "speed": 30,
+      "pmin": 60,
+      "pmax": 60,
+      "passes": 1,
+      "air": true,
+      "notas": "Biblioteca de fábrica de Atheon (Param.lib)"
+    },
+    {
+      "material": "Acrílico",
+      "grosor": 5,
+      "op": "corte",
+      "speed": 16,
+      "pmin": 60,
+      "pmax": 60,
+      "passes": 1,
+      "air": true,
+      "notas": "Interpolado (orientativo) de la biblioteca de Atheon: 4,5 mm a 18 mm/s y 6 mm a 12 mm/s"
+    },
+    {
+      "material": "Acrílico",
+      "grosor": 10,
+      "op": "corte",
+      "speed": 4,
+      "pmin": 60,
+      "pmax": 60,
+      "passes": 1,
+      "air": true,
+      "notas": "Biblioteca de fábrica de Atheon (Param.lib)"
+    },
+    {
+      "material": "MDF (marcar líneas)",
+      "grosor": 0,
+      "op": "marcado",
+      "speed": 200,
+      "pmin": 14,
+      "pmax": 14,
+      "passes": 1,
+      "air": true,
+      "notas": "De «Engrave MDF low power» de Atheon, que es grabado por barrido: para marcar líneas es orientativo, compruébalo"
+    }
   ]
 }
