@@ -28,7 +28,7 @@
       "excluir": [
         "simulador3d_profesor.html"
       ],
-      "descripcion": "Portada y todas las herramientas: Calcador, Corrector, Anidador, Simulador 3D, Tutor G-Code, Calculadora, biblioteca de inicio, apuntes y manuales.",
+      "descripcion": "Portada y todas las herramientas: Calcador, Corrector, Calcador láser, Anidador, Simulador 3D, Tutor G-Code, Calculadora, biblioteca de inicio, apuntes y manuales.",
       "icono": 0,
       "devtools": true,
       "publicar": true
@@ -69,6 +69,23 @@
       "devtools": false,
       "publicar": true
     },
+    "laser": {
+      "nombre": "Calcador láser",
+      "titulo": "Calcador láser",
+      "exe": "CalcadorLaser",
+      "id": "es.eloiaa.suitecnc.laser",
+      "inicio": "laser.html",
+      "incluir": [],
+      "excluir": [
+        "arcos_ij.html",
+        "manual_arcos_ij.html",
+        "manual_arcos_ij.pdf"
+      ],
+      "descripcion": "El Calcador para la cortadora láser: dibuja la pieza o abre un programa G-code y obtén el archivo .rd de la máquina (Ruida, Atheon de Nomatech), con la mesa, vista previa y simulación.",
+      "icono": 3,
+      "devtools": false,
+      "publicar": true
+    },
     "anidador": {
       "nombre": "Anidador de tableros",
       "titulo": "Anidador de tableros",
@@ -80,7 +97,7 @@
         "manual_anidador.pdf"
       ],
       "descripcion": "Coloca varias piezas en el tablero para cortarlas de una vez y devuelve el tablero al Calcador (que lleva dentro).",
-      "icono": 3,
+      "icono": 4,
       "devtools": false,
       "publicar": true
     },
@@ -95,7 +112,7 @@
         "guia_simulador.pdf"
       ],
       "descripcion": "Abre un programa ISO (G-code) y mira cómo se mecaniza la pieza en 3D o en 2D, con su revisión, el plano del ejercicio y el informe de entrega.",
-      "icono": 4,
+      "icono": 5,
       "devtools": false,
       "publicar": true
     },
@@ -110,7 +127,7 @@
         "guia_tutor.pdf"
       ],
       "descripcion": "Dibuja una pieza y mira cómo se escribe su programa línea a línea (Aprender), o escríbelo tú y el Tutor te corrige cada línea (Practicar).",
-      "icono": 5,
+      "icono": 6,
       "devtools": false,
       "publicar": true,
       "excluir": [
@@ -132,7 +149,7 @@
         "manual_calculadora.pdf"
       ],
       "descripcion": "Proyecciones, polares, centro e I J R de un arco, G90 ↔ G91, revoluciones y avance.",
-      "icono": 6,
+      "icono": 7,
       "devtools": false,
       "publicar": true
     },
@@ -147,7 +164,7 @@
         "manual_arcos_ij.pdf"
       ],
       "descripcion": "Aprende a calcular I y J de los arcos G2 y G3: centro alineado, Pitágoras, círculo completo, contorno y leer el bloque.",
-      "icono": 7,
+      "icono": 8,
       "devtools": false,
       "publicar": true
     }

@@ -1,0 +1,48 @@
+// Calcador láser (laser.html): el dibujo y un programa G-code pasan a un .rd válido para la láser (Ruida, código 0x88),
+// con el formato de Atheon Design; el Calcador no enseña la pestaña 🔥 Láser
+const { lanzar, abrir, ejercicios, fs, path } = require('./comun');
+(async () => { const b = await lanzar(); const fallos = [], ok = (c, m) => { console.log((c ? '✓ ' : '✗ ') + m); if (!c) fallos.push(m); };
+  // 1) En el Calcador, el modo láser no aparece
+  let pg = await abrir(b, 'calcador.html');
+  ok(!(await pg.evaluate(() => !!document.getElementById('tuFuenteLaser') || typeof window.LASER !== 'undefined')), 'calcador.html: sin pestaña 🔥 Láser');
+  await pg.close();
+  // 2) laser.html: cada ejercicio de la carpeta → .rd que se descifra y vuelve a dar la pieza
+  pg = await abrir(b, 'laser.html');
+  ok(await pg.evaluate(() => !!document.getElementById('lasPanel') && document.getElementById('tutorPanel').classList.contains('laser')), 'laser.html: pestaña 🔥 Láser activa');
+  let n = 0;
+  for (const f of ejercicios().slice(0, 12)) {
+    let d; try { d = JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) { continue; } if (!d.calcador) continue;
+    const r = await pg.evaluate(d => { try { abrirJSONDatos(d); LASER.volverAlDibujo();
+        const g = LASER.generarRD(), dec = LASER.RDCore.decode(g.rd.bytes);
+        const cortes = dec.cmds.filter(c => c.hex.startsWith('A8')).length, b = g.rd.bounds;
+        const tr = LASER.trazadosDibujo(), xs = [].concat(...tr.map(t => t.pts.map(q => q[0]))), ys = [].concat(...tr.map(t => t.pts.map(q => q[1])));
+        const w = Math.max(...xs) - Math.min(...xs), h = Math.max(...ys) - Math.min(...ys);
+        return { magic: dec.magic, fin: dec.cmds[dec.cmds.length - 1].hex, cortes, ancho: (b[2] - b[0]) / 1000, alto: (b[3] - b[1]) / 1000, w, h, max: [b[2], b[3]] };
+      } catch (e) { return { error: e.message }; } }, d);
+    n++;
+    const nom = path.basename(f);
+    if (r.error) { ok(false, `${nom}: ${r.error}`); continue; }
+    ok(r.magic === 0x88 && r.fin === 'D7' && r.cortes > 0, `${nom}: .rd con código 0x88, ${r.cortes} cortes y fin de archivo`);
+    ok(Math.abs(r.ancho - r.w) < 0.01 && Math.abs(r.alto - r.h) < 0.01, `${nom}: mide lo mismo que el dibujo (${r.w.toFixed(2)} × ${r.h.toFixed(2)} mm)`);
+    ok(r.max[0] <= 0 && r.max[1] <= 0, `${nom}: coordenadas referidas al cabezal (esquina inferior izquierda), como Atheon Design`);
+  }
+  // 2b) El programa de 📋 Solución es de láser: sin T, Z ni compensación; M03 S… / M05 y las pasadas repiten el contorno
+  const pr = await pg.evaluate(() => { tuFuente('solucion'); tuRefrescar(true); const t = TU.prog.texto.replace(/;.*$/gm, ''), A = LASER.ajustes();
+    return { T: /\bT\d|M0?6\b/.test(t), Z: /\bZ-?\d/.test(t), comp: /G4[12]/.test(t), m3: (t.match(/M03 S\d+/g) || []).length, m5: (t.match(/M05/g) || []).length, vacio: TU.prog.vacio }; });
+  ok(!pr.vacio && !pr.T && !pr.Z && !pr.comp && pr.m3 > 0 && pr.m3 === pr.m5, `programa de láser: sin T, Z ni G41/G42; ${pr.m3} encendidos M03 y otros tantos M05`);
+  // 2c) El mismo trabajo que un .rd real de Atheon Design (cuadrado de 50 × 50, 9 mm/s, 60 %, 2 pasadas): byte a byte
+  const ref = fs.readFileSync(path.join(process.env.SUITE || path.join(__dirname, '../..'), 'herramientas_desarrollo/laser/referencia_atheon/cuadrado_50x50.rd'));
+  const mio = await pg.evaluate(() => { const A = LASER.ajustes(), copia = JSON.stringify(A);
+    Object.assign(A, { inicio: 'current', ref: 'bl', formato: 'atheon', magic: 136, origen: 'tr', optimizar: true, intPrimero: true });
+    Object.assign(A.capas[1], { speed: 9, pmin: 60, pmax: 60, passes: 2, air: true, out: true });
+    LASER.abrirGcodeTexto('G90\nG0 X0 Y50\nG1 X50\nG1 Y0\nG1 X0\nG1 Y50\nM30\n', 'cuadrado.nc');
+    const b = Array.from(LASER.generarRD().rd.bytes); LASER.volverAlDibujo(); Object.assign(A, JSON.parse(copia)); return b; });
+  const dif = mio.length === ref.length ? mio.filter((v, i) => v !== ref[i]).length : -1;
+  ok(dif >= 0 && dif <= 2, `igual que el .rd de Atheon Design (${ref.length} bytes; ${dif < 0 ? 'distinto tamaño: ' + mio.length : dif + ' bytes distintos, el redondeo de 1 µm'})`);
+  // 3) Un programa G-code: G1/G2/G3 cortan y G0 no
+  const nc = 'G71 G90\nG0 X0 Y0\nG1 X40\nG3 X40 Y20 I0 J10\nG1 X0\nG1 Y0\nG0 X100 Y100\nM30\n';
+  const g = await pg.evaluate(t => { const s = LASER.abrirGcodeTexto(t, 'prueba.nc'); const r = LASER.generarRD(); const res = { n: s.trazados.length, cerrado: s.trazados[0] && s.trazados[0].cerrado, bytes: r.rd.bytes.length }; LASER.volverAlDibujo(); return res; }, nc);
+  ok(g.n === 1 && g.cerrado && g.bytes > 300, `G-code → un trazado cerrado (G0 no corta) y un .rd de ${g.bytes} bytes`);
+  ok(!pg.errs.length, 'laser.html: sin errores de JavaScript' + (pg.errs.length ? ' · ' + pg.errs.slice(0, 2).join(' | ') : ''));
+  console.log(`${n} ejercicios · fallos ${fallos.length}`);
+  await b.close(); process.exitCode = fallos.length ? 1 : 0; })();

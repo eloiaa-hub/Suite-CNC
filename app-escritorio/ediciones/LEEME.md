@@ -7,6 +7,7 @@ Todas las apps que se compilan están en **`ediciones.json`**: la Suite completa
 | `profesorado` | Suite CNC | `SuiteCNC.exe` | `index.html` (la portada y todo) |
 | `calcador` | Calcador de contornos | `Calcador.exe` | `calcador.html` |
 | `corrector` | Corrector | `Corrector.exe` | `corrector.html` |
+| `laser` | Calcador láser | `CalcadorLaser.exe` | `laser.html` |
 | `anidador` | Anidador de tableros | `Anidador.exe` | `anidador.html` |
 | `simulador` | Simulador 3D | `Simulador3D.exe` | `simulador3d.html` |
 | `tutor` | Tutor G-Code | `TutorGCode.exe` | `tutor.html` |

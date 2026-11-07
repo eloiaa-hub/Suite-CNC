@@ -2,6 +2,18 @@
 
 La versión de la suite es **año.mes** (por ejemplo, 2026.10). Cada programa conserva además su propio número junto a su título.
 
+## Suite CNC 2026.11
+
+### Calcador láser v1 (nuevo)
+- **`laser.html`**: el Calcador para la cortadora láser del taller (Atheon de Nomatech, controladora Ruida). Es el mismo programa con el modo láser activado, como el Corrector.
+- Pestaña **🔥 Láser** en el panel derecho: lo que se dibuja sale como archivo **.rd** para la máquina, con dos capas: **Corte** (contornos cerrados) y **Marcado** (abiertos, textos, grabados y cajeras), cada una con velocidad, potencia mínima y máxima, pasadas y aire.
+- **📋 Solución** escribe el **programa para láser**: en el bloque «🔥 Láser» quedan las coordenadas (G90, G91, G91 total o mixta) y el orden, y en lugar de la fresa, la velocidad (mm/s, F en mm/min), la potencia mínima y máxima (S de 0 a 1000) y las pasadas de Corte y Marcado, más el soplado de aire (M08/M09). Sin T M06, sin Z ni G41/G42: M03 S… enciende el láser, M05 lo apaga y las pasadas repiten el contorno.
+- **🟫 Mesa**, junto al nombre: enseña la superficie útil de la láser (1000 × 700 mm), el cero máquina (arriba a la derecha, X hacia la izquierda e Y hacia abajo) y dónde queda la pieza con su cero pieza, que se sitúa con X e Y desde el cero máquina o con «Centrar la pieza». La pieza sale en verde si cabe y en rojo si se sale, con aviso en el resumen. Con «coordenadas de la mesa», el .rd usa esa posición.
+- **Desde un programa G-code…**: G1, G2 y G3 cortan y G0 se mueve sin láser, sin Z ni compensación; sirve para cortar en la láser los programas de los alumnos.
+- **Vista previa** con simulación del recorrido, punto del cabezal y las órdenes del archivo.
+- El .rd copia orden por orden el de Atheon Design: coordenadas referidas al cabezal (esquina inferior izquierda de la pieza), código 0x88.
+- El Calcador, el Corrector y el Tutor no cambian.
+
 ## Suite CNC 2026.10
 
 Versiones de los programas: **Calcador v130 · Corrector v75 · Tutor G-Code v7 · Simulador 3D V46 · Calculadora de taller v5 · Arcos I J v8 · Anidador de tableros v8**.
