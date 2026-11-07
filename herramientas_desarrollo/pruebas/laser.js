@@ -39,6 +39,16 @@ const { lanzar, abrir, ejercicios, fs, path } = require('./comun');
     const b = Array.from(LASER.generarRD().rd.bytes); LASER.volverAlDibujo(); Object.assign(A, JSON.parse(copia)); return b; });
   const dif = mio.length === ref.length ? mio.filter((v, i) => v !== ref[i]).length : -1;
   ok(dif >= 0 && dif <= 2, `igual que el .rd de Atheon Design (${ref.length} bytes; ${dif < 0 ? 'distinto tamaño: ' + mio.length : dif + ' bytes distintos, el redondeo de 1 µm'})`);
+  // 2d) .rld: con los tramos del cuadrado de Atheon Design sale su mismo proyecto (salvo 64 bytes de un campo que se deja vacío, como en Default.rld)
+  const refRld = fs.readFileSync(path.join(process.env.SUITE || path.join(__dirname, '../..'), 'herramientas_desarrollo/laser/referencia_atheon/cuadrado_50x50.rld'));
+  const rl = await pg.evaluate(async () => { const x0 = 498.43615000000005, x1 = 548.43615, y0 = 600.9692500000001, y1 = 650.9692500000001;
+    const t = [[x0, y1, x1, y1], [x1, y1, x1, y0], [x1, y0, x0, y0], [x0, y0, x0, y1]];
+    const b = await LASER.RLD.escribir(t, { speed: 9, pmin: 60, pmax: 60, passes: 2 }, { W: 1000, H: 700 });
+    const d = await LASER.generarRLD().catch(e => null);
+    return { b: Array.from(b), n: d ? d.length : 0 }; });
+  const difR = rl.b.length === refRld.length ? rl.b.filter((v, i) => v !== refRld[i]).length : -1;
+  ok(difR >= 0 && difR <= 64, `.rld del cuadrado igual que el de Atheon Design (${refRld.length} bytes; ${difR < 0 ? 'distinto tamaño: ' + rl.b.length : difR + ' bytes distintos'})`);
+  ok(rl.n > 0 && (rl.n - (refRld.length - 4 * 74)) % 74 === 0, `.rld del dibujo: ${(rl.n - (refRld.length - 4 * 74)) / 74} tramos de 74 bytes`);
   // 3) Un programa G-code: G1/G2/G3 cortan y G0 no
   const nc = 'G71 G90\nG0 X0 Y0\nG1 X40\nG3 X40 Y20 I0 J10\nG1 X0\nG1 Y0\nG0 X100 Y100\nM30\n';
   const g = await pg.evaluate(t => { const s = LASER.abrirGcodeTexto(t, 'prueba.nc'); const r = LASER.generarRD(); const res = { n: s.trazados.length, cerrado: s.trazados[0] && s.trazados[0].cerrado, bytes: r.rd.bytes.length }; LASER.volverAlDibujo(); return res; }, nc);
