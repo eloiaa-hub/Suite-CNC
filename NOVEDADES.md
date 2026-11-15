@@ -4,6 +4,14 @@ La versión de la suite es **año.mes** (por ejemplo, 2026.10). Cada programa co
 
 ## Suite CNC 2026.11
 
+### Calcador v131 / Corrector v76: guardar la batería y revisión por alumno
+- **💾 Guardar batería / 📂 Abrir batería…** en la 🗃 Batería de corrección: un .json con los ejercicios, los programas, tus notas y comentarios, las hojas de calificaciones y la revisión, para seguir otro día sin volver a cargar los zip. El navegador recuerda además la última batería (📂 Recuperarla / Olvidarla).
+- **👤 Revisión por alumno**: una tabla alumno × tarea con las notas, la media de cada alumno (las no entregadas cuentan 0 o solo cuentan las entregadas), un peso por tarea, tareas que no cuentan, 🔗 unir el mismo alumno escrito de dos maneras y ⬇ CSV.
+- **La ficha del alumno**: todas sus correcciones, una tarjeta por tarea, con su dibujo, los errores, los parecidos, tu nota y tu comentario; 🔍 Su corrección la abre en la corrección masiva y ↩ A la revisión vuelve.
+- **🖨 Informes / Devoluciones por alumno**: una hoja resumen por alumno (sus notas, su comentario y su media) y, si se quiere, detrás la corrección de cada tarea.
+- Si una tarea encaja igual con dos ejercicios (otro de la biblioteca con el mismo título), gana el del **nombre del archivo** y la fila avisa (⚠️ También encaja con…).
+- Manuales del Calcador y del Corrector actualizados (capítulo «Corregir a toda la clase»).
+
 ### Calcador láser v3: ancho de corte, plantilla de prueba y mesa
 - **Ancho de corte (kerf)** en la capa Corte y en cada material de la biblioteca. Con él, el láser va medio ancho **por fuera de la pieza** y **por dentro de los agujeros**, para que salgan a su medida: en el .rd, en el .rld y en la vista previa. Un borde común a dos piezas pegadas se corta por la línea, una sola vez.
 - En **📋 Solución**, con ancho de corte, el programa compensa con **G41/G42** (activados en el G0 de entrada) y **G40**, como las láseres CNC. Un **programa G-code** abierto se compensa según sus G41/G42; sin ellos, el Resumen avisa de que la pieza saldrá más pequeña.
