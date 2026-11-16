@@ -4,6 +4,10 @@ La versión de la suite es **año.mes** (por ejemplo, 2026.10). Cada programa co
 
 ## Suite CNC 2026.11
 
+### Libro de calificaciones v3
+- **Tab** pasa a la columna de al lado (el siguiente ejercicio del mismo alumno) y guarda la nota; Intro, al alumno de abajo.
+- Las casillas de las notas se distinguen del fondo (azul claro, con borde).
+
 ### Libro de calificaciones v2: bloques plegables
 - En la tabla, un bloque **plegado** enseña solo su media; desplegado, todos sus ejercicios. Clic en su nombre (▸ / ▾) o **▸ Plegar** / **▾ Desplegar** todos. De serie, los de más de 4 ejercicios salen plegados.
 

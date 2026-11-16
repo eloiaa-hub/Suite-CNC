@@ -81,6 +81,16 @@ const B = L => L.map(f => ({ name: path.basename(f), mimeType: 'application/octe
     const ids = await p.evaluate(() => ({ it: L.evals[0].bloques[2].items[0].id, A: Object.fromEntries(L.alumnos.map(a => [a.nombre.split(' ')[0], a.id])) }));
     const cel = (it, a) => `input.celda[data-it="${it}"][data-a="${a}"]:not([data-k])`;
     for (const [n, v] of [['Ana', '16'], ['Bruno', '9,5'], ['Carla', '20']]) { await p.fill(cel(ids.it, ids.A[n]), v); await p.press(cel(ids.it, ids.A[n]), 'Enter'); }
+    // Tab: a la columna de al lado (el mismo alumno), con la nota guardada; Intro: al alumno de abajo
+    await p.evaluate(() => { const b = L.evals[0].bloques[2]; b.items.push(itemNuevo('Plano')); cambio(); });
+    const it2 = await p.evaluate(() => L.evals[0].bloques[2].items[1].id), A0 = await p.evaluate(() => alumnosOrden().map(a => a.id));
+    await p.fill(cel(ids.it, A0[3]), '15'); await p.keyboard.press('Tab'); await p.waitForTimeout(150);
+    let foco = await p.evaluate(() => [document.activeElement.dataset.it, document.activeElement.dataset.a]);
+    ok(foco[0] === it2 && foco[1] === A0[3] && await p.evaluate(([it, a]) => buscarItem(it).it.notas[a].n === 15, [ids.it, A0[3]]), 'Tab pasa a la columna de al lado (el mismo alumno) y guarda la nota');
+    await p.keyboard.type('7'); await p.keyboard.press('Enter'); await p.waitForTimeout(150);
+    foco = await p.evaluate(() => [document.activeElement.dataset.it, document.activeElement.dataset.a]);
+    ok(foco[0] === it2 && foco[1] === A0[4] && await p.evaluate(([it, a]) => buscarItem(it).it.notas[a].n === 7, [it2, A0[3]]), 'Intro pasa al alumno de abajo (la misma columna)');
+    await p.evaluate(() => { const b = L.evals[0].bloques[2]; b.items.pop(); cambio(); });
     await p.evaluate(() => { const ev = L.evals[0]; ev.bloques[0].peso = 40; ev.bloques[1].peso = 40; ev.bloques[2].peso = 20; ev.bloques[1].min = 5; cambio(); });
     // la nota de Bruno, a mano: Examen 4; Prácticas: 01A 8 ·1, 02A 5 ·1, 02B — (0) ·2, Geo 09 no cuenta, 03A 8 ·1, 03B — (0) ·1 → 21/6 = 3,5 (< mín. 5);
     // Memoria 9,5/20 → 4,75. Nota = (4·40 + 3,5·40 + 4,75·20)/100 = 3,95; con el mínimo, tope 4 → 3,95

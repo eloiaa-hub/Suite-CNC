@@ -94,7 +94,7 @@ cuerpo = f"""<body>
 <section><h2 class="cap"><span>5</span>Poner y cambiar notas a mano</h2>
 <ul>
 <li><span class="boton">➕ Ejercicio a mano</span> (o ➕ en un bloque): su nombre, su bloque, su peso y su nota máxima. Después, escribe las notas en su columna.</li>
-<li><strong>Las casillas</strong> se escriben con coma o con punto; <kbd>Intro</kbd> o las flechas ↑ ↓ pasan al alumno de abajo o de arriba, y <kbd>Tab</kbd> al ejercicio de al lado. Vacía = no entregado.</li>
+<li><strong>Las casillas</strong> (en azul claro) se escriben con coma o con punto. <kbd>Tab</kbd> pasa a la <strong>columna de al lado</strong> (el siguiente ejercicio del mismo alumno; <kbd>Mayús</kbd> + <kbd>Tab</kbd>, a la de antes), e <kbd>Intro</kbd> o las flechas ↑ ↓ al alumno de abajo o de arriba, en la misma columna. La nota se guarda al salir de la casilla. Vacía = no entregado.</li>
 <li>Una nota <strong>importada</strong> también se puede cambiar: la casilla se pone en <strong>amarillo</strong> y, al pasar el ratón, dice la nota importada. En el ejercicio, <span class="boton">↺ Notas importadas</span> las devuelve todas.</li>
 <li><strong>Los criterios</strong>: ▸ en la cabecera de un ejercicio importado con sus criterios los despliega en columnas. Si la nota del Corrector era la suma de los criterios (lo normal), al cambiar un criterio cambia la nota. Abajo, la media de la clase en cada criterio.</li>
 </ul>

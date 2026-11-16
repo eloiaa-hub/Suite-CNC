@@ -8,12 +8,12 @@
   :root {
     --acento: #005A9C; --acento-suave: rgba(0,90,156,.10); --fondo: #eef2f6; --panel: #ffffff; --texto: #1d2733; --texto-sec: #5b6878;
     --borde: #d7dee7; --sombra: 0 6px 22px rgba(20,40,70,.10); --verde: #1e7a48; --naranja: #a3560f; --rojo: #b52b2b;
-    --campo: #f7f9fb; --suave: #f3f6f9; --ap: #e3f4ea; --su: #fbe4e4; --mod: #fff4d6;
+    --campo: #f7f9fb; --suave: #f3f6f9; --ap: #e3f4ea; --su: #fbe4e4; --mod: #fff4d6; --celda: #eaf1f8; --celda-borde: #c3d1df;
   }
   :root[data-tema="oscuro"] {
     --acento: #5aa9e6; --acento-suave: rgba(90,169,230,.14); --fondo: #14181d; --panel: #1d232a; --texto: #e6ebf0; --texto-sec: #9aa7b5;
     --borde: #2e3843; --sombra: 0 6px 22px rgba(0,0,0,.35); --verde: #4dd08a; --naranja: #f0a35e; --rojo: #ef7b6e;
-    --campo: #161b21; --suave: #222a33; --ap: #17362a; --su: #3d2124; --mod: #3a3220;
+    --campo: #161b21; --suave: #222a33; --ap: #17362a; --su: #3d2124; --mod: #3a3220; --celda: #26303b; --celda-borde: #3a4757;
   }
   * { box-sizing: border-box; }
   body { margin: 0; font-family: 'Segoe UI', system-ui, -apple-system, Roboto, Arial, sans-serif; background: var(--fondo); color: var(--texto); line-height: 1.45; font-size: 14px; }
@@ -72,9 +72,10 @@
   th.bpleg { cursor: pointer; } th.bpleg:hover { color: var(--acento); } th.bpleg .pl { font-size: 11px; }
   .ih { max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
   .ih:hover { color: var(--acento); }
-  .celda { width: 52px; text-align: center; border: 1px solid transparent; background: transparent; border-radius: 4px; padding: 2px 3px; }
-  .celda:hover { border-color: var(--borde); }
-  .celda:focus { border-color: var(--acento); background: var(--campo); outline: none; }
+  .celda { width: 52px; text-align: center; border: 1px solid var(--celda-borde); background: var(--celda); border-radius: 4px; padding: 2px 3px; }
+  .celda:hover { border-color: var(--acento); }
+  .celda:focus { border-color: var(--acento); background: var(--panel); outline: none; box-shadow: 0 0 0 2px var(--acento-suave); }
+  td.mod .celda { background: transparent; }
   td.mod { background: var(--mod) !important; }
   td.crit .celda { width: 42px; font-size: 12px; }
   th.crit, td.crit { background: var(--suave) !important; }
@@ -121,7 +122,7 @@
 </head>
 <body>
 <div class="barra">
-  <h1><a class="casa" href="index.html" title="Portada de las herramientas">⌂</a> 📒 Libro de calificaciones — Por Eloi A.A. <span class="ver" title="Versión del programa">v2</span></h1>
+  <h1><a class="casa" href="index.html" title="Portada de las herramientas">⌂</a> 📒 Libro de calificaciones — Por Eloi A.A. <span class="ver" title="Versión del programa">v3</span></h1>
   <button class="btn pri" id="bImportar" title="Importar las notas de los CSV del Corrector: la corrección de un ejercicio (también con variantes), la hoja de calificaciones de Aules rellenada, la revisión por alumno de la batería o el zip «Descarga CSV Correcciones»">📥 Importar notas…</button>
   <button class="btn" id="bAlumnos" title="La lista de la clase: añadir, renombrar, unir o quitar alumnos">👥 Alumnos</button>
   <button class="btn" id="bGuardar" title="Guardar el libro en un archivo .json (el navegador recuerda además el último)">💾 Guardar</button>
@@ -171,7 +172,7 @@
 // Las notas de la clase por evaluaciones: bloques con su peso, ejercicios con su peso dentro del bloque,
 // importados de los CSV del Corrector (solo la nota final o, si se quiere, también sus criterios) o puestos a mano.
 // ════════════════════════════════════════════════════════════════════════════════════════════
-const VERSION = 'v2', CLAVE = 'libro_calificaciones';
+const VERSION = 'v3', CLAVE = 'libro_calificaciones';
 const $ = id => document.getElementById(id);
 const esc = t => String(t ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const uid = () => Math.random().toString(36).slice(2, 10);
@@ -387,9 +388,13 @@ function enlazarTabla(ev) {
                 else { if (x.o === undefined && it.fuente !== 'a mano') x.o = x.n; x.n = v; if (x.o !== undefined) x.m = x.o !== v; }
                 if (x.n === null && !x.c && x.o === undefined) delete it.notas[a];
             }
-            const foco = document.activeElement && document.activeElement.classList.contains('celda') ? [document.activeElement.dataset.it, document.activeElement.dataset.a, document.activeElement.dataset.k] : null;
-            guardarPronto(); pintar();
-            if (foco) { const s2 = document.querySelector(`input.celda[data-it="${foco[0]}"][data-a="${foco[1]}"]${foco[2] !== undefined ? `[data-k="${foco[2]}"]` : ':not([data-k])'}`); if (s2) { s2.focus(); s2.select(); } }
+            guardarPronto();
+            // repintar cuando el foco ya esté en la casilla siguiente (Tab, clic…) y devolvérselo
+            setTimeout(() => {
+                const ae = document.activeElement, foco = ae && ae.classList && ae.classList.contains('celda') ? [ae.dataset.it, ae.dataset.a, ae.dataset.k] : null;
+                pintar();
+                if (foco) { const s2 = document.querySelector(`input.celda[data-it="${foco[0]}"][data-a="${foco[1]}"]${foco[2] !== undefined ? `[data-k="${foco[2]}"]` : ':not([data-k])'}`); if (s2) { s2.focus(); s2.select(); } }
+            }, 0);
         };
         inp.onfocus = () => inp.select();
     });
