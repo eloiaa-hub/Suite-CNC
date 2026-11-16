@@ -4,6 +4,10 @@ La versión de la suite es **año.mes** (por ejemplo, 2026.10). Cada programa co
 
 ## Suite CNC 2026.11
 
+### Calcador v135 / Corrector v80: las hojas de calificaciones de la batería, también por los alumnos
+- Si Aules o el navegador cortan el nombre de la hoja de calificaciones («Calificaciones-…-ISO GEO-3.csv») o se le cambia, la batería la casa con su tarea por los **números de participante** (los de las carpetas del zip de entregas, distintos en cada tarea).
+- La columna «Hoja de calificaciones» dice cómo ha casado (nº de la tarea, por el nombre, por los alumnos) o **⚠️ sin hoja**; encima de la tabla, las hojas que no casan con ninguna tarea.
+
 ### Calcador v134 / Corrector v79: ⬆ Notas para Aules, sin la casilla de «registros modificados»
 - La hoja de calificaciones sale con la «Última modificación (calificación)» de ahora, en un formato que Aules entiende («2026-11-16 13:09»). Antes Aules no entendía su propia fecha en castellano, la tomaba por antigua y decía que «no hay calificaciones modificadas» si no se marcaba «Permitir la actualización de los registros que se han modificado recientemente en Moodle…».
 - Manuales: nuevo apartado «⬆ Subir a Aules las notas y las devoluciones», paso a paso para un ejercicio y para una batería.
