@@ -153,7 +153,7 @@
 <body>
 <div class="ventana">
 <div class="barra">
-  <h1><a class="casa" href="index.html" title="Portada de las herramientas">⌂</a> 📒 Libro de calificaciones — Por Eloi A.A. <span class="ver" title="Versión del programa">v6</span></h1>
+  <h1><a class="casa" href="index.html" title="Portada de las herramientas">⌂</a> 📒 Libro de calificaciones — Por Eloi A.A. <span class="ver" title="Versión del programa">v7</span></h1>
   <button class="btn pri" id="bImportar" title="Importar las notas de los CSV del Corrector: la corrección de un ejercicio (también con variantes), la hoja de calificaciones de Aules rellenada, la revisión por alumno de la batería o el zip «Descarga CSV Correcciones»">📥 Importar notas…</button>
   <button class="btn" id="bAlumnos" title="La lista de la clase: añadir, renombrar, unir o quitar alumnos">👥 Alumnos</button>
   <button class="btn" id="bGuardar" title="Guardar el libro en un archivo .json (el navegador recuerda además el último)">💾 Guardar</button>
@@ -210,7 +210,7 @@
 // Las notas de la clase por evaluaciones: bloques con su peso, ejercicios con su peso dentro del bloque,
 // importados de los CSV del Corrector (solo la nota final o, si se quiere, también sus criterios) o puestos a mano.
 // ════════════════════════════════════════════════════════════════════════════════════════════
-const VERSION = 'v6', CLAVE = 'libro_calificaciones';
+const VERSION = 'v7', CLAVE = 'libro_calificaciones';
 const $ = id => document.getElementById(id);
 const esc = t => String(t ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const uid = () => Math.random().toString(36).slice(2, 10);
@@ -546,7 +546,7 @@ function htmlFichaAlumno(aid, imprimir) {
           ${r.bajo.length ? `<p class="${imprimir ? 'sub' : 'nota-p'}">⚠ No llega al mínimo de ${r.bajo.map(b => `«${esc(b.nombre)}» (${nf(b.min, 2)})`).join(', ')}${r.sinTope !== r.n ? `: la nota se queda en ${nf(r.n, 2)} (sin el mínimo sería ${nf(r.sinTope, 2)})` : ''}.</p>` : ''}
           <table class="lista ficha-t"><tr><th>Bloque / ejercicio</th><th>Peso</th><th>Nota</th></tr>${ev.bloques.map(b => {
             const m = mediaBloque(ev, b, aid);
-            return `<tr style="font-weight:600"><td>${esc(b.nombre)}</td><td>${sumaPesos(ev) ? nf(b.peso / sumaPesos(ev) * 100, 0) + ' %' : ''}</td><td>${m !== null && b.min !== null && b.min !== undefined && m < b.min ? '⚠ ' : ''}${nf(m, 2)}</td></tr>`
+            return `<tr class="blo" style="font-weight:600"><td>${esc(b.nombre)}</td><td>${sumaPesos(ev) ? nf(b.peso / sumaPesos(ev) * 100, 0) + ' %' : ''}</td><td>${m !== null && b.min !== null && b.min !== undefined && m < b.min ? '⚠ ' : ''}${nf(m, 2)}</td></tr>`
                 + b.items.map(it => { const v = notaIt(it, aid); return `<tr><td style="padding-left:18px">${esc(it.nombre)}</td><td>×${nf(it.peso, 2)}</td><td>${v === null ? (cuentaIt(it) ? (ev.modo === 'cero' ? '— (0)' : '—') : '') : nf(v, 2)}${it.criterios && it.notas[aid] && it.notas[aid].c && !imprimir ? ` <span class="nota-p">(${it.criterios.map((c, k) => `${esc(c)} ${nf(it.notas[aid].c[k], 2)}`).join(' · ')})</span>` : ''}</td></tr>`; }).join('');
         }).join('')}</table>
           ${ev.comentarios[aid] ? `<p class="com-imp"><b>Comentario:</b> ${esc(ev.comentarios[aid])}</p>` : ''}`;
@@ -868,13 +868,19 @@ function csvEval() {
 }
 const CSS_IMP = `body { font-family: 'Segoe UI', Arial, sans-serif; color: #1d2733; margin: 0; font-size: 10pt; } @page { size: A4; margin: 14mm; }
   h1 { font-size: 15pt; margin: 0 0 2mm; } h2 { font-size: 12pt; margin: 4mm 0 2mm; } h4 { font-size: 11pt; margin: 5mm 0 2mm; } .sub { color: #5b6878; font-size: 9pt; margin-bottom: 4mm; }
-  table { border-collapse: collapse; width: 100%; } th, td { border: 1px solid #c9d2dc; padding: 1.2mm 2mm; text-align: center; } th { background: #eef2f6; font-size: 8.5pt; } td:first-child, th:first-child { text-align: left; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  table { border-collapse: collapse; width: 100%; } th, td { border: 1px solid #c9d2dc; padding: 1.2mm 2mm; text-align: center; } td:first-child, th:first-child { text-align: left; }
+  th { background: var(--base); color: #fff; font-size: 8.5pt; border-color: color-mix(in srgb, var(--base) 70%, white); }
+  tr:nth-child(even) td { background: color-mix(in srgb, var(--base) 12%, white); }
+  tr.blo td { background: color-mix(in srgb, var(--base) 20%, white) !important; font-weight: 600; border-top: 1.5px solid var(--base); }
+  h1 { color: var(--base); } h4 { color: var(--base); border-bottom: 1.5px solid var(--base); padding-bottom: 1mm; }
+  .caja { border-color: var(--base) !important; background: color-mix(in srgb, var(--base) 6%, white); }
   .ap { color: #1e7a48; font-weight: 700; } .su { color: #b52b2b; font-weight: 700; } section { page-break-after: always; } section:last-child { page-break-after: auto; }
   .gran { font-size: 16pt; font-weight: 700; } .caja { border: 1px solid #c9d2dc; border-radius: 2mm; padding: 3mm 4mm; margin-top: 4mm; } .com-imp { margin: 2mm 0; }
   .lista td:nth-child(2), .lista td:nth-child(3) { width: 22mm; }`;
 function abrirImpresion(titulo, cuerpo, apaisado) {
     const w = window.open('', '_blank'); if (!w) { snack('El navegador ha bloqueado la ventana de impresión: permite las ventanas emergentes'); return; }
-    w.document.open(); w.document.write(`<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>${esc(titulo)}</title><style>${CSS_IMP}${apaisado ? '@page { size: A4 landscape; }' : ''}</style></head><body>${cuerpo}<script>window.onload = () => setTimeout(() => window.print(), 300);<\/script></body></html>`); w.document.close();
+    w.document.open(); w.document.write(`<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>${esc(titulo)}</title><style>:root { --base: ${(getComputedStyle(document.documentElement).getPropertyValue('--base') || '').trim() || '#005A9C'}; }${CSS_IMP}${apaisado ? '@page { size: A4 landscape; }' : ''}</style></head><body>${cuerpo}<script>window.onload = () => setTimeout(() => window.print(), 300);<\/script></body></html>`); w.document.close();
 }
 const cls2 = n => n === null || n === undefined ? '' : n >= (L.opc.aprobado ?? 5) ? 'ap' : 'su';
 function imprimirActa() {

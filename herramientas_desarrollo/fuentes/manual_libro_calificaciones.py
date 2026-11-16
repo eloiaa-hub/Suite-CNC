@@ -135,6 +135,7 @@ cuerpo = f"""<body>
 <li><span class="boton">🖨 Acta</span>: la tabla de la evaluación abierta (las medias de los bloques, la nota y el boletín) o la del final del curso.</li>
 <li><span class="boton">🖨 Boletines</span>: una hoja por alumno con sus notas bloque a bloque, la nota de cada evaluación, el boletín, tus comentarios y, con más de una evaluación, el final del curso. Para uno solo, en su ficha: 🖨 Su boletín.</li>
 <li><span class="boton">🗋 Nuevo</span>: empieza un libro vacío (guarda antes el de ahora).</li>
+<li>El acta y los boletines salen con el <strong>color de entorno</strong> (⚙): la cabecera de color, las filas en dos colores alternos y, en los boletines, cada bloque destacado. Para que salgan los colores en papel, en la ventana de impresión deja marcados los gráficos de fondo si tu navegador lo pregunta.</li>
 </ul>
 {fig('boletin.png', 'El boletín de un alumno.', '62%')}
 <div class="nota atencion"><strong>⚠️ Los datos de los alumnos.</strong> El libro y sus CSV llevan los nombres y las notas de los alumnos: guárdalos donde guardas el resto de las notas, no los compartas.</div>

@@ -150,6 +150,7 @@ const B = L => L.map(f => ({ name: path.basename(f), mimeType: 'application/octe
     // boletines
     const H = await p.evaluate(() => { let h = ''; const o = window.open; window.open = () => ({ document: { open() {}, write(x) { h += x; }, close() {} } }); try { imprimirBoletines(null); } finally { window.open = o; } return h; });
     ok((H.match(/<section>/g) || []).length === 5 && /Muy buen trimestre/.test(H) && /Memoria/.test(H), '🖨 boletines: uno por alumno, con su comentario');
+    ok(/--base: #/.test(H) && /tr:nth-child\(even\) td/.test(H) && /<tr class="blo"/.test(H), '🖨 con el color de entorno, filas alternas y los bloques destacados');
     // la nota máxima del bloque: ejercicios de 1 punto (Arcos I J: 3 ejercicios, cada uno sobre 1)
     await p.click('.pest[data-ev="0"]'); await p.click('#evBloque'); await p.waitForTimeout(100);
     const nb4 = await p.evaluate(() => L.evals[0].bloques.length - 1);
