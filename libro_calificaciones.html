@@ -6,30 +6,36 @@
 <title>Libro de calificaciones — Por Eloi A.A.</title>
 <style>
   :root {
-    --acento: #005A9C; --acento-suave: rgba(0,90,156,.10); --fondo: #eef2f6; --panel: #ffffff; --texto: #1d2733; --texto-sec: #5b6878;
-    --borde: #d7dee7; --sombra: 0 6px 22px rgba(20,40,70,.10); --verde: #1e7a48; --naranja: #a3560f; --rojo: #b52b2b;
-    --campo: #f7f9fb; --suave: #f3f6f9; --ap: #e3f4ea; --su: #fbe4e4; --mod: #fff4d6; --celda: #eaf1f8; --celda-borde: #c3d1df;
+    --acento: #005A9C; --acento-suave: #e8f0f8; --fondo: #eef1f5; --panel: #ffffff; --ventana: #f8f9fa; --texto: #333; --texto-sec: #6b7280;
+    --borde: #d1d5db; --sombra: 0 2px 8px rgba(0,0,0,.08); --verde: #1e7a48; --naranja: #a3560f; --rojo: #b52b2b;
+    --campo: #ffffff; --suave: #f1f4f7; --ap: #e3f4ea; --su: #fbe4e4; --mod: #fff1c2; --celda: #ffffff; --celda-borde: #c3d1df;
+    --cab: #005A9C; --cab-texto: #ffffff; --cab2: #dbe7f3; --fila-par: #eef4fa; --fila-sobre: #cfe2f5; --sobre-borde: #005A9C;
   }
   :root[data-tema="oscuro"] {
-    --acento: #5aa9e6; --acento-suave: rgba(90,169,230,.14); --fondo: #14181d; --panel: #1d232a; --texto: #e6ebf0; --texto-sec: #9aa7b5;
-    --borde: #2e3843; --sombra: 0 6px 22px rgba(0,0,0,.35); --verde: #4dd08a; --naranja: #f0a35e; --rojo: #ef7b6e;
-    --campo: #161b21; --suave: #222a33; --ap: #17362a; --su: #3d2124; --mod: #3a3220; --celda: #26303b; --celda-borde: #3a4757;
+    --acento: #5aa9e6; --acento-suave: #1a2a3a; --fondo: #1a1a1e; --panel: #222226; --ventana: #252528; --texto: #e8e8ec; --texto-sec: #9a9aa3;
+    --borde: #3a3a3f; --sombra: 0 2px 8px rgba(0,0,0,.4); --verde: #4dd08a; --naranja: #f0a35e; --rojo: #ef7b6e;
+    --campo: #1c1c20; --suave: #2b2b30; --ap: #17362a; --su: #3d2124; --mod: #3a3220; --celda: #1c1c20; --celda-borde: #45454c;
+    --cab: #1d4f7a; --cab-texto: #ffffff; --cab2: #23384d; --fila-par: #282d35; --fila-sobre: #24405c; --sobre-borde: #5aa9e6;
   }
   * { box-sizing: border-box; }
-  body { margin: 0; font-family: 'Segoe UI', system-ui, -apple-system, Roboto, Arial, sans-serif; background: var(--fondo); color: var(--texto); line-height: 1.45; font-size: 14px; }
+  body { margin: 0; font-family: 'Segoe UI', Geneva, Verdana, sans-serif; background: var(--fondo); color: var(--texto); line-height: 1.45; font-size: 14px; padding: 10px; }
+  .ventana { background: var(--ventana); max-width: 1700px; margin: 0 auto; border-radius: 10px; box-shadow: 0 12px 40px rgba(0,0,0,.18); border: 1px solid var(--borde); overflow: hidden; min-height: calc(100vh - 20px); }
   button, input, select, textarea { font: inherit; color: inherit; }
-  .barra { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: var(--panel); border-bottom: 1px solid var(--borde); flex-wrap: wrap; }
-  .barra h1 { margin: 0; font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 6px; flex: 1; min-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .barra { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 6px; padding: 10px 18px; background: var(--ventana); border-bottom: 1px solid var(--borde); flex-wrap: wrap; user-select: none; }
+  .barra h1 { margin: 0; font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 6px; flex: 1; min-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .barra a.casa { text-decoration: none; color: inherit; opacity: .75; }
   .ver { font-size: 11px; font-weight: 600; padding: 1px 7px; border-radius: 9px; background: var(--acento-suave); color: var(--acento); }
-  .btn { border: 1px solid var(--borde); background: var(--panel); border-radius: 8px; padding: 5px 10px; cursor: pointer; white-space: nowrap; }
-  .btn:hover { border-color: var(--acento); }
-  .btn.pri { background: var(--acento); border-color: var(--acento); color: #fff; }
+  .btn { border: 1px solid var(--borde); background: var(--panel); border-radius: 5px; padding: 5px 10px; cursor: pointer; white-space: nowrap; font-size: 13px; }
+  .btn:hover { border-color: var(--acento); color: var(--acento); }
+  .barra .btn { border-color: var(--acento); color: var(--acento); font-weight: 600; font-size: 12.5px; padding: 4px 10px; background: transparent; }
+  .barra .btn:hover { background: var(--acento); color: #fff; }
+  .btn.pri, .barra .btn.pri { background: var(--acento); border-color: var(--acento); color: #fff; }
+  .btn.pri:hover { opacity: .88; color: #fff; }
   .btn.mini { padding: 1px 7px; font-size: 12px; }
   .btn.peligro:hover { border-color: var(--rojo); color: var(--rojo); }
   .btn:disabled { opacity: .45; cursor: default; }
-  .envoltura { max-width: 1600px; margin: 0 auto; padding: 14px 16px 40px; }
-  .caja { background: var(--panel); border: 1px solid var(--borde); border-radius: 14px; padding: 12px 14px; box-shadow: var(--sombra); margin-bottom: 14px; }
+  .envoltura { padding: 14px 18px 30px; }
+  .caja { background: var(--panel); border: 1px solid var(--borde); border-radius: 8px; padding: 12px 14px; box-shadow: var(--sombra); margin-bottom: 14px; }
   .caja h2 { margin: 0 0 8px; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--texto-sec); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
   .fila { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
   .nota-p { font-size: 12px; color: var(--texto-sec); }
@@ -38,19 +44,21 @@
   .grupo-in { font-weight: 600; min-width: 280px; flex: 1; max-width: 520px; }
   /* pestañas */
   .pestanas { display: flex; gap: 4px; flex-wrap: wrap; align-items: flex-end; margin-bottom: -1px; position: relative; z-index: 1; }
-  .pest { border: 1px solid var(--borde); border-bottom: none; background: var(--suave); border-radius: 10px 10px 0 0; padding: 7px 14px; cursor: pointer; }
-  .pest.activa { background: var(--panel); font-weight: 700; color: var(--acento); }
+  .pest { border: 1px solid var(--borde); border-bottom: none; background: var(--suave); border-radius: 8px 8px 0 0; padding: 7px 16px; cursor: pointer; font-weight: 600; color: var(--texto-sec); }
+  .pest:hover { color: var(--acento); }
+  .pest.activa { background: var(--acento); border-color: var(--acento); color: #fff; }
   .pest.final { margin-left: auto; }
-  .hoja { border-top-left-radius: 0; }
+  .hoja { border-top-left-radius: 0; border-top: 3px solid var(--acento); }
   /* estructura */
   .bloques { display: flex; flex-direction: column; gap: 6px; }
-  .bloque { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 6px 8px; border: 1px solid var(--borde); border-radius: 10px; background: var(--suave); }
+  .bloque { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 6px 8px; border: 1px solid var(--borde); border-left: 4px solid var(--acento); border-radius: 6px; background: var(--suave); }
   .bloque .bn { font-weight: 600; width: 190px; }
   .bloque label { font-size: 12px; color: var(--texto-sec); display: inline-flex; align-items: center; gap: 4px; }
   .bloque input[type=number] { width: 58px; }
   .chips { display: flex; gap: 4px; flex-wrap: wrap; flex: 1; min-width: 200px; }
   .chip { border: 1px solid var(--borde); background: var(--panel); border-radius: 14px; padding: 1px 9px; font-size: 12px; cursor: pointer; white-space: nowrap; }
-  .chip:hover { border-color: var(--acento); }
+  .chip:hover { border-color: var(--acento); background: var(--acento); color: #fff; }
+  .chip:hover small { color: #fff; }
   .chip small { color: var(--texto-sec); }
   .chip.fuera { opacity: .5; text-decoration: line-through; }
   .aviso-pesos { font-size: 12px; color: var(--naranja); }
@@ -58,31 +66,38 @@
   .tabla-caja { overflow: auto; max-height: calc(100vh - 230px); border: 1px solid var(--borde); border-radius: 10px; }
   table.libro { border-collapse: separate; border-spacing: 0; font-size: 13px; min-width: 100%; }
   table.libro th, table.libro td { border-bottom: 1px solid var(--borde); border-right: 1px solid var(--borde); padding: 3px 5px; text-align: center; background: var(--panel); }
-  table.libro thead th { position: sticky; z-index: 3; background: var(--suave); font-size: 12px; font-weight: 600; white-space: nowrap; }
+  table.libro thead th { position: sticky; z-index: 3; background: var(--cab); color: var(--cab-texto); font-size: 12px; font-weight: 600; white-space: nowrap; border-color: rgba(255,255,255,.25); }
+  table.libro thead tr:nth-child(2) th, table.libro thead tr:nth-child(3) th { background: var(--cab2); color: var(--texto); border-color: var(--borde); }
+  table.libro thead th .nota-p { color: inherit; opacity: .8; }
+  table.libro tbody tr:nth-child(even) td { background: var(--fila-par); }
+  table.libro tbody tr:hover td { background: var(--fila-sobre); }
+  table.libro tbody tr:hover td.al { box-shadow: inset 4px 0 0 var(--sobre-borde); }
   table.libro thead tr:nth-child(1) th { top: 0; }
   table.libro thead tr:nth-child(2) th { top: 27px; }
-  table.libro thead tr:nth-child(3) th { top: 54px; font-weight: normal; color: var(--texto-sec); font-size: 11px; }
+  table.libro thead tr:nth-child(3) th { top: 54px; font-weight: normal; color: var(--texto-sec) !important; font-size: 11px; }
   table.libro .al { position: sticky; left: 0; z-index: 2; text-align: left; white-space: nowrap; min-width: 200px; max-width: 280px; overflow: hidden; text-overflow: ellipsis; }
   table.libro thead .al { z-index: 4; }
   table.libro td.al a { color: var(--texto); text-decoration: none; font-weight: 600; cursor: pointer; }
   table.libro td.al a:hover { color: var(--acento); text-decoration: underline; }
-  table.libro tfoot td { position: sticky; bottom: 0; background: var(--suave); font-weight: 600; font-size: 12px; z-index: 2; }
+  table.libro tfoot td { position: sticky; bottom: 0; background: var(--cab2); font-weight: 600; font-size: 12px; z-index: 2; border-top: 2px solid var(--acento); }
   table.libro tfoot td.al { z-index: 3; }
-  .bh { border-left: 2px solid var(--texto-sec) !important; }
+  .bh { border-left: 2px solid var(--acento) !important; }
+  thead .bh { border-left-color: rgba(255,255,255,.6) !important; }
+  thead tr:nth-child(n+2) .bh { border-left-color: var(--acento) !important; }
   th.bpleg { cursor: pointer; } th.bpleg:hover { color: var(--acento); } th.bpleg .pl { font-size: 11px; }
   .ih { max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
   .ih:hover { color: var(--acento); }
   .celda { width: 52px; text-align: center; border: 1px solid var(--celda-borde); background: var(--celda); border-radius: 4px; padding: 2px 3px; }
   .celda:hover { border-color: var(--acento); }
-  .celda:focus { border-color: var(--acento); background: var(--panel); outline: none; box-shadow: 0 0 0 2px var(--acento-suave); }
+  .celda:focus { border-color: var(--acento); background: var(--panel); outline: none; box-shadow: 0 0 0 3px rgba(0,90,156,.25); }
   td.mod .celda { background: transparent; }
   td.mod { background: var(--mod) !important; }
   td.crit .celda { width: 42px; font-size: 12px; }
-  th.crit, td.crit { background: var(--suave) !important; }
+  td.crit { background-image: linear-gradient(rgba(0,0,0,.035), rgba(0,0,0,.035)); }
   .su-t { color: var(--rojo); } .ap-t { color: var(--verde); }
   td.media { font-weight: 600; white-space: nowrap; }
   td.nev { white-space: nowrap; }
-  td.nev { font-weight: 700; font-size: 14px; border-left: 2px solid var(--texto-sec) !important; }
+  td.nev { font-weight: 700; font-size: 14px; border-left: 2px solid var(--acento) !important; }
   td.bol { font-weight: 700; font-size: 14px; }
   td.bol.ap-t, td.nev.ap-t { background: var(--ap) !important; color: var(--verde); }
   td.bol.su-t, td.nev.su-t { background: var(--su) !important; color: var(--rojo); }
@@ -121,8 +136,9 @@
 </style>
 </head>
 <body>
+<div class="ventana">
 <div class="barra">
-  <h1><a class="casa" href="index.html" title="Portada de las herramientas">⌂</a> 📒 Libro de calificaciones — Por Eloi A.A. <span class="ver" title="Versión del programa">v3</span></h1>
+  <h1><a class="casa" href="index.html" title="Portada de las herramientas">⌂</a> 📒 Libro de calificaciones — Por Eloi A.A. <span class="ver" title="Versión del programa">v4</span></h1>
   <button class="btn pri" id="bImportar" title="Importar las notas de los CSV del Corrector: la corrección de un ejercicio (también con variantes), la hoja de calificaciones de Aules rellenada, la revisión por alumno de la batería o el zip «Descarga CSV Correcciones»">📥 Importar notas…</button>
   <button class="btn" id="bAlumnos" title="La lista de la clase: añadir, renombrar, unir o quitar alumnos">👥 Alumnos</button>
   <button class="btn" id="bGuardar" title="Guardar el libro en un archivo .json (el navegador recuerda además el último)">💾 Guardar</button>
@@ -149,6 +165,7 @@
   <div class="caja hoja" id="hoja"></div>
 </div>
 
+</div>
 <!-- Importar -->
 <div class="ov" id="ovImp"><div class="dlg ancho">
   <header><h3>📥 Importar notas</h3><button class="btn mini" data-cerrar>✕</button></header>
@@ -172,7 +189,7 @@
 // Las notas de la clase por evaluaciones: bloques con su peso, ejercicios con su peso dentro del bloque,
 // importados de los CSV del Corrector (solo la nota final o, si se quiere, también sus criterios) o puestos a mano.
 // ════════════════════════════════════════════════════════════════════════════════════════════
-const VERSION = 'v3', CLAVE = 'libro_calificaciones';
+const VERSION = 'v4', CLAVE = 'libro_calificaciones';
 const $ = id => document.getElementById(id);
 const esc = t => String(t ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const uid = () => Math.random().toString(36).slice(2, 10);
@@ -357,13 +374,19 @@ function tablaEval(ev) {
     const vN = A.map(a => notaEval(ev, a.id).n), vB = A.map(a => boletin(notaEval(ev, a.id).n));
     pie += `<td class="nev">${nf(medias(vN), 2)}</td><td>${ap(vB)}</td><td></td>`;
     return `<div class="tabla-caja"><table class="libro"><thead><tr>${f1}</tr><tr>${f2}</tr><tr>${f3}</tr></thead><tbody>${filas}</tbody><tfoot><tr>${pie}</tr></tfoot></table></div>
-        <div class="nota-p" style="margin-top:6px">Escribe las notas en las casillas (sobre la nota máxima del ejercicio; vacío = no entregado). En amarillo, las notas importadas que has cambiado a mano. ▸ / ▾ en un bloque lo despliega o lo pliega (plegado, solo su media); en un ejercicio, sus criterios. Clic en un alumno: su ficha; en ✎: tu comentario.</div>`;
+        <div class="nota-p" style="margin-top:6px">Escribe las notas en las casillas (sobre la nota máxima del ejercicio; vacío = no entregado): Tab o ← → cambian de columna; Intro o ↑ ↓, de alumno. En amarillo, las notas importadas que has cambiado a mano. ▸ / ▾ en un bloque lo despliega o lo pliega (plegado, solo su media); en un ejercicio, sus criterios. Clic en un alumno: su ficha; en ✎: tu comentario.</div>`;
 }
 function buscarItem(id) { for (const ev of L.evals) for (const b of ev.bloques) for (const it of b.items) if (it.id === id) return { ev, b, it }; return null; }
 function enlazarTabla(ev) {
     const h = $('hoja');
     h.querySelectorAll('input.celda').forEach(inp => {
         inp.onkeydown = e => {
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+                // ← →: la casilla de antes o la de después en la fila (como en una hoja de cálculo)
+                const C = [...inp.closest('tr').querySelectorAll('input.celda')], i = C.indexOf(inp), sig = C[i + (e.key === 'ArrowLeft' ? -1 : 1)];
+                if (sig) { e.preventDefault(); sig.focus(); sig.select(); }
+                return;
+            }
             if (e.key === 'Enter' || e.key === 'ArrowDown' || e.key === 'ArrowUp') {
                 e.preventDefault(); const td = inp.closest('td'), tr = td.parentNode, i = [...tr.children].indexOf(td);
                 const otro = (e.key === 'ArrowUp' ? tr.previousElementSibling : tr.nextElementSibling); const sig = otro && otro.children[i] && otro.children[i].querySelector('input');

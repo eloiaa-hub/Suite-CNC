@@ -90,6 +90,12 @@ const B = L => L.map(f => ({ name: path.basename(f), mimeType: 'application/octe
     await p.keyboard.type('7'); await p.keyboard.press('Enter'); await p.waitForTimeout(150);
     foco = await p.evaluate(() => [document.activeElement.dataset.it, document.activeElement.dataset.a]);
     ok(foco[0] === it2 && foco[1] === A0[4] && await p.evaluate(([it, a]) => buscarItem(it).it.notas[a].n === 7, [it2, A0[3]]), 'Intro pasa al alumno de abajo (la misma columna)');
+    await p.keyboard.press('ArrowLeft'); await p.waitForTimeout(100);
+    foco = await p.evaluate(() => [document.activeElement.dataset.it, document.activeElement.dataset.a]);
+    ok(foco[0] === ids.it && foco[1] === A0[4], '← pasa a la columna de antes');
+    await p.keyboard.type('12'); await p.keyboard.press('ArrowRight'); await p.waitForTimeout(150);
+    foco = await p.evaluate(() => [document.activeElement.dataset.it, document.activeElement.dataset.a]);
+    ok(foco[0] === it2 && foco[1] === A0[4] && await p.evaluate(([it, a]) => buscarItem(it).it.notas[a].n === 12, [ids.it, A0[4]]), '→ pasa a la de después y guarda la nota');
     await p.evaluate(() => { const b = L.evals[0].bloques[2]; b.items.pop(); cambio(); });
     await p.evaluate(() => { const ev = L.evals[0]; ev.bloques[0].peso = 40; ev.bloques[1].peso = 40; ev.bloques[2].peso = 20; ev.bloques[1].min = 5; cambio(); });
     // la nota de Bruno, a mano: Examen 4; Prácticas: 01A 8 ·1, 02A 5 ·1, 02B — (0) ·2, Geo 09 no cuenta, 03A 8 ·1, 03B — (0) ·1 → 21/6 = 3,5 (< mín. 5);

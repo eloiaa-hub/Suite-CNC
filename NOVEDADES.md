@@ -4,6 +4,11 @@ La versión de la suite es **año.mes** (por ejemplo, 2026.10). Cada programa co
 
 ## Suite CNC 2026.11
 
+### Libro de calificaciones v4
+- La tabla como una hoja de cálculo: cabecera azul, **filas en dos colores alternos** y la **fila del ratón resaltada**.
+- **← →** cambian de columna (como Tab); ↑ ↓ e Intro, de alumno.
+- El aspecto del Calcador: la ventana, la barra de botones, las pestañas y los bloques.
+
 ### Libro de calificaciones v3
 - **Tab** pasa a la columna de al lado (el siguiente ejercicio del mismo alumno) y guarda la nota; Intro, al alumno de abajo.
 - Las casillas de las notas se distinguen del fondo (azul claro, con borde).
