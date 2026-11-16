@@ -60,6 +60,20 @@ let fallos = 0; const ok = (c, m) => { console.log((c ? '✓ ' : '✗ ') + m); i
         const inf = await pg.evaluate(() => { let html = ''; const o = window.open; window.open = () => ({ document: { open() {}, write: t => { html += t; }, close() {} }, focus() {}, print() {}, addEventListener() {}, onload: null });
             try { imprimirInformes(); } catch (e) { html = 'ERROR ' + e.message; } finally { window.open = o; } return html; });
         ok(/🎲 Corregido con la variante 12B/.test(inf) && /le tocaba la 12B/.test(inf), `${prog}: el informe dice la variante ${inf.startsWith('ERROR') ? inf : ''}`);
+        // las devoluciones (Corrector v77): con el nombre del alumno, el título de su variante, los criterios y el programa correcto
+        const dev = await pg.evaluate(() => { let html = ''; const o = window.open; window.open = () => ({ document: { open() {}, write: t => { html += t; }, close() {} }, focus() {}, print() {}, addEventListener() {}, onload: null });
+            const cap = f => { html = ''; try { f(); } catch (e) { html = 'ERROR ' + e.message; } return html; };
+            const k = n => masiva.lista.findIndex(it => it.alumno === n);
+            try { return { ana: cap(() => imprimirDevoluciones([k('Ana')])), todas: cap(() => imprimirDevoluciones()), inf: cap(() => imprimirInformes([k('Ana')])), num: cfgHoja.num }; } finally { window.open = o; } });
+        const tit = h => (h.match(/<title>([^<]*)/) || [])[1] || '';
+        ok(/^Devolución — Ana — Examen \(variante B\) · Ejercicio nº 12B$/.test(tit(dev.ana)), `${prog}: el PDF de la devolución lleva el nombre del alumno y su variante («${tit(dev.ana)}»)`);
+        ok(/<h1>Examen \(variante B\) · Ejercicio nº 12B<\/h1>/.test(dev.ana), `${prog}: la página dice su variante`);
+        ok(/Cómo se ha evaluado<\/h2><p class="crit">Se pide: [^<]*Tolerancia: [^<]*La nota/.test(dev.ana), `${prog}: la devolución lleva los criterios`);
+        const sol = (dev.ana.match(/<div class="prog sol">([\s\S]*?)<\/div><\/section>|<div class="prog sol">([\s\S]*?)<\/div>\s*<\/section>/) || [])[0] || '';
+        ok(/Programa correcto/.test(dev.ana) && /EJERCICIO N. 12B\)/.test(sol) && /T\d+ M06/.test(sol) && /S\d+ M03/.test(sol) && /G[01] /.test(sol), `${prog}: la devolución lleva el programa correcto de su variante`);
+        const pags = (dev.todas.match(/<h1>[^<]*<\/h1>/g) || []);
+        ok(/^Devolución — Examen · Ejercicio nº 12$/.test(tit(dev.todas)) && pags.some(h => /12C/.test(h)) && pags.some(h => /12A/.test(h)) && (dev.todas.match(/Programa correcto/g) || []).length === 5, `${prog}: todas: cada una con su variante y su solución («${tit(dev.todas)}»)`);
+        ok(!/Programa correcto|Cómo se ha evaluado/.test(dev.inf) && /^Corrección — Ana — /.test(tit(dev.inf)) && dev.num === '12A', `${prog}: el informe del profesor no lleva la solución; el ejercicio abierto sigue siendo la 12A`);
         // sin variantes: como antes
         await pg.evaluate(() => { elegirVariantesMasiva(); }); await pg.waitForTimeout(400); await pg.click('#varMasivaNo'); await pg.waitForTimeout(300);
         const sin = await pg.evaluate(() => masiva.lista.map(it => it.variante || '').join('') === '' && masiva.lista.find(it => it.alumno === 'Ana').v.veredicto !== 'bien');

@@ -4,6 +4,10 @@ La versión de la suite es **año.mes** (por ejemplo, 2026.10). Cada programa co
 
 ## Suite CNC 2026.11
 
+### Calcador v132 / Corrector v77: devoluciones más completas
+- **🖨 Devoluciones**: detrás del programa del alumno, **cómo se ha evaluado** (lo que pide la hoja, la tolerancia y los criterios de la nota) y el **programa correcto** (el de «📋 Solución», en las coordenadas que pide la hoja; con variantes, el de la variante de cada alumno).
+- **El nombre del PDF**: la devolución (o el informe) de un solo alumno se llama con su nombre y su ejercicio: «Devolución — Nombre — Ejercicio … (variante A) · Ejercicio nº 01NOV-A». Con variantes, cada hoja lleva el título de la variante del alumno (antes, todas el de la variante abierta); con varios alumnos de variantes distintas, el PDF lleva el del ejercicio sin la variante.
+
 ### Calcador v131 / Corrector v76: guardar la batería y revisión por alumno
 - **💾 Guardar batería / 📂 Abrir batería…** en la 🗃 Batería de corrección: un .json con los ejercicios, los programas, tus notas y comentarios, las hojas de calificaciones y la revisión, para seguir otro día sin volver a cargar los zip. El navegador recuerda además la última batería (📂 Recuperarla / Olvidarla).
 - **👤 Revisión por alumno**: una tabla alumno × tarea con las notas, la media de cada alumno (las no entregadas cuentan 0 o solo cuentan las entregadas), un peso por tarea, tareas que no cuentan, 🔗 unir el mismo alumno escrito de dos maneras y ⬇ CSV.

@@ -692,7 +692,7 @@
 <body>
 <div class="app-window">
     <header class="top-bar">
-        <a href="index.html" class="ir-portada" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a><span class="top-bar-title">✅ Corrector — Por Eloi A.A.<span class="ver-suite" title="Versión del programa (generado a partir del Calcador v129)" style="font-size:11px;font-weight:600;padding:1px 7px;margin-left:8px;border-radius:9px;background:rgba(0,90,156,.12);color:#005A9C;vertical-align:middle">v76</span></span>
+        <a href="index.html" class="ir-portada" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a><span class="top-bar-title">✅ Corrector — Por Eloi A.A.<span class="ver-suite" title="Versión del programa (generado a partir del Calcador v129)" style="font-size:11px;font-weight:600;padding:1px 7px;margin-left:8px;border-radius:9px;background:rgba(0,90,156,.12);color:#005A9C;vertical-align:middle">v77</span></span>
         <div class="top-bar-right">
             <input class="project-name" id="projectName" type="text" value="calco_sin_nombre" placeholder="Nombre del proyecto">
             <div class="c2-archivo"><button class="btn-manual" onclick="nuevo()" title="Empieza de cero (se puede deshacer)">🗋 Nuevo</button><button class="btn-manual" onclick="document.getElementById('fileJSON').click()" title="Abre un proyecto .json del Calcador o del Corrector">📂 Abrir</button><button class="btn-manual" onclick="exportarJSON()" title="Guarda el proyecto en un archivo JSON: lo abren el Calcador, el Corrector, el Tutor y el Simulador (como plano del ejercicio)">💾 Guardar</button><button class="btn-manual" onclick="abrirBiblioteca()" title="Tus ejercicios: buscar, abrir e imprimir sus hojas">🗂 Biblioteca</button></div>
@@ -12469,10 +12469,15 @@ function imprimirInformes(ks) {
     const esc = t => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;');
     const N = critNota(), hoy = new Date().toLocaleDateString('es-ES');
     const pide = textoPide();
-    const titulo = `${cfgHoja.titulo || nombreProyecto()}${cfgHoja.num ? ' · Ejercicio nº ' + cfgHoja.num : ''}`;
+    const titulo = `${cfgHoja.titulo || nombreProyecto()}${cfgHoja.num ? ' · Ejercicio nº ' + cfgHoja.num : ''}`, tituloGen = titulo;
+    // el nombre del PDF: con un solo alumno, su nombre y su ejercicio (su variante); con varios, el ejercicio (sin la variante si son distintas)
+    const titulos = [...new Set(sel.map(k => tituloVariante(masiva.lista[k], titulo)))];
+    const tituloDoc = sel.length === 1 && masiva.lista[sel[0]] ? `${masiva.lista[sel[0]].alumno} — ${titulos[0]}` : titulos.length === 1 ? titulos[0] : tituloComunVariantes(titulo);
     const cat = { escritura:'Escritura', geometria:'Geometría', seguridad:'Seguridad', fuera:'Zona que sobra', requisito:'Lo pedido', compensacion:'Compensación', herramienta:'Herramienta' };
+    let solBase;
     const pagina = k => {
-        const it = masiva.lista[k], r = it.r || {}, v = it.v;
+        const it = masiva.lista[k], r = it.r || {}, v = it.v, titulo = tituloVariante(it, tituloGen);
+        const sol = !modoDevol ? null : it.variante && solImp && solImp.has(it.variante) ? solImp.get(it.variante) : (solBase === undefined ? (solBase = solucionDevol(tituloGen)) : solBase);
         const H = (r.hallazgos || []).filter(h => v.veredicto !== 'vacio' || !/^Falta mecanizar/.test(h.msg)).sort((a, b) => (a.tipo === 'error' ? 0 : 1) - (b.tipo === 'error' ? 0 : 1) || ((a.linea ?? 1e9) - (b.linea ?? 1e9)));
         const lineasMal = new Set(H.filter(h => h.tipo === 'error' && h.linea !== null && h.linea !== undefined).map(h => h.linea)), lineasAv = new Set(H.filter(h => h.tipo === 'aviso' && h.linea !== null && h.linea !== undefined).map(h => h.linea));
         const prog = String(it.texto).replace(/\r/g, '').split('\n').map((l, i) => `<div class="${lineasMal.has(i) ? 'lm' : lineasAv.has(i) ? 'la' : ''}">${esc(l) || '&nbsp;'}</div>`).join('');
@@ -12490,8 +12495,10 @@ function imprimirInformes(ks) {
             ${modoDevol && it.notaProf !== null && it.notaProf !== undefined ? '' : tablaDesglose(v, N)}
             <h2>${modoDevol ? 'Lo que tienes que revisar' : 'Observaciones'}</h2>
             ${H.length ? `<ol class="obs">${H.map(h => `<li class="${h.tipo}"><span class="c">${h.tipo === 'error' ? (cat[h.cat] || 'Error') : (cat[h.cat] || 'Aviso')}</span> ${esc(h.msg)}${h.pista ? `<div class="pi">Pista: ${esc(h.pista)}</div>` : ''}</li>`).join('')}</ol>` : '<p class="nada">Ninguna: todos los tramos del plano están mecanizados y ningún corte se sale del contorno.</p>'}
-            <h2>Programa del alumno <small>(en rojo, bloques con error; en naranja, con aviso)</small></h2>
+            <h2>${modoDevol ? 'Tu programa' : 'Programa del alumno'} <small>(en rojo, bloques con error; en naranja, con aviso)</small></h2>
             <div class="prog">${prog}</div>
+            ${modoDevol ? `<h2>Cómo se ha evaluado</h2><p class="crit">Se pide: ${esc(pide)}. Tolerancia: ${nf(cfgCorr.tol, 2)} mm. ${esc(textoCriterios(N).replace(/^Nota orientativa/, 'La nota'))}${it.notaProf !== null && it.notaProf !== undefined ? ' La nota final la ha puesto el profesor.' : ''}</p>` : ''}
+            ${sol ? `<h2>Programa correcto <small>(una solución, en ${esc(sol.coord)}${sol.nota ? '; ' + esc(sol.nota) : ''}; puede haber otras igual de buenas)</small></h2><div class="prog sol">${sol.L.map(l => `<div>${esc(l) || '&nbsp;'}</div>`).join('')}</div>` : ''}
         </section>`;
     };
     const resumen = todos ? `<section class="inf res"><header><div><h1>${esc(titulo)}</h1><div class="sub">Resumen de la corrección · ${hoy} · Se pide: ${esc(pide)}</div></div></header>
@@ -12501,7 +12508,7 @@ function imprimirInformes(ks) {
         ${tablaErroresClase(sel)}
         ${tablaParecidosInforme()}
         <p class="crit">${textoCriterios(N)}</p></section>` : '';
-    const html = `<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>${modoDevol ? 'Devolución' : 'Corrección'} — ${esc(titulo)}</title><style>
+    const html = `<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>${modoDevol ? 'Devolución' : 'Corrección'} — ${esc(tituloDoc)}</title><style>
         @page { size: A4 portrait; margin: 12mm; }
         body { font: 10pt/1.35 'Segoe UI', Arial, sans-serif; color: #222; margin: 0; }
         .com-prof { margin: 2px 0 10px; padding: 6px 10px; border-left: 4px solid #2a6db0; background: #eef4fb; }
@@ -12524,6 +12531,7 @@ function imprimirInformes(ks) {
         .prog { font: 8pt/1.3 Consolas, 'Courier New', monospace; column-count: 2; column-gap: 6mm; border: 1px solid #eee; padding: 2mm; }
         .prog div { white-space: pre-wrap; overflow-wrap: anywhere; break-inside: avoid; } .prog .lm { background: #fbe0e0; color: #a01f1f; } .prog .la { background: #fcefdc; }
         .crit { font-size: 8.5pt; color: #666; }
+        .prog.sol { background: #f3faf6; border-color: #cfe8da; }
     </style></head><body>${resumen}${sel.map(pagina).join('')}
 <script>window.onload = () => setTimeout(() => window.print(), 300);<\/script></body></html>`;
     const w = window.open('', '_blank');
@@ -12630,14 +12638,44 @@ pintarEjercicioMasiva = function () {
     if (b) { b.classList.toggle('activo', masiva.variantes.length > 0); b.textContent = masiva.variantes.length ? `🎲 Variantes (${masiva.variantes.length})…` : '🎲 Variantes…'; }
     if (d && masiva.variantes.length) d.textContent += ` · 🎲 con las variantes ${masiva.variantes.map(v => v.etq).join(', ')}`;
 };
+// Con alumnos de varias variantes, el título sin la variante y el número común («01NOV-A», «01NOV-B» → «01NOV»)
+function tituloComunVariantes(base) {
+    const nums = masiva.variantes.map(v => { try { return fichaDe(v.datos).num; } catch (e) { return ''; } }).filter(Boolean);
+    if (!nums.length) return base.replace(/\s*\(variante [A-Z]\)/i, '');
+    const pre = nums.reduce((a, b) => { let i = 0; while (i < a.length && a[i] === b[i]) i++; return a.slice(0, i); }).replace(/[\s\-_·.]+$/, '');
+    const t = String(cfgHoja.titulo || nombreProyecto()).replace(/\s*\(variante [A-Z]\)/i, '');
+    return `${t}${pre ? ' · Ejercicio nº ' + pre : ''}`;
+}
+// El título de la variante de un alumno (el de su ficha), o el del ejercicio abierto
+function tituloVariante(it, base) {
+    const v = it && it.variante && masiva.variantes.find(x => x.etq === it.variante);
+    if (!v) return base;
+    try { const f = fichaDe(v.datos); return f.titulo ? `${f.titulo}${f.num ? ' · Ejercicio nº ' + f.num : ''}` : base; } catch (e) { return base; }
+}
+// El programa correcto para la devolución: el de «📋 Solución» del ejercicio abierto, en las coordenadas que pide la hoja
+let solImp = null;
+function solucionDevol(tit) {
+    if (typeof tuGenerar !== 'function') return null;
+    const ej = TU.ejercicio, co = cfgMec.coord, pide = { g90: 'G90', g91: 'G91', mix: 'mixta' }[cfgHoja.prog];
+    try {
+        TU.ejercicio = null; cfgMec.coord = pide || (['G90', 'G91', 'G91T', 'mixta'].includes(co) ? co : 'G90');
+        const p = tuGenerar(); if (!p || p.vacio || !p.lineas || !p.lineas.length) return null;
+        const L = p.lineas.map(l => l.texto || '');
+        const i = p.lineas.findIndex(l => l.titulo); if (i >= 0 && tit) L[i] = `(${tuSinTildes(tit).toUpperCase().replace(/[()]/g, '')})`;
+        return { L, coord: { G90: 'absolutas (G90)', G91: 'incrementales (G91)', G91T: 'incrementales (G91, también la Z)', mixta: 'mixta (G90 y G91)' }[cfgMec.coord] || cfgMec.coord,
+                 nota: cfgHoja.prog === 'polar' ? 'la hoja pide polares; aquí, en absolutas' : '' };
+    } catch (e) { console.warn('Solución', e); return null; }
+    finally { TU.ejercicio = ej; cfgMec.coord = co; }
+}
 // los informes impresos: el dibujo de cada alumno, con su variante
 const _imprimirInformesBase = imprimirInformes;
 imprimirInformes = function (ks) {
     if (!masiva.variantes.length) return _imprimirInformesBase(ks);
     const mapa = new Map(), sel = ks || masiva.lista.map((_, k) => k);
     masiva.variantes.forEach(v => { const de = sel.map(k => masiva.lista[k]).filter(it => it && it.variante === v.etq && it.r && it.r.segs); if (de.length) conVariante(v, () => de.forEach(it => mapa.set(it.r, svgCorreccion(it.r)))); });
+    if (modoDevol) { solImp = new Map(); masiva.variantes.forEach(v => { if (sel.some(k => masiva.lista[k] && masiva.lista[k].variante === v.etq)) conVariante(v, () => solImp.set(v.etq, solucionDevol(tituloVariante({ variante: v.etq }, '')))); }); }
     const orig = svgCorreccion; svgCorreccion = r => mapa.has(r) ? mapa.get(r) : orig(r);
-    try { return _imprimirInformesBase(ks); } finally { svgCorreccion = orig; }
+    try { return _imprimirInformesBase(ks); } finally { svgCorreccion = orig; solImp = null; }
 };
 // ── La ventana para elegir las variantes ──
 async function elegirVariantesMasiva() {
