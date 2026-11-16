@@ -6,16 +6,19 @@
 <title>Libro de calificaciones — Por Eloi A.A.</title>
 <style>
   :root {
-    --acento: #005A9C; --acento-suave: #e8f0f8; --fondo: #eef1f5; --panel: #ffffff; --ventana: #f8f9fa; --texto: #333; --texto-sec: #6b7280;
+    --base: #005A9C;
+    --acento: var(--base); --acento-suave: color-mix(in srgb, var(--base) 10%, white); --fondo: #eef1f5; --panel: #ffffff; --ventana: #f8f9fa; --texto: #333; --texto-sec: #6b7280;
     --borde: #d1d5db; --sombra: 0 2px 8px rgba(0,0,0,.08); --verde: #1e7a48; --naranja: #a3560f; --rojo: #b52b2b;
     --campo: #ffffff; --suave: #f1f4f7; --ap: #e3f4ea; --su: #fbe4e4; --mod: #fff1c2; --celda: #ffffff; --celda-borde: #c3d1df;
-    --cab: #005A9C; --cab-texto: #ffffff; --cab2: #dbe7f3; --fila-par: #eef4fa; --fila-sobre: #cfe2f5; --sobre-borde: #005A9C;
+    --cab: var(--base); --cab-texto: #ffffff; --cab2: color-mix(in srgb, var(--base) 15%, white); --fila-par: color-mix(in srgb, var(--base) 6%, white);
+    --fila-sobre: color-mix(in srgb, var(--base) 22%, white); --sobre-borde: var(--base); --foco: color-mix(in srgb, var(--base) 30%, transparent);
   }
   :root[data-tema="oscuro"] {
-    --acento: #5aa9e6; --acento-suave: #1a2a3a; --fondo: #1a1a1e; --panel: #222226; --ventana: #252528; --texto: #e8e8ec; --texto-sec: #9a9aa3;
+    --acento: color-mix(in srgb, var(--base) 65%, white); --acento-suave: color-mix(in srgb, var(--base) 25%, #222226); --fondo: #1a1a1e; --panel: #222226; --ventana: #252528; --texto: #e8e8ec; --texto-sec: #9a9aa3;
     --borde: #3a3a3f; --sombra: 0 2px 8px rgba(0,0,0,.4); --verde: #4dd08a; --naranja: #f0a35e; --rojo: #ef7b6e;
     --campo: #1c1c20; --suave: #2b2b30; --ap: #17362a; --su: #3d2124; --mod: #3a3220; --celda: #1c1c20; --celda-borde: #45454c;
-    --cab: #1d4f7a; --cab-texto: #ffffff; --cab2: #23384d; --fila-par: #282d35; --fila-sobre: #24405c; --sobre-borde: #5aa9e6;
+    --cab: color-mix(in srgb, var(--base) 75%, black); --cab-texto: #ffffff; --cab2: color-mix(in srgb, var(--base) 22%, #222226); --fila-par: color-mix(in srgb, var(--base) 8%, #222226);
+    --fila-sobre: color-mix(in srgb, var(--base) 35%, #222226); --sobre-borde: var(--acento); --foco: color-mix(in srgb, var(--base) 45%, transparent);
   }
   * { box-sizing: border-box; }
   body { margin: 0; font-family: 'Segoe UI', Geneva, Verdana, sans-serif; background: var(--fondo); color: var(--texto); line-height: 1.45; font-size: 14px; padding: 10px; }
@@ -84,12 +87,12 @@
   .bh { border-left: 2px solid var(--acento) !important; }
   thead .bh { border-left-color: rgba(255,255,255,.6) !important; }
   thead tr:nth-child(n+2) .bh { border-left-color: var(--acento) !important; }
-  th.bpleg { cursor: pointer; } th.bpleg:hover { color: var(--acento); } th.bpleg .pl { font-size: 11px; }
+  th.bpleg { cursor: pointer; } th.bpleg:hover { text-decoration: underline; background: color-mix(in srgb, var(--cab) 85%, white); } th.bpleg .pl { font-size: 11px; }
   .ih { max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
-  .ih:hover { color: var(--acento); }
+  .ih:hover { text-decoration: underline; color: var(--acento); }
   .celda { width: 52px; text-align: center; border: 1px solid var(--celda-borde); background: var(--celda); border-radius: 4px; padding: 2px 3px; }
   .celda:hover { border-color: var(--acento); }
-  .celda:focus { border-color: var(--acento); background: var(--panel); outline: none; box-shadow: 0 0 0 3px rgba(0,90,156,.25); }
+  .celda:focus { border-color: var(--acento); background: var(--panel); outline: none; box-shadow: 0 0 0 3px var(--foco); }
   td.mod .celda { background: transparent; }
   td.mod { background: var(--mod) !important; }
   td.crit .celda { width: 42px; font-size: 12px; }
@@ -127,6 +130,18 @@
   .zona-arr { border: 2px dashed var(--borde); border-radius: 12px; padding: 18px; text-align: center; color: var(--texto-sec); }
   .zona-arr.sobre { border-color: var(--acento); color: var(--acento); }
   .estado-ok { color: var(--verde); } .estado-dud { color: var(--naranja); } .estado-nuevo { color: var(--acento); } .estado-no { color: var(--texto-sec); }
+  .ajustes { position: absolute; top: 48px; right: 18px; background: var(--ventana); border: 1px solid var(--borde); border-radius: 10px; box-shadow: 0 8px 26px rgba(0,0,0,.18); padding: 14px 16px; display: none; flex-direction: column; gap: 10px; z-index: 30; min-width: 220px; }
+  .ajustes.visible { display: flex; }
+  .ajustes h4 { margin: 0; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--texto-sec); }
+  .fila-aj { display: flex; align-items: center; justify-content: space-between; font-size: 13px; cursor: pointer; }
+  .paleta { display: flex; gap: 8px; }
+  .color-btn { width: 22px; height: 22px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: transform .1s; }
+  .color-btn:hover { transform: scale(1.15); } .color-btn.activo { border-color: var(--texto); box-shadow: 0 0 0 2px var(--ventana) inset; }
+  .toggle { position: relative; display: inline-block; width: 36px; height: 20px; flex-shrink: 0; }
+  .toggle input { opacity: 0; width: 0; height: 0; }
+  .toggle-slider { position: absolute; cursor: pointer; inset: 0; background: var(--borde); border-radius: 20px; transition: .25s; }
+  .toggle-slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: .25s; }
+  .toggle input:checked + .toggle-slider { background: var(--acento); } .toggle input:checked + .toggle-slider:before { transform: translateX(16px); }
   .snack { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); background: #263240; color: #fff; padding: 9px 16px; border-radius: 10px; z-index: 80; max-width: min(720px, 92vw); box-shadow: var(--sombra); display: none; }
   .ficha-t td, .ficha-t th { text-align: center; }
   .ficha-t td:first-child, .ficha-t th:first-child { text-align: left; }
@@ -138,7 +153,7 @@
 <body>
 <div class="ventana">
 <div class="barra">
-  <h1><a class="casa" href="index.html" title="Portada de las herramientas">⌂</a> 📒 Libro de calificaciones — Por Eloi A.A. <span class="ver" title="Versión del programa">v4</span></h1>
+  <h1><a class="casa" href="index.html" title="Portada de las herramientas">⌂</a> 📒 Libro de calificaciones — Por Eloi A.A. <span class="ver" title="Versión del programa">v5</span></h1>
   <button class="btn pri" id="bImportar" title="Importar las notas de los CSV del Corrector: la corrección de un ejercicio (también con variantes), la hoja de calificaciones de Aules rellenada, la revisión por alumno de la batería o el zip «Descarga CSV Correcciones»">📥 Importar notas…</button>
   <button class="btn" id="bAlumnos" title="La lista de la clase: añadir, renombrar, unir o quitar alumnos">👥 Alumnos</button>
   <button class="btn" id="bGuardar" title="Guardar el libro en un archivo .json (el navegador recuerda además el último)">💾 Guardar</button>
@@ -148,7 +163,13 @@
   <button class="btn" id="bBoletines" title="Imprimir una hoja por alumno: sus notas por bloque y ejercicio, la nota de la evaluación y tu comentario">🖨 Boletines</button>
   <button class="btn" id="bNuevo" title="Empezar un libro nuevo (vacío)">🗋 Nuevo</button>
   <a class="btn" href="manual_libro_calificaciones.html" target="_blank" title="El manual del Libro de calificaciones" style="text-decoration:none">❓ Manual</a>
-  <button class="btn" id="bTema" title="Modo claro / oscuro">🌓</button>
+  <button class="btn" id="bAjustes" title="Apariencia: modo oscuro y color de entorno">⚙</button>
+  <div class="ajustes" id="ajustes">
+    <h4>Apariencia</h4>
+    <label class="fila-aj"><span>Modo oscuro</span><span class="toggle"><input type="checkbox" id="chkOscuro"><span class="toggle-slider"></span></span></label>
+    <h4>Color entorno</h4>
+    <div class="paleta" id="paleta"></div>
+  </div>
   <input type="file" id="fAbrir" accept=".json,application/json" hidden>
 </div>
 
@@ -189,7 +210,7 @@
 // Las notas de la clase por evaluaciones: bloques con su peso, ejercicios con su peso dentro del bloque,
 // importados de los CSV del Corrector (solo la nota final o, si se quiere, también sus criterios) o puestos a mano.
 // ════════════════════════════════════════════════════════════════════════════════════════════
-const VERSION = 'v4', CLAVE = 'libro_calificaciones';
+const VERSION = 'v5', CLAVE = 'libro_calificaciones';
 const $ = id => document.getElementById(id);
 const esc = t => String(t ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const uid = () => Math.random().toString(36).slice(2, 10);
@@ -869,9 +890,20 @@ function imprimirBoletines(ids) {
 }
 
 // ════════════════ Arranque ════════════════
-function tema(t) { document.documentElement.dataset.tema = t; try { localStorage.setItem('libro_tema', t); } catch (e) {} }
-try { const t = localStorage.getItem('libro_tema'); if (t) document.documentElement.dataset.tema = t; } catch (e) {}
-$('bTema').onclick = () => tema(document.documentElement.dataset.tema === 'oscuro' ? 'claro' : 'oscuro');
+// ⚙ Apariencia: modo oscuro y color de entorno (los del Calcador)
+const COLORES = ['#005A9C', '#28a745', '#dc3545', '#e67e22', '#8e44ad', '#16a085'];
+function tema(t) { document.documentElement.dataset.tema = t; $('chkOscuro').checked = t === 'oscuro'; try { localStorage.setItem('libro_tema', t); } catch (e) {} }
+function colorEntorno(c) {
+    document.documentElement.style.setProperty('--base', c);
+    $('paleta').querySelectorAll('.color-btn').forEach(b => b.classList.toggle('activo', b.dataset.c === c));
+    try { localStorage.setItem('libro_color', c); } catch (e) {}
+}
+$('paleta').innerHTML = COLORES.map(c => `<div class="color-btn" style="background:${c}" data-c="${c}" title="${c}"></div>`).join('');
+$('paleta').querySelectorAll('.color-btn').forEach(b => b.onclick = () => colorEntorno(b.dataset.c));
+$('chkOscuro').onchange = e => tema(e.target.checked ? 'oscuro' : 'claro');
+$('bAjustes').onclick = e => { e.stopPropagation(); $('ajustes').classList.toggle('visible'); };
+document.addEventListener('click', e => { if (!e.target.closest('#ajustes') && !e.target.closest('#bAjustes')) $('ajustes').classList.remove('visible'); });
+try { tema(localStorage.getItem('libro_tema') || 'claro'); colorEntorno(localStorage.getItem('libro_color') || COLORES[0]); } catch (e) { colorEntorno(COLORES[0]); }
 $('bImportar').onclick = abrirImportar;
 $('impOk').onclick = hacerImportar;
 $('ovImp').querySelectorAll('[data-cerrar]').forEach(b => b.onclick = () => $('ovImp').classList.remove('visible'));

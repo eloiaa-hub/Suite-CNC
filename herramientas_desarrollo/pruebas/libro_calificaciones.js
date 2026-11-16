@@ -84,16 +84,16 @@ const B = L => L.map(f => ({ name: path.basename(f), mimeType: 'application/octe
     // Tab: a la columna de al lado (el mismo alumno), con la nota guardada; Intro: al alumno de abajo
     await p.evaluate(() => { const b = L.evals[0].bloques[2]; b.items.push(itemNuevo('Plano')); cambio(); });
     const it2 = await p.evaluate(() => L.evals[0].bloques[2].items[1].id), A0 = await p.evaluate(() => alumnosOrden().map(a => a.id));
-    await p.fill(cel(ids.it, A0[3]), '15'); await p.keyboard.press('Tab'); await p.waitForTimeout(150);
+    await p.fill(cel(ids.it, A0[3]), '15'); await p.keyboard.press('Tab'); await p.waitForTimeout(400);
     let foco = await p.evaluate(() => [document.activeElement.dataset.it, document.activeElement.dataset.a]);
     ok(foco[0] === it2 && foco[1] === A0[3] && await p.evaluate(([it, a]) => buscarItem(it).it.notas[a].n === 15, [ids.it, A0[3]]), 'Tab pasa a la columna de al lado (el mismo alumno) y guarda la nota');
-    await p.keyboard.type('7'); await p.keyboard.press('Enter'); await p.waitForTimeout(150);
+    await p.keyboard.type('7'); await p.keyboard.press('Enter'); await p.waitForTimeout(400);
     foco = await p.evaluate(() => [document.activeElement.dataset.it, document.activeElement.dataset.a]);
     ok(foco[0] === it2 && foco[1] === A0[4] && await p.evaluate(([it, a]) => buscarItem(it).it.notas[a].n === 7, [it2, A0[3]]), 'Intro pasa al alumno de abajo (la misma columna)');
-    await p.keyboard.press('ArrowLeft'); await p.waitForTimeout(100);
+    await p.keyboard.press('ArrowLeft'); await p.waitForTimeout(400);
     foco = await p.evaluate(() => [document.activeElement.dataset.it, document.activeElement.dataset.a]);
     ok(foco[0] === ids.it && foco[1] === A0[4], '← pasa a la columna de antes');
-    await p.keyboard.type('12'); await p.keyboard.press('ArrowRight'); await p.waitForTimeout(150);
+    await p.keyboard.type('12'); await p.keyboard.press('ArrowRight'); await p.waitForTimeout(400);
     foco = await p.evaluate(() => [document.activeElement.dataset.it, document.activeElement.dataset.a]);
     ok(foco[0] === it2 && foco[1] === A0[4] && await p.evaluate(([it, a]) => buscarItem(it).it.notas[a].n === 12, [ids.it, A0[4]]), '→ pasa a la de después y guarda la nota');
     await p.evaluate(() => { const b = L.evals[0].bloques[2]; b.items.pop(); cambio(); });
@@ -150,6 +150,17 @@ const B = L => L.map(f => ({ name: path.basename(f), mimeType: 'application/octe
     // boletines
     const H = await p.evaluate(() => { let h = ''; const o = window.open; window.open = () => ({ document: { open() {}, write(x) { h += x; }, close() {} } }); try { imprimirBoletines(null); } finally { window.open = o; } return h; });
     ok((H.match(/<section>/g) || []).length === 5 && /Muy buen trimestre/.test(H) && /Memoria/.test(H), '🖨 boletines: uno por alumno, con su comentario');
+    // ⚙ apariencia: color de entorno y modo oscuro (se recuerdan)
+    await p.click('#bAjustes'); await p.click('.color-btn[data-c="#28a745"]');
+    const col = await p.evaluate(() => getComputedStyle(document.querySelector('table.libro thead th')).backgroundColor);
+    await p.click('.fila-aj'); await p.waitForTimeout(100);
+    ok(col === 'rgb(40, 167, 69)' && await p.evaluate(() => document.documentElement.dataset.tema === 'oscuro'), `⚙ el color de entorno (la cabecera de la tabla: ${col}) y el modo oscuro`);
+    // el título de un bloque, con el ratón encima, se sigue leyendo (no se vuelve del color del fondo)
+    await p.hover('th[data-pleg]'); const hc = await p.evaluate(() => { const t = document.querySelector('th[data-pleg]'), c = getComputedStyle(t); return [c.color, c.backgroundColor]; });
+    ok(hc[0] !== hc[1] && hc[0] === 'rgb(255, 255, 255)', `con el ratón encima, el título del bloque sigue en blanco (${hc.join(' sobre ')})`);
+    await p.reload(); await p.waitForTimeout(300);
+    ok(await p.evaluate(() => document.documentElement.dataset.tema === 'oscuro' && getComputedStyle(document.documentElement).getPropertyValue('--base').trim() === '#28a745'), 'y se recuerdan');
+    await p.evaluate(() => { localStorage.removeItem('libro_tema'); localStorage.removeItem('libro_color'); });
     ok(p.errs.length === 0, 'sin errores de JavaScript ' + p.errs.join(' | '));
     await b.close(); fs.rmSync(TMP, { recursive: true, force: true });
     console.log(`fallos ${fallos}`); process.exit(fallos ? 1 : 0);

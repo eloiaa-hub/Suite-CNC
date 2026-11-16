@@ -4,6 +4,10 @@ La versión de la suite es **año.mes** (por ejemplo, 2026.10). Cada programa co
 
 ## Suite CNC 2026.11
 
+### Libro de calificaciones v5
+- **⚙ Apariencia**, como en el Calcador: modo oscuro y **color de entorno** (seis colores); la cabecera, las filas y los botones toman ese color.
+- Con el ratón encima, el título de un bloque en la cabecera ya no se vuelve del color del fondo: se subraya.
+
 ### Libro de calificaciones v4
 - La tabla como una hoja de cálculo: cabecera azul, **filas en dos colores alternos** y la **fila del ratón resaltada**.
 - **← →** cambian de columna (como Tab); ↑ ↓ e Intro, de alumno.
