@@ -5,7 +5,7 @@ La versión de la suite es **año.mes** (por ejemplo, 2026.10). Cada programa co
 ## Suite CNC 2026.11
 
 ### Calcador v136 / Corrector v81
-- En la batería, **⬇ Descargar todo (.zip)** se llama ahora **⬇ Descargar calificaciones Aules (.zip)** (lo que trae no cambia).
+- En la batería, **⬇ Descargar todo (.zip)** se llama ahora **⬇ Descarga CSV Correcciones (.zip)** (lo que trae no cambia: las hojas de calificaciones de Aules rellenadas, el informe de cada tarea y el resumen).
 
 ### Calcador v135 / Corrector v80: las hojas de calificaciones de la batería, también por los alumnos
 - Si Aules o el navegador cortan el nombre de la hoja de calificaciones («Calificaciones-…-ISO GEO-3.csv») o se le cambia, la batería la casa con su tarea por los **números de participante** (los de las carpetas del zip de entregas, distintos en cada tarea).
