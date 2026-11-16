@@ -56,6 +56,7 @@ function zip(entradas) {
         ok(nb < 100 && /Errores:/.test(f(102)[9]), `${prog}: Bruno, ${f(102)[4]} con sus errores en el comentario`);
         ok(f(103)[4] === '100,00', `${prog}: Carla casa por el número aunque el nombre no coincida (${f(103)[4]})`);
         ok(f(104)[4] === '' && f(104)[9] === '', `${prog}: David, sin entrega, se queda como estaba`);
+        ok(/^\d{4}-\d\d-\d\d \d\d:\d\d$/.test(f(101)[8]) && /^\d{4}-\d\d-\d\d \d\d:\d\d$/.test(f(102)[8]) && f(104)[8] === '-', `${prog}: «Última modificación (calificación)», con la hora de ahora en un formato que Aules entiende (${f(101)[8]}); sin entrega, igual`);
         ok(f(101)[2] === 'ana@x.es' && f(101)[7] === 'jueves, 29 de octubre de 2026, 10:00', `${prog}: el resto de columnas, igual`);
         // una hoja con punto decimal y separador «;», sin comentarios
         const hoja2 = 'Identificador;Nombre completo;Calificación;Calificación máxima\nParticipante 101;Ana García Pérez;;10.00\nParticipante 102;Bruno Sanz;;10.00\n';

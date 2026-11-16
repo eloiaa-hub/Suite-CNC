@@ -4,6 +4,9 @@ La versión de la suite es **año.mes** (por ejemplo, 2026.10). Cada programa co
 
 ## Suite CNC 2026.11
 
+### Calcador v134 / Corrector v79: ⬆ Notas para Aules, sin la casilla de «registros modificados»
+- La hoja de calificaciones sale con la «Última modificación (calificación)» de ahora, en un formato que Aules entiende («2026-11-16 13:09»). Antes Aules no entendía su propia fecha en castellano, la tomaba por antigua y decía que «no hay calificaciones modificadas» si no se marcaba «Permitir la actualización de los registros que se han modificado recientemente en Moodle…».
+
 ### Calcador v133 / Corrector v78: devoluciones a Aules y lo que repite cada alumno
 - **⬆ Devoluciones para Aules**: un zip con la devolución de cada alumno (una página HTML), con su número de participante en el nombre, para subirlo de una vez en la tarea («Subir varios archivos de retroalimentación en un zip»). En la batería, un zip con un zip por tarea.
 - **Con la solución**: una casilla para que la devolución lleve o no el programa correcto (se recuerda; vale para la corrección masiva, la batería y la revisión).

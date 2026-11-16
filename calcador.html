@@ -690,7 +690,7 @@
 <body>
 <div class="app-window">
     <header class="top-bar">
-        <a href="index.html" class="ir-portada" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a><span class="top-bar-title">⬡ Calcador de contornos — Por Eloi A.A.<span class="ver-suite" title="Versión del programa" style="font-size:11px;font-weight:600;padding:1px 7px;margin-left:8px;border-radius:9px;background:rgba(0,90,156,.12);color:#005A9C;vertical-align:middle">v133</span></span>
+        <a href="index.html" class="ir-portada" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a><span class="top-bar-title">⬡ Calcador de contornos — Por Eloi A.A.<span class="ver-suite" title="Versión del programa" style="font-size:11px;font-weight:600;padding:1px 7px;margin-left:8px;border-radius:9px;background:rgba(0,90,156,.12);color:#005A9C;vertical-align:middle">v134</span></span>
         <div class="top-bar-right">
             <input class="project-name" id="projectName" type="text" value="calco_sin_nombre" placeholder="Nombre del proyecto">
             <div class="c2-archivo"><button class="btn-manual" onclick="nuevo()" title="Empieza de cero (se puede deshacer)">🗋 Nuevo</button><button class="btn-manual" onclick="document.getElementById('fileJSON').click()" title="Abre un proyecto .json del Calcador o del Corrector">📂 Abrir</button><button class="btn-manual" onclick="exportarJSON()" title="Guarda el proyecto en un archivo JSON: lo abren el Calcador, el Corrector, el Tutor y el Simulador (como plano del ejercicio)">💾 Guardar</button><button class="btn-manual" onclick="abrirBiblioteca()" title="Tus ejercicios: buscar, abrir e imprimir sus hojas">🗂 Biblioteca</button></div>
@@ -12856,7 +12856,8 @@ const escribirCSVAules = h => (h.bom ? '﻿' : '') + h.filas.map(f => f.map(x =>
 function columnasAules(cab) {
     const b = re => cab.findIndex(x => re.test(String(x).normalize('NFD').replace(/[̀-ͯ]/g, '')));
     return { id: b(/^(identificador|identifier|id)$/i), nombre: b(/nom(bre)? complet|full ?name/i), nota: b(/^(calificacion|qualificacio|grade)$/i),
-             max: b(/(calificacion|qualificacio|grade).*(max)|maxim.*(calificacion|qualificacio|grade)/i), com: b(/retroaliment|feedback|comentari/i) };
+             max: b(/(calificacion|qualificacio|grade).*(max)|maxim.*(calificacion|qualificacio|grade)/i), com: b(/retroaliment|feedback|comentari/i),
+             mod: b(/(ultima|darrera) modificacio(n)? \((calificacion|qualificacio)\)|last modified \(grade\)/i) };
 }
 // El resultado de cada alumno (si entrega varios programas, el mejor)
 function resultadosAules() {
@@ -12880,6 +12881,7 @@ function comentarioAules(it) {
     return t.join('\n');
 }
 // Rellena la hoja; devuelve el texto y lo que ha casado
+function fechaAules(d) { d = d || new Date(); const z = n => String(n).padStart(2, '0'); return `${d.getFullYear()}-${z(d.getMonth() + 1)}-${z(d.getDate())} ${z(d.getHours())}:${z(d.getMinutes())}`; }
 function rellenarHojaAules(txt, opc) {
     const h = leerCSVAules(txt), cab = h.filas[0] || [], C = columnasAules(cab);
     if (C.nota < 0 || (C.id < 0 && C.nombre < 0)) return { error: 'No parece la hoja de calificaciones de una tarea de Aules: falta la columna «Calificación» o la del identificador.' };
@@ -12897,6 +12899,9 @@ function rellenarHojaAules(txt, opc) {
         const nota = Math.round(it.v.nota / 10 * max * 100) / 100, notaTxt = nota.toFixed(2);
         f[C.nota] = coma ? notaTxt.replace('.', ',') : notaTxt;
         if (C.com >= 0 && opc.comentario) f[C.com] = comentarioAules(it);
+        // la fecha de la calificación, ahora y en un formato que Aules entiende («2026-11-16 13:09»): si no, Aules
+        // no lee la suya («miércoles, 4 de noviembre…»), la toma por antigua y se salta las filas que ya tienen registro
+        if (C.mod >= 0) f[C.mod] = fechaAules();
         casados.push({ nombre: nom || clave, alumno: clave, nota, max, por: id && porId.get(id) ? 'número de participante' : 'nombre' });
     }
     const sinCasar = [...res.keys()].filter(n => !usados.has(n));
@@ -12911,7 +12916,7 @@ function abrirNotasAules() {
         <div class="help-content">
         <ol class="aules-pasos"><li>En la tarea de Aules: <b>Ver todas las entregas</b> → <b>Acción sobre las calificaciones</b> → <b>Descargar hoja de calificaciones</b> (activa antes, en la configuración de la tarea, «Hoja de calificaciones fuera de línea» y, si quieres el comentario, «Comentarios de retroalimentación»).</li>
         <li>Ábrela aquí: se rellena la calificación de cada alumno (la nota orientativa, sobre la calificación máxima de la tarea) y su comentario.</li>
-        <li>En Aules: <b>Subir hoja de calificaciones</b>, con la casilla «Permitir actualizar registros modificados más recientemente en Moodle» si ya habías puesto alguna nota.</li></ol>
+        <li>En Aules: <b>Subir hoja de calificaciones</b> (separador: coma; codificación: UTF-8). La fecha de la calificación va con la hora de ahora, así que no hace falta la casilla «Permitir la actualización de los registros…», salvo que pongas notas en Aules después de rellenar la hoja.</li></ol>
         <label class="aules-op"><input type="checkbox" id="aulesCom" checked> Poner el comentario (la nota, el veredicto y sus errores principales)</label>
         <input type="file" id="aulesCSV" accept=".csv,text/csv" style="display:none">
         <div class="btn-row" style="margin-top:10px"><button class="btn-action" id="aulesAbrir">📂 Abrir la hoja de calificaciones…</button></div>
