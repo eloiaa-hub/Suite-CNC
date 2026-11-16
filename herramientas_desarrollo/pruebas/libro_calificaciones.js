@@ -150,6 +150,16 @@ const B = L => L.map(f => ({ name: path.basename(f), mimeType: 'application/octe
     // boletines
     const H = await p.evaluate(() => { let h = ''; const o = window.open; window.open = () => ({ document: { open() {}, write(x) { h += x; }, close() {} } }); try { imprimirBoletines(null); } finally { window.open = o; } return h; });
     ok((H.match(/<section>/g) || []).length === 5 && /Muy buen trimestre/.test(H) && /Memoria/.test(H), '🖨 boletines: uno por alumno, con su comentario');
+    // la nota máxima del bloque: ejercicios de 1 punto (Arcos I J: 3 ejercicios, cada uno sobre 1)
+    await p.click('.pest[data-ev="0"]'); await p.click('#evBloque'); await p.waitForTimeout(100);
+    const nb4 = await p.evaluate(() => L.evals[0].bloques.length - 1);
+    ok(await p.$eval(`.bloque[data-b="${nb4}"] [data-campo=max]`, x => x.value) === '10', 'un bloque nuevo: máx. 10');
+    for (let k = 0; k < 3; k++) { await p.click(`.bloque[data-b="${nb4}"] [data-acc=mas]`); await p.fill('#iNom', `Arco ${k + 1}`); await p.click('#iOk'); await p.waitForTimeout(100); }
+    await p.fill(`.bloque[data-b="${nb4}"] [data-campo=max]`, '1'); await p.dispatchEvent(`.bloque[data-b="${nb4}"] [data-campo=max]`, 'change'); await p.waitForTimeout(100);
+    const arc = await p.evaluate(nb => { const ev = L.evals[0], b = ev.bloques[nb], a = alumnosOrden()[0].id; b.items[0].notas[a] = { n: 1 }; b.items[1].notas[a] = { n: 1 }; b.items[2].notas[a] = { n: 0 };
+        return { max: b.items.map(i => i.max).join(), m: mediaBloque(ev, b, a) }; }, nb4);
+    ok(arc.max === '1,1,1' && Math.abs(arc.m - 20 / 3) < 1e-9, `máx. 1: los tres ejercicios sobre 1; con 1, 1 y 0, la media del bloque es ${arc.m.toFixed(2)} sobre 10`);
+    await p.evaluate(nb => { L.evals[0].bloques.splice(nb, 1); cambio(); }, nb4);
     // ⚙ apariencia: color de entorno y modo oscuro (se recuerdan)
     await p.click('#bAjustes'); await p.click('.color-btn[data-c="#28a745"]');
     const col = await p.evaluate(() => getComputedStyle(document.querySelector('table.libro thead th')).backgroundColor);

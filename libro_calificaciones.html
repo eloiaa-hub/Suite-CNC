@@ -153,7 +153,7 @@
 <body>
 <div class="ventana">
 <div class="barra">
-  <h1><a class="casa" href="index.html" title="Portada de las herramientas">⌂</a> 📒 Libro de calificaciones — Por Eloi A.A. <span class="ver" title="Versión del programa">v5</span></h1>
+  <h1><a class="casa" href="index.html" title="Portada de las herramientas">⌂</a> 📒 Libro de calificaciones — Por Eloi A.A. <span class="ver" title="Versión del programa">v6</span></h1>
   <button class="btn pri" id="bImportar" title="Importar las notas de los CSV del Corrector: la corrección de un ejercicio (también con variantes), la hoja de calificaciones de Aules rellenada, la revisión por alumno de la batería o el zip «Descarga CSV Correcciones»">📥 Importar notas…</button>
   <button class="btn" id="bAlumnos" title="La lista de la clase: añadir, renombrar, unir o quitar alumnos">👥 Alumnos</button>
   <button class="btn" id="bGuardar" title="Guardar el libro en un archivo .json (el navegador recuerda además el último)">💾 Guardar</button>
@@ -210,7 +210,7 @@
 // Las notas de la clase por evaluaciones: bloques con su peso, ejercicios con su peso dentro del bloque,
 // importados de los CSV del Corrector (solo la nota final o, si se quiere, también sus criterios) o puestos a mano.
 // ════════════════════════════════════════════════════════════════════════════════════════════
-const VERSION = 'v5', CLAVE = 'libro_calificaciones';
+const VERSION = 'v6', CLAVE = 'libro_calificaciones';
 const $ = id => document.getElementById(id);
 const esc = t => String(t ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const uid = () => Math.random().toString(36).slice(2, 10);
@@ -231,7 +231,9 @@ function libroNuevo() {
         evals: [evalNueva('1.ª evaluación')], final: { comentarios: {} }, opc: { aprobado: 5, redondeo: 'redondear', sinAprobarRedondeo: true, topeMin: 4 } };
 }
 function evalNueva(nombre) { return { id: uid(), nombre, peso: 1, modo: 'cero', bloques: [], comentarios: {} }; }
-function bloqueNuevo(nombre, peso) { return { id: uid(), nombre, peso: peso ?? 0, min: null, items: [] }; }
+function bloqueNuevo(nombre, peso) { return { id: uid(), nombre, peso: peso ?? 0, min: null, max: 10, items: [] }; }
+// La nota máxima de los ejercicios del bloque (null si son distintas)
+function maxBloque(b) { if (!b.items.length) return b.max ?? 10; const m = b.items[0].max; return b.items.every(it => it.max === m) ? m : null; }
 function itemNuevo(nombre, o = {}) { return Object.assign({ id: uid(), nombre, peso: 1, max: 10, fuente: 'a mano', criterios: null, sumaCrit: false, notas: {} }, o); }
 const evAct = () => L.evals[evSel] || null;
 const alumnosOrden = () => L.alumnos.slice().sort((a, b) => a.nombre.localeCompare(b.nombre, 'es', { sensitivity: 'base' }));
@@ -316,6 +318,7 @@ function pintarEval() {
           <input type="text" class="bn" value="${esc(b.nombre)}" data-campo="nombre" title="Nombre del bloque">
           <label title="El peso del bloque en la nota de la evaluación (en %, o en las unidades que quieras: se reparte en proporción)">peso <input type="number" min="0" step="any" value="${b.peso}" data-campo="peso">${sp ? `<small>(${nf(b.peso / sp * 100, 0)} %)</small>` : ''}</label>
           <label title="Nota mínima del bloque para hacer media (vacío: sin mínimo). Si no llega, se avisa y la nota de la evaluación se queda, como mucho, en la de ⚙ Opciones">mín. <input type="number" min="0" max="10" step="any" value="${b.min ?? ''}" data-campo="min" style="width:50px"></label>
+          <label title="La nota máxima de los ejercicios del bloque: sobre cuánto se ponen sus notas (10 de serie). Por ejemplo, con ejercicios de 1 punto, 1: un 1 es un 10 y un 0,5, un 5. La media del bloque sale siempre sobre 10.">máx. <input type="number" min="0.01" step="any" value="${maxBloque(b) ?? ''}" placeholder="varias" data-campo="max" style="width:58px"></label>
           <div class="chips">${b.items.map((it, j) => `<span class="chip ${cuentaIt(it) ? '' : 'fuera'}" data-it="${j}" title="${esc(it.nombre)} · ${esc(it.fuente)} · sobre ${nf(it.max, 2)}${cuentaIt(it) ? '' : ' · no cuenta (sin peso o sin notas)'}">${esc(it.nombre)} <small>×${nf(it.peso, 2)}</small></span>`).join('') || '<span class="nota-p">Sin ejercicios: 📥 Importar notas o ➕ ejercicio</span>'}</div>
           <button class="btn mini" data-acc="mas" title="Añadir un ejercicio a mano a este bloque">➕</button>
           <button class="btn mini" data-acc="sube" title="Subir" ${i ? '' : 'disabled'}>▲</button>
@@ -335,7 +338,12 @@ function pintarEval() {
     h.querySelectorAll('.bloque').forEach(d => {
         const b = ev.bloques[+d.dataset.b];
         d.querySelectorAll('[data-campo]').forEach(x => x.onchange = () => {
-            const c = x.dataset.campo; if (c === 'nombre') b.nombre = x.value.trim() || b.nombre; else if (c === 'peso') b.peso = Math.max(0, num(x.value) ?? 0); else b.min = num(x.value);
+            const c = x.dataset.campo; if (c === 'nombre') b.nombre = x.value.trim() || b.nombre; else if (c === 'peso') b.peso = Math.max(0, num(x.value) ?? 0);
+            else if (c === 'max') { const v = num(x.value); if (v === null || v <= 0) { pintar(); return; }
+                const fuera = b.items.reduce((k, it) => k + Object.values(it.notas).filter(y => y && y.n !== null && y.n > v).length, 0);
+                b.max = v; b.items.forEach(it => { it.max = v; });
+                if (fuera) snack(`Ojo: ${fuera} nota(s) del bloque pasan de ${nf(v, 2)}`); }
+            else b.min = num(x.value);
             cambio(); });
         d.querySelectorAll('.chip').forEach(c => c.onclick = () => dlgItem(b, b.items[+c.dataset.it]));
         d.querySelector('[data-acc=mas]').onclick = () => dlgItem(b, null);
@@ -501,7 +509,7 @@ function dlgItem(b, it) {
         <label class="campo"><span>Nombre</span><input type="text" id="iNom" value="${esc(it ? it.nombre : `Ejercicio ${b.items.length + 1}`)}"></label>
         <label class="campo"><span>Bloque</span><select id="iBlo">${ev.bloques.map((x, i) => `<option value="${i}" ${x === b ? 'selected' : ''}>${esc(x.nombre)}</option>`).join('')}</select></label>
         <label class="campo"><span>Peso dentro del bloque</span><input type="number" id="iPeso" min="0" step="any" value="${it ? it.peso : 1}"></label>
-        <label class="campo"><span>Nota máxima</span><input type="number" id="iMax" min="0.01" step="any" value="${it ? it.max : 10}"></label>
+        <label class="campo"><span>Nota máxima</span><input type="number" id="iMax" min="0.01" step="any" value="${it ? it.max : (maxBloque(b) ?? b.max ?? 10)}"></label>
       </div>
       ${it ? `<p class="nota-p">De: ${esc(it.fuente)} · ${n} nota(s)${it.criterios ? ` · criterios: ${esc(it.criterios.join(', '))}${it.sumaCrit ? ' (la nota es su suma: si cambias un criterio, cambia la nota)' : ''}` : ''}. Peso 0: no cuenta en la media.</p>` : '<p class="nota-p">Después, escribe las notas en su columna de la tabla.</p>'}`,
         `${it ? '<button class="btn peligro izq" id="iBorrar">🗑 Quitar el ejercicio</button><button class="btn izq" id="iDeshacer" title="Volver a las notas importadas en las casillas cambiadas a mano">↺ Notas importadas</button>' : ''}<button class="btn" data-cerrar>Cancelar</button><button class="btn pri" id="iOk">${nuevo ? 'Añadir' : 'Aplicar'}</button>`, 'estrecho');

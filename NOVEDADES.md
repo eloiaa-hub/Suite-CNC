@@ -4,6 +4,9 @@ La versión de la suite es **año.mes** (por ejemplo, 2026.10). Cada programa co
 
 ## Suite CNC 2026.11
 
+### Libro de calificaciones v6
+- **máx.** en cada bloque (10 de serie), junto a mín.: la nota máxima de sus ejercicios (por ejemplo, 1 para ejercicios de 1 punto). La media del bloque sale sobre 10.
+
 ### Libro de calificaciones v5
 - **⚙ Apariencia**, como en el Calcador: modo oscuro y **color de entorno** (seis colores); la cabecera, las filas y los botones toman ese color.
 - Con el ratón encima, el título de un bloque en la cabecera ya no se vuelve del color del fondo: se subraya.
