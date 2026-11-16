@@ -37,7 +37,7 @@ cuerpo = f"""<body>
 <tr><td class="n">1</td><td><strong>Barra de arriba.</strong> 📥 Importar notas, 👥 Alumnos, 💾 Guardar, 📂 Abrir, ⬇ CSV, 🖨 Acta, 🖨 Boletines, 🗋 Nuevo y ❓ Manual.</td></tr>
 <tr><td class="n">2</td><td><strong>Grupo y curso.</strong> Salen en el acta y en los boletines.</td></tr>
 <tr><td class="n">3</td><td><strong>Pestañas.</strong> Una por evaluación (＋ añade otra) y, a la derecha, <strong>🏁 Final del curso</strong>.</td></tr>
-<tr><td class="n">4</td><td><strong>La evaluación.</strong> Su nombre, su peso en la final, si los no entregados cuentan 0, ➕ Bloque, ➕ Ejercicio a mano y ⚙ Opciones.</td></tr>
+<tr><td class="n">4</td><td><strong>La evaluación.</strong> Su nombre, su peso en la final, si los no entregados cuentan 0, ➕ Bloque, ➕ Ejercicio a mano, ▸ Plegar y ▾ Desplegar (todos los bloques) y ⚙ Opciones.</td></tr>
 <tr><td class="n">5</td><td><strong>Los bloques.</strong> Cada uno con su nombre, su peso (entre paréntesis, el % que le toca), su nota mínima y sus ejercicios (clic en uno para editarlo).</td></tr>
 <tr><td class="n">6</td><td><strong>La tabla.</strong> Un alumno por fila. Por cada bloque, sus ejercicios y su media; al final, la <strong>Nota</strong> de la evaluación, el <strong>Boletín</strong> y tu <strong>Comentario</strong>. Abajo, la media de la clase. En verde, aprobado; en rojo, suspenso.</td></tr>
 </table>
@@ -85,6 +85,9 @@ cuerpo = f"""<body>
 <li><strong>El boletín</strong>: la nota redondeada (⚙ Opciones).</li>
 </ol>
 <div class="nota clase"><strong>✅ Ejemplo.</strong> Examen 40 % (7), Prácticas 40 % (6,5) y Trabajos 20 % (8): (7 · 40 + 6,5 · 40 + 8 · 20) / 100 = 7,0 → boletín 7.</div>
+<h3>Plegar los bloques</h3>
+<p>Un bloque con muchos ejercicios (una batería de 12) hace la tabla muy ancha. <strong>Plegado</strong>, la tabla enseña solo su <strong>media</strong>; desplegado, todos sus ejercicios. Clic en el nombre del bloque en la cabecera de la tabla (<strong>▸</strong> plegado, <strong>▾</strong> desplegado) lo pliega o lo despliega; <span class="boton">▸ Plegar</span> y <span class="boton">▾ Desplegar</span> lo hacen con todos. De serie, los bloques de <strong>más de 4 ejercicios</strong> salen plegados. Se recuerda en el libro.</p>
+{fig('plegado.png', 'Prácticas de geometría plegado: solo su media; Examen y Trabajos, desplegados.', crop=(0, 120, 1440, 760))}
 <p>El <strong>▲</strong> de cada bloque lo sube; <strong>🗑</strong> lo quita con sus ejercicios y sus notas. ➕ en un bloque le añade un ejercicio.</p>
 </section>
 

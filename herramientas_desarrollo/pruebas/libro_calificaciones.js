@@ -95,6 +95,13 @@ const B = L => L.map(f => ({ name: path.basename(f), mimeType: 'application/octe
     ok(Math.abs(nb2 - 7) < 1e-9, `«solo cuentan los entregados»: Prácticas de Bruno (8 + 5 + 8) / 3 = ${nb2}`);
     await p.selectOption('#evModo', 'cero');
     // un criterio cambiado a mano: la nota es la suma y queda marcada
+    // los bloques de más de 4 ejercicios salen plegados: solo su media
+    const pl = await p.evaluate(() => ({ th: [...document.querySelectorAll('th[data-pleg]')].map(t => t.textContent.trim().slice(0, 16)), cel: document.querySelectorAll('input.celda').length }));
+    ok(pl.th[1].startsWith('▸ Prácticas') && pl.cel === 5 * 1 + 5 * 1, `Prácticas (6 ejercicios) sale plegada: solo su media (${pl.th.join(' | ')}; ${pl.cel} casillas)`);
+    await p.click(`th[data-pleg="${await p.evaluate(() => L.evals[0].bloques[1].id)}"]`); await p.waitForTimeout(100);
+    ok(await p.evaluate(() => L.evals[0].bloques[1].plegado === false && document.querySelectorAll('input.celda').length === 5 * 8), '▸ en su cabecera la despliega');
+    await p.click('#evPleg'); ok(await p.evaluate(() => L.evals[0].bloques.every(b => !b.items.length || b.plegado) && document.querySelectorAll('input.celda').length === 0), '▸ Plegar: todos los bloques, solo la media');
+    await p.click('#evDesp'); ok(await p.evaluate(() => document.querySelectorAll('input.celda').length === 5 * 8), '▾ Desplegar: todos');
     const it01 = await p.evaluate(() => L.evals[0].bloques[1].items[0].id);
     await p.click(`[data-desp="${it01}"]`);
     const ck = `input.celda[data-it="${it01}"][data-a="${ids.A.Ana}"][data-k="0"]`; await p.fill(ck, '3'); await p.press(ck, 'Tab'); await p.waitForTimeout(150);

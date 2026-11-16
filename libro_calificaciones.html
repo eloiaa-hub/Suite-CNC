@@ -69,6 +69,7 @@
   table.libro tfoot td { position: sticky; bottom: 0; background: var(--suave); font-weight: 600; font-size: 12px; z-index: 2; }
   table.libro tfoot td.al { z-index: 3; }
   .bh { border-left: 2px solid var(--texto-sec) !important; }
+  th.bpleg { cursor: pointer; } th.bpleg:hover { color: var(--acento); } th.bpleg .pl { font-size: 11px; }
   .ih { max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
   .ih:hover { color: var(--acento); }
   .celda { width: 52px; text-align: center; border: 1px solid transparent; background: transparent; border-radius: 4px; padding: 2px 3px; }
@@ -120,7 +121,7 @@
 </head>
 <body>
 <div class="barra">
-  <h1><a class="casa" href="index.html" title="Portada de las herramientas">⌂</a> 📒 Libro de calificaciones — Por Eloi A.A. <span class="ver" title="Versión del programa">v1</span></h1>
+  <h1><a class="casa" href="index.html" title="Portada de las herramientas">⌂</a> 📒 Libro de calificaciones — Por Eloi A.A. <span class="ver" title="Versión del programa">v2</span></h1>
   <button class="btn pri" id="bImportar" title="Importar las notas de los CSV del Corrector: la corrección de un ejercicio (también con variantes), la hoja de calificaciones de Aules rellenada, la revisión por alumno de la batería o el zip «Descarga CSV Correcciones»">📥 Importar notas…</button>
   <button class="btn" id="bAlumnos" title="La lista de la clase: añadir, renombrar, unir o quitar alumnos">👥 Alumnos</button>
   <button class="btn" id="bGuardar" title="Guardar el libro en un archivo .json (el navegador recuerda además el último)">💾 Guardar</button>
@@ -170,7 +171,7 @@
 // Las notas de la clase por evaluaciones: bloques con su peso, ejercicios con su peso dentro del bloque,
 // importados de los CSV del Corrector (solo la nota final o, si se quiere, también sus criterios) o puestos a mano.
 // ════════════════════════════════════════════════════════════════════════════════════════════
-const VERSION = 'v1', CLAVE = 'libro_calificaciones';
+const VERSION = 'v2', CLAVE = 'libro_calificaciones';
 const $ = id => document.getElementById(id);
 const esc = t => String(t ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const uid = () => Math.random().toString(36).slice(2, 10);
@@ -269,7 +270,7 @@ function pintarEval() {
         <label class="nota-p" style="text-transform:none;letter-spacing:0" title="Un ejercicio que el alumno no ha entregado (y la clase sí), ¿cuenta 0 o no cuenta en su media?">
           <select id="evModo"><option value="cero" ${ev.modo === 'cero' ? 'selected' : ''}>los no entregados cuentan 0</option><option value="entregados" ${ev.modo === 'entregados' ? 'selected' : ''}>solo cuentan los entregados</option></select></label>
         <span style="margin-left:auto;display:flex;gap:6px;text-transform:none;letter-spacing:0">
-          <button class="btn mini" id="evBloque">➕ Bloque</button><button class="btn mini" id="evItem">➕ Ejercicio a mano</button><button class="btn mini" id="evOpc" title="Aprobado, redondeo del boletín y nota mínima de los bloques">⚙ Opciones</button>
+          <button class="btn mini" id="evBloque">➕ Bloque</button><button class="btn mini" id="evItem">➕ Ejercicio a mano</button><button class="btn mini" id="evPleg" title="Plegar todos los bloques: en la tabla, solo la media de cada uno">▸ Plegar</button><button class="btn mini" id="evDesp" title="Desplegar todos los bloques: todos sus ejercicios">▾ Desplegar</button><button class="btn mini" id="evOpc" title="Aprobado, redondeo del boletín y nota mínima de los bloques">⚙ Opciones</button>
           <button class="btn mini peligro" id="evBorrar" title="Quitar esta evaluación">🗑</button></span></h2>
       <div class="bloques" id="bloques">${ev.bloques.map((b, i) => `
         <div class="bloque" data-b="${i}">
@@ -289,6 +290,8 @@ function pintarEval() {
     $('evBloque').onclick = () => { ev.bloques.push(bloqueNuevo(`Bloque ${ev.bloques.length + 1}`, ev.bloques.length ? 0 : 100)); cambio(); };
     $('evItem').onclick = () => dlgItem(null, null);
     $('evOpc').onclick = dlgOpciones;
+    $('evPleg').onclick = () => { ev.bloques.forEach(b => { b.plegado = true; }); cambio(); };
+    $('evDesp').onclick = () => { ev.bloques.forEach(b => { b.plegado = false; }); cambio(); };
     $('evBorrar').onclick = () => confirmar(`¿Quitar «${ev.nombre}» con todos sus bloques, notas y comentarios?`, 'Quitar', () => { L.evals.splice(evSel, 1); if (!L.evals.length) L.evals.push(evalNueva('1.ª evaluación')); evSel = 0; cambio(); });
     h.querySelectorAll('.bloque').forEach(d => {
         const b = ev.bloques[+d.dataset.b];
@@ -303,6 +306,9 @@ function pintarEval() {
     enlazarTabla(ev);
 }
 
+// Un bloque plegado enseña solo su media (de serie, los de más de 4 ejercicios); se despliega con ▸ en su cabecera
+const plegado = b => b.items.length > 0 && (b.plegado === undefined ? b.items.length > 4 : b.plegado);
+const vis = b => plegado(b) ? [] : b.items;
 function tablaEval(ev) {
     const A = alumnosOrden();
     if (!A.length) return `<div class="vacio">No hay alumnos todavía. 📥 <b>Importa notas</b> (la lista de la clase se crea con los nombres) o añádelos en 👥 Alumnos.</div>`;
@@ -310,26 +316,26 @@ function tablaEval(ev) {
     // cabecera: bloque | ejercicios (+ criterios desplegados) | media del bloque
     let f1 = `<th class="al" rowspan="3">Alumno/a</th>`, f2 = '', f3 = '';
     B.forEach((b, bi) => {
-        const cols = b.items.reduce((s, it) => s + 1 + (abiertos.has(it.id) && it.criterios ? it.criterios.length : 0), 0) + 1;
-        f1 += `<th class="bh" colspan="${cols}">${esc(b.nombre)} <span class="nota-p">${sumaPesos(ev) ? nf(b.peso / sumaPesos(ev) * 100, 0) + ' %' : ''}</span></th>`;
-        b.items.forEach((it, j) => {
+        const cols = vis(b).reduce((s, it) => s + 1 + (abiertos.has(it.id) && it.criterios ? it.criterios.length : 0), 0) + 1;
+        f1 += `<th class="bh bpleg" colspan="${cols}" data-pleg="${b.id}" title="${plegado(b) ? 'Desplegar: ver sus ejercicios' : 'Plegar: ver solo la media del bloque'}">${b.items.length ? `<span class="pl">${plegado(b) ? '▸' : '▾'}</span> ` : ''}${esc(b.nombre)}${plegado(b) ? ` <span class="nota-p">(${b.items.length})</span>` : ''} <span class="nota-p">${sumaPesos(ev) ? nf(b.peso / sumaPesos(ev) * 100, 0) + ' %' : ''}</span></th>`;
+        vis(b).forEach((it, j) => {
             const ab = abiertos.has(it.id) && it.criterios;
             f2 += `<th class="ih ${j === 0 ? 'bh' : ''}" colspan="${1 + (ab ? it.criterios.length : 0)}" data-bi="${ev.bloques.indexOf(b)}" data-ii="${j}" title="${esc(it.nombre)} — clic: editar el ejercicio">${it.criterios ? `<span data-desp="${it.id}" title="Ver / ocultar sus criterios">${ab ? '▾' : '▸'}</span> ` : ''}${esc(it.nombre)}</th>`;
             f3 += `<th class="${j === 0 ? 'bh' : ''}">×${nf(it.peso, 2)}${it.max !== 10 ? ` /${nf(it.max, 2)}` : ''}</th>` + (ab ? it.criterios.map(c => `<th class="crit" title="${esc(c)}">${esc(c.length > 9 ? c.slice(0, 8) + '…' : c)}</th>`).join('') : '');
         });
-        f2 += `<th rowspan="2" ${b.items.length ? '' : 'class="bh"'}>Media</th>`;
+        f2 += `<th rowspan="2" ${vis(b).length ? '' : 'class="bh"'}>Media</th>`;
     });
     f1 += `<th class="nev" rowspan="3" title="La nota de la evaluación: la media de los bloques con su peso">Nota</th><th rowspan="3" title="La nota del boletín (⚙ Opciones: redondeo)">Boletín</th><th rowspan="3">Comentario</th>`;
     const filas = A.map(a => {
         let tds = `<td class="al"><a data-ficha="${a.id}" title="Su ficha: todas sus notas y tus comentarios">${esc(a.nombre)}</a></td>`;
         B.forEach(b => {
-            b.items.forEach((it, j) => {
+            vis(b).forEach((it, j) => {
                 const x = it.notas[a.id], ab = abiertos.has(it.id) && it.criterios;
                 tds += `<td class="${j === 0 ? 'bh' : ''} ${x && x.m ? 'mod' : ''}" ${x && x.m && x.o !== undefined && x.o !== null ? `title="Importada: ${nf(x.o, 2)} · cambiada a mano"` : ''}><input class="celda ${clsNota(notaIt(it, a.id))}" data-it="${it.id}" data-a="${a.id}" value="${x ? nf(x.n, 2) : ''}" inputmode="decimal"></td>`;
                 if (ab) it.criterios.forEach((c, k) => { tds += `<td class="crit"><input class="celda" data-it="${it.id}" data-a="${a.id}" data-k="${k}" value="${x && x.c ? nf(x.c[k], 2) : ''}" inputmode="decimal" title="${esc(c)}"></td>`; });
             });
             const m = mediaBloque(ev, b, a.id);
-            tds += `<td class="media ${b.items.length ? '' : 'bh'} ${clsNota(m)}">${b.min !== null && b.min !== undefined && m !== null && m < b.min ? `<span class="minf" title="No llega al mínimo del bloque (${nf(b.min, 2)})">⚠ </span>` : ''}${nf(m)}</td>`;
+            tds += `<td class="media ${vis(b).length ? '' : 'bh'} ${clsNota(m)}">${b.min !== null && b.min !== undefined && m !== null && m < b.min ? `<span class="minf" title="No llega al mínimo del bloque (${nf(b.min, 2)})">⚠ </span>` : ''}${nf(m)}</td>`;
         });
         const r = notaEval(ev, a.id), bo = boletin(r.n), com = ev.comentarios[a.id] || '';
         tds += `<td class="nev ${clsNota(r.n)}" ${r.bajo.length ? `title="No llega al mínimo en: ${esc(r.bajo.map(b => b.nombre).join(', '))}${r.sinTope !== r.n ? ` (sin el tope: ${nf(r.sinTope, 2)})` : ''}"` : ''}>${r.bajo.length ? '<span class="minf">⚠</span> ' : ''}${nf(r.n, 2)}</td>
@@ -341,16 +347,16 @@ function tablaEval(ev) {
     const medias = v => { const x = v.filter(y => y !== null); return x.length ? x.reduce((s, y) => s + y, 0) / x.length : null; };
     const ap = v => { const x = v.filter(y => y !== null); return x.length ? `${x.filter(y => y >= (L.opc.aprobado ?? 5)).length}/${x.length}` : ''; };
     B.forEach(b => {
-        b.items.forEach((it, j) => {
+        vis(b).forEach((it, j) => {
             const v = A.map(a => notaIt(it, a.id)); pie += `<td class="${j === 0 ? 'bh' : ''}" title="aprueban ${ap(v)}">${nf(medias(v))}</td>`;
             if (abiertos.has(it.id) && it.criterios) it.criterios.forEach((c, k) => { pie += `<td class="crit">${nf(medias(A.map(a => { const x = it.notas[a.id]; return x && x.c ? x.c[k] : null; }).map(y => y === undefined ? null : y)))}</td>`; });
         });
-        const v = A.map(a => mediaBloque(ev, b, a.id)); pie += `<td class="${b.items.length ? '' : 'bh'}" title="aprueban ${ap(v)}">${nf(medias(v))}</td>`;
+        const v = A.map(a => mediaBloque(ev, b, a.id)); pie += `<td class="${vis(b).length ? '' : 'bh'}" title="aprueban ${ap(v)}">${nf(medias(v))}</td>`;
     });
     const vN = A.map(a => notaEval(ev, a.id).n), vB = A.map(a => boletin(notaEval(ev, a.id).n));
     pie += `<td class="nev">${nf(medias(vN), 2)}</td><td>${ap(vB)}</td><td></td>`;
     return `<div class="tabla-caja"><table class="libro"><thead><tr>${f1}</tr><tr>${f2}</tr><tr>${f3}</tr></thead><tbody>${filas}</tbody><tfoot><tr>${pie}</tr></tfoot></table></div>
-        <div class="nota-p" style="margin-top:6px">Escribe las notas en las casillas (sobre la nota máxima del ejercicio; vacío = no entregado). En amarillo, las notas importadas que has cambiado a mano. ▸ despliega los criterios de un ejercicio importado con ellos. Clic en un alumno: su ficha; en ✎: tu comentario.</div>`;
+        <div class="nota-p" style="margin-top:6px">Escribe las notas en las casillas (sobre la nota máxima del ejercicio; vacío = no entregado). En amarillo, las notas importadas que has cambiado a mano. ▸ / ▾ en un bloque lo despliega o lo pliega (plegado, solo su media); en un ejercicio, sus criterios. Clic en un alumno: su ficha; en ✎: tu comentario.</div>`;
 }
 function buscarItem(id) { for (const ev of L.evals) for (const b of ev.bloques) for (const it of b.items) if (it.id === id) return { ev, b, it }; return null; }
 function enlazarTabla(ev) {
@@ -390,6 +396,7 @@ function enlazarTabla(ev) {
     h.querySelectorAll('th.ih').forEach(th => th.onclick = e => {
         const d = e.target.closest('[data-desp]'); if (d) { const id = d.dataset.desp; abiertos.has(id) ? abiertos.delete(id) : abiertos.add(id); pintar(); return; }
         const b = ev.bloques[+th.dataset.bi]; dlgItem(b, b.items[+th.dataset.ii]); });
+    h.querySelectorAll('th[data-pleg]').forEach(th => th.onclick = () => { const b = ev.bloques.find(x => x.id === th.dataset.pleg); if (!b || !b.items.length) return; b.plegado = !plegado(b); cambio(); });
     h.querySelectorAll('[data-ficha]').forEach(x => x.onclick = () => dlgFicha(x.dataset.ficha));
     h.querySelectorAll('[data-com]').forEach(x => x.onclick = () => dlgComentario(ev, x.dataset.com));
 }

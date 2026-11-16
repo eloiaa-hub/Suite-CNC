@@ -4,6 +4,9 @@ La versión de la suite es **año.mes** (por ejemplo, 2026.10). Cada programa co
 
 ## Suite CNC 2026.11
 
+### Libro de calificaciones v2: bloques plegables
+- En la tabla, un bloque **plegado** enseña solo su media; desplegado, todos sus ejercicios. Clic en su nombre (▸ / ▾) o **▸ Plegar** / **▾ Desplegar** todos. De serie, los de más de 4 ejercicios salen plegados.
+
 ### Nuevo: 📒 Libro de calificaciones v1
 - Las notas de la clase **por evaluaciones**, con **bloques** (Examen, Prácticas, Trabajos…) con su peso y **ejercicios** con su peso dentro del bloque, nota máxima y **nota mínima por bloque**.
 - **📥 Importa las notas del Corrector**: la corrección de un ejercicio (también un examen con variantes), la hoja de calificaciones de Aules rellenada, la revisión por alumno de la batería y el zip ⬇ Descarga CSV Correcciones entero. Solo la nota final o, si se quiere, también sus **criterios** (para verlos y cambiarlos). Casa a los alumnos por el nombre y pregunta los dudosos.

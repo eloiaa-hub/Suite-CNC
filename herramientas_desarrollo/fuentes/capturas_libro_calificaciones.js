@@ -22,12 +22,13 @@ const hoja = '﻿Identificador,Nombre completo,Dirección de correo,Estado,Calif
    const a0 = alumnosOrden()[0].id; ev.comentarios[a0] = 'Buen trimestre. Repasa la compensación de radio antes del examen.'; ev.comentarios[alumnosOrden()[3].id] = 'Tiene que entregar las prácticas que le faltan.';
    const it = ev.bloques[1].items[0]; const x = it.notas[alumnosOrden()[1].id]; if (x) { x.o = x.n; x.n = Math.min(10, x.n + 1); x.m = true; }
    cambio(); });
- await p.evaluate(() => abiertos.add(L.evals[0].bloques[1].items[0].id)); await p.evaluate(() => pintar());
+ await p.evaluate(() => { L.evals[0].bloques[1].plegado = false; abiertos.add(L.evals[0].bloques[1].items[0].id); }); await p.evaluate(() => pintar());
  await p.evaluate(() => window.scrollTo(0, 0)); await p.screenshot({ path: OUT + '/tabla.png' });
  await p.evaluate(() => { document.querySelector('.tabla-caja').scrollLeft = 10000; }); await p.screenshot({ path: OUT + '/tabla_dcha.png' });
  await p.click('[data-ficha]'); await p.waitForTimeout(200); await p.screenshot({ path: OUT + '/ficha.png' }); await p.click('#fOk');
  await p.click('.chip'); await p.waitForTimeout(100); await p.screenshot({ path: OUT + '/ejercicio.png' }); await p.click('#ovDlg [data-cerrar]');
  await p.click('#evOpc'); await p.waitForTimeout(100); await p.screenshot({ path: OUT + '/opciones.png' }); await p.click('#ovDlg [data-cerrar]');
+ await p.evaluate(() => { L.evals[0].bloques[1].plegado = undefined; cambio(); window.scrollTo(0, 0); }); await p.screenshot({ path: OUT + '/plegado.png' });
  await p.click('#pMasEv'); await p.evaluate(() => { L.evals[0].peso = 1; const e2 = L.evals[1]; e2.bloques.push(bloqueNuevo('Prácticas', 100)); const it = itemNuevo('Práctica de cajeras'); e2.bloques[0].items.push(it); let s = 11; const r = () => (s = (s * 9301 + 49297) % 233280) / 233280; alumnosOrden().forEach(a => it.notas[a.id] = { n: Math.round((3 + r() * 7) * 10) / 10 }); cambio(); });
  await p.click('.pest.final'); await p.waitForTimeout(200); await p.screenshot({ path: OUT + '/final.png' });
  await p.click('.pest[data-ev="0"]');
