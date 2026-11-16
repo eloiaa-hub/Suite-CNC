@@ -4,6 +4,13 @@ La versión de la suite es **año.mes** (por ejemplo, 2026.10). Cada programa co
 
 ## Suite CNC 2026.11
 
+### Nuevo: 📒 Libro de calificaciones v1
+- Las notas de la clase **por evaluaciones**, con **bloques** (Examen, Prácticas, Trabajos…) con su peso y **ejercicios** con su peso dentro del bloque, nota máxima y **nota mínima por bloque**.
+- **📥 Importa las notas del Corrector**: la corrección de un ejercicio (también un examen con variantes), la hoja de calificaciones de Aules rellenada, la revisión por alumno de la batería y el zip ⬇ Descarga CSV Correcciones entero. Solo la nota final o, si se quiere, también sus **criterios** (para verlos y cambiarlos). Casa a los alumnos por el nombre y pregunta los dudosos.
+- **Notas a mano**: ejercicios nuevos y notas escritas en la tabla; las importadas cambiadas a mano se marcan (y se pueden devolver).
+- La **nota de la evaluación**, la del **boletín** (redondeo, sin aprobar por redondeo), la **final del curso**, **tus comentarios** por alumno, la ficha de cada alumno, **🖨 acta**, **🖨 boletines**, **⬇ CSV**, 💾 guardar / 📂 abrir (y el navegador recuerda el libro).
+- Manual en HTML y PDF.
+
 ### Calcador v136 / Corrector v81
 - En la batería, **⬇ Descargar todo (.zip)** se llama ahora **⬇ Descarga CSV Correcciones (.zip)** (lo que trae no cambia: las hojas de calificaciones de Aules rellenadas, el informe de cada tarea y el resumen).
 

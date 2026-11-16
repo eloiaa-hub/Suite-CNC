@@ -14445,7 +14445,7 @@ document.querySelectorAll('.devol-sol').forEach(x => { x.checked = devolConSoluc
 
 // ══ Corrector v80 / Calcador v135: las hojas de calificaciones de la batería, también por los alumnos ══
 // Aules (o el navegador) a veces corta el nombre de la hoja («Calificaciones-…-ISO GEO-3.csv»): sin la tarea ni su número
-// no se puede casar por el nombre. Pero los números de participante de la hoja («Participante29214120») son los mismos que
+// no se puede casar por el nombre. Pero los números de participante de la hoja («Participante123456») son los mismos que
 // los de las carpetas del zip de entregas de esa tarea, y son distintos en cada tarea: casan la hoja sin dudas.
 function idsHojaBat(h) {
     if (!h.ids) { h.ids = new Set(); String(h.texto || '').split(/\r?\n/).slice(1).forEach(l => { const m = /^﻿?"?\s*(?:participante|participant)\s*(\d+)/i.exec(l); if (m) h.ids.add(m[1]); }); }

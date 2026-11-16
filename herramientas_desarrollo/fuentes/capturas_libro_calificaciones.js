@@ -1,0 +1,38 @@
+const { lanzar, abrir, fs, path } = require(process.env.COMUN);
+const OUT = process.argv[2];
+const NOM = ['ANA GARCÍA LÓPEZ','BRUNO SANZ PÉREZ','CARLA RUIZ MORA','DAVID LÓPEZ GIL','ELENA VIDAL ROS','FERNANDO MARÍN SOLER','GLORIA NAVARRO CANO','HÉCTOR FERRER BAS','IRENE MOLINA PONS','JORGE ROCA VILA','LAURA SERRA COLL','MARIO BLASCO RÍOS','NURIA ESTEVE MAS','ÓSCAR LLORENS PUIG','PAULA GINER TUR','RAÚL CAMPOS SEGUÍ','SARA MONTÓN BOU'];
+let s = 7; const r = () => (s = (s * 9301 + 49297) % 233280) / 233280;
+const nota = (base) => { const v = Math.min(10, Math.max(0, base + (r() - .5) * 5)); return Math.round(v * 10) / 10; };
+const csvC = (nom) => '﻿"Alumno";"Archivo";"Veredicto";"Nota";"Geometría";"Lo pedido";"Seguridad";"Informe de entrega"\n' + NOM.map((n, i) => { if (r() < .08) return ''; const g = Math.round(r() * 6 * 10) / 10, p = r() < .8 ? 2 : 0, sg = r() < .7 ? 2 : 0; return `"${n}";"p.txt";"";"${String(Math.round((g + p + sg) * 10) / 10).replace('.', ',')}";"${String(g).replace('.', ',')}";"${p}";"${sg}";""`; }).filter(Boolean).join('\n');
+const hoja = '﻿Identificador,Nombre completo,Dirección de correo,Estado,Calificación,Calificación máxima\n' + NOM.map((n, i) => `Participante${100 + i},${n},x@x,Enviado,"${i === 4 ? '' : String(nota(7)).replace('.', ',')}","10,00"`).join('\n');
+(async () => { const b = await lanzar(), p = await abrir(b, 'libro_calificaciones.html'); await p.setViewportSize({ width: 1440, height: 900 });
+ await p.evaluate(() => localStorage.removeItem('libro_calificaciones')); await p.reload(); await p.waitForTimeout(300);
+ const B = (n, t) => ({ name: n, mimeType: 'text/csv', buffer: Buffer.from(t) }); await p.addStyleTag({ content: '.snack{visibility:hidden !important}' });
+ await p.fill('#grupo', '2CFS7 · Automatització en fusteria i moble'); await p.dispatchEvent('#grupo', 'change'); await p.fill('#curso', '2026-2027'); await p.dispatchEvent('#curso', 'change');
+ await p.click('#bImportar'); await p.setInputFiles('#impF', [B('Calificaciones-Curso-2CFS7 1788982647-Examen 4 de noviembre-11830001 - con notas.csv', hoja)]); await p.waitForSelector('[data-fn]');
+ await p.fill('#impNb', 'Examen'); await p.dispatchEvent('#impNb', 'change'); await p.click('#impOk'); await p.waitForTimeout(200);
+ const tareas = ['ISO GEO 01A', 'ISO GEO 01B', 'ISO GEO 02A', 'ISO GEO 02B', 'ISO GEO 03A', 'Geometría 09'];
+ await p.click('#bImportar'); await p.setInputFiles('#impF', tareas.map(t => B(`${t} - corrección.csv`, csvC(t)))); await p.waitForSelector('[data-fn]');
+ await p.check('#impCrit'); await p.selectOption('#impBlo', 'nuevo'); await p.fill('#impNb', 'Prácticas de geometría'); await p.dispatchEvent('#impNb', 'change');
+ await p.screenshot({ path: OUT + '/importar.png' }); await p.click('#impOk'); await p.waitForTimeout(200);
+ await p.click('#evBloque'); await p.evaluate(() => { const ev = L.evals[0]; ev.bloques[0].peso = 40; ev.bloques[1].peso = 40; ev.bloques[2].nombre = 'Trabajos'; ev.bloques[2].peso = 20; ev.bloques[1].min = 4;
+   ['Memoria del proyecto', 'Plano acotado', 'Actitud en el taller'].forEach(n => ev.bloques[2].items.push(itemNuevo(n)));
+   let s = 3; const r = () => (s = (s * 9301 + 49297) % 233280) / 233280;
+   alumnosOrden().forEach(a => ev.bloques[2].items.forEach(it => { if (r() < .9) it.notas[a.id] = { n: Math.round((4 + r() * 6) * 2) / 2 }; }));
+   const a0 = alumnosOrden()[0].id; ev.comentarios[a0] = 'Buen trimestre. Repasa la compensación de radio antes del examen.'; ev.comentarios[alumnosOrden()[3].id] = 'Tiene que entregar las prácticas que le faltan.';
+   const it = ev.bloques[1].items[0]; const x = it.notas[alumnosOrden()[1].id]; if (x) { x.o = x.n; x.n = Math.min(10, x.n + 1); x.m = true; }
+   cambio(); });
+ await p.evaluate(() => abiertos.add(L.evals[0].bloques[1].items[0].id)); await p.evaluate(() => pintar());
+ await p.evaluate(() => window.scrollTo(0, 0)); await p.screenshot({ path: OUT + '/tabla.png' });
+ await p.evaluate(() => { document.querySelector('.tabla-caja').scrollLeft = 10000; }); await p.screenshot({ path: OUT + '/tabla_dcha.png' });
+ await p.click('[data-ficha]'); await p.waitForTimeout(200); await p.screenshot({ path: OUT + '/ficha.png' }); await p.click('#fOk');
+ await p.click('.chip'); await p.waitForTimeout(100); await p.screenshot({ path: OUT + '/ejercicio.png' }); await p.click('#ovDlg [data-cerrar]');
+ await p.click('#evOpc'); await p.waitForTimeout(100); await p.screenshot({ path: OUT + '/opciones.png' }); await p.click('#ovDlg [data-cerrar]');
+ await p.click('#pMasEv'); await p.evaluate(() => { L.evals[0].peso = 1; const e2 = L.evals[1]; e2.bloques.push(bloqueNuevo('Prácticas', 100)); const it = itemNuevo('Práctica de cajeras'); e2.bloques[0].items.push(it); let s = 11; const r = () => (s = (s * 9301 + 49297) % 233280) / 233280; alumnosOrden().forEach(a => it.notas[a.id] = { n: Math.round((3 + r() * 7) * 10) / 10 }); cambio(); });
+ await p.click('.pest.final'); await p.waitForTimeout(200); await p.screenshot({ path: OUT + '/final.png' });
+ await p.click('.pest[data-ev="0"]');
+ const pops = []; p.context().on('page', x => pops.push(x));
+ await p.evaluate(() => imprimirBoletines([alumnosOrden()[0].id])); await p.waitForTimeout(1500);
+ if (pops.length) { const q = pops[pops.length - 1]; await q.setViewportSize({ width: 820, height: 1000 }); await q.evaluate(() => { window.print = () => {}; }); await q.screenshot({ path: OUT + '/boletin.png' }); }
+ const [d] = await Promise.all([p.waitForEvent('download'), p.click('#bGuardar')]); await d.saveAs(OUT + '/Libro de ejemplo.json');
+ console.log('ok', p.errs); await b.close(); })();

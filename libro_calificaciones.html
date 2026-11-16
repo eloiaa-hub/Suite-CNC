@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Libro de calificaciones — Por Eloi A.A.</title>
+<style>
+  :root {
+    --acento: #005A9C; --acento-suave: rgba(0,90,156,.10); --fondo: #eef2f6; --panel: #ffffff; --texto: #1d2733; --texto-sec: #5b6878;
+    --borde: #d7dee7; --sombra: 0 6px 22px rgba(20,40,70,.10); --verde: #1e7a48; --naranja: #a3560f; --rojo: #b52b2b;
+    --campo: #f7f9fb; --suave: #f3f6f9; --ap: #e3f4ea; --su: #fbe4e4; --mod: #fff4d6;
+  }
+  :root[data-tema="oscuro"] {
+    --acento: #5aa9e6; --acento-suave: rgba(90,169,230,.14); --fondo: #14181d; --panel: #1d232a; --texto: #e6ebf0; --texto-sec: #9aa7b5;
+    --borde: #2e3843; --sombra: 0 6px 22px rgba(0,0,0,.35); --verde: #4dd08a; --naranja: #f0a35e; --rojo: #ef7b6e;
+    --campo: #161b21; --suave: #222a33; --ap: #17362a; --su: #3d2124; --mod: #3a3220;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Segoe UI', system-ui, -apple-system, Roboto, Arial, sans-serif; background: var(--fondo); color: var(--texto); line-height: 1.45; font-size: 14px; }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  .barra { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: var(--panel); border-bottom: 1px solid var(--borde); flex-wrap: wrap; }
+  .barra h1 { margin: 0; font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 6px; flex: 1; min-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .barra a.casa { text-decoration: none; color: inherit; opacity: .75; }
+  .ver { font-size: 11px; font-weight: 600; padding: 1px 7px; border-radius: 9px; background: var(--acento-suave); color: var(--acento); }
+  .btn { border: 1px solid var(--borde); background: var(--panel); border-radius: 8px; padding: 5px 10px; cursor: pointer; white-space: nowrap; }
+  .btn:hover { border-color: var(--acento); }
+  .btn.pri { background: var(--acento); border-color: var(--acento); color: #fff; }
+  .btn.mini { padding: 1px 7px; font-size: 12px; }
+  .btn.peligro:hover { border-color: var(--rojo); color: var(--rojo); }
+  .btn:disabled { opacity: .45; cursor: default; }
+  .envoltura { max-width: 1600px; margin: 0 auto; padding: 14px 16px 40px; }
+  .caja { background: var(--panel); border: 1px solid var(--borde); border-radius: 14px; padding: 12px 14px; box-shadow: var(--sombra); margin-bottom: 14px; }
+  .caja h2 { margin: 0 0 8px; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--texto-sec); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .fila { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .nota-p { font-size: 12px; color: var(--texto-sec); }
+  input[type=text], input[type=number], select, textarea { background: var(--campo); border: 1px solid var(--borde); border-radius: 6px; padding: 4px 7px; }
+  input[type=number] { width: 70px; }
+  .grupo-in { font-weight: 600; min-width: 280px; flex: 1; max-width: 520px; }
+  /* pestañas */
+  .pestanas { display: flex; gap: 4px; flex-wrap: wrap; align-items: flex-end; margin-bottom: -1px; position: relative; z-index: 1; }
+  .pest { border: 1px solid var(--borde); border-bottom: none; background: var(--suave); border-radius: 10px 10px 0 0; padding: 7px 14px; cursor: pointer; }
+  .pest.activa { background: var(--panel); font-weight: 700; color: var(--acento); }
+  .pest.final { margin-left: auto; }
+  .hoja { border-top-left-radius: 0; }
+  /* estructura */
+  .bloques { display: flex; flex-direction: column; gap: 6px; }
+  .bloque { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 6px 8px; border: 1px solid var(--borde); border-radius: 10px; background: var(--suave); }
+  .bloque .bn { font-weight: 600; width: 190px; }
+  .bloque label { font-size: 12px; color: var(--texto-sec); display: inline-flex; align-items: center; gap: 4px; }
+  .bloque input[type=number] { width: 58px; }
+  .chips { display: flex; gap: 4px; flex-wrap: wrap; flex: 1; min-width: 200px; }
+  .chip { border: 1px solid var(--borde); background: var(--panel); border-radius: 14px; padding: 1px 9px; font-size: 12px; cursor: pointer; white-space: nowrap; }
+  .chip:hover { border-color: var(--acento); }
+  .chip small { color: var(--texto-sec); }
+  .chip.fuera { opacity: .5; text-decoration: line-through; }
+  .aviso-pesos { font-size: 12px; color: var(--naranja); }
+  /* tabla */
+  .tabla-caja { overflow: auto; max-height: calc(100vh - 230px); border: 1px solid var(--borde); border-radius: 10px; }
+  table.libro { border-collapse: separate; border-spacing: 0; font-size: 13px; min-width: 100%; }
+  table.libro th, table.libro td { border-bottom: 1px solid var(--borde); border-right: 1px solid var(--borde); padding: 3px 5px; text-align: center; background: var(--panel); }
+  table.libro thead th { position: sticky; z-index: 3; background: var(--suave); font-size: 12px; font-weight: 600; white-space: nowrap; }
+  table.libro thead tr:nth-child(1) th { top: 0; }
+  table.libro thead tr:nth-child(2) th { top: 27px; }
+  table.libro thead tr:nth-child(3) th { top: 54px; font-weight: normal; color: var(--texto-sec); font-size: 11px; }
+  table.libro .al { position: sticky; left: 0; z-index: 2; text-align: left; white-space: nowrap; min-width: 200px; max-width: 280px; overflow: hidden; text-overflow: ellipsis; }
+  table.libro thead .al { z-index: 4; }
+  table.libro td.al a { color: var(--texto); text-decoration: none; font-weight: 600; cursor: pointer; }
+  table.libro td.al a:hover { color: var(--acento); text-decoration: underline; }
+  table.libro tfoot td { position: sticky; bottom: 0; background: var(--suave); font-weight: 600; font-size: 12px; z-index: 2; }
+  table.libro tfoot td.al { z-index: 3; }
+  .bh { border-left: 2px solid var(--texto-sec) !important; }
+  .ih { max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
+  .ih:hover { color: var(--acento); }
+  .celda { width: 52px; text-align: center; border: 1px solid transparent; background: transparent; border-radius: 4px; padding: 2px 3px; }
+  .celda:hover { border-color: var(--borde); }
+  .celda:focus { border-color: var(--acento); background: var(--campo); outline: none; }
+  td.mod { background: var(--mod) !important; }
+  td.crit .celda { width: 42px; font-size: 12px; }
+  th.crit, td.crit { background: var(--suave) !important; }
+  .su-t { color: var(--rojo); } .ap-t { color: var(--verde); }
+  td.media { font-weight: 600; white-space: nowrap; }
+  td.nev { white-space: nowrap; }
+  td.nev { font-weight: 700; font-size: 14px; border-left: 2px solid var(--texto-sec) !important; }
+  td.bol { font-weight: 700; font-size: 14px; }
+  td.bol.ap-t, td.nev.ap-t { background: var(--ap) !important; color: var(--verde); }
+  td.bol.su-t, td.nev.su-t { background: var(--su) !important; color: var(--rojo); }
+  td.com { text-align: left; min-width: 160px; max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; color: var(--texto-sec); font-size: 12px; }
+  td.com:hover { color: var(--acento); }
+  .minf { color: var(--naranja); cursor: help; }
+  .vacio { padding: 30px; text-align: center; color: var(--texto-sec); }
+  /* diálogos */
+  .ov { position: fixed; inset: 0; background: rgba(10,20,30,.45); display: none; align-items: center; justify-content: center; z-index: 50; padding: 16px; }
+  .ov.visible { display: flex; }
+  .dlg { background: var(--panel); border-radius: 14px; box-shadow: var(--sombra); width: min(860px, 100%); max-height: 100%; display: flex; flex-direction: column; }
+  .dlg.ancho { width: min(1150px, 100%); }
+  .dlg.estrecho { width: min(520px, 100%); }
+  .dlg header { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-bottom: 1px solid var(--borde); }
+  .dlg header h3 { margin: 0; font-size: 15px; flex: 1; }
+  .dlg .cuerpo { padding: 12px 14px; overflow: auto; flex: 1; min-height: 0; }
+  .dlg footer { display: flex; gap: 8px; justify-content: flex-end; padding: 10px 14px; border-top: 1px solid var(--borde); flex-wrap: wrap; align-items: center; }
+  .campo { display: flex; flex-direction: column; gap: 3px; margin-bottom: 8px; }
+  .campo > span { font-size: 12px; color: var(--texto-sec); }
+  .rejilla { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px 12px; }
+  table.lista { border-collapse: collapse; width: 100%; font-size: 13px; }
+  table.lista th, table.lista td { border-bottom: 1px solid var(--borde); padding: 4px 6px; text-align: left; }
+  table.lista th { background: var(--suave); font-size: 12px; position: sticky; top: 0; }
+  .fuente { border: 1px solid var(--borde); border-radius: 10px; padding: 8px 10px; margin-bottom: 8px; background: var(--suave); }
+  .fuente .tit { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .tipo { font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--acento); }
+  .zona-arr { border: 2px dashed var(--borde); border-radius: 12px; padding: 18px; text-align: center; color: var(--texto-sec); }
+  .zona-arr.sobre { border-color: var(--acento); color: var(--acento); }
+  .estado-ok { color: var(--verde); } .estado-dud { color: var(--naranja); } .estado-nuevo { color: var(--acento); } .estado-no { color: var(--texto-sec); }
+  .snack { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); background: #263240; color: #fff; padding: 9px 16px; border-radius: 10px; z-index: 80; max-width: min(720px, 92vw); box-shadow: var(--sombra); display: none; }
+  .ficha-t td, .ficha-t th { text-align: center; }
+  .ficha-t td:first-child, .ficha-t th:first-child { text-align: left; }
+  textarea.com-ed { width: 100%; min-height: 120px; resize: vertical; }
+  .ayuda p { margin: 6px 0; }
+  @media print { .barra, .no-imp { display: none !important; } }
+</style>
+</head>
+<body>
+<div class="barra">
+  <h1><a class="casa" href="index.html" title="Portada de las herramientas">⌂</a> 📒 Libro de calificaciones — Por Eloi A.A. <span class="ver" title="Versión del programa">v1</span></h1>
+  <button class="btn pri" id="bImportar" title="Importar las notas de los CSV del Corrector: la corrección de un ejercicio (también con variantes), la hoja de calificaciones de Aules rellenada, la revisión por alumno de la batería o el zip «Descarga CSV Correcciones»">📥 Importar notas…</button>
+  <button class="btn" id="bAlumnos" title="La lista de la clase: añadir, renombrar, unir o quitar alumnos">👥 Alumnos</button>
+  <button class="btn" id="bGuardar" title="Guardar el libro en un archivo .json (el navegador recuerda además el último)">💾 Guardar</button>
+  <button class="btn" id="bAbrir" title="Abrir un libro guardado (.json)">📂 Abrir</button>
+  <button class="btn" id="bCSV" title="La evaluación abierta (o el final del curso) en CSV, para la hoja de cálculo">⬇ CSV</button>
+  <button class="btn" id="bActa" title="Imprimir la tabla de la evaluación abierta">🖨 Acta</button>
+  <button class="btn" id="bBoletines" title="Imprimir una hoja por alumno: sus notas por bloque y ejercicio, la nota de la evaluación y tu comentario">🖨 Boletines</button>
+  <button class="btn" id="bNuevo" title="Empezar un libro nuevo (vacío)">🗋 Nuevo</button>
+  <a class="btn" href="manual_libro_calificaciones.html" target="_blank" title="El manual del Libro de calificaciones" style="text-decoration:none">❓ Manual</a>
+  <button class="btn" id="bTema" title="Modo claro / oscuro">🌓</button>
+  <input type="file" id="fAbrir" accept=".json,application/json" hidden>
+</div>
+
+<div class="envoltura">
+  <div class="caja">
+    <div class="fila">
+      <input type="text" id="grupo" class="grupo-in" placeholder="Grupo y módulo (p. ej. 2CFS7 · Automatització en fusteria i moble)" title="Sale en el acta y en los boletines">
+      <input type="text" id="curso" placeholder="Curso (2026-2027)" style="width:150px">
+      <span class="nota-p" id="resumen"></span>
+    </div>
+  </div>
+
+  <div class="pestanas" id="pestanas"></div>
+  <div class="caja hoja" id="hoja"></div>
+</div>
+
+<!-- Importar -->
+<div class="ov" id="ovImp"><div class="dlg ancho">
+  <header><h3>📥 Importar notas</h3><button class="btn mini" data-cerrar>✕</button></header>
+  <div class="cuerpo" id="impCuerpo"></div>
+  <footer><span class="izq nota-p" id="impPie" style="margin-right:auto"></span><button class="btn" data-cerrar>Cancelar</button><button class="btn pri" id="impOk" disabled>Importar</button></footer>
+</div></div>
+
+<!-- Genérico -->
+<div class="ov" id="ovDlg"><div class="dlg" id="dlgCaja">
+  <header><h3 id="dlgTit"></h3><button class="btn mini" data-cerrar>✕</button></header>
+  <div class="cuerpo" id="dlgCuerpo"></div>
+  <footer id="dlgPie"></footer>
+</div></div>
+
+<div class="snack" id="snack"></div>
+
+<script>
+'use strict';
+// ════════════════════════════════════════════════════════════════════════════════════════════
+// Libro de calificaciones (Suite CNC) — por Eloi A.A.
+// Las notas de la clase por evaluaciones: bloques con su peso, ejercicios con su peso dentro del bloque,
+// importados de los CSV del Corrector (solo la nota final o, si se quiere, también sus criterios) o puestos a mano.
+// ════════════════════════════════════════════════════════════════════════════════════════════
+const VERSION = 'v1', CLAVE = 'libro_calificaciones';
+const $ = id => document.getElementById(id);
+const esc = t => String(t ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+const uid = () => Math.random().toString(36).slice(2, 10);
+const nf = (x, d = 1) => x === null || x === undefined || isNaN(x) ? '' : String(Math.round(x * 10 ** d) / 10 ** d).replace('.', ',');
+const num = t => { if (t === null || t === undefined) return null; const s = String(t).trim().replace(/\s/g, ''); if (!s || s === '-' || s === '—') return null;
+    const v = Number(s.includes(',') ? s.replace(/\./g, '').replace(',', '.') : s); return isFinite(v) ? v : null; };
+function snack(t, ms = 4500) { const s = $('snack'); s.textContent = t; s.style.display = 'block'; clearTimeout(snack.t); snack.t = setTimeout(() => { s.style.display = 'none'; }, ms); }
+const norm = t => String(t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9ñ ]+/g, ' ').replace(/\s+/g, ' ').trim();
+const claveNom = t => norm(t).split(' ').filter(Boolean).sort().join(' ');
+
+// ── El libro ──
+// { grupo, curso, alumnos: [{ id, nombre }], evals: [{ id, nombre, peso, modo:'cero'|'entregados', bloques: [{ id, nombre, peso, min,
+//   items: [{ id, nombre, peso, max, fuente, criterios: [nombres] | null, sumaCrit, notas: { idAlumno: { n, o, c: [..] , m } } }] }],
+//   comentarios: { idAlumno: texto } }], final: { comentarios: {} }, opc: { aprobado, redondeo, tope } }
+let L = null, evSel = 0, abiertos = new Set();   // abiertos: ítems con los criterios desplegados
+function libroNuevo() {
+    return { tipo: 'libro-calificaciones', version: 1, grupo: '', curso: '', alumnos: [],
+        evals: [evalNueva('1.ª evaluación')], final: { comentarios: {} }, opc: { aprobado: 5, redondeo: 'redondear', sinAprobarRedondeo: true, topeMin: 4 } };
+}
+function evalNueva(nombre) { return { id: uid(), nombre, peso: 1, modo: 'cero', bloques: [], comentarios: {} }; }
+function bloqueNuevo(nombre, peso) { return { id: uid(), nombre, peso: peso ?? 0, min: null, items: [] }; }
+function itemNuevo(nombre, o = {}) { return Object.assign({ id: uid(), nombre, peso: 1, max: 10, fuente: 'a mano', criterios: null, sumaCrit: false, notas: {} }, o); }
+const evAct = () => L.evals[evSel] || null;
+const alumnosOrden = () => L.alumnos.slice().sort((a, b) => a.nombre.localeCompare(b.nombre, 'es', { sensitivity: 'base' }));
+
+// ── Guardar en el navegador ──
+let tGuardar = null;
+function guardarPronto() { clearTimeout(tGuardar); tGuardar = setTimeout(guardarLocal, 400); }
+function guardarLocal() { try { localStorage.setItem(CLAVE, JSON.stringify(L)); } catch (e) { snack('El navegador no ha podido guardar el libro (¿demasiado grande?): guárdalo con 💾'); } }
+function cargarLocal() { try { const t = localStorage.getItem(CLAVE); if (t) { const d = JSON.parse(t); if (d && d.tipo === 'libro-calificaciones') return arreglar(d); } } catch (e) {} return null; }
+function arreglar(d) {
+    const n = libroNuevo();
+    d.opc = Object.assign(n.opc, d.opc || {}); d.final = d.final || { comentarios: {} }; d.final.comentarios = d.final.comentarios || {};
+    d.alumnos = d.alumnos || []; d.evals = (d.evals && d.evals.length) ? d.evals : n.evals;
+    d.evals.forEach(e => { e.bloques = e.bloques || []; e.comentarios = e.comentarios || {}; if (e.peso === undefined) e.peso = 1; e.modo = e.modo || 'cero';
+        e.bloques.forEach(b => { b.items = b.items || []; b.items.forEach(it => { it.notas = it.notas || {}; if (!it.max) it.max = 10; if (it.peso === undefined) it.peso = 1; }); }); });
+    return d;
+}
+
+// ── Cálculo ──
+// La nota de un alumno en un ejercicio, sobre 10 (null: no tiene)
+function notaIt(it, a) { const x = it.notas[a]; return x && x.n !== null && x.n !== undefined ? x.n / (it.max || 10) * 10 : null; }
+// ¿Cuenta el ejercicio? (con peso y con alguna nota en la clase: uno que todavía no se ha hecho no pone ceros)
+const cuentaIt = it => it.peso > 0 && Object.values(it.notas).some(x => x && x.n !== null && x.n !== undefined);
+function mediaBloque(ev, b, a) {
+    let s = 0, w = 0;
+    b.items.forEach(it => { if (!cuentaIt(it)) return; const v = notaIt(it, a);
+        if (v === null) { if (ev.modo === 'cero') w += it.peso; return; }
+        s += v * it.peso; w += it.peso; });
+    return w ? s / w : null;
+}
+function notaEval(ev, a) {
+    let s = 0, w = 0; const bajo = [];
+    ev.bloques.forEach(b => { if (!(b.peso > 0)) return; const m = mediaBloque(ev, b, a); if (m === null) return;
+        s += m * b.peso; w += b.peso; if (b.min !== null && b.min !== undefined && b.min !== '' && m < b.min) bajo.push(b); });
+    if (!w) return { n: null, bajo };
+    let n = s / w;
+    const tope = L.opc.topeMin;
+    if (bajo.length && tope !== null && tope !== undefined && tope !== '' && n > tope) n = +tope;
+    return { n, bajo, sinTope: s / w };
+}
+function boletin(n) {
+    if (n === null || n === undefined) return null;
+    const ap = L.opc.aprobado ?? 5;
+    let r = L.opc.redondeo === 'truncar' ? Math.floor(n + 1e-9) : L.opc.redondeo === 'nada' ? Math.round(n * 10) / 10 : Math.round(n + 1e-9);
+    if (L.opc.sinAprobarRedondeo && n < ap && r >= ap) r = L.opc.redondeo === 'nada' ? n : Math.floor(n);
+    return Math.max(L.opc.redondeo === 'nada' ? 0 : 1, Math.min(10, r));
+}
+function notaFinal(a) {
+    let s = 0, w = 0;
+    L.evals.forEach(ev => { if (!(ev.peso > 0)) return; const r = notaEval(ev, a); if (r.n === null) return; s += r.n * ev.peso; w += ev.peso; });
+    return w ? s / w : null;
+}
+const clsNota = n => n === null || n === undefined ? '' : n >= (L.opc.aprobado ?? 5) ? 'ap-t' : 'su-t';
+const sumaPesos = ev => ev.bloques.reduce((s, b) => s + (+b.peso || 0), 0);
+
+// ════════════════ Pintar ════════════════
+function pintar() {
+    $('grupo').value = L.grupo || ''; $('curso').value = L.curso || '';
+    if (evSel > L.evals.length) evSel = 0;
+    $('pestanas').innerHTML = L.evals.map((e, i) => `<button class="pest ${i === evSel ? 'activa' : ''}" data-ev="${i}">${esc(e.nombre)}</button>`).join('')
+        + `<button class="pest" id="pMasEv" title="Añadir una evaluación">＋</button><button class="pest final ${evSel === L.evals.length ? 'activa' : ''}" data-ev="${L.evals.length}" title="La nota final del curso: la media de las evaluaciones, con su peso">🏁 Final del curso</button>`;
+    $('pestanas').querySelectorAll('[data-ev]').forEach(b => b.onclick = () => { evSel = +b.dataset.ev; pintar(); });
+    $('pMasEv').onclick = () => { L.evals.push(evalNueva(`${L.evals.length + 1}.ª evaluación`)); evSel = L.evals.length - 1; cambio(); };
+    const nIt = L.evals.reduce((s, e) => s + e.bloques.reduce((t, b) => t + b.items.length, 0), 0);
+    $('resumen').textContent = `${L.alumnos.length} alumnos · ${L.evals.length} evaluación(es) · ${nIt} ejercicio(s)`;
+    if (evSel === L.evals.length) pintarFinal(); else pintarEval();
+}
+function cambio() { guardarPronto(); pintar(); }
+
+function pintarEval() {
+    const ev = evAct(), h = $('hoja');
+    const sp = sumaPesos(ev);
+    h.innerHTML = `<h2>Evaluación <input type="text" id="evNom" value="${esc(ev.nombre)}" style="width:200px;text-transform:none;letter-spacing:0">
+        <label class="nota-p" style="text-transform:none;letter-spacing:0" title="El peso de esta evaluación en la nota final del curso">peso en la final <input type="number" id="evPeso" min="0" step="any" value="${ev.peso}"></label>
+        <label class="nota-p" style="text-transform:none;letter-spacing:0" title="Un ejercicio que el alumno no ha entregado (y la clase sí), ¿cuenta 0 o no cuenta en su media?">
+          <select id="evModo"><option value="cero" ${ev.modo === 'cero' ? 'selected' : ''}>los no entregados cuentan 0</option><option value="entregados" ${ev.modo === 'entregados' ? 'selected' : ''}>solo cuentan los entregados</option></select></label>
+        <span style="margin-left:auto;display:flex;gap:6px;text-transform:none;letter-spacing:0">
+          <button class="btn mini" id="evBloque">➕ Bloque</button><button class="btn mini" id="evItem">➕ Ejercicio a mano</button><button class="btn mini" id="evOpc" title="Aprobado, redondeo del boletín y nota mínima de los bloques">⚙ Opciones</button>
+          <button class="btn mini peligro" id="evBorrar" title="Quitar esta evaluación">🗑</button></span></h2>
+      <div class="bloques" id="bloques">${ev.bloques.map((b, i) => `
+        <div class="bloque" data-b="${i}">
+          <input type="text" class="bn" value="${esc(b.nombre)}" data-campo="nombre" title="Nombre del bloque">
+          <label title="El peso del bloque en la nota de la evaluación (en %, o en las unidades que quieras: se reparte en proporción)">peso <input type="number" min="0" step="any" value="${b.peso}" data-campo="peso">${sp ? `<small>(${nf(b.peso / sp * 100, 0)} %)</small>` : ''}</label>
+          <label title="Nota mínima del bloque para hacer media (vacío: sin mínimo). Si no llega, se avisa y la nota de la evaluación se queda, como mucho, en la de ⚙ Opciones">mín. <input type="number" min="0" max="10" step="any" value="${b.min ?? ''}" data-campo="min" style="width:50px"></label>
+          <div class="chips">${b.items.map((it, j) => `<span class="chip ${cuentaIt(it) ? '' : 'fuera'}" data-it="${j}" title="${esc(it.nombre)} · ${esc(it.fuente)} · sobre ${nf(it.max, 2)}${cuentaIt(it) ? '' : ' · no cuenta (sin peso o sin notas)'}">${esc(it.nombre)} <small>×${nf(it.peso, 2)}</small></span>`).join('') || '<span class="nota-p">Sin ejercicios: 📥 Importar notas o ➕ ejercicio</span>'}</div>
+          <button class="btn mini" data-acc="mas" title="Añadir un ejercicio a mano a este bloque">➕</button>
+          <button class="btn mini" data-acc="sube" title="Subir" ${i ? '' : 'disabled'}>▲</button>
+          <button class="btn mini peligro" data-acc="borra" title="Quitar el bloque">🗑</button>
+        </div>`).join('') || '<div class="nota-p">Esta evaluación no tiene bloques todavía. Crea uno (➕ Bloque) o 📥 Importa notas: el bloque se crea al importar.</div>'}</div>
+      ${ev.bloques.length && Math.abs(sp - 100) > 0.01 && sp > 0 ? `<div class="aviso-pesos">Los pesos de los bloques suman ${nf(sp, 2)}: se reparten en proporción (lo que sale entre paréntesis).</div>` : ''}
+      <div style="margin-top:10px">${tablaEval(ev)}</div>`;
+    $('evNom').onchange = e => { ev.nombre = e.target.value.trim() || ev.nombre; cambio(); };
+    $('evPeso').onchange = e => { ev.peso = Math.max(0, num(e.target.value) ?? 0); cambio(); };
+    $('evModo').onchange = e => { ev.modo = e.target.value; cambio(); };
+    $('evBloque').onclick = () => { ev.bloques.push(bloqueNuevo(`Bloque ${ev.bloques.length + 1}`, ev.bloques.length ? 0 : 100)); cambio(); };
+    $('evItem').onclick = () => dlgItem(null, null);
+    $('evOpc').onclick = dlgOpciones;
+    $('evBorrar').onclick = () => confirmar(`¿Quitar «${ev.nombre}» con todos sus bloques, notas y comentarios?`, 'Quitar', () => { L.evals.splice(evSel, 1); if (!L.evals.length) L.evals.push(evalNueva('1.ª evaluación')); evSel = 0; cambio(); });
+    h.querySelectorAll('.bloque').forEach(d => {
+        const b = ev.bloques[+d.dataset.b];
+        d.querySelectorAll('[data-campo]').forEach(x => x.onchange = () => {
+            const c = x.dataset.campo; if (c === 'nombre') b.nombre = x.value.trim() || b.nombre; else if (c === 'peso') b.peso = Math.max(0, num(x.value) ?? 0); else b.min = num(x.value);
+            cambio(); });
+        d.querySelectorAll('.chip').forEach(c => c.onclick = () => dlgItem(b, b.items[+c.dataset.it]));
+        d.querySelector('[data-acc=mas]').onclick = () => dlgItem(b, null);
+        d.querySelector('[data-acc=sube]').onclick = () => { const i = +d.dataset.b; [ev.bloques[i - 1], ev.bloques[i]] = [ev.bloques[i], ev.bloques[i - 1]]; cambio(); };
+        d.querySelector('[data-acc=borra]').onclick = () => confirmar(`¿Quitar el bloque «${b.nombre}» y sus ${b.items.length} ejercicio(s) con sus notas?`, 'Quitar', () => { ev.bloques.splice(+d.dataset.b, 1); cambio(); });
+    });
+    enlazarTabla(ev);
+}
+
+function tablaEval(ev) {
+    const A = alumnosOrden();
+    if (!A.length) return `<div class="vacio">No hay alumnos todavía. 📥 <b>Importa notas</b> (la lista de la clase se crea con los nombres) o añádelos en 👥 Alumnos.</div>`;
+    const B = ev.bloques.filter(b => b.items.length || true);
+    // cabecera: bloque | ejercicios (+ criterios desplegados) | media del bloque
+    let f1 = `<th class="al" rowspan="3">Alumno/a</th>`, f2 = '', f3 = '';
+    B.forEach((b, bi) => {
+        const cols = b.items.reduce((s, it) => s + 1 + (abiertos.has(it.id) && it.criterios ? it.criterios.length : 0), 0) + 1;
+        f1 += `<th class="bh" colspan="${cols}">${esc(b.nombre)} <span class="nota-p">${sumaPesos(ev) ? nf(b.peso / sumaPesos(ev) * 100, 0) + ' %' : ''}</span></th>`;
+        b.items.forEach((it, j) => {
+            const ab = abiertos.has(it.id) && it.criterios;
+            f2 += `<th class="ih ${j === 0 ? 'bh' : ''}" colspan="${1 + (ab ? it.criterios.length : 0)}" data-bi="${ev.bloques.indexOf(b)}" data-ii="${j}" title="${esc(it.nombre)} — clic: editar el ejercicio">${it.criterios ? `<span data-desp="${it.id}" title="Ver / ocultar sus criterios">${ab ? '▾' : '▸'}</span> ` : ''}${esc(it.nombre)}</th>`;
+            f3 += `<th class="${j === 0 ? 'bh' : ''}">×${nf(it.peso, 2)}${it.max !== 10 ? ` /${nf(it.max, 2)}` : ''}</th>` + (ab ? it.criterios.map(c => `<th class="crit" title="${esc(c)}">${esc(c.length > 9 ? c.slice(0, 8) + '…' : c)}</th>`).join('') : '');
+        });
+        f2 += `<th rowspan="2" ${b.items.length ? '' : 'class="bh"'}>Media</th>`;
+    });
+    f1 += `<th class="nev" rowspan="3" title="La nota de la evaluación: la media de los bloques con su peso">Nota</th><th rowspan="3" title="La nota del boletín (⚙ Opciones: redondeo)">Boletín</th><th rowspan="3">Comentario</th>`;
+    const filas = A.map(a => {
+        let tds = `<td class="al"><a data-ficha="${a.id}" title="Su ficha: todas sus notas y tus comentarios">${esc(a.nombre)}</a></td>`;
+        B.forEach(b => {
+            b.items.forEach((it, j) => {
+                const x = it.notas[a.id], ab = abiertos.has(it.id) && it.criterios;
+                tds += `<td class="${j === 0 ? 'bh' : ''} ${x && x.m ? 'mod' : ''}" ${x && x.m && x.o !== undefined && x.o !== null ? `title="Importada: ${nf(x.o, 2)} · cambiada a mano"` : ''}><input class="celda ${clsNota(notaIt(it, a.id))}" data-it="${it.id}" data-a="${a.id}" value="${x ? nf(x.n, 2) : ''}" inputmode="decimal"></td>`;
+                if (ab) it.criterios.forEach((c, k) => { tds += `<td class="crit"><input class="celda" data-it="${it.id}" data-a="${a.id}" data-k="${k}" value="${x && x.c ? nf(x.c[k], 2) : ''}" inputmode="decimal" title="${esc(c)}"></td>`; });
+            });
+            const m = mediaBloque(ev, b, a.id);
+            tds += `<td class="media ${b.items.length ? '' : 'bh'} ${clsNota(m)}">${b.min !== null && b.min !== undefined && m !== null && m < b.min ? `<span class="minf" title="No llega al mínimo del bloque (${nf(b.min, 2)})">⚠ </span>` : ''}${nf(m)}</td>`;
+        });
+        const r = notaEval(ev, a.id), bo = boletin(r.n), com = ev.comentarios[a.id] || '';
+        tds += `<td class="nev ${clsNota(r.n)}" ${r.bajo.length ? `title="No llega al mínimo en: ${esc(r.bajo.map(b => b.nombre).join(', '))}${r.sinTope !== r.n ? ` (sin el tope: ${nf(r.sinTope, 2)})` : ''}"` : ''}>${r.bajo.length ? '<span class="minf">⚠</span> ' : ''}${nf(r.n, 2)}</td>
+            <td class="bol ${clsNota(bo)}">${bo === null ? '' : nf(bo)}</td><td class="com" data-com="${a.id}" title="${esc(com) || 'Escribir un comentario'}">${com ? esc(com) : '✎'}</td>`;
+        return `<tr>${tds}</tr>`;
+    }).join('');
+    // pie: media de la clase
+    let pie = `<td class="al">Media de la clase · aprueban</td>`;
+    const medias = v => { const x = v.filter(y => y !== null); return x.length ? x.reduce((s, y) => s + y, 0) / x.length : null; };
+    const ap = v => { const x = v.filter(y => y !== null); return x.length ? `${x.filter(y => y >= (L.opc.aprobado ?? 5)).length}/${x.length}` : ''; };
+    B.forEach(b => {
+        b.items.forEach((it, j) => {
+            const v = A.map(a => notaIt(it, a.id)); pie += `<td class="${j === 0 ? 'bh' : ''}" title="aprueban ${ap(v)}">${nf(medias(v))}</td>`;
+            if (abiertos.has(it.id) && it.criterios) it.criterios.forEach((c, k) => { pie += `<td class="crit">${nf(medias(A.map(a => { const x = it.notas[a.id]; return x && x.c ? x.c[k] : null; }).map(y => y === undefined ? null : y)))}</td>`; });
+        });
+        const v = A.map(a => mediaBloque(ev, b, a.id)); pie += `<td class="${b.items.length ? '' : 'bh'}" title="aprueban ${ap(v)}">${nf(medias(v))}</td>`;
+    });
+    const vN = A.map(a => notaEval(ev, a.id).n), vB = A.map(a => boletin(notaEval(ev, a.id).n));
+    pie += `<td class="nev">${nf(medias(vN), 2)}</td><td>${ap(vB)}</td><td></td>`;
+    return `<div class="tabla-caja"><table class="libro"><thead><tr>${f1}</tr><tr>${f2}</tr><tr>${f3}</tr></thead><tbody>${filas}</tbody><tfoot><tr>${pie}</tr></tfoot></table></div>
+        <div class="nota-p" style="margin-top:6px">Escribe las notas en las casillas (sobre la nota máxima del ejercicio; vacío = no entregado). En amarillo, las notas importadas que has cambiado a mano. ▸ despliega los criterios de un ejercicio importado con ellos. Clic en un alumno: su ficha; en ✎: tu comentario.</div>`;
+}
+function buscarItem(id) { for (const ev of L.evals) for (const b of ev.bloques) for (const it of b.items) if (it.id === id) return { ev, b, it }; return null; }
+function enlazarTabla(ev) {
+    const h = $('hoja');
+    h.querySelectorAll('input.celda').forEach(inp => {
+        inp.onkeydown = e => {
+            if (e.key === 'Enter' || e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                e.preventDefault(); const td = inp.closest('td'), tr = td.parentNode, i = [...tr.children].indexOf(td);
+                const otro = (e.key === 'ArrowUp' ? tr.previousElementSibling : tr.nextElementSibling); const sig = otro && otro.children[i] && otro.children[i].querySelector('input');
+                inp.blur(); if (sig) { setTimeout(() => { const s2 = document.querySelector(`input.celda[data-it="${sig.dataset.it}"][data-a="${sig.dataset.a}"]${sig.dataset.k !== undefined ? `[data-k="${sig.dataset.k}"]` : ':not([data-k])'}`); if (s2) { s2.focus(); s2.select(); } }, 0); }
+            }
+        };
+        inp.onchange = () => {
+            const r = buscarItem(inp.dataset.it); if (!r) return; const it = r.it, a = inp.dataset.a;
+            const v = num(inp.value);
+            if (inp.value.trim() && v === null) { snack('Escribe un número (con coma o con punto)'); inp.value = ''; return; }
+            let x = it.notas[a];
+            if (inp.dataset.k !== undefined) {
+                if (!x) x = it.notas[a] = { n: null, c: it.criterios.map(() => null) };
+                if (!x.c) x.c = it.criterios.map(() => null);
+                if (x.o === undefined && !x.m) x.o = x.n;
+                x.c[+inp.dataset.k] = v;
+                if (it.sumaCrit) { const s = x.c.reduce((t, y) => t + (y || 0), 0); x.n = x.c.some(y => y !== null) ? Math.round(s * 100) / 100 : null; }
+                x.m = x.o !== undefined && x.o !== x.n ? true : x.m;
+            } else {
+                if (v !== null && (v < 0 || v > it.max)) snack(`Ojo: la nota está fuera de 0 – ${nf(it.max, 2)} (la nota máxima de «${it.nombre}»)`);
+                if (!x) { if (v === null) return; x = it.notas[a] = { n: v }; if (it.fuente !== 'a mano') x.m = true; }
+                else { if (x.o === undefined && it.fuente !== 'a mano') x.o = x.n; x.n = v; if (x.o !== undefined) x.m = x.o !== v; }
+                if (x.n === null && !x.c && x.o === undefined) delete it.notas[a];
+            }
+            const foco = document.activeElement && document.activeElement.classList.contains('celda') ? [document.activeElement.dataset.it, document.activeElement.dataset.a, document.activeElement.dataset.k] : null;
+            guardarPronto(); pintar();
+            if (foco) { const s2 = document.querySelector(`input.celda[data-it="${foco[0]}"][data-a="${foco[1]}"]${foco[2] !== undefined ? `[data-k="${foco[2]}"]` : ':not([data-k])'}`); if (s2) { s2.focus(); s2.select(); } }
+        };
+        inp.onfocus = () => inp.select();
+    });
+    h.querySelectorAll('th.ih').forEach(th => th.onclick = e => {
+        const d = e.target.closest('[data-desp]'); if (d) { const id = d.dataset.desp; abiertos.has(id) ? abiertos.delete(id) : abiertos.add(id); pintar(); return; }
+        const b = ev.bloques[+th.dataset.bi]; dlgItem(b, b.items[+th.dataset.ii]); });
+    h.querySelectorAll('[data-ficha]').forEach(x => x.onclick = () => dlgFicha(x.dataset.ficha));
+    h.querySelectorAll('[data-com]').forEach(x => x.onclick = () => dlgComentario(ev, x.dataset.com));
+}
+
+function pintarFinal() {
+    const h = $('hoja'), A = alumnosOrden(), E = L.evals, sw = E.reduce((s, e) => s + (+e.peso || 0), 0);
+    const filas = A.map(a => {
+        const ns = E.map(ev => notaEval(ev, a.id)), f = notaFinal(a.id), bo = boletin(f), com = L.final.comentarios[a.id] || '';
+        return `<tr><td class="al"><a data-ficha="${a.id}">${esc(a.nombre)}</a></td>${ns.map(r => `<td class="${clsNota(r.n)}">${r.bajo.length ? '<span class="minf" title="No llega al mínimo de algún bloque">⚠</span> ' : ''}${nf(r.n, 2)}</td><td class="${clsNota(boletin(r.n))}">${boletin(r.n) === null ? '' : nf(boletin(r.n))}</td>`).join('')}
+            <td class="nev ${clsNota(f)}">${nf(f, 2)}</td><td class="bol ${clsNota(bo)}">${bo === null ? '' : nf(bo)}</td><td class="com" data-comf="${a.id}" title="${esc(com) || 'Escribir un comentario'}">${com ? esc(com) : '✎'}</td></tr>`;
+    }).join('');
+    h.innerHTML = `<h2>🏁 Final del curso <span class="nota-p" style="text-transform:none;letter-spacing:0">La media de las evaluaciones con su peso (se cambia en cada evaluación, «peso en la final»). <button class="btn mini" id="evOpc">⚙ Opciones</button></span></h2>
+      ${A.length ? `<div class="tabla-caja"><table class="libro"><thead><tr><th class="al" rowspan="2">Alumno/a</th>${E.map(e => `<th colspan="2" class="bh">${esc(e.nombre)} <span class="nota-p">${sw ? nf((+e.peso || 0) / sw * 100, 0) + ' %' : ''}</span></th>`).join('')}<th class="nev" rowspan="2">Final</th><th rowspan="2">Boletín</th><th rowspan="2">Comentario final</th></tr>
+        <tr>${E.map(() => '<th class="bh">Nota</th><th>Bol.</th>').join('')}</tr></thead><tbody>${filas}</tbody></table></div>` : '<div class="vacio">No hay alumnos todavía.</div>'}`;
+    const o = $('evOpc'); if (o) o.onclick = dlgOpciones;
+    h.querySelectorAll('[data-ficha]').forEach(x => x.onclick = () => dlgFicha(x.dataset.ficha));
+    h.querySelectorAll('[data-comf]').forEach(x => x.onclick = () => dlgComentario(null, x.dataset.comf));
+}
+
+// ════════════════ Diálogos ════════════════
+function abrirDlg(tit, cuerpo, pie, clase) {
+    $('dlgTit').innerHTML = tit; $('dlgCuerpo').innerHTML = cuerpo; $('dlgPie').innerHTML = pie || '<button class="btn" data-cerrar>Cerrar</button>';
+    $('dlgCaja').className = 'dlg ' + (clase || ''); $('ovDlg').classList.add('visible');
+    const iz = $('dlgPie').querySelectorAll('.izq'); if (iz.length) iz[iz.length - 1].style.marginRight = 'auto';
+    $('ovDlg').querySelectorAll('[data-cerrar]').forEach(b => b.onclick = cerrarDlg);
+}
+function cerrarDlg() { $('ovDlg').classList.remove('visible'); }
+function confirmar(texto, si, fn) {
+    abrirDlg('¿Seguro?', `<p>${esc(texto)}</p>`, `<button class="btn" data-cerrar>Cancelar</button><button class="btn pri" id="cfSi">${esc(si)}</button>`, 'estrecho');
+    $('cfSi').onclick = () => { cerrarDlg(); fn(); };
+}
+function dlgOpciones() {
+    const o = L.opc;
+    abrirDlg('⚙ Opciones de las notas', `
+      <div class="rejilla">
+        <label class="campo"><span>Aprobado desde</span><input type="number" id="oAp" min="0" max="10" step="any" value="${o.aprobado}"></label>
+        <label class="campo"><span>Nota del boletín</span><select id="oRed"><option value="redondear" ${o.redondeo === 'redondear' ? 'selected' : ''}>redondeada (6,5 → 7)</option><option value="truncar" ${o.redondeo === 'truncar' ? 'selected' : ''}>truncada (6,9 → 6)</option><option value="nada" ${o.redondeo === 'nada' ? 'selected' : ''}>con un decimal</option></select></label>
+        <label class="campo"><span>Si no llega a un mínimo de bloque, la nota se queda como mucho en</span><input type="number" id="oTope" min="0" max="10" step="any" value="${o.topeMin ?? ''}" placeholder="sin tope"></label>
+      </div>
+      <label><input type="checkbox" id="oSinAp" ${o.sinAprobarRedondeo ? 'checked' : ''}> No se aprueba por el redondeo (4,6 → 4, no 5)</label>
+      <p class="nota-p">El mínimo de cada bloque se pone en el bloque («mín.»). Estas opciones valen para todas las evaluaciones y para la final.</p>`,
+        `<button class="btn" data-cerrar>Cancelar</button><button class="btn pri" id="oOk">Aplicar</button>`, 'estrecho');
+    $('oOk').onclick = () => { o.aprobado = num($('oAp').value) ?? 5; o.redondeo = $('oRed').value; o.topeMin = num($('oTope').value); o.sinAprobarRedondeo = $('oSinAp').checked; cerrarDlg(); cambio(); };
+}
+// Un ejercicio: nuevo (a mano) o editar
+function dlgItem(b, it) {
+    const ev = evAct(); const nuevo = !it;
+    if (nuevo && !ev.bloques.length) ev.bloques.push(bloqueNuevo('Ejercicios', 100));
+    b = b || ev.bloques[ev.bloques.length - 1];
+    const n = it ? Object.keys(it.notas).filter(k => it.notas[k] && it.notas[k].n !== null).length : 0;
+    abrirDlg(nuevo ? '➕ Ejercicio a mano' : `✎ ${esc(it.nombre)}`, `
+      <div class="rejilla">
+        <label class="campo"><span>Nombre</span><input type="text" id="iNom" value="${esc(it ? it.nombre : `Ejercicio ${b.items.length + 1}`)}"></label>
+        <label class="campo"><span>Bloque</span><select id="iBlo">${ev.bloques.map((x, i) => `<option value="${i}" ${x === b ? 'selected' : ''}>${esc(x.nombre)}</option>`).join('')}</select></label>
+        <label class="campo"><span>Peso dentro del bloque</span><input type="number" id="iPeso" min="0" step="any" value="${it ? it.peso : 1}"></label>
+        <label class="campo"><span>Nota máxima</span><input type="number" id="iMax" min="0.01" step="any" value="${it ? it.max : 10}"></label>
+      </div>
+      ${it ? `<p class="nota-p">De: ${esc(it.fuente)} · ${n} nota(s)${it.criterios ? ` · criterios: ${esc(it.criterios.join(', '))}${it.sumaCrit ? ' (la nota es su suma: si cambias un criterio, cambia la nota)' : ''}` : ''}. Peso 0: no cuenta en la media.</p>` : '<p class="nota-p">Después, escribe las notas en su columna de la tabla.</p>'}`,
+        `${it ? '<button class="btn peligro izq" id="iBorrar">🗑 Quitar el ejercicio</button><button class="btn izq" id="iDeshacer" title="Volver a las notas importadas en las casillas cambiadas a mano">↺ Notas importadas</button>' : ''}<button class="btn" data-cerrar>Cancelar</button><button class="btn pri" id="iOk">${nuevo ? 'Añadir' : 'Aplicar'}</button>`, 'estrecho');
+    $('iOk').onclick = () => {
+        const nb = ev.bloques[+$('iBlo').value];
+        const x = it || itemNuevo('');
+        x.nombre = $('iNom').value.trim() || x.nombre || 'Ejercicio'; x.peso = Math.max(0, num($('iPeso').value) ?? 1); x.max = Math.max(0.01, num($('iMax').value) ?? 10);
+        if (it && nb !== b) { b.items.splice(b.items.indexOf(it), 1); nb.items.push(it); } else if (!it) nb.items.push(x);
+        cerrarDlg(); cambio();
+    };
+    if (it) {
+        $('iBorrar').onclick = () => confirmar(`¿Quitar «${it.nombre}» y sus ${n} nota(s)?`, 'Quitar', () => { b.items.splice(b.items.indexOf(it), 1); cambio(); });
+        $('iDeshacer').onclick = () => { let k = 0; Object.values(it.notas).forEach(x => { if (x.m && x.o !== undefined) { x.n = x.o; x.m = false; k++; } }); cerrarDlg(); cambio(); snack(k ? `${k} nota(s) vuelven a la importada` : 'No hay notas cambiadas a mano'); };
+    }
+}
+function dlgComentario(ev, aid) {
+    const A = alumnosOrden(), i = A.findIndex(a => a.id === aid), a = A[i], dic = ev ? ev.comentarios : L.final.comentarios;
+    abrirDlg(`✎ ${esc(a.nombre)} — ${ev ? esc(ev.nombre) : 'final del curso'}`, `<textarea class="com-ed" id="cTxt" placeholder="Tu comentario (sale en su boletín)">${esc(dic[aid] || '')}</textarea>
+        <p class="nota-p">Nota: ${ev ? nf(notaEval(ev, aid).n, 2) : nf(notaFinal(aid), 2)}. Se guarda al cambiar de alumno o al cerrar.</p>`,
+        `<button class="btn izq" id="cAnt" ${i ? '' : 'disabled'}>◀</button><button class="btn izq" id="cSig" ${i < A.length - 1 ? '' : 'disabled'}>▶</button><button class="btn pri" id="cOk">Hecho</button>`, 'estrecho');
+    const guarda = () => { const t = $('cTxt').value.trim(); if (t) dic[aid] = t; else delete dic[aid]; guardarPronto(); };
+    $('cOk').onclick = () => { guarda(); cerrarDlg(); pintar(); };
+    $('cAnt').onclick = () => { guarda(); dlgComentario(ev, A[i - 1].id); };
+    $('cSig').onclick = () => { guarda(); dlgComentario(ev, A[i + 1].id); };
+    $('ovDlg').querySelector('[data-cerrar]').onclick = () => { guarda(); cerrarDlg(); pintar(); };
+    setTimeout(() => $('cTxt').focus(), 0);
+}
+function htmlFichaAlumno(aid, imprimir) {
+    let h = '';
+    L.evals.forEach(ev => {
+        if (!ev.bloques.some(b => b.items.length)) return;
+        const r = notaEval(ev, aid);
+        h += `<h4>${esc(ev.nombre)} — nota ${nf(r.n, 2)}${boletin(r.n) !== null ? ` · boletín <b>${nf(boletin(r.n))}</b>` : ''}</h4>
+          ${r.bajo.length ? `<p class="${imprimir ? 'sub' : 'nota-p'}">⚠ No llega al mínimo de ${r.bajo.map(b => `«${esc(b.nombre)}» (${nf(b.min, 2)})`).join(', ')}${r.sinTope !== r.n ? `: la nota se queda en ${nf(r.n, 2)} (sin el mínimo sería ${nf(r.sinTope, 2)})` : ''}.</p>` : ''}
+          <table class="lista ficha-t"><tr><th>Bloque / ejercicio</th><th>Peso</th><th>Nota</th></tr>${ev.bloques.map(b => {
+            const m = mediaBloque(ev, b, aid);
+            return `<tr style="font-weight:600"><td>${esc(b.nombre)}</td><td>${sumaPesos(ev) ? nf(b.peso / sumaPesos(ev) * 100, 0) + ' %' : ''}</td><td>${m !== null && b.min !== null && b.min !== undefined && m < b.min ? '⚠ ' : ''}${nf(m, 2)}</td></tr>`
+                + b.items.map(it => { const v = notaIt(it, aid); return `<tr><td style="padding-left:18px">${esc(it.nombre)}</td><td>×${nf(it.peso, 2)}</td><td>${v === null ? (cuentaIt(it) ? (ev.modo === 'cero' ? '— (0)' : '—') : '') : nf(v, 2)}${it.criterios && it.notas[aid] && it.notas[aid].c && !imprimir ? ` <span class="nota-p">(${it.criterios.map((c, k) => `${esc(c)} ${nf(it.notas[aid].c[k], 2)}`).join(' · ')})</span>` : ''}</td></tr>`; }).join('');
+        }).join('')}</table>
+          ${ev.comentarios[aid] ? `<p class="com-imp"><b>Comentario:</b> ${esc(ev.comentarios[aid])}</p>` : ''}`;
+    });
+    return h;
+}
+function dlgFicha(aid) {
+    const A = alumnosOrden(), i = A.findIndex(a => a.id === aid), a = A[i]; if (!a) return;
+    const f = notaFinal(aid);
+    abrirDlg(`👤 ${esc(a.nombre)}`, `${htmlFichaAlumno(aid) || '<p class="nota-p">Sin notas todavía.</p>'}
+        <h4>Final del curso — ${nf(f, 2)}${boletin(f) !== null ? ` · boletín <b>${nf(boletin(f))}</b>` : ''}</h4>
+        ${L.evals.map(ev => `<label class="campo"><span>Tu comentario — ${esc(ev.nombre)}</span><textarea data-cev="${ev.id}" rows="2">${esc(ev.comentarios[aid] || '')}</textarea></label>`).join('')}
+        <label class="campo"><span>Tu comentario — final del curso</span><textarea data-cev="final" rows="2">${esc(L.final.comentarios[aid] || '')}</textarea></label>`,
+        `<button class="btn izq" id="fAnt" ${i ? '' : 'disabled'}>◀</button><button class="btn izq" id="fSig" ${i < A.length - 1 ? '' : 'disabled'}>▶</button><button class="btn izq" id="fImp">🖨 Su boletín</button><button class="btn pri" id="fOk">Hecho</button>`);
+    const guarda = () => { $('dlgCuerpo').querySelectorAll('[data-cev]').forEach(t => { const dic = t.dataset.cev === 'final' ? L.final.comentarios : L.evals.find(e => e.id === t.dataset.cev).comentarios; const v = t.value.trim(); if (v) dic[aid] = v; else delete dic[aid]; }); guardarPronto(); };
+    $('fOk').onclick = () => { guarda(); cerrarDlg(); pintar(); };
+    $('fAnt').onclick = () => { guarda(); dlgFicha(A[i - 1].id); };
+    $('fSig').onclick = () => { guarda(); dlgFicha(A[i + 1].id); };
+    $('fImp').onclick = () => { guarda(); imprimirBoletines([aid]); };
+    $('ovDlg').querySelector('[data-cerrar]').onclick = () => { guarda(); cerrarDlg(); pintar(); };
+}
+
+// ── 👥 Alumnos ──
+function notasDe(aid) { let n = 0; L.evals.forEach(ev => ev.bloques.forEach(b => b.items.forEach(it => { if (it.notas[aid]) n++; }))); return n; }
+function dlgAlumnos() {
+    const A = alumnosOrden();
+    abrirDlg('👥 La clase', `
+      <p class="nota-p">Los alumnos se casan entre los archivos por el nombre (sin tildes ni mayúsculas, en cualquier orden). Si uno sale dos veces (escrito de dos maneras), marca los dos y 🔗 únelos.</p>
+      <table class="lista"><tr><th></th><th>Nombre</th><th>Notas</th><th></th></tr>${A.map(a => `<tr><td><input type="checkbox" class="aSel" value="${a.id}"></td>
+        <td><input type="text" class="aNom" data-id="${a.id}" value="${esc(a.nombre)}" style="width:100%"></td><td>${notasDe(a.id)}</td>
+        <td><button class="btn mini peligro" data-quita="${a.id}" title="Quitar de la clase (con sus notas)">🗑</button></td></tr>`).join('')}</table>
+      <label class="campo" style="margin-top:10px"><span>Añadir alumnos (uno por línea)</span><textarea id="aNuevos" rows="3" placeholder="Nombre Apellido Apellido"></textarea></label>`,
+        `<button class="btn izq" id="aUnir">🔗 Unir los marcados</button><button class="btn" id="aMas">➕ Añadir</button><button class="btn pri" data-cerrar>Hecho</button>`);
+    $('dlgCuerpo').querySelectorAll('.aNom').forEach(x => x.onchange = () => { const a = L.alumnos.find(y => y.id === x.dataset.id); if (a && x.value.trim()) { a.nombre = x.value.trim(); guardarPronto(); pintar(); } });
+    $('dlgCuerpo').querySelectorAll('[data-quita]').forEach(x => x.onclick = () => { const a = L.alumnos.find(y => y.id === x.dataset.quita);
+        confirmar(`¿Quitar a ${a.nombre} de la clase, con sus ${notasDe(a.id)} nota(s) y sus comentarios?`, 'Quitar', () => { quitarAlumno(a.id); cambio(); dlgAlumnos(); }); });
+    $('aMas').onclick = () => { const t = $('aNuevos').value.split(/\r?\n/).map(s => s.trim()).filter(Boolean); let n = 0;
+        t.forEach(nom => { if (!L.alumnos.some(a => claveNom(a.nombre) === claveNom(nom))) { L.alumnos.push({ id: uid(), nombre: nom }); n++; } });
+        cambio(); dlgAlumnos(); snack(`${n} alumno(s) añadido(s)`); };
+    $('aUnir').onclick = () => {
+        const ids = [...$('dlgCuerpo').querySelectorAll('.aSel:checked')].map(x => x.value);
+        if (ids.length < 2) { snack('Marca los dos (o más) nombres del mismo alumno'); return; }
+        const r = unirAlumnos(ids); cambio(); dlgAlumnos(); snack(r.choques ? `Unidos. ${r.choques} nota(s) estaban en los dos: se queda la más alta` : 'Unidos');
+    };
+}
+function quitarAlumno(id) {
+    L.alumnos = L.alumnos.filter(a => a.id !== id);
+    L.evals.forEach(ev => { delete ev.comentarios[id]; ev.bloques.forEach(b => b.items.forEach(it => delete it.notas[id])); }); delete L.final.comentarios[id];
+}
+function unirAlumnos(ids) {
+    // se queda el nombre más completo (el más largo)
+    const nomDe = id => (L.alumnos.find(a => a.id === id) || {}).nombre || '';
+    ids = ids.slice().sort((x, y) => nomDe(y).length - nomDe(x).length || notasDe(y) - notasDe(x));
+    const [k, ...resto] = ids; let choques = 0;
+    resto.forEach(o => {
+        L.evals.forEach(ev => {
+            ev.bloques.forEach(b => b.items.forEach(it => { const x = it.notas[o]; if (!x) return; const y = it.notas[k];
+                if (!y || y.n === null) it.notas[k] = x; else if (x.n !== null) { choques++; if (x.n > y.n) it.notas[k] = x; } delete it.notas[o]; }));
+            if (ev.comentarios[o]) ev.comentarios[k] = [ev.comentarios[k], ev.comentarios[o]].filter(Boolean).join(' '); delete ev.comentarios[o];
+        });
+        if (L.final.comentarios[o]) L.final.comentarios[k] = [L.final.comentarios[k], L.final.comentarios[o]].filter(Boolean).join(' '); delete L.final.comentarios[o];
+        L.alumnos = L.alumnos.filter(a => a.id !== o);
+    });
+    return { choques };
+}
+
+// ════════════════ Importar ════════════════
+// CSV: separador ; o , (el que haya más en la cabecera), comillas, saltos de línea dentro de comillas
+function leerCSV(txt) {
+    txt = String(txt).replace(/^﻿/, '');
+    const l1 = txt.split(/\r?\n/)[0]; const cuenta = c => (l1.replace(/"[^"]*"/g, '').match(new RegExp('\\' + c, 'g')) || []).length;
+    const sep = cuenta(';') >= cuenta(',') && cuenta(';') > 0 ? ';' : cuenta('\t') > cuenta(',') ? '\t' : ',';
+    const filas = []; let f = [], c = '', q = false;
+    for (let i = 0; i < txt.length; i++) {
+        const ch = txt[i];
+        if (q) { if (ch === '"') { if (txt[i + 1] === '"') { c += '"'; i++; } else q = false; } else c += ch; }
+        else if (ch === '"') q = true;
+        else if (ch === sep) { f.push(c); c = ''; }
+        else if (ch === '\n' || ch === '\r') { if (ch === '\r' && txt[i + 1] === '\n') i++; f.push(c); filas.push(f); f = []; c = ''; }
+        else c += ch;
+    }
+    if (c !== '' || f.length) { f.push(c); filas.push(f); }
+    return filas.filter(r => r.some(x => String(x).trim() !== ''));
+}
+// El nombre de la tarea en el nombre de un archivo de Aules («Calificaciones-Curso-2CFS7 1788982647-ISO GEO 01A-11829876 - con notas.csv»)
+function nombreTarea(arch) {
+    let s = String(arch).replace(/^.*[\\/]/, '').replace(/\.(csv|zip|json)$/i, '').replace(/\s*-\s*(con notas|corrección|correccion)$/i, '').replace(/^Calificaciones-/i, '');
+    const m = /\d{6,}-(.+)$/.exec(s); if (m) s = m[1];
+    s = s.replace(/-\d{5,}$/, '').replace(/-\d{1,2}$/, '').trim();
+    return s || arch;
+}
+function idxCol(cab, re) { return cab.findIndex(h => re.test(norm(h))); }
+// Cada archivo → fuentes: [{ tipo, nombre, max, criterios, filas: [{ nombre, n, c }], peso }]
+function fuentesDeCSV(txt, arch, carpeta) {
+    const F = leerCSV(txt); if (!F.length) return { error: 'vacío' };
+    const cab = F[0].map(h => String(h).trim()), cn = cab.map(norm);
+    // 1) Hoja de calificaciones de Aules (rellenada con ⬆ Notas para Aules)
+    const iId = idxCol(cab, /^identificador$|^identifier$/), iNom = idxCol(cab, /^nombre completo$|^nom complet$|^full name$/), iCal = idxCol(cab, /^calificacion$|^qualificacio$|^grade$/), iMax = idxCol(cab, /^calificacion maxima$|^qualificacio maxima$|^maximum grade$/);
+    if (iId >= 0 && iNom >= 0 && iCal >= 0) {
+        const filas = F.slice(1).map(r => ({ nombre: (r[iNom] || '').trim(), n: num(r[iCal]) })).filter(r => r.nombre);
+        const max = iMax >= 0 ? (F.slice(1).map(r => num(r[iMax])).find(v => v) || 10) : 10;
+        return { fuentes: [{ tipo: 'Hoja de calificaciones de Aules', nombre: nombreTarea(carpeta || arch), max, criterios: null, filas, peso: 1 }] };
+    }
+    // 2) La revisión por alumno de la batería (⬇ CSV): una columna por tarea, una fila «(peso)»
+    const iMed = cn.indexOf('media');
+    if (/^alumno/.test(cn[0]) && iMed > 1 && F[1] && norm(F[1][0]) === 'peso') {
+        const T = cab.slice(1, iMed), pes = F[1].slice(1, iMed);
+        return { fuentes: T.map((t, k) => ({ tipo: 'Revisión por alumno (batería)', nombre: t, max: 10, criterios: null, peso: num(pes[k]) ?? 0, noCuenta: /no cuenta/i.test(pes[k] || ''),
+            filas: F.slice(2).map(r => ({ nombre: (r[0] || '').trim(), n: num(r[k + 1]) })).filter(r => r.nombre) })) };
+    }
+    // 3) La corrección de un ejercicio (📚 corrección masiva o batería: «… - corrección.csv»): Alumno; …; Nota; criterios…
+    const iAl = idxCol(cab, /^alumno a?$|^alumno$|^alumne$/), iNota = cn.indexOf('nota');
+    if (iAl >= 0 && iNota >= 0) {
+        const fin = /^(informe de entrega|formato del archivo|parecido con|observaciones|variante|archivo|veredicto)$/;
+        const crit = []; for (let k = iNota + 1; k < cab.length && !fin.test(cn[k]); k++) crit.push(k);
+        const iVar = idxCol(cab, /^variante$/);
+        const por = new Map();   // varias entregas del mismo alumno: la mejor
+        F.slice(1).forEach(r => { const nom = (r[iAl] || '').trim(); if (!nom) return; const n = num(r[iNota]);
+            const x = { nombre: nom, n, c: crit.length ? crit.map(k => num(r[k])) : null, variante: iVar >= 0 ? r[iVar] : '' };
+            const y = por.get(claveNom(nom)); if (!y || (n ?? -1) > (y.n ?? -1)) por.set(claveNom(nom), x); });
+        const filas = [...por.values()];
+        const suma = crit.length && filas.filter(x => x.n !== null && x.c).every(x => Math.abs(x.c.reduce((s, y) => s + (y || 0), 0) - x.n) < 0.051);
+        return { fuentes: [{ tipo: 'Corrección del Corrector', nombre: nombreTarea(carpeta || arch), max: 10, criterios: crit.length ? crit.map(k => cab[k]) : null, sumaCrit: !!suma, filas, peso: 1 }] };
+    }
+    if (/resumen de la bateria/.test(norm(arch))) return { error: 'es el resumen de la batería (una fila por tarea, sin las notas de cada alumno): no hace falta' };
+    return { error: 'no es un CSV de notas que se reconozca (hoja de calificaciones de Aules, corrección del Corrector o revisión por alumno)' };
+}
+// zip (sin comprimir o deflate): [{ nombre, datos: Uint8Array }]
+async function leerZip(buf) {
+    const u = new Uint8Array(buf), dv = new DataView(u.buffer, u.byteOffset, u.byteLength);
+    let e = -1; for (let i = u.length - 22; i >= Math.max(0, u.length - 65557); i--) if (dv.getUint32(i, true) === 0x06054b50) { e = i; break; }
+    if (e < 0) throw new Error('no es un .zip válido');
+    const n = dv.getUint16(e + 10, true); let p = dv.getUint32(e + 16, true); const out = [];
+    for (let k = 0; k < n; k++) {
+        if (dv.getUint32(p, true) !== 0x02014b50) break;
+        const flag = dv.getUint16(p + 8, true), met = dv.getUint16(p + 10, true), cs = dv.getUint32(p + 20, true), ln = dv.getUint16(p + 28, true), lx = dv.getUint16(p + 30, true), lc = dv.getUint16(p + 32, true), off = dv.getUint32(p + 42, true);
+        const nb = u.subarray(p + 46, p + 46 + ln); let nombre;
+        try { nombre = new TextDecoder('utf-8', { fatal: !(flag & 0x800) ? true : false }).decode(nb); } catch (er) { nombre = new TextDecoder('latin1').decode(nb); }
+        p += 46 + ln + lx + lc;
+        if (nombre.endsWith('/')) continue;
+        const d0 = off + 30 + dv.getUint16(off + 26, true) + dv.getUint16(off + 28, true), raw = u.subarray(d0, d0 + cs);
+        let datos = null;
+        if (met === 0) datos = raw;
+        else if (met === 8 && typeof DecompressionStream !== 'undefined') { try { datos = new Uint8Array(await new Response(new Blob([raw]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer()); } catch (er) { datos = null; } }
+        out.push({ nombre, datos });
+    }
+    return out;
+}
+const txtDe = u => new TextDecoder('utf-8').decode(u);
+async function leerArchivosImp(files) {
+    const fuentes = [], avisos = [];
+    for (const f of files) {
+        const nom = f.name || 'archivo';
+        try {
+            if (/\.zip$/i.test(nom)) {
+                const E = (await leerZip(await f.arrayBuffer())).filter(x => /\.csv$/i.test(x.nombre));
+                // de cada carpeta (tarea): la corrección (con los criterios); si no hay, la hoja de Aules rellenada
+                const porDir = new Map();
+                E.forEach(x => { const dir = x.nombre.includes('/') ? x.nombre.replace(/\/[^/]*$/, '') : ''; if (!porDir.has(dir)) porDir.set(dir, []); porDir.get(dir).push(x); });
+                porDir.forEach((L2, dir) => {
+                    const orden = L2.slice().sort((a, b) => (/correcci/i.test(b.nombre) ? 1 : 0) - (/correcci/i.test(a.nombre) ? 1 : 0));
+                    let usado = false;
+                    for (const x of orden) {
+                        if (!x.datos) { avisos.push(`${x.nombre}: no se ha podido descomprimir`); continue; }
+                        const r = fuentesDeCSV(txtDe(x.datos), x.nombre, dir ? dir.replace(/^.*\//, '') : '');
+                        if (r.fuentes) { if (dir && usado) continue; r.fuentes.forEach(s => { s.archivo = `${nom} › ${x.nombre}`; fuentes.push(s); }); usado = !!dir; }
+                    }
+                });
+            } else if (/\.json$/i.test(nom)) {
+                const d = JSON.parse(await f.text());
+                if (d && d.tipo === 'libro-calificaciones') { avisos.push(`${nom}: es un libro de calificaciones: ábrelo con 📂 Abrir`); continue; }
+                avisos.push(`${nom}: no es un archivo de notas`);
+            } else {
+                const r = fuentesDeCSV(await f.text(), nom, '');
+                if (r.error) avisos.push(`${nom}: ${r.error}`); else r.fuentes.forEach(s => { s.archivo = nom; fuentes.push(s); });
+            }
+        } catch (er) { avisos.push(`${nom}: ${er.message}`); }
+    }
+    return { fuentes, avisos };
+}
+// Casar un nombre importado con la clase: igual (sin tildes, en cualquier orden) o, si no, el que comparta más palabras (¿?)
+function casarAlumno(nom) {
+    const k = claveNom(nom), t = new Set(k.split(' '));
+    const igual = L.alumnos.find(a => claveNom(a.nombre) === k); if (igual) return { id: igual.id, seguro: true };
+    let mejor = null, m = 0, empate = false;
+    L.alumnos.forEach(a => { const c = claveNom(a.nombre).split(' ').filter(x => t.has(x) && x.length > 2).length; if (c > m) { m = c; mejor = a; empate = false; } else if (c === m && c) empate = true; });
+    if (mejor && m >= 2 && !empate) return { id: mejor.id, seguro: false };
+    return { id: null, seguro: false };
+}
+let IMP = null;   // { fuentes, avisos, casa: Map(nombreImportado → id | 'nuevo' | 'no') }
+function abrirImportar() {
+    IMP = { fuentes: [], avisos: [] };
+    pintarImp(); $('ovImp').classList.add('visible');
+}
+function pintarImp() {
+    const c = $('impCuerpo'), ev = evAct() || L.evals[0];
+    if (!IMP.fuentes.length) {
+        c.innerHTML = `<div class="zona-arr" id="impZona">Arrastra aquí los archivos o <button class="btn" id="impElegir">📂 Elige los archivos…</button><input type="file" id="impF" multiple accept=".csv,.zip,text/csv,application/zip" hidden>
+          <p class="nota-p" style="margin-bottom:0">Del Corrector: la <b>corrección de un ejercicio</b> («… - corrección.csv», también con variantes), la <b>hoja de calificaciones de Aules</b> rellenada («… - con notas.csv»), la <b>revisión por alumno</b> de la batería (su ⬇ CSV) o el zip <b>⬇ Descarga CSV Correcciones</b> de la batería entero.</p></div>
+          ${IMP.avisos.length ? `<p class="estado-dud">${IMP.avisos.map(esc).join('<br>')}</p>` : ''}`;
+        $('impElegir').onclick = () => $('impF').click();
+        $('impF').onchange = e => cargarImp([...e.target.files]);
+        const z = $('impZona'); z.ondragover = e => { e.preventDefault(); z.classList.add('sobre'); }; z.ondragleave = () => z.classList.remove('sobre');
+        z.ondrop = e => { e.preventDefault(); z.classList.remove('sobre'); cargarImp([...e.dataTransfer.files]); };
+        $('impOk').disabled = true; $('impPie').textContent = ''; return;
+    }
+    // los nombres importados y con quién casan
+    const noms = new Map(); IMP.fuentes.forEach(s => s.filas.forEach(r => { const k = claveNom(r.nombre); if (!noms.has(k)) noms.set(k, r.nombre); }));
+    if (!IMP.casa) { IMP.casa = new Map(); noms.forEach((nom, k) => { const r = casarAlumno(nom); IMP.casa.set(k, { id: r.id || 'nuevo', seguro: r.seguro, auto: r.id }); }); }
+    const opAl = sel => `<option value="nuevo" ${sel === 'nuevo' ? 'selected' : ''}>➕ alumno nuevo</option><option value="no" ${sel === 'no' ? 'selected' : ''}>— no importar</option>` + alumnosOrden().map(a => `<option value="${a.id}" ${sel === a.id ? 'selected' : ''}>${esc(a.nombre)}</option>`).join('');
+    const yaEn = (b, nom) => b && b.items.find(it => norm(it.nombre) === norm(nom));
+    c.innerHTML = `
+      <div class="rejilla">
+        <label class="campo"><span>A la evaluación</span><select id="impEv">${L.evals.map((e, i) => `<option value="${i}" ${e === ev ? 'selected' : ''}>${esc(e.nombre)}</option>`).join('')}</select></label>
+        <label class="campo"><span>Al bloque</span><select id="impBlo"></select></label>
+        <label class="campo" id="impNbCampo"><span>Nombre del bloque nuevo</span><input type="text" id="impNb" value="${esc(IMP.nb || sugerirBloque())}"></label>
+      </div>
+      <label><input type="checkbox" id="impCrit" ${IMP.crit ? 'checked' : ''}> Importar también los <b>criterios</b> de la corrección (geometría, lo pedido, seguridad… o los apartados de tu rúbrica), para verlos y cambiarlos (▸ en la columna)</label>
+      <h4>Ejercicios (${IMP.fuentes.length})</h4>
+      ${IMP.fuentes.map((s, i) => `<div class="fuente"><div class="tit"><input type="checkbox" data-fu="${i}" ${s.no ? '' : 'checked'}> <span class="tipo">${esc(s.tipo)}</span>
+          <input type="text" data-fn="${i}" value="${esc(s.nombre)}" style="min-width:220px" title="El nombre del ejercicio en el libro">
+          <label class="nota-p">peso <input type="number" data-fp="${i}" min="0" step="any" value="${s.peso}" style="width:58px"></label>
+          <span class="nota-p">${s.filas.filter(r => r.n !== null).length} notas de ${s.filas.length} · media ${nf(media(s.filas.map(r => r.n === null ? null : r.n / s.max * 10)))}${s.max !== 10 ? ` · sobre ${nf(s.max, 2)}` : ''}${s.criterios ? ` · criterios: ${esc(s.criterios.join(', '))}` : ''}</span>
+          <span class="nota-p estado-dud" data-ya="${i}"></span></div>
+          <div class="nota-p" title="${esc(s.archivo)}" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(s.archivo)}</div></div>`).join('')}
+      ${IMP.avisos.length ? `<p class="estado-dud">${IMP.avisos.map(esc).join('<br>')}</p>` : ''}
+      <h4>Alumnos (${noms.size})</h4>
+      <table class="lista"><tr><th>En el archivo</th><th>En la clase</th><th></th></tr>${[...noms].map(([k, nom]) => { const x = IMP.casa.get(k);
+        return `<tr><td>${esc(nom)}</td><td><select data-ca="${esc(k)}">${opAl(x.id)}</select></td><td class="${x.id === 'no' ? 'estado-no' : x.id === 'nuevo' ? 'estado-nuevo' : x.id === x.auto && x.seguro ? 'estado-ok' : 'estado-dud'}">${x.id === 'no' ? 'no se importa' : x.id === 'nuevo' ? 'nuevo' : x.id === x.auto && x.seguro ? '✔ el mismo' : '¿es el mismo? compruébalo'}</td></tr>`; }).join('')}</table>`;
+    const pintaBlo = () => {
+        const e = L.evals[+$('impEv').value];
+        $('impBlo').innerHTML = e.bloques.map((b, i) => `<option value="${i}">${esc(b.nombre)}</option>`).join('') + `<option value="nuevo">➕ bloque nuevo</option>`;
+        if (IMP.blo !== undefined && IMP.blo !== 'nuevo' && e.bloques[IMP.blo]) $('impBlo').value = IMP.blo; else $('impBlo').value = e.bloques.length && !IMP.bloNuevo ? '0' : 'nuevo';
+        $('impNbCampo').style.visibility = $('impBlo').value === 'nuevo' ? 'visible' : 'hidden';
+        const b = $('impBlo').value === 'nuevo' ? null : e.bloques[+$('impBlo').value];
+        c.querySelectorAll('[data-ya]').forEach(x => { const s = IMP.fuentes[+x.dataset.ya]; x.textContent = yaEn(b, s.nombre) ? '⟳ ya está en el bloque: se actualizan sus notas' : ''; });
+    };
+    $('impEv').onchange = () => { IMP.blo = undefined; pintaBlo(); };
+    $('impBlo').onchange = () => { IMP.blo = $('impBlo').value === 'nuevo' ? 'nuevo' : +$('impBlo').value; IMP.bloNuevo = IMP.blo === 'nuevo'; pintaBlo(); };
+    $('impNb').onchange = () => { IMP.nb = $('impNb').value; };
+    $('impCrit').onchange = () => { IMP.crit = $('impCrit').checked; };
+    c.querySelectorAll('[data-fu]').forEach(x => x.onchange = () => { IMP.fuentes[+x.dataset.fu].no = !x.checked; });
+    c.querySelectorAll('[data-fn]').forEach(x => x.onchange = () => { IMP.fuentes[+x.dataset.fn].nombre = x.value.trim() || IMP.fuentes[+x.dataset.fn].nombre; pintaBlo(); });
+    c.querySelectorAll('[data-fp]').forEach(x => x.onchange = () => { IMP.fuentes[+x.dataset.fp].peso = Math.max(0, num(x.value) ?? 1); });
+    c.querySelectorAll('[data-ca]').forEach(x => x.onchange = () => { IMP.casa.get(x.dataset.ca).id = x.value; pintarImp(); });
+    pintaBlo();
+    $('impOk').disabled = false;
+    const nuevos = [...IMP.casa.values()].filter(x => x.id === 'nuevo').length, dud = [...IMP.casa.values()].filter(x => x.id !== 'nuevo' && x.id !== 'no' && !(x.id === x.auto && x.seguro)).length;
+    $('impPie').textContent = `${nuevos ? nuevos + ' alumno(s) nuevo(s)' : 'Ningún alumno nuevo'}${dud ? ` · ${dud} por comprobar` : ''}`;
+}
+const media = v => { const x = v.filter(y => y !== null && y !== undefined); return x.length ? x.reduce((s, y) => s + y, 0) / x.length : null; };
+function sugerirBloque() {
+    if (!IMP.fuentes.length) return 'Ejercicios';
+    if (IMP.fuentes.length > 1) return IMP.fuentes[0].tipo.startsWith('Revisión') || IMP.fuentes.length > 2 ? 'Batería de ejercicios' : 'Ejercicios';
+    return IMP.fuentes[0].nombre;
+}
+async function cargarImp(files) {
+    if (!files.length) return;
+    const r = await leerArchivosImp(files);
+    IMP.fuentes.push(...r.fuentes); IMP.avisos.push(...r.avisos); IMP.casa = null; IMP.crit = IMP.crit ?? false;
+    pintarImp();
+}
+function hacerImportar() {
+    const ev = L.evals[+$('impEv').value];
+    let b = $('impBlo').value === 'nuevo' ? null : ev.bloques[+$('impBlo').value];
+    if (!b) { b = bloqueNuevo(($('impNb').value || 'Ejercicios').trim(), ev.bloques.length ? 0 : 100); ev.bloques.push(b); }
+    const crit = $('impCrit').checked;
+    // los alumnos nuevos
+    const ids = new Map();
+    IMP.casa.forEach((x, k) => {
+        if (x.id === 'no') return;
+        if (x.id === 'nuevo') { const nom = IMP.fuentes.flatMap(s => s.filas).find(r => claveNom(r.nombre) === k).nombre; const a = { id: uid(), nombre: bonito(nom) }; L.alumnos.push(a); ids.set(k, a.id); }
+        else ids.set(k, x.id);
+    });
+    let nI = 0, nN = 0, nAct = 0;
+    IMP.fuentes.filter(s => !s.no).forEach(s => {
+        let it = b.items.find(x => norm(x.nombre) === norm(s.nombre));
+        if (it) nAct++; else { it = itemNuevo(s.nombre, { peso: s.peso, max: s.max, fuente: s.tipo }); b.items.push(it); nI++; }
+        it.fuente = s.tipo; it.max = s.max;
+        if (crit && s.criterios) { it.criterios = s.criterios.slice(); it.sumaCrit = !!s.sumaCrit; } else if (!crit) { /* solo la nota */ }
+        s.filas.forEach(r => { const id = ids.get(claveNom(r.nombre)); if (!id) return;
+            if (r.n === null && !(crit && r.c)) { if (it.notas[id] && !it.notas[id].m) delete it.notas[id]; return; }
+            const x = { n: r.n, o: r.n }; if (crit && it.criterios && r.c) x.c = r.c.slice(); it.notas[id] = x; nN++; });
+    });
+    $('ovImp').classList.remove('visible');
+    evSel = L.evals.indexOf(ev); cambio();
+    snack(`Importado: ${nI} ejercicio(s) nuevo(s)${nAct ? `, ${nAct} actualizado(s)` : ''}, ${nN} nota(s), en «${b.nombre}» de ${ev.nombre}`);
+}
+// «MARÍA JOSÉ ORTÍZ PEÑA» → «María José Ortíz Peña»
+function bonito(nom) {
+    if (nom !== nom.toUpperCase()) return nom.trim();
+    return nom.toLowerCase().replace(/(^|[\s'-])(\p{L})/gu, (m, a, b) => a + b.toUpperCase()).replace(/\b(De|Del|La|Las|Los|Y|I)\b/g, (m, x, i) => i ? m.toLowerCase() : m).trim();
+}
+
+// ════════════════ Guardar, abrir, CSV, imprimir ════════════════
+function descargar(texto, nombre, tipo) { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([texto], { type: tipo })); a.download = nombre; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); }
+const fechaHoy = () => new Date().toLocaleDateString('es-ES').replace(/\//g, '-');
+const nomArch = t => String(t || '').replace(/[\\/:*?"<>|·]+/g, ' ').replace(/\s+/g, ' ').trim();
+function guardarArchivo() { descargar(JSON.stringify(L, null, 1), nomArch(`Libro de calificaciones ${L.grupo || ''} ${fechaHoy()}`) + '.json', 'application/json'); snack('Libro guardado (el navegador recuerda además el último)'); }
+async function abrirArchivo(f) {
+    try { const d = JSON.parse(await f.text()); if (!d || d.tipo !== 'libro-calificaciones') { snack('No es un libro de calificaciones'); return; }
+        const hacer = () => { L = arreglar(d); evSel = 0; abiertos.clear(); cambio(); snack(`Abierto: ${f.name}`); };
+        if (L.alumnos.length || L.evals.some(e => e.bloques.length)) confirmar('¿Abrir el libro? El que tienes ahora se sustituye (guárdalo antes con 💾 si lo quieres).', 'Abrir', hacer); else hacer();
+    } catch (e) { snack('No se ha podido abrir: ' + e.message); }
+}
+function csvEval() {
+    const c = x => '"' + String(x ?? '').replace(/"/g, '""') + '"', d = x => x === null || x === undefined ? '' : nf(x, 2), A = alumnosOrden();
+    let filas;
+    if (evSel === L.evals.length) {
+        filas = [['Alumno/a', ...L.evals.flatMap(e => [e.nombre, e.nombre + ' (boletín)']), 'Final', 'Final (boletín)', 'Comentario final'],
+            ...A.map(a => [a.nombre, ...L.evals.flatMap(e => { const n = notaEval(e, a.id).n; return [d(n), d(boletin(n))]; }), d(notaFinal(a.id)), d(boletin(notaFinal(a.id))), L.final.comentarios[a.id] || ''])];
+    } else {
+        const ev = evAct(), its = ev.bloques.flatMap(b => b.items.map(it => ({ b, it })));
+        filas = [['Alumno/a', ...its.map(x => `${x.b.nombre} · ${x.it.nombre}`), ...ev.bloques.map(b => `${b.nombre} (media)`), 'Nota', 'Boletín', 'Comentario'],
+            ['(peso)', ...its.map(x => d(x.it.peso)), ...ev.bloques.map(b => d(b.peso)), '', '', ''],
+            ...A.map(a => { const r = notaEval(ev, a.id); return [a.nombre, ...its.map(x => d(notaIt(x.it, a.id))), ...ev.bloques.map(b => d(mediaBloque(ev, b, a.id))), d(r.n), d(boletin(r.n)), ev.comentarios[a.id] || '']; })];
+    }
+    descargar('﻿' + filas.map(f => f.map(c).join(';')).join('\r\n'), nomArch(`${evSel === L.evals.length ? 'Final del curso' : evAct().nombre} ${L.grupo || ''}`) + '.csv', 'text/csv;charset=utf-8');
+}
+const CSS_IMP = `body { font-family: 'Segoe UI', Arial, sans-serif; color: #1d2733; margin: 0; font-size: 10pt; } @page { size: A4; margin: 14mm; }
+  h1 { font-size: 15pt; margin: 0 0 2mm; } h2 { font-size: 12pt; margin: 4mm 0 2mm; } h4 { font-size: 11pt; margin: 5mm 0 2mm; } .sub { color: #5b6878; font-size: 9pt; margin-bottom: 4mm; }
+  table { border-collapse: collapse; width: 100%; } th, td { border: 1px solid #c9d2dc; padding: 1.2mm 2mm; text-align: center; } th { background: #eef2f6; font-size: 8.5pt; } td:first-child, th:first-child { text-align: left; }
+  .ap { color: #1e7a48; font-weight: 700; } .su { color: #b52b2b; font-weight: 700; } section { page-break-after: always; } section:last-child { page-break-after: auto; }
+  .gran { font-size: 16pt; font-weight: 700; } .caja { border: 1px solid #c9d2dc; border-radius: 2mm; padding: 3mm 4mm; margin-top: 4mm; } .com-imp { margin: 2mm 0; }
+  .lista td:nth-child(2), .lista td:nth-child(3) { width: 22mm; }`;
+function abrirImpresion(titulo, cuerpo, apaisado) {
+    const w = window.open('', '_blank'); if (!w) { snack('El navegador ha bloqueado la ventana de impresión: permite las ventanas emergentes'); return; }
+    w.document.open(); w.document.write(`<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>${esc(titulo)}</title><style>${CSS_IMP}${apaisado ? '@page { size: A4 landscape; }' : ''}</style></head><body>${cuerpo}<script>window.onload = () => setTimeout(() => window.print(), 300);<\/script></body></html>`); w.document.close();
+}
+const cls2 = n => n === null || n === undefined ? '' : n >= (L.opc.aprobado ?? 5) ? 'ap' : 'su';
+function imprimirActa() {
+    const A = alumnosOrden(), fin = evSel === L.evals.length;
+    const cab = `<h1>${fin ? 'Final del curso' : esc(evAct().nombre)}</h1><div class="sub">${[L.grupo, L.curso, new Date().toLocaleDateString('es-ES')].filter(Boolean).map(esc).join(' · ')}</div>`;
+    let t;
+    if (fin) t = `<table><tr><th>Alumno/a</th>${L.evals.map(e => `<th>${esc(e.nombre)}</th>`).join('')}<th>Final</th><th>Boletín</th></tr>${A.map(a => `<tr><td>${esc(a.nombre)}</td>${L.evals.map(e => `<td>${nf(notaEval(e, a.id).n, 2)}</td>`).join('')}<td>${nf(notaFinal(a.id), 2)}</td><td class="${cls2(boletin(notaFinal(a.id)))}">${boletin(notaFinal(a.id)) === null ? '' : nf(boletin(notaFinal(a.id)))}</td></tr>`).join('')}</table>`;
+    else { const ev = evAct(); t = `<table><tr><th>Alumno/a</th>${ev.bloques.map(b => `<th>${esc(b.nombre)}<br><small>${sumaPesos(ev) ? nf(b.peso / sumaPesos(ev) * 100, 0) + ' %' : ''}</small></th>`).join('')}<th>Nota</th><th>Boletín</th></tr>${A.map(a => { const r = notaEval(ev, a.id), bo = boletin(r.n); return `<tr><td>${esc(a.nombre)}</td>${ev.bloques.map(b => `<td>${nf(mediaBloque(ev, b, a.id), 2)}</td>`).join('')}<td>${r.bajo.length ? '⚠ ' : ''}${nf(r.n, 2)}</td><td class="${cls2(bo)}">${bo === null ? '' : nf(bo)}</td></tr>`; }).join('')}</table>
+        ${A.some(a => notaEval(ev, a.id).bajo.length) ? '<p class="sub">⚠ No llega al mínimo de algún bloque.</p>' : ''}`; }
+    abrirImpresion(`Acta — ${fin ? 'Final del curso' : evAct().nombre}`, cab + t, !fin && evAct().bloques.length > 5);
+}
+function imprimirBoletines(ids) {
+    const A = alumnosOrden().filter(a => !ids || ids.includes(a.id)); if (!A.length) { snack('No hay alumnos'); return; }
+    const secs = A.map(a => {
+        const f = notaFinal(a.id), varias = L.evals.filter(e => e.bloques.some(b => b.items.length)).length > 1;
+        return `<section><h1>${esc(a.nombre)}</h1><div class="sub">${[L.grupo, L.curso, new Date().toLocaleDateString('es-ES')].filter(Boolean).map(esc).join(' · ')}</div>
+          ${htmlFichaAlumno(a.id, true).replace(/class="lista ficha-t"/g, 'class="lista"')}
+          ${varias ? `<div class="caja">Final del curso: <span class="gran ${cls2(f)}">${nf(f, 2)}</span>${boletin(f) !== null ? ` · boletín <span class="gran ${cls2(boletin(f))}">${nf(boletin(f))}</span>` : ''}${L.final.comentarios[a.id] ? `<p class="com-imp"><b>Comentario:</b> ${esc(L.final.comentarios[a.id])}</p>` : ''}</div>` : ''}</section>`;
+    }).join('');
+    abrirImpresion(A.length === 1 ? `Boletín — ${A[0].nombre}` : `Boletines — ${L.grupo || 'la clase'}`, secs);
+}
+
+// ════════════════ Arranque ════════════════
+function tema(t) { document.documentElement.dataset.tema = t; try { localStorage.setItem('libro_tema', t); } catch (e) {} }
+try { const t = localStorage.getItem('libro_tema'); if (t) document.documentElement.dataset.tema = t; } catch (e) {}
+$('bTema').onclick = () => tema(document.documentElement.dataset.tema === 'oscuro' ? 'claro' : 'oscuro');
+$('bImportar').onclick = abrirImportar;
+$('impOk').onclick = hacerImportar;
+$('ovImp').querySelectorAll('[data-cerrar]').forEach(b => b.onclick = () => $('ovImp').classList.remove('visible'));
+$('bAlumnos').onclick = dlgAlumnos;
+$('bGuardar').onclick = guardarArchivo;
+$('bAbrir').onclick = () => $('fAbrir').click();
+$('fAbrir').onchange = e => { if (e.target.files[0]) abrirArchivo(e.target.files[0]); e.target.value = ''; };
+$('bCSV').onclick = csvEval;
+$('bActa').onclick = imprimirActa;
+$('bBoletines').onclick = () => imprimirBoletines(null);
+$('bNuevo').onclick = () => confirmar('¿Empezar un libro nuevo, vacío? El de ahora se pierde si no lo has guardado con 💾.', 'Libro nuevo', () => { L = libroNuevo(); evSel = 0; abiertos.clear(); cambio(); });
+$('grupo').onchange = e => { L.grupo = e.target.value.trim(); guardarPronto(); };
+$('curso').onchange = e => { L.curso = e.target.value.trim(); guardarPronto(); };
+// arrastrar a la ventana: un libro (.json) se abre; CSV y zip, a importar
+document.addEventListener('dragover', e => e.preventDefault());
+document.addEventListener('drop', e => {
+    if (e.target.closest && e.target.closest('#impZona')) return;
+    e.preventDefault(); const F = [...e.dataTransfer.files]; if (!F.length) return;
+    const j = F.find(f => /\.json$/i.test(f.name));
+    if (j && F.length === 1) { abrirArchivo(j); return; }
+    if (!$('ovImp').classList.contains('visible')) abrirImportar();
+    cargarImp(F.filter(f => !/\.json$/i.test(f.name)));
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { $('ovDlg').classList.remove('visible'); $('ovImp').classList.remove('visible'); } });
+window.addEventListener('beforeunload', () => { clearTimeout(tGuardar); guardarLocal(); });
+L = cargarLocal() || libroNuevo();
+pintar();
+</script>
+</body>
+</html>
