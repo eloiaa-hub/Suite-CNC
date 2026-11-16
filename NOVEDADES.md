@@ -4,6 +4,11 @@ La versión de la suite es **año.mes** (por ejemplo, 2026.10). Cada programa co
 
 ## Suite CNC 2026.11
 
+### Calcador v133 / Corrector v78: devoluciones a Aules y lo que repite cada alumno
+- **⬆ Devoluciones para Aules**: un zip con la devolución de cada alumno (una página HTML), con su número de participante en el nombre, para subirlo de una vez en la tarea («Subir varios archivos de retroalimentación en un zip»). En la batería, un zip con un zip por tarea.
+- **Con la solución**: una casilla para que la devolución lleve o no el programa correcto (se recuerda; vale para la corrección masiva, la batería y la revisión).
+- **🔁 Lo que repite** cada alumno en las tareas de la batería: en su ficha de la revisión, en su hoja resumen impresa y en el CSV.
+
 ### Calcador v132 / Corrector v77: devoluciones más completas
 - **🖨 Devoluciones**: detrás del programa del alumno, **cómo se ha evaluado** (lo que pide la hoja, la tolerancia y los criterios de la nota) y el **programa correcto** (el de «📋 Solución», en las coordenadas que pide la hoja; con variantes, el de la variante de cada alumno).
 - **El nombre del PDF**: la devolución (o el informe) de un solo alumno se llama con su nombre y su ejercicio: «Devolución — Nombre — Ejercicio … (variante A) · Ejercicio nº 01NOV-A». Con variantes, cada hoja lleva el título de la variante del alumno (antes, todas el de la variante abierta); con varios alumnos de variantes distintas, el PDF lleva el del ejercicio sin la variante.
