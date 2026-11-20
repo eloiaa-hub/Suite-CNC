@@ -17,7 +17,8 @@ let fallos = 0; const ok = (c, m) => { console.log((c ? '✓ ' : '✗ ') + m); i
             `${prog}: avisa de %, O1000, G21, G54 y G43`);
         ok(tiene(/D1: en clase no se escribe D/) && tiene(/T1 M6: en clase, el cambio de herramienta se escribe así: T101 M06/) && tiene(/M3 S12000: en clase se escribe primero la velocidad/) && tiene(/M08 \(refrigerante\)/) && tiene(/M09/),
             `${prog}: avisa de D1, T1 M6, M3 S12000, M08 y M09`);
-        ok(!tiene(/G17|G90|G01|G0 |M05|M30/), `${prog}: no avisa de G17, G90, G01, M05 ni M30 (dados en clase)`);
+        ok(!tiene(/G90|G01|G0 |M05|M30/), `${prog}: no avisa de G90, G01, M05 ni M30 (dados en clase)`);
+        ok(tiene(/G17 \(plano XY/), `${prog}: avisa de G17 (no se da en clase)`);
         ok(A.filter(m => /^%|«%»/.test(m.replace(/^[^:]*: /, ''))).length === 1 && tiene(/\(y 1 vez más\)/), `${prog}: un aviso por código, con las veces que se repite`);
         const bien = await pg.evaluate(t => avisosClase(t).length, nc);
         ok(bien === 0, `${prog}: el programa de la solución, sin avisos (${bien})`);

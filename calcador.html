@@ -697,7 +697,7 @@
 <body>
 <div class="app-window">
     <header class="top-bar">
-        <a href="index.html" class="ir-portada" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a><span class="top-bar-title">⬡ Calcador de contornos — Por Eloi A.A.<span class="ver-suite" title="Versión del programa" style="font-size:11px;font-weight:600;padding:1px 7px;margin-left:8px;border-radius:9px;background:rgba(0,90,156,.12);color:#005A9C;vertical-align:middle">v137</span></span>
+        <a href="index.html" class="ir-portada" title="Portada de las herramientas" style="text-decoration:none;font-size:15px;margin-right:6px;color:inherit;opacity:.75">⌂</a><span class="top-bar-title">⬡ Calcador de contornos — Por Eloi A.A.<span class="ver-suite" title="Versión del programa" style="font-size:11px;font-weight:600;padding:1px 7px;margin-left:8px;border-radius:9px;background:rgba(0,90,156,.12);color:#005A9C;vertical-align:middle">v138</span></span>
         <div class="top-bar-right">
             <input class="project-name" id="projectName" type="text" value="calco_sin_nombre" placeholder="Nombre del proyecto">
             <div class="c2-archivo"><button class="btn-manual" onclick="nuevo()" title="Empieza de cero (se puede deshacer)">🗋 Nuevo</button><button class="btn-manual" onclick="document.getElementById('fileJSON').click()" title="Abre un proyecto .json del Calcador o del Corrector">📂 Abrir</button><button class="btn-manual" onclick="exportarJSON()" title="Guarda el proyecto en un archivo JSON: lo abren el Calcador, el Corrector, el Tutor y el Simulador (como plano del ejercicio)">💾 Guardar</button><button class="btn-manual" onclick="abrirBiblioteca()" title="Tus ejercicios: buscar, abrir e imprimir sus hojas">🗂 Biblioteca</button></div>
@@ -13107,13 +13107,15 @@ elegirVariantesMasiva = async function () {
 // ── Avisar de los códigos que no se han dado en clase (no baja la nota) ──
 // G y M que no están en la lista de clase (configurable, se guarda en el navegador), el número de programa (O1000) y «%»,
 // la D (en clase no se escribe), la herramienta con otro formato (T1, T1 M6 → T101 M06) y el husillo al revés (M03 S12000 → S12000 M03).
-const CODIGOS_CLASE_DEF = 'G0 G1 G2 G3 G15 G16 G17 G18 G19 G40 G41 G42 G70 G71 G73 G80 G81 G82 G83 G90 G91 G98 G99 M2 M3 M4 M5 M6 M30';
+const CODIGOS_CLASE_DEF = 'G0 G1 G2 G3 G15 G16 G18 G19 G40 G41 G42 G70 G71 G73 G80 G81 G82 G83 G90 G91 G98 G99 M2 M3 M4 M5 M6 M30';
+// la lista de partida de antes (con G17): si es la que hay guardada en el navegador, pasa a la nueva (sin G17: no se da en clase)
+const CODIGOS_CLASE_ANT = ['G0 G1 G2 G3 G15 G16 G17 G18 G19 G40 G41 G42 G70 G71 G73 G80 G81 G82 G83 G90 G91 G98 G99 M2 M3 M4 M5 M6 M30'];
 const CODIGOS_CLASE_CLAVE = 'calcador_codigos_clase';
-const cfgClase = (() => { try { const v = JSON.parse(localStorage.getItem(CODIGOS_CLASE_CLAVE) || 'null'); if (v && typeof v === 'object') return { activo: v.activo !== false, codigos: String(v.codigos || CODIGOS_CLASE_DEF) }; } catch (e) {} return { activo: true, codigos: CODIGOS_CLASE_DEF }; })();
+const cfgClase = (() => { try { const v = JSON.parse(localStorage.getItem(CODIGOS_CLASE_CLAVE) || 'null'); if (v && typeof v === 'object') return { activo: v.activo !== false, codigos: !v.codigos || CODIGOS_CLASE_ANT.includes(String(v.codigos).trim()) ? CODIGOS_CLASE_DEF : String(v.codigos) }; } catch (e) {} return { activo: true, codigos: CODIGOS_CLASE_DEF }; })();
 function guardarCfgClase() { try { localStorage.setItem(CODIGOS_CLASE_CLAVE, JSON.stringify(cfgClase)); } catch (e) {} }
 const normCod = w => { const m = /^([GM])0*(\d+)(?:\.(\d+))?$/i.exec(w); return m ? m[1].toUpperCase() + m[2] + (m[3] && +m[3] ? '.' + m[3] : '') : w.toUpperCase(); };
 const codigosClase = () => new Set(String(cfgClase.codigos).split(/[\s,;]+/).filter(Boolean).map(normCod));
-const QUE_ES = { G4: 'pausa', G20: 'pulgadas (en clase, G70)', G21: 'milímetros (en clase, G71)', G28: 'volver al punto de referencia', G43: 'compensación de longitud de la herramienta', G44: 'compensación de longitud',
+const QUE_ES = { G4: 'pausa', G17: 'plano XY; la máquina ya trabaja en XY', G20: 'pulgadas (en clase, G70)', G21: 'milímetros (en clase, G71)', G28: 'volver al punto de referencia', G43: 'compensación de longitud de la herramienta', G44: 'compensación de longitud',
     G49: 'anular la compensación de longitud', G53: 'coordenadas de máquina', G54: 'origen de pieza (en clase, el cero pieza del plano)', G55: 'origen de pieza', G56: 'origen de pieza', G57: 'origen de pieza', G92: 'cambiar el origen',
     G94: 'avance por minuto', G95: 'avance por vuelta', G61: 'parada exacta', G64: 'modo continuo', G68: 'giro de coordenadas', G69: 'anular el giro', M0: 'parada', M1: 'parada opcional', M7: 'refrigerante', M8: 'refrigerante', M9: 'parar el refrigerante', M19: 'orientar el husillo', M98: 'llamada a subprograma', M99: 'fin de subprograma' };
 function avisosClase(texto) {
