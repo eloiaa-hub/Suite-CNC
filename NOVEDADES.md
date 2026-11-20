@@ -4,8 +4,8 @@ La versión de la suite es **año.mes** (por ejemplo, 2026.10). Cada programa co
 
 ## Suite CNC 2026.11
 
-### Calcador v138 / Corrector v83
-- **G17** ya no está entre los códigos dados en clase: se avisa de él (sin bajar la nota). Si en el navegador estaba guardada la lista de partida de antes, pasa sola a la nueva; una lista cambiada a mano se respeta.
+### Calcador v139 / Corrector v84
+- **G17, G18 y G19** (los planos) ya no están entre los códigos dados en clase (la fresa solo corta en XY): se avisa de ellos (sin bajar la nota). Si en el navegador estaba guardada la lista de partida de antes, pasa sola a la nueva; una lista cambiada a mano se respeta.
 
 ### Calcador v137 / Corrector v82: 🔍 Estilo distinto al de clase
 - En la corrección masiva (y en la batería), **🔍** junto a los programas que no están escritos como en clase: comentarios en inglés, la cabecera «de seguridad» de los manuales, X10.000, caracteres copiados de un chat, los comentarios de la solución del Calcador o el programa que genera, varios códigos no dados en clase.

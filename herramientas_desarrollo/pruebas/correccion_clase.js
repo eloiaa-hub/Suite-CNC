@@ -19,6 +19,8 @@ let fallos = 0; const ok = (c, m) => { console.log((c ? '✓ ' : '✗ ') + m); i
             `${prog}: avisa de D1, T1 M6, M3 S12000, M08 y M09`);
         ok(!tiene(/G90|G01|G0 |M05|M30/), `${prog}: no avisa de G90, G01, M05 ni M30 (dados en clase)`);
         ok(tiene(/G17 \(plano XY/), `${prog}: avisa de G17 (no se da en clase)`);
+        { const pl = await pg.evaluate(() => avisosClase('G71 G90\nG18\nG19\nT101 M06\nS12000 M03').map(h => h.msg).join(' | '));
+          ok(/G18 \(plano XZ/.test(pl) && /G19 \(plano YZ/.test(pl), `${prog}: y de G18 y G19`); }
         ok(A.filter(m => /^%|«%»/.test(m.replace(/^[^:]*: /, ''))).length === 1 && tiene(/\(y 1 vez más\)/), `${prog}: un aviso por código, con las veces que se repite`);
         const bien = await pg.evaluate(t => avisosClase(t).length, nc);
         ok(bien === 0, `${prog}: el programa de la solución, sin avisos (${bien})`);
