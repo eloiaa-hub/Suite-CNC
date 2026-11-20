@@ -4,6 +4,10 @@ La versión de la suite es **año.mes** (por ejemplo, 2026.10). Cada programa co
 
 ## Suite CNC 2026.11
 
+### Calcador v137 / Corrector v82: 🔍 Estilo distinto al de clase
+- En la corrección masiva (y en la batería), **🔍** junto a los programas que no están escritos como en clase: comentarios en inglés, la cabecera «de seguridad» de los manuales, X10.000, caracteres copiados de un chat, los comentarios de la solución del Calcador o el programa que genera, varios códigos no dados en clase.
+- Son **indicios, no pruebas**, y **no cambian la nota**: salen en la corrección, en el informe del profesor y en el CSV, no en la devolución. Una casilla en las opciones lo quita.
+
 ### Libro de calificaciones v7
 - **🖨 Acta y boletines** con el color de entorno: cabecera de color, **filas en dos colores alternos** y, en los boletines, cada bloque destacado.
 

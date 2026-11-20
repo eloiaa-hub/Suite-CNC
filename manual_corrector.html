@@ -234,6 +234,18 @@ ul, ol { padding-left: 6mm; } li { margin: 1mm 0; }
 <li>Como el resto de informes, se abre la ventana de impresión: «Guardar como PDF» para tenerlo en un archivo.</li>
 </ul>
 <div class="nota consejo"><strong>💡 Si una tarea encaja igual con dos ejercicios</strong> (por ejemplo, «ISO GEO 02b.json» y otro de la biblioteca cuyo título también es «ISO GEO 02b»), gana el que encaja por el <strong>nombre del archivo</strong>, y la fila avisa: «⚠️ También encaja con: … Comprueba que es el bueno». Se puede cambiar a mano en el desplegable.</div>
+<h3>🔍 Estilo distinto al de clase</h3>
+<p>Ningún programa puede demostrar que un G-code lo ha hecho una IA (o un compañero, o un manual). Pero un programa que <strong>no está escrito como en clase</strong> deja indicios. Con la casilla <strong>🔍 Estilo distinto al de clase</strong> marcada (en las opciones de la corrección masiva; viene marcada), el Corrector los busca en cada programa:</p>
+<ul>
+<li><strong>Comentarios en inglés</strong> (<em>tool change</em>, <em>spindle on</em>, <em>end of program</em>…).</li>
+<li><strong>La cabecera «de seguridad» de los manuales</strong>, con códigos que no se han dado en clase (<code>G21 G17 G40 G49 G80 G90</code>, <code>G54</code>…).</li>
+<li><strong>Números con decimales que sobran</strong>: <code>X10.000</code>, <code>F300.0</code> (en clase, <code>X10</code>).</li>
+<li><strong>Caracteres copiados de un chat o de un documento</strong>: <code>```</code>, <code>**</code>, rayas largas (—), comillas tipográficas, emojis…</li>
+<li><strong>Los comentarios de «📋 Solución» del Calcador o del Tutor</strong> («P1 → P2: recta», «baja despacio a la profundidad»…), o <strong>el programa que genera el Calcador</strong> (con su cabecera).</li>
+<li><strong>Varios códigos o formatos no dados en clase</strong> a la vez (<code>%</code>, <code>O1000</code>, <code>T1 M6</code>, <code>M3 S12000</code>, <code>G41</code> sin haberlo dado…).</li>
+</ul>
+<p>Los programas con indicios llevan <strong>🔍</strong> y su número junto al nombre (al pasar el ratón, cuáles); el resumen de la clase dice cuántos hay y, al pulsarlo, una ventana con los indicios de cada alumno. Salen también en su <strong>corrección</strong>, en el <strong>informe del profesor</strong> y en el <strong>⬇ CSV</strong> (columna «Estilo distinto al de clase»), pero <strong>no en la devolución</strong> del alumno.</p>
+<div class="nota atencion"><strong>⚠️ Son indicios, no pruebas, y no cambian la nota.</strong> Un alumno puede escribir así porque lo ha visto en un manual o en otra máquina. Sirven para saber a quién preguntarle por su programa: «¿por qué aquí G3 y no G2?», «¿de dónde sale este J-10?», «cambia el radio a 15». Quien lo ha hecho responde enseguida.</div>
 <h3>⬆ Subir a Aules las notas y las devoluciones</h3>
 <p>Lo mismo para un ejercicio (la corrección masiva) que para una batería. Antes de la primera vez, en la configuración de <strong>cada</strong> tarea de Aules, en «Tipos de retroalimentación», activa la <em>Hoja de calificaciones fuera de línea</em> (para las notas) y los <em>Archivos de retroalimentación</em> (para las devoluciones).</p>
 <h4>Las notas: la hoja de calificaciones</h4>
