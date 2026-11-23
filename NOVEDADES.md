@@ -4,6 +4,13 @@ La versión de la suite es **año.mes** (por ejemplo, 2026.10). Cada programa co
 
 ## Suite CNC 2026.11
 
+### Libro de calificaciones v8: grupos y asignaturas
+- **Un solo libro para todo el curso**: arriba, las pestañas de los **grupos** (2CFS7, 1CFS7…) y, debajo, las de sus **asignaturas**. Cada grupo tiene **una sola lista de alumnos**, que vale para todas sus asignaturas; cada asignatura, sus evaluaciones, bloques, pesos, opciones y final.
+- **＋ Grupo** (con su primera asignatura y la lista de alumnos escrita o pegada), **＋ Asignatura** (vacía o **copiando la estructura de otra**: evaluaciones, bloques, pesos, mín./máx. y ejercicios, sin notas) y **✎** para cambiar el nombre o quitarlos.
+- **Notas a mano sin importar nada**: si el grupo no tiene alumnos, la lista se escribe (o se pega) en la misma página; después, ➕ Ejercicio a mano y las notas en las casillas.
+- Quitar o unir un alumno vale en todas las asignaturas del grupo. El acta, los boletines y el CSV llevan «grupo · asignatura». 📥 Importar dice en qué grupo y asignatura entran las notas.
+- **📂 Abrir** otro libro: **sustituir** el de ahora o **añadir sus grupos** (para juntar en uno los libros de cada grupo). Los libros de antes se abren como un grupo con una asignatura, sin perder nada.
+
 ### Calcador v139 / Corrector v84
 - **G17, G18 y G19** (los planos) ya no están entre los códigos dados en clase (la fresa solo corta en XY): se avisa de ellos (sin bajar la nota). Si en el navegador estaba guardada la lista de partida de antes, pasa sola a la nueva; una lista cambiada a mano se respeta.
 

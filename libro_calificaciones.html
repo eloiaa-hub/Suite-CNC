@@ -44,7 +44,15 @@
   .nota-p { font-size: 12px; color: var(--texto-sec); }
   input[type=text], input[type=number], select, textarea { background: var(--campo); border: 1px solid var(--borde); border-radius: 6px; padding: 4px 7px; }
   input[type=number] { width: 70px; }
-  .grupo-in { font-weight: 600; min-width: 280px; flex: 1; max-width: 520px; }
+  .clases .et { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--texto-sec); width: 82px; flex: none; }
+  .pills { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .pill { border: 1px solid var(--borde); background: var(--suave); border-radius: 16px; padding: 5px 14px; cursor: pointer; font-weight: 600; color: var(--texto); }
+  .pill:hover { border-color: var(--acento); color: var(--acento); }
+  .pill.activa { background: var(--acento); border-color: var(--acento); color: #fff; }
+  .pill .cnt { font-weight: 400; font-size: 11px; opacity: .75; margin-left: 4px; }
+  .pill.mas { background: transparent; border-style: dashed; color: var(--texto-sec); font-weight: 400; }
+  .pill.ed { padding: 5px 9px; background: transparent; }
+  .vacio textarea { display: block; margin: 12px auto 8px; width: min(420px, 100%); text-align: left; }
   /* pestañas */
   .pestanas { display: flex; gap: 4px; flex-wrap: wrap; align-items: flex-end; margin-bottom: -1px; position: relative; z-index: 1; }
   .pest { border: 1px solid var(--borde); border-bottom: none; background: var(--suave); border-radius: 8px 8px 0 0; padding: 7px 16px; cursor: pointer; font-weight: 600; color: var(--texto-sec); }
@@ -153,15 +161,15 @@
 <body>
 <div class="ventana">
 <div class="barra">
-  <h1><a class="casa" href="index.html" title="Portada de las herramientas">⌂</a> 📒 Libro de calificaciones — Por Eloi A.A. <span class="ver" title="Versión del programa">v7</span></h1>
+  <h1><a class="casa" href="index.html" title="Portada de las herramientas">⌂</a> 📒 Libro de calificaciones — Por Eloi A.A. <span class="ver" title="Versión del programa">v8</span></h1>
   <button class="btn pri" id="bImportar" title="Importar las notas de los CSV del Corrector: la corrección de un ejercicio (también con variantes), la hoja de calificaciones de Aules rellenada, la revisión por alumno de la batería o el zip «Descarga CSV Correcciones»">📥 Importar notas…</button>
-  <button class="btn" id="bAlumnos" title="La lista de la clase: añadir, renombrar, unir o quitar alumnos">👥 Alumnos</button>
+  <button class="btn" id="bAlumnos" title="La lista de alumnos del grupo abierto (vale para todas sus asignaturas): añadir, renombrar, unir o quitar">👥 Alumnos</button>
   <button class="btn" id="bGuardar" title="Guardar el libro en un archivo .json (el navegador recuerda además el último)">💾 Guardar</button>
-  <button class="btn" id="bAbrir" title="Abrir un libro guardado (.json)">📂 Abrir</button>
+  <button class="btn" id="bAbrir" title="Abrir un libro guardado (.json): en lugar del de ahora o sumando sus grupos a este">📂 Abrir</button>
   <button class="btn" id="bCSV" title="La evaluación abierta (o el final del curso) en CSV, para la hoja de cálculo">⬇ CSV</button>
   <button class="btn" id="bActa" title="Imprimir la tabla de la evaluación abierta">🖨 Acta</button>
   <button class="btn" id="bBoletines" title="Imprimir una hoja por alumno: sus notas por bloque y ejercicio, la nota de la evaluación y tu comentario">🖨 Boletines</button>
-  <button class="btn" id="bNuevo" title="Empezar un libro nuevo (vacío)">🗋 Nuevo</button>
+  <button class="btn" id="bNuevo" title="Empezar un libro nuevo (vacío, sin grupos)">🗋 Nuevo</button>
   <a class="btn" href="manual_libro_calificaciones.html" target="_blank" title="El manual del Libro de calificaciones" style="text-decoration:none">❓ Manual</a>
   <button class="btn" id="bAjustes" title="Apariencia: modo oscuro y color de entorno">⚙</button>
   <div class="ajustes" id="ajustes">
@@ -175,11 +183,10 @@
 
 <div class="envoltura">
   <div class="caja">
-    <div class="fila">
-      <input type="text" id="grupo" class="grupo-in" placeholder="Grupo y módulo (p. ej. 2CFS7 · Automatització en fusteria i moble)" title="Sale en el acta y en los boletines">
-      <input type="text" id="curso" placeholder="Curso (2026-2027)" style="width:150px">
-      <span class="nota-p" id="resumen"></span>
-    </div>
+    <div class="fila clases"><span class="et">Grupo</span><div class="pills" id="tabsG"></div>
+      <span class="nota-p" style="margin-left:auto">Curso</span><input type="text" id="curso" placeholder="2026-2027" style="width:110px" title="El curso escolar: sale en el acta y en los boletines"></div>
+    <div class="fila clases" style="margin-top:8px"><span class="et">Asignatura</span><div class="pills" id="tabsA"></div>
+      <span class="nota-p" id="resumen" style="margin-left:auto"></span></div>
   </div>
 
   <div class="pestanas" id="pestanas"></div>
@@ -210,7 +217,7 @@
 // Las notas de la clase por evaluaciones: bloques con su peso, ejercicios con su peso dentro del bloque,
 // importados de los CSV del Corrector (solo la nota final o, si se quiere, también sus criterios) o puestos a mano.
 // ════════════════════════════════════════════════════════════════════════════════════════════
-const VERSION = 'v7', CLAVE = 'libro_calificaciones';
+const VERSION = 'v8', CLAVE = 'libro_calificaciones';
 const $ = id => document.getElementById(id);
 const esc = t => String(t ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const uid = () => Math.random().toString(36).slice(2, 10);
@@ -225,10 +232,27 @@ const claveNom = t => norm(t).split(' ').filter(Boolean).sort().join(' ');
 // { grupo, curso, alumnos: [{ id, nombre }], evals: [{ id, nombre, peso, modo:'cero'|'entregados', bloques: [{ id, nombre, peso, min,
 //   items: [{ id, nombre, peso, max, fuente, criterios: [nombres] | null, sumaCrit, notas: { idAlumno: { n, o, c: [..] , m } } }] }],
 //   comentarios: { idAlumno: texto } }], final: { comentarios: {} }, opc: { aprobado, redondeo, tope } }
-let L = null, evSel = 0, abiertos = new Set();   // abiertos: ítems con los criterios desplegados
-function libroNuevo() {
-    return { tipo: 'libro-calificaciones', version: 1, grupo: '', curso: '', alumnos: [],
-        evals: [evalNueva('1.ª evaluación')], final: { comentarios: {} }, opc: { aprobado: 5, redondeo: 'redondear', sinAprobarRedondeo: true, topeMin: 4 } };
+// Desde la v8 el libro tiene grupos, cada uno con su lista de alumnos y sus asignaturas:
+// D = { tipo, version: 2, curso, grupos: [{ id, nombre, alumnos, asigs: [{ id, nombre, evals, final, opc }] }], sel: { g, a } }
+// L es la vista de la asignatura abierta (sus alumnos son los del grupo): el resto del programa trabaja con L como antes.
+let D = null, gSel = 0, aSel = 0, L = null, evSel = 0, abiertos = new Set();   // abiertos: ítems con los criterios desplegados
+function asigNueva(nombre) { return { id: uid(), nombre, evals: [evalNueva('1.ª evaluación')], final: { comentarios: {} }, opc: { aprobado: 5, redondeo: 'redondear', sinAprobarRedondeo: true, topeMin: 4 } }; }
+function grupoNuevo(nombre, asig) { return { id: uid(), nombre, alumnos: [], asigs: [asigNueva(asig || 'Asignatura 1')] }; }
+function libroNuevo() { return { tipo: 'libro-calificaciones', version: 2, curso: '', grupos: [grupoNuevo('Grupo 1')], sel: { g: 0, a: 0 } }; }
+function vista() {
+    gSel = Math.min(Math.max(0, gSel | 0), D.grupos.length - 1); const g = D.grupos[gSel];
+    aSel = Math.min(Math.max(0, aSel | 0), g.asigs.length - 1); const a = g.asigs[aSel];
+    D.sel = { g: gSel, a: aSel };
+    L = { g, a, get alumnos() { return g.alumnos; }, set alumnos(v) { g.alumnos = v; }, get evals() { return a.evals; }, set evals(v) { a.evals = v; },
+        get final() { return a.final; }, get opc() { return a.opc; }, get curso() { return D.curso; },
+        get grupo() { return [g.nombre, a.nombre].filter(Boolean).join(' · '); } };
+}
+function ponerLibro(d) { D = d; gSel = d.sel ? d.sel.g : 0; aSel = d.sel ? d.sel.a : 0; evSel = 0; abiertos.clear(); vista(); }
+// Copia de la estructura de una asignatura: evaluaciones, bloques, pesos, mín./máx. y ejercicios, sin notas ni comentarios
+function copiaEstructura(s) {
+    const c = JSON.parse(JSON.stringify({ evals: s.evals, opc: s.opc }));
+    c.evals.forEach(ev => { ev.id = uid(); ev.comentarios = {}; ev.bloques.forEach(b => { b.id = uid(); b.items.forEach(it => { it.id = uid(); it.notas = {}; }); }); });
+    return c;
 }
 function evalNueva(nombre) { return { id: uid(), nombre, peso: 1, modo: 'cero', bloques: [], comentarios: {} }; }
 function bloqueNuevo(nombre, peso) { return { id: uid(), nombre, peso: peso ?? 0, min: null, max: 10, items: [] }; }
@@ -241,12 +265,24 @@ const alumnosOrden = () => L.alumnos.slice().sort((a, b) => a.nombre.localeCompa
 // ── Guardar en el navegador ──
 let tGuardar = null;
 function guardarPronto() { clearTimeout(tGuardar); tGuardar = setTimeout(guardarLocal, 400); }
-function guardarLocal() { try { localStorage.setItem(CLAVE, JSON.stringify(L)); } catch (e) { snack('El navegador no ha podido guardar el libro (¿demasiado grande?): guárdalo con 💾'); } }
+function guardarLocal() { try { localStorage.setItem(CLAVE, JSON.stringify(D)); } catch (e) { snack('El navegador no ha podido guardar el libro (¿demasiado grande?): guárdalo con 💾'); } }
 function cargarLocal() { try { const t = localStorage.getItem(CLAVE); if (t) { const d = JSON.parse(t); if (d && d.tipo === 'libro-calificaciones') return arreglar(d); } } catch (e) {} return null; }
 function arreglar(d) {
-    const n = libroNuevo();
+    if (!d.grupos) {   // libro de una sola clase (hasta la v7): un grupo con una asignatura
+        const t = String(d.grupo || '').trim(), i = t.indexOf(' · ');
+        d = { tipo: 'libro-calificaciones', version: 2, curso: d.curso || '', sel: { g: 0, a: 0 }, grupos: [{ id: uid(), nombre: (i > 0 ? t.slice(0, i) : t) || 'Grupo 1', alumnos: d.alumnos || [],
+            asigs: [{ id: uid(), nombre: i > 0 ? t.slice(i + 3) : 'Asignatura 1', evals: d.evals, final: d.final, opc: d.opc }] }] };
+    }
+    d.version = 2; d.curso = d.curso || ''; d.grupos = d.grupos && d.grupos.length ? d.grupos : [grupoNuevo('Grupo 1')];
+    d.grupos.forEach(g => { g.id = g.id || uid(); g.nombre = g.nombre ?? ''; g.alumnos = g.alumnos || []; g.asigs = g.asigs && g.asigs.length ? g.asigs : [asigNueva('Asignatura 1')]; g.asigs.forEach(arreglarAsig); });
+    d.sel = d.sel || { g: 0, a: 0 };
+    return d;
+}
+function arreglarAsig(d) {
+    const n = asigNueva('');
+    d.id = d.id || uid(); d.nombre = d.nombre ?? '';
     d.opc = Object.assign(n.opc, d.opc || {}); d.final = d.final || { comentarios: {} }; d.final.comentarios = d.final.comentarios || {};
-    d.alumnos = d.alumnos || []; d.evals = (d.evals && d.evals.length) ? d.evals : n.evals;
+    d.evals = (d.evals && d.evals.length) ? d.evals : n.evals;
     d.evals.forEach(e => { e.bloques = e.bloques || []; e.comentarios = e.comentarios || {}; if (e.peso === undefined) e.peso = 1; e.modo = e.modo || 'cero';
         e.bloques.forEach(b => { b.items = b.items || []; b.items.forEach(it => { it.notas = it.notas || {}; if (!it.max) it.max = 10; if (it.peso === undefined) it.peso = 1; }); }); });
     return d;
@@ -291,7 +327,7 @@ const sumaPesos = ev => ev.bloques.reduce((s, b) => s + (+b.peso || 0), 0);
 
 // ════════════════ Pintar ════════════════
 function pintar() {
-    $('grupo').value = L.grupo || ''; $('curso').value = L.curso || '';
+    vista(); pintarClases();
     if (evSel > L.evals.length) evSel = 0;
     $('pestanas').innerHTML = L.evals.map((e, i) => `<button class="pest ${i === evSel ? 'activa' : ''}" data-ev="${i}">${esc(e.nombre)}</button>`).join('')
         + `<button class="pest" id="pMasEv" title="Añadir una evaluación">＋</button><button class="pest final ${evSel === L.evals.length ? 'activa' : ''}" data-ev="${L.evals.length}" title="La nota final del curso: la media de las evaluaciones, con su peso">🏁 Final del curso</button>`;
@@ -299,9 +335,83 @@ function pintar() {
     $('pMasEv').onclick = () => { L.evals.push(evalNueva(`${L.evals.length + 1}.ª evaluación`)); evSel = L.evals.length - 1; cambio(); };
     const nIt = L.evals.reduce((s, e) => s + e.bloques.reduce((t, b) => t + b.items.length, 0), 0);
     $('resumen').textContent = `${L.alumnos.length} alumnos · ${L.evals.length} evaluación(es) · ${nIt} ejercicio(s)`;
+    document.title = `${L.grupo ? L.grupo + ' — ' : ''}Libro de calificaciones`;
     if (evSel === L.evals.length) pintarFinal(); else pintarEval();
 }
 function cambio() { guardarPronto(); pintar(); }
+function pintarClases() {
+    $('curso').value = D.curso || '';
+    const g = L.g;
+    $('tabsG').innerHTML = D.grupos.map((x, i) => `<button class="pill ${i === gSel ? 'activa' : ''}" data-g="${i}" title="${x.alumnos.length} alumnos · ${x.asigs.map(s => s.nombre).map(esc).join(', ')}">${esc(x.nombre || '(sin nombre)')}<span class="cnt">${x.alumnos.length}</span></button>`).join('')
+        + `<button class="pill ed" id="gEd" title="Cambiar el nombre del grupo «${esc(g.nombre)}» o quitarlo">✎</button><button class="pill mas" id="gMas" title="Añadir un grupo: su lista de alumnos y sus asignaturas">＋ Grupo</button>`;
+    $('tabsA').innerHTML = g.asigs.map((x, i) => `<button class="pill ${i === aSel ? 'activa' : ''}" data-a="${i}">${esc(x.nombre || '(sin nombre)')}</button>`).join('')
+        + `<button class="pill ed" id="aEd" title="Cambiar el nombre de la asignatura «${esc(L.a.nombre)}» o quitarla">✎</button><button class="pill mas" id="aMas" title="Añadir una asignatura a ${esc(g.nombre)}, vacía o con la estructura de otra">＋ Asignatura</button>`;
+    $('tabsG').querySelectorAll('[data-g]').forEach(b => b.onclick = () => { if (+b.dataset.g === gSel) return; gSel = +b.dataset.g; aSel = 0; evSel = 0; abiertos.clear(); cambio(); });
+    $('tabsA').querySelectorAll('[data-a]').forEach(b => b.onclick = () => { if (+b.dataset.a === aSel) return; aSel = +b.dataset.a; evSel = 0; abiertos.clear(); cambio(); });
+    $('gMas').onclick = () => dlgGrupo(true); $('gEd').onclick = () => dlgGrupo(false);
+    $('aMas').onclick = () => dlgAsig(true); $('aEd').onclick = () => dlgAsig(false);
+}
+// Las asignaturas de todo el libro, para copiar su estructura
+const opcEstructura = () => `<option value="">vacía (una evaluación, sin bloques)</option>` + D.grupos.flatMap((g, i) => g.asigs.map((s, j) => `<option value="${i}:${j}">copiar la estructura de ${esc([g.nombre, s.nombre].filter(Boolean).join(' · '))}</option>`)).join('');
+function asigDesde(nombre, v) {
+    const s = asigNueva(nombre); if (!v) return s;
+    const [i, j] = v.split(':').map(Number), o = D.grupos[i] && D.grupos[i].asigs[j]; if (!o) return s;
+    return Object.assign(s, copiaEstructura(o));
+}
+function anadirAlumnos(texto) {
+    let n = 0;
+    String(texto || '').split(/\r?\n/).map(x => x.replace(/^[\s\d.)-]+(?=\p{L})/u, '').trim()).filter(Boolean).forEach(nom => {
+        if (!L.alumnos.some(a => claveNom(a.nombre) === claveNom(nom))) { L.alumnos.push({ id: uid(), nombre: bonito(nom) }); n++; } });
+    return n;
+}
+function dlgGrupo(nuevo) {
+    const g = L.g;
+    abrirDlg(nuevo ? '＋ Grupo nuevo' : `✎ Grupo ${esc(g.nombre)}`, nuevo ? `
+      <div class="rejilla">
+        <label class="campo"><span>Nombre del grupo</span><input type="text" id="gNom" placeholder="p. ej. 1CFS7"></label>
+        <label class="campo"><span>Primera asignatura</span><input type="text" id="gAsig" placeholder="p. ej. 0987 Automatització"></label>
+      </div>
+      <label class="campo"><span>Estructura de la asignatura</span><select id="gEst">${opcEstructura()}</select></label>
+      <label class="campo"><span>Alumnos (uno por línea; también se pueden añadir después o al importar)</span><textarea id="gAl" rows="6" placeholder="Ana García López&#10;Bruno Sanz Pérez&#10;…"></textarea></label>
+      <p class="nota-p">Cada grupo tiene una sola lista de alumnos, que vale para todas sus asignaturas.</p>` : `
+      <label class="campo"><span>Nombre del grupo</span><input type="text" id="gNom" value="${esc(g.nombre)}"></label>
+      <p class="nota-p">${g.alumnos.length} alumnos · asignaturas: ${g.asigs.map(s => esc(s.nombre || '(sin nombre)')).join(', ')}. La lista de alumnos se cambia en 👥 Alumnos.</p>`,
+        `${nuevo ? '' : '<button class="btn peligro izq" id="gBorrar">🗑 Quitar el grupo</button>'}<button class="btn" data-cerrar>Cancelar</button><button class="btn pri" id="gOk">${nuevo ? 'Crear el grupo' : 'Aplicar'}</button>`, 'estrecho');
+    setTimeout(() => $('gNom') && $('gNom').focus(), 50);
+    $('gOk').onclick = () => {
+        const nom = $('gNom').value.trim();
+        if (nuevo) {
+            const x = { id: uid(), nombre: nom || `Grupo ${D.grupos.length + 1}`, alumnos: [], asigs: [asigDesde($('gAsig').value.trim() || 'Asignatura 1', $('gEst').value)] };
+            D.grupos.push(x); gSel = D.grupos.length - 1; aSel = 0; evSel = 0; abiertos.clear(); vista();
+            const n = anadirAlumnos($('gAl').value); cerrarDlg(); cambio(); snack(`Grupo ${x.nombre} creado${n ? ` con ${n} alumnos` : ''}`);
+        } else { if (nom) g.nombre = nom; cerrarDlg(); cambio(); }
+    };
+    if (!nuevo) $('gBorrar').onclick = () => {
+        const n = g.asigs.reduce((t, s) => t + s.evals.reduce((u, e) => u + e.bloques.reduce((v, b) => v + b.items.reduce((w, it) => w + Object.keys(it.notas).length, 0), 0), 0), 0);
+        confirmar(`¿Quitar el grupo ${g.nombre}, con sus ${g.alumnos.length} alumnos, sus ${g.asigs.length} asignatura(s) y ${n} nota(s)?`, 'Quitar el grupo', () => {
+            D.grupos.splice(gSel, 1); if (!D.grupos.length) D.grupos.push(grupoNuevo('Grupo 1')); gSel = Math.max(0, gSel - 1); aSel = 0; evSel = 0; cambio(); });
+    };
+}
+function dlgAsig(nuevo) {
+    const g = L.g, s = L.a;
+    abrirDlg(nuevo ? `＋ Asignatura nueva en ${esc(g.nombre)}` : `✎ ${esc(s.nombre || 'Asignatura')}`, `
+      <label class="campo"><span>Nombre de la asignatura</span><input type="text" id="sNom" value="${nuevo ? '' : esc(s.nombre)}" placeholder="p. ej. Proyecto intermodular"></label>
+      ${nuevo ? `<label class="campo"><span>Estructura</span><select id="sEst">${opcEstructura()}</select></label>
+      <p class="nota-p">Con «copiar la estructura» salen las mismas evaluaciones, bloques, pesos, mín./máx. y ejercicios, sin notas. Los alumnos son los del grupo.</p>` : ''}`,
+        `${nuevo ? '' : '<button class="btn peligro izq" id="sBorrar">🗑 Quitar la asignatura</button>'}<button class="btn" data-cerrar>Cancelar</button><button class="btn pri" id="sOk">${nuevo ? 'Crear' : 'Aplicar'}</button>`, 'estrecho');
+    setTimeout(() => $('sNom') && $('sNom').focus(), 50);
+    $('sOk').onclick = () => {
+        const nom = $('sNom').value.trim();
+        if (nuevo) { g.asigs.push(asigDesde(nom || `Asignatura ${g.asigs.length + 1}`, $('sEst').value)); aSel = g.asigs.length - 1; evSel = 0; abiertos.clear(); }
+        else if (nom) s.nombre = nom;
+        cerrarDlg(); cambio();
+    };
+    if (!nuevo) $('sBorrar').onclick = () => {
+        if (g.asigs.length < 2) { snack('El grupo tiene una sola asignatura: cámbiale el nombre, o quita el grupo entero (✎ del grupo)'); return; }
+        const n = s.evals.reduce((u, e) => u + e.bloques.reduce((v, b) => v + b.items.reduce((w, it) => w + Object.keys(it.notas).length, 0), 0), 0);
+        confirmar(`¿Quitar la asignatura ${s.nombre} de ${g.nombre}, con sus evaluaciones y ${n} nota(s)? Los alumnos se quedan en el grupo.`, 'Quitar', () => { g.asigs.splice(aSel, 1); aSel = Math.max(0, aSel - 1); evSel = 0; cambio(); });
+    };
+}
 
 function pintarEval() {
     const ev = evAct(), h = $('hoja');
@@ -323,7 +433,7 @@ function pintarEval() {
           <button class="btn mini" data-acc="mas" title="Añadir un ejercicio a mano a este bloque">➕</button>
           <button class="btn mini" data-acc="sube" title="Subir" ${i ? '' : 'disabled'}>▲</button>
           <button class="btn mini peligro" data-acc="borra" title="Quitar el bloque">🗑</button>
-        </div>`).join('') || '<div class="nota-p">Esta evaluación no tiene bloques todavía. Crea uno (➕ Bloque) o 📥 Importa notas: el bloque se crea al importar.</div>'}</div>
+        </div>`).join('') || '<div class="nota-p">Esta evaluación no tiene bloques todavía. Para poner notas a mano: ➕ Ejercicio a mano (crea el bloque «Ejercicios») o ➕ Bloque. O 📥 Importa notas: el bloque se crea al importar.</div>'}</div>
       ${ev.bloques.length && Math.abs(sp - 100) > 0.01 && sp > 0 ? `<div class="aviso-pesos">Los pesos de los bloques suman ${nf(sp, 2)}: se reparten en proporción (lo que sale entre paréntesis).</div>` : ''}
       <div style="margin-top:10px">${tablaEval(ev)}</div>`;
     $('evNom').onchange = e => { ev.nombre = e.target.value.trim() || ev.nombre; cambio(); };
@@ -351,6 +461,7 @@ function pintarEval() {
         d.querySelector('[data-acc=borra]').onclick = () => confirmar(`¿Quitar el bloque «${b.nombre}» y sus ${b.items.length} ejercicio(s) con sus notas?`, 'Quitar', () => { ev.bloques.splice(+d.dataset.b, 1); cambio(); });
     });
     enlazarTabla(ev);
+    if ($('vAlOk')) $('vAlOk').onclick = () => { const n = anadirAlumnos($('vAl').value); if (!n) { snack('Escribe los nombres, uno por línea'); return; } cambio(); snack(`${n} alumno(s) añadido(s) a ${L.g.nombre}`); };
 }
 
 // Un bloque plegado enseña solo su media (de serie, los de más de 4 ejercicios); se despliega con ▸ en su cabecera
@@ -358,7 +469,8 @@ const plegado = b => b.items.length > 0 && (b.plegado === undefined ? b.items.le
 const vis = b => plegado(b) ? [] : b.items;
 function tablaEval(ev) {
     const A = alumnosOrden();
-    if (!A.length) return `<div class="vacio">No hay alumnos todavía. 📥 <b>Importa notas</b> (la lista de la clase se crea con los nombres) o añádelos en 👥 Alumnos.</div>`;
+    if (!A.length) return `<div class="vacio"><b>${esc(L.g.nombre)}</b> no tiene alumnos todavía. Escribe la lista (uno por línea, o pégala de una hoja de cálculo) y pon las notas a mano,<br>o 📥 <b>Importa notas</b> de Aules o del Corrector: la lista se crea con los nombres.
+      <textarea id="vAl" rows="7" placeholder="Ana García López&#10;Bruno Sanz Pérez&#10;Carla Ruiz Mora&#10;…"></textarea><button class="btn pri" id="vAlOk">➕ Añadir a ${esc(L.g.nombre)}</button></div>`;
     const B = ev.bloques.filter(b => b.items.length || true);
     // cabecera: bloque | ejercicios (+ criterios desplegados) | media del bloque
     let f1 = `<th class="al" rowspan="3">Alumno/a</th>`, f2 = '', f3 = '';
@@ -494,7 +606,7 @@ function dlgOpciones() {
         <label class="campo"><span>Si no llega a un mínimo de bloque, la nota se queda como mucho en</span><input type="number" id="oTope" min="0" max="10" step="any" value="${o.topeMin ?? ''}" placeholder="sin tope"></label>
       </div>
       <label><input type="checkbox" id="oSinAp" ${o.sinAprobarRedondeo ? 'checked' : ''}> No se aprueba por el redondeo (4,6 → 4, no 5)</label>
-      <p class="nota-p">El mínimo de cada bloque se pone en el bloque («mín.»). Estas opciones valen para todas las evaluaciones y para la final.</p>`,
+      <p class="nota-p">El mínimo de cada bloque se pone en el bloque («mín.»). Estas opciones valen para todas las evaluaciones y para la final de ${esc(L.grupo || 'esta asignatura')}.</p>`,
         `<button class="btn" data-cerrar>Cancelar</button><button class="btn pri" id="oOk">Aplicar</button>`, 'estrecho');
     $('oOk').onclick = () => { o.aprobado = num($('oAp').value) ?? 5; o.redondeo = $('oRed').value; o.topeMin = num($('oTope').value); o.sinAprobarRedondeo = $('oSinAp').checked; cerrarDlg(); cambio(); };
 }
@@ -570,11 +682,11 @@ function dlgFicha(aid) {
 }
 
 // ── 👥 Alumnos ──
-function notasDe(aid) { let n = 0; L.evals.forEach(ev => ev.bloques.forEach(b => b.items.forEach(it => { if (it.notas[aid]) n++; }))); return n; }
+function notasDe(aid) { let n = 0; L.g.asigs.forEach(s => s.evals.forEach(ev => ev.bloques.forEach(b => b.items.forEach(it => { if (it.notas[aid]) n++; })))); return n; }
 function dlgAlumnos() {
     const A = alumnosOrden();
-    abrirDlg('👥 La clase', `
-      <p class="nota-p">Los alumnos se casan entre los archivos por el nombre (sin tildes ni mayúsculas, en cualquier orden). Si uno sale dos veces (escrito de dos maneras), marca los dos y 🔗 únelos.</p>
+    abrirDlg(`👥 Alumnos de ${esc(L.g.nombre)}`, `
+      <p class="nota-p">La lista es del grupo: vale para todas sus asignaturas (${L.g.asigs.map(s => esc(s.nombre)).join(', ')}). Los alumnos se casan entre los archivos por el nombre (sin tildes ni mayúsculas, en cualquier orden). Si uno sale dos veces (escrito de dos maneras), marca los dos y 🔗 únelos.</p>
       <table class="lista"><tr><th></th><th>Nombre</th><th>Notas</th><th></th></tr>${A.map(a => `<tr><td><input type="checkbox" class="aSel" value="${a.id}"></td>
         <td><input type="text" class="aNom" data-id="${a.id}" value="${esc(a.nombre)}" style="width:100%"></td><td>${notasDe(a.id)}</td>
         <td><button class="btn mini peligro" data-quita="${a.id}" title="Quitar de la clase (con sus notas)">🗑</button></td></tr>`).join('')}</table>
@@ -594,22 +706,22 @@ function dlgAlumnos() {
 }
 function quitarAlumno(id) {
     L.alumnos = L.alumnos.filter(a => a.id !== id);
-    L.evals.forEach(ev => { delete ev.comentarios[id]; ev.bloques.forEach(b => b.items.forEach(it => delete it.notas[id])); }); delete L.final.comentarios[id];
+    L.g.asigs.forEach(s => { s.evals.forEach(ev => { delete ev.comentarios[id]; ev.bloques.forEach(b => b.items.forEach(it => delete it.notas[id])); }); delete s.final.comentarios[id]; });
 }
 function unirAlumnos(ids) {
     // se queda el nombre más completo (el más largo)
     const nomDe = id => (L.alumnos.find(a => a.id === id) || {}).nombre || '';
     ids = ids.slice().sort((x, y) => nomDe(y).length - nomDe(x).length || notasDe(y) - notasDe(x));
     const [k, ...resto] = ids; let choques = 0;
-    resto.forEach(o => {
-        L.evals.forEach(ev => {
+    resto.forEach(o => L.g.asigs.forEach(s => {
+        s.evals.forEach(ev => {
             ev.bloques.forEach(b => b.items.forEach(it => { const x = it.notas[o]; if (!x) return; const y = it.notas[k];
                 if (!y || y.n === null) it.notas[k] = x; else if (x.n !== null) { choques++; if (x.n > y.n) it.notas[k] = x; } delete it.notas[o]; }));
             if (ev.comentarios[o]) ev.comentarios[k] = [ev.comentarios[k], ev.comentarios[o]].filter(Boolean).join(' '); delete ev.comentarios[o];
         });
-        if (L.final.comentarios[o]) L.final.comentarios[k] = [L.final.comentarios[k], L.final.comentarios[o]].filter(Boolean).join(' '); delete L.final.comentarios[o];
-        L.alumnos = L.alumnos.filter(a => a.id !== o);
-    });
+        if (s.final.comentarios[o]) s.final.comentarios[k] = [s.final.comentarios[k], s.final.comentarios[o]].filter(Boolean).join(' '); delete s.final.comentarios[o];
+    }));
+    L.alumnos = L.alumnos.filter(a => !resto.includes(a.id));
     return { choques };
 }
 
@@ -759,6 +871,7 @@ function pintarImp() {
     const opAl = sel => `<option value="nuevo" ${sel === 'nuevo' ? 'selected' : ''}>➕ alumno nuevo</option><option value="no" ${sel === 'no' ? 'selected' : ''}>— no importar</option>` + alumnosOrden().map(a => `<option value="${a.id}" ${sel === a.id ? 'selected' : ''}>${esc(a.nombre)}</option>`).join('');
     const yaEn = (b, nom) => b && b.items.find(it => norm(it.nombre) === norm(nom));
     c.innerHTML = `
+      <div class="nota-p" style="margin-bottom:8px">Se importa en <b>${esc(L.grupo || 'la asignatura abierta')}</b>. Si no es ahí, cancela y elige antes el grupo y la asignatura arriba.</div>
       <div class="rejilla">
         <label class="campo"><span>A la evaluación</span><select id="impEv">${L.evals.map((e, i) => `<option value="${i}" ${e === ev ? 'selected' : ''}>${esc(e.nombre)}</option>`).join('')}</select></label>
         <label class="campo"><span>Al bloque</span><select id="impBlo"></select></label>
@@ -845,11 +958,21 @@ function bonito(nom) {
 function descargar(texto, nombre, tipo) { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([texto], { type: tipo })); a.download = nombre; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); }
 const fechaHoy = () => new Date().toLocaleDateString('es-ES').replace(/\//g, '-');
 const nomArch = t => String(t || '').replace(/[\\/:*?"<>|·]+/g, ' ').replace(/\s+/g, ' ').trim();
-function guardarArchivo() { descargar(JSON.stringify(L, null, 1), nomArch(`Libro de calificaciones ${L.grupo || ''} ${fechaHoy()}`) + '.json', 'application/json'); snack('Libro guardado (el navegador recuerda además el último)'); }
+function guardarArchivo() { descargar(JSON.stringify(D, null, 1), nomArch(`Libro de calificaciones ${D.grupos.length > 1 ? D.curso || '' : L.g.nombre || ''} ${fechaHoy()}`) + '.json', 'application/json'); snack('Libro guardado (el navegador recuerda además el último)'); }
 async function abrirArchivo(f) {
-    try { const d = JSON.parse(await f.text()); if (!d || d.tipo !== 'libro-calificaciones') { snack('No es un libro de calificaciones'); return; }
-        const hacer = () => { L = arreglar(d); evSel = 0; abiertos.clear(); cambio(); snack(`Abierto: ${f.name}`); };
-        if (L.alumnos.length || L.evals.some(e => e.bloques.length)) confirmar('¿Abrir el libro? El que tienes ahora se sustituye (guárdalo antes con 💾 si lo quieres).', 'Abrir', hacer); else hacer();
+    try { let d = JSON.parse(await f.text()); if (!d || d.tipo !== 'libro-calificaciones') { snack('No es un libro de calificaciones'); return; }
+        d = arreglar(d);
+        const hacer = () => { ponerLibro(d); cambio(); snack(`Abierto: ${f.name}`); };
+        const vacio = D.grupos.every(g => !g.alumnos.length && g.asigs.every(s => s.evals.every(e => !e.bloques.length)));
+        if (vacio) { hacer(); return; }
+        const nom = d.grupos.map(g => g.nombre || '(sin nombre)').join(', ');
+        abrirDlg('📂 Abrir un libro', `<p>El libro <b>${esc(f.name)}</b> tiene ${d.grupos.length} grupo(s): ${esc(nom)}.</p>
+          <p class="nota-p"><b>Añadir sus grupos</b>: se suman a los de este libro (por ejemplo, para juntar en uno los libros de cada grupo).<br><b>Sustituir</b>: el libro de ahora se cambia por ese (guárdalo antes con 💾 si lo quieres).</p>`,
+            `<button class="btn" data-cerrar>Cancelar</button><button class="btn" id="abSus">Sustituir</button><button class="btn pri" id="abSum">Añadir sus grupos</button>`, 'estrecho');
+        $('abSus').onclick = () => { cerrarDlg(); hacer(); };
+        $('abSum').onclick = () => { cerrarDlg();
+            d.grupos.forEach(g => { let n = g.nombre, k = 2; while (D.grupos.some(x => x.nombre === n)) n = `${g.nombre} (${k++})`; g.nombre = n; D.grupos.push(g); });
+            if (!D.curso) D.curso = d.curso; gSel = D.grupos.length - d.grupos.length; aSel = 0; evSel = 0; abiertos.clear(); cambio(); snack(`Añadido(s): ${d.grupos.map(g => g.nombre).join(', ')}`); };
     } catch (e) { snack('No se ha podido abrir: ' + e.message); }
 }
 function csvEval() {
@@ -928,9 +1051,8 @@ $('fAbrir').onchange = e => { if (e.target.files[0]) abrirArchivo(e.target.files
 $('bCSV').onclick = csvEval;
 $('bActa').onclick = imprimirActa;
 $('bBoletines').onclick = () => imprimirBoletines(null);
-$('bNuevo').onclick = () => confirmar('¿Empezar un libro nuevo, vacío? El de ahora se pierde si no lo has guardado con 💾.', 'Libro nuevo', () => { L = libroNuevo(); evSel = 0; abiertos.clear(); cambio(); });
-$('grupo').onchange = e => { L.grupo = e.target.value.trim(); guardarPronto(); };
-$('curso').onchange = e => { L.curso = e.target.value.trim(); guardarPronto(); };
+$('bNuevo').onclick = () => confirmar('¿Empezar un libro nuevo, vacío? El de ahora (con todos sus grupos) se pierde si no lo has guardado con 💾.', 'Libro nuevo', () => { ponerLibro(libroNuevo()); cambio(); });
+$('curso').onchange = e => { D.curso = e.target.value.trim(); guardarPronto(); };
 // arrastrar a la ventana: un libro (.json) se abre; CSV y zip, a importar
 document.addEventListener('dragover', e => e.preventDefault());
 document.addEventListener('drop', e => {
@@ -943,7 +1065,7 @@ document.addEventListener('drop', e => {
 });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') { $('ovDlg').classList.remove('visible'); $('ovImp').classList.remove('visible'); } });
 window.addEventListener('beforeunload', () => { clearTimeout(tGuardar); guardarLocal(); });
-L = cargarLocal() || libroNuevo();
+ponerLibro(cargarLocal() || libroNuevo());
 pintar();
 </script>
 </body>

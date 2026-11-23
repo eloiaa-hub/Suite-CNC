@@ -8,7 +8,9 @@ const hoja = '﻿Identificador,Nombre completo,Dirección de correo,Estado,Calif
 (async () => { const b = await lanzar(), p = await abrir(b, 'libro_calificaciones.html'); await p.setViewportSize({ width: 1440, height: 900 });
  await p.evaluate(() => localStorage.removeItem('libro_calificaciones')); await p.reload(); await p.waitForTimeout(300);
  const B = (n, t) => ({ name: n, mimeType: 'text/csv', buffer: Buffer.from(t) }); await p.addStyleTag({ content: '.snack{visibility:hidden !important}' });
- await p.fill('#grupo', '2CFS7 · Automatització en fusteria i moble'); await p.dispatchEvent('#grupo', 'change'); await p.fill('#curso', '2026-2027'); await p.dispatchEvent('#curso', 'change');
+ await p.fill('#curso', '2026-2027'); await p.dispatchEvent('#curso', 'change');
+ await p.click('#gEd'); await p.fill('#gNom', '2CFS7'); await p.click('#gOk'); await p.click('#aEd'); await p.fill('#sNom', 'Automatització en fusteria i moble'); await p.click('#sOk');
+ await p.screenshot({ path: OUT + '/vacio.png' });
  await p.click('#bImportar'); await p.setInputFiles('#impF', [B('Calificaciones-Curso-2CFS7 1788982647-Examen 4 de noviembre-11830001 - con notas.csv', hoja)]); await p.waitForSelector('[data-fn]');
  await p.fill('#impNb', 'Examen'); await p.dispatchEvent('#impNb', 'change'); await p.click('#impOk'); await p.waitForTimeout(200);
  const tareas = ['ISO GEO 01A', 'ISO GEO 01B', 'ISO GEO 02A', 'ISO GEO 02B', 'ISO GEO 03A', 'Geometría 09'];
@@ -29,6 +31,12 @@ const hoja = '﻿Identificador,Nombre completo,Dirección de correo,Estado,Calif
  await p.click('.chip'); await p.waitForTimeout(100); await p.screenshot({ path: OUT + '/ejercicio.png' }); await p.click('#ovDlg [data-cerrar]');
  await p.click('#evOpc'); await p.waitForTimeout(100); await p.screenshot({ path: OUT + '/opciones.png' }); await p.click('#ovDlg [data-cerrar]');
  await p.evaluate(() => { L.evals[0].bloques[1].plegado = undefined; cambio(); window.scrollTo(0, 0); }); await p.screenshot({ path: OUT + '/plegado.png' });
+ // grupos y asignaturas: otra asignatura con la misma estructura y otro grupo
+ await p.click('#aMas'); await p.fill('#sNom', 'Proyecto intermodular'); await p.selectOption('#sEst', '0:0'); await p.waitForTimeout(100); await p.screenshot({ path: OUT + '/asig_nueva.png' }); await p.click('#sOk');
+ await p.click('#gMas'); await p.fill('#gNom', '1CFS7'); await p.fill('#gAsig', 'Mecanització'); await p.fill('#gAl', 'Alba Pérez Soria\nBlanca Ortiz Vela\nCésar Ibáñez Mira\n…'); await p.waitForTimeout(100); await p.screenshot({ path: OUT + '/grupo_nuevo.png' });
+ await p.evaluate(() => { document.getElementById('gAl').value = 'Alba Pérez Soria\nBlanca Ortiz Vela\nCésar Ibáñez Mira\nDaniel Vera Sanz\nEva Martí Gil'; }); await p.click('#gOk');
+ await p.waitForTimeout(100); await p.evaluate(() => window.scrollTo(0, 0)); await p.screenshot({ path: OUT + '/grupos.png' });
+ await p.click('#tabsG [data-g="0"]'); await p.click('#tabsA [data-a="0"]'); await p.waitForTimeout(100);
  await p.click('#pMasEv'); await p.evaluate(() => { L.evals[0].peso = 1; const e2 = L.evals[1]; e2.bloques.push(bloqueNuevo('Prácticas', 100)); const it = itemNuevo('Práctica de cajeras'); e2.bloques[0].items.push(it); let s = 11; const r = () => (s = (s * 9301 + 49297) % 233280) / 233280; alumnosOrden().forEach(a => it.notas[a.id] = { n: Math.round((3 + r() * 7) * 10) / 10 }); cambio(); });
  await p.click('.pest.final'); await p.waitForTimeout(200); await p.screenshot({ path: OUT + '/final.png' });
  await p.click('.pest[data-ev="0"]');
