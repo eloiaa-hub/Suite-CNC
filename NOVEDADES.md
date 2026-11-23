@@ -4,6 +4,11 @@ La versión de la suite es **año.mes** (por ejemplo, 2026.10). Cada programa co
 
 ## Suite CNC 2026.11
 
+### Libro de calificaciones v9
+- **Un bloque sin ejercicios tiene su columna** en la tabla, con el nombre del bloque: escribe las notas a mano y, con la primera, se crea su ejercicio (sobre el máx. del bloque). ➕ Bloque y a escribir, sin importar nada.
+- **▴ Minimizar bloques**: los bloques (pesos, mín., máx. y ejercicios) quedan en una sola línea con cada bloque, su % y sus ejercicios; ▾ Ver bloques o clic en uno los vuelve a enseñar.
+- **▴ en la cabecera de grupos y asignaturas**: una sola línea con dos desplegables para cambiar de grupo y de asignatura; ▾ Grupos y asignaturas vuelve a las pestañas. El navegador recuerda lo que tenías minimizado.
+
 ### Libro de calificaciones v8: grupos y asignaturas
 - **Un solo libro para todo el curso**: arriba, las pestañas de los **grupos** (2CFS7, 1CFS7…) y, debajo, las de sus **asignaturas**. Cada grupo tiene **una sola lista de alumnos**, que vale para todas sus asignaturas; cada asignatura, sus evaluaciones, bloques, pesos, opciones y final.
 - **＋ Grupo** (con su primera asignatura y la lista de alumnos escrita o pegada), **＋ Asignatura** (vacía o **copiando la estructura de otra**: evaluaciones, bloques, pesos, mín./máx. y ejercicios, sin notas) y **✎** para cambiar el nombre o quitarlos.

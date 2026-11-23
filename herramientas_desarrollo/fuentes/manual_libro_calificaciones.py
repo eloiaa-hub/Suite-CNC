@@ -42,6 +42,14 @@ cuerpo = f"""<body>
 <tr><td class="n">5</td><td><strong>Los bloques.</strong> Cada uno con su nombre, su peso (entre paréntesis, el % que le toca), su nota mínima y sus ejercicios (clic en uno para editarlo).</td></tr>
 <tr><td class="n">6</td><td><strong>La tabla.</strong> Un alumno por fila. Por cada bloque, sus ejercicios y su media; al final, la <strong>Nota</strong> de la evaluación, el <strong>Boletín</strong> y tu <strong>Comentario</strong>. Abajo, la media de la clase. En verde, aprobado; en rojo, suspenso.</td></tr>
 </table>
+<h3>Minimizar lo que no necesitas ver</h3>
+<ul>
+<li><span class="boton">▴ Minimizar bloques</span> (en la evaluación): los bloques quedan en <strong>una sola línea</strong>, cada uno con su % y su número de ejercicios. <span class="boton">▾ Ver bloques</span> o clic en uno los vuelve a enseñar para cambiar pesos, mínimos o ejercicios. La tabla no cambia.</li>
+<li><span class="boton">▴</span> en la cabecera de grupos y asignaturas: <strong>una sola línea</strong> con dos desplegables para cambiar de grupo y de asignatura. <span class="boton">▾ Grupos y asignaturas</span> vuelve a las pestañas (con ＋ y ✎).</li>
+<li>▸ Plegar / ▾ Desplegar es otra cosa: pliega los bloques <strong>en la tabla</strong> (solo su media).</li>
+<li>El navegador recuerda lo que tenías minimizado.</li>
+</ul>
+{fig('minimizado.png', 'La cabecera y los bloques minimizados: queda casi toda la pantalla para la tabla.', crop=(0, 50, 1440, 640))}
 {fig('tabla_dcha.png', 'La parte derecha de la tabla: la media de cada bloque, la nota, el boletín y tus comentarios.', crop=(0, 360, 1440, 900))}
 </section>
 
@@ -127,6 +135,7 @@ cuerpo = f"""<body>
 
 <section><h2 class="cap"><span>6</span>Poner y cambiar notas a mano</h2>
 <ul>
+<li><span class="boton">➕ Bloque</span> y a escribir: un bloque <strong>sin ejercicios</strong> tiene en la tabla una columna con su nombre (en cursiva). Escribe ahí las notas: con la primera se crea su ejercicio, con el nombre del bloque y sobre su <strong>máx.</strong> (por ejemplo, ARCOS I, J con máx. 3). Después puedes cambiarle el nombre (clic en él, en el bloque) o añadir más ejercicios.</li>
 <li><span class="boton">➕ Ejercicio a mano</span> (o ➕ en un bloque): su nombre, su bloque, su peso y su nota máxima. Después, escribe las notas en su columna.</li>
 <li><strong>Las casillas</strong> (blancas, con borde) se escriben con coma o con punto. <kbd>Tab</kbd> o la flecha → pasan a la <strong>columna de al lado</strong> (el siguiente ejercicio del mismo alumno; <kbd>Mayús</kbd> + <kbd>Tab</kbd> o ←, a la de antes), e <kbd>Intro</kbd> o las flechas ↑ ↓ al alumno de abajo o de arriba, en la misma columna, como en una hoja de cálculo. Las filas van en dos colores alternos y la del ratón se resalta, para no equivocarse de alumno. La nota se guarda al salir de la casilla. Vacía = no entregado.</li>
 <li>Una nota <strong>importada</strong> también se puede cambiar: la casilla se pone en <strong>amarillo</strong> y, al pasar el ratón, dice la nota importada. En el ejercicio, <span class="boton">↺ Notas importadas</span> las devuelve todas.</li>

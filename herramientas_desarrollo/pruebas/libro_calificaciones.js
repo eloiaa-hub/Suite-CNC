@@ -80,10 +80,12 @@ const B = L => L.map(f => ({ name: path.basename(f), mimeType: 'application/octe
     await p.click('#evBloque'); await p.click('.bloque[data-b="2"] [data-acc=mas]'); await p.fill('#iNom', 'Memoria'); await p.fill('#iMax', '20'); await p.click('#iOk'); await p.waitForTimeout(150);
     const ids = await p.evaluate(() => ({ it: L.evals[0].bloques[2].items[0].id, A: Object.fromEntries(L.alumnos.map(a => [a.nombre.split(' ')[0], a.id])) }));
     const cel = (it, a) => `input.celda[data-it="${it}"][data-a="${a}"]:not([data-k])`;
-    for (const [n, v] of [['Ana', '16'], ['Bruno', '9,5'], ['Carla', '20']]) { await p.fill(cel(ids.it, ids.A[n]), v); await p.press(cel(ids.it, ids.A[n]), 'Enter'); }
+    for (const [n, v] of [['Ana', '16'], ['Bruno', '9,5'], ['Carla', '20']]) { await p.fill(cel(ids.it, ids.A[n]), v); await p.press(cel(ids.it, ids.A[n]), 'Enter'); await p.waitForTimeout(150); }
+    await p.waitForTimeout(300);   // (que acabe de repintar antes de seguir)
     // Tab: a la columna de al lado (el mismo alumno), con la nota guardada; Intro: al alumno de abajo
     await p.evaluate(() => { const b = L.evals[0].bloques[2]; b.items.push(itemNuevo('Plano')); cambio(); });
     const it2 = await p.evaluate(() => L.evals[0].bloques[2].items[1].id), A0 = await p.evaluate(() => alumnosOrden().map(a => a.id));
+    await p.waitForTimeout(200);
     await p.fill(cel(ids.it, A0[3]), '15'); await p.keyboard.press('Tab'); await p.waitForTimeout(400);
     let foco = await p.evaluate(() => [document.activeElement.dataset.it, document.activeElement.dataset.a]);
     ok(foco[0] === it2 && foco[1] === A0[3] && await p.evaluate(([it, a]) => buscarItem(it).it.notas[a].n === 15, [ids.it, A0[3]]), 'Tab pasa a la columna de al lado (el mismo alumno) y guarda la nota');

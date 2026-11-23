@@ -52,6 +52,19 @@
   .pill .cnt { font-weight: 400; font-size: 11px; opacity: .75; margin-left: 4px; }
   .pill.mas { background: transparent; border-style: dashed; color: var(--texto-sec); font-weight: 400; }
   .pill.ed { padding: 5px 9px; background: transparent; }
+  .clases-mini { display: none; }
+  .mini-clases .clases-mini { display: flex; }
+  .mini-clases #clasesTodo { display: none; }
+  .mini-clases { padding: 7px 14px; }
+  .clases-mini b { color: var(--acento); }
+  .clases-mini select { font-weight: 600; }
+  /* bloques minimizados: una línea con cada bloque y su % */
+  .bloques[hidden] { display: none; }
+  .bloques-mini { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .bmini { border: 1px solid var(--borde); border-left: 4px solid var(--acento); border-radius: 6px; background: var(--suave); padding: 3px 10px; font-size: 12px; cursor: pointer; }
+  .bmini:hover { border-color: var(--acento); }
+  .bmini small { color: var(--texto-sec); }
+  th.nueva { font-style: italic; font-weight: 400 !important; }
   .vacio textarea { display: block; margin: 12px auto 8px; width: min(420px, 100%); text-align: left; }
   /* pestañas */
   .pestanas { display: flex; gap: 4px; flex-wrap: wrap; align-items: flex-end; margin-bottom: -1px; position: relative; z-index: 1; }
@@ -161,7 +174,7 @@
 <body>
 <div class="ventana">
 <div class="barra">
-  <h1><a class="casa" href="index.html" title="Portada de las herramientas">⌂</a> 📒 Libro de calificaciones — Por Eloi A.A. <span class="ver" title="Versión del programa">v8</span></h1>
+  <h1><a class="casa" href="index.html" title="Portada de las herramientas">⌂</a> 📒 Libro de calificaciones — Por Eloi A.A. <span class="ver" title="Versión del programa">v9</span></h1>
   <button class="btn pri" id="bImportar" title="Importar las notas de los CSV del Corrector: la corrección de un ejercicio (también con variantes), la hoja de calificaciones de Aules rellenada, la revisión por alumno de la batería o el zip «Descarga CSV Correcciones»">📥 Importar notas…</button>
   <button class="btn" id="bAlumnos" title="La lista de alumnos del grupo abierto (vale para todas sus asignaturas): añadir, renombrar, unir o quitar">👥 Alumnos</button>
   <button class="btn" id="bGuardar" title="Guardar el libro en un archivo .json (el navegador recuerda además el último)">💾 Guardar</button>
@@ -182,11 +195,14 @@
 </div>
 
 <div class="envoltura">
-  <div class="caja">
+  <div class="caja" id="cajaClases">
+    <div class="fila clases-mini" id="clasesMini"></div>
+    <div id="clasesTodo">
     <div class="fila clases"><span class="et">Grupo</span><div class="pills" id="tabsG"></div>
       <span class="nota-p" style="margin-left:auto">Curso</span><input type="text" id="curso" placeholder="2026-2027" style="width:110px" title="El curso escolar: sale en el acta y en los boletines"></div>
     <div class="fila clases" style="margin-top:8px"><span class="et">Asignatura</span><div class="pills" id="tabsA"></div>
-      <span class="nota-p" id="resumen" style="margin-left:auto"></span></div>
+      <span class="nota-p" id="resumen" style="margin-left:auto"></span><button class="btn mini" id="clOcultar" title="Minimizar: solo una línea con el grupo y la asignatura">▴</button></div>
+    </div>
   </div>
 
   <div class="pestanas" id="pestanas"></div>
@@ -217,7 +233,7 @@
 // Las notas de la clase por evaluaciones: bloques con su peso, ejercicios con su peso dentro del bloque,
 // importados de los CSV del Corrector (solo la nota final o, si se quiere, también sus criterios) o puestos a mano.
 // ════════════════════════════════════════════════════════════════════════════════════════════
-const VERSION = 'v8', CLAVE = 'libro_calificaciones';
+const VERSION = 'v9', CLAVE = 'libro_calificaciones';
 const $ = id => document.getElementById(id);
 const esc = t => String(t ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const uid = () => Math.random().toString(36).slice(2, 10);
@@ -339,8 +355,22 @@ function pintar() {
     if (evSel === L.evals.length) pintarFinal(); else pintarEval();
 }
 function cambio() { guardarPronto(); pintar(); }
+// Lo que se ve u oculta (cosas de este navegador, no del libro)
+const VER = (() => { try { return JSON.parse(localStorage.getItem('libro_ver') || '{}'); } catch (e) { return {}; } })();
+function guardarVer() { try { localStorage.setItem('libro_ver', JSON.stringify(VER)); } catch (e) {} }
 function pintarClases() {
     $('curso').value = D.curso || '';
+    $('cajaClases').classList.toggle('mini-clases', !!VER.clases);
+    $('clasesMini').innerHTML = `<span class="et nota-p" style="text-transform:uppercase;letter-spacing:.08em;font-size:11px">Grupo</span>
+      <select id="mG" title="Cambiar de grupo">${D.grupos.map((x, i) => `<option value="${i}" ${i === gSel ? 'selected' : ''}>${esc(x.nombre || '(sin nombre)')} (${x.alumnos.length})</option>`).join('')}</select>
+      <span class="et nota-p" style="text-transform:uppercase;letter-spacing:.08em;font-size:11px;margin-left:8px">Asignatura</span>
+      <select id="mA" title="Cambiar de asignatura">${L.g.asigs.map((x, i) => `<option value="${i}" ${i === aSel ? 'selected' : ''}>${esc(x.nombre || '(sin nombre)')}</option>`).join('')}</select>
+      ${D.curso ? `<span class="nota-p">· ${esc(D.curso)}</span>` : ''}
+      <button class="btn mini" id="clMostrar" style="margin-left:auto" title="Ver los grupos y las asignaturas en pestañas, con ＋ y ✎">▾ Grupos y asignaturas</button>`;
+    $('mG').onchange = e => { gSel = +e.target.value; aSel = 0; evSel = 0; abiertos.clear(); cambio(); };
+    $('mA').onchange = e => { aSel = +e.target.value; evSel = 0; abiertos.clear(); cambio(); };
+    $('clMostrar').onclick = () => { VER.clases = false; guardarVer(); pintarClases(); };
+    $('clOcultar').onclick = () => { VER.clases = true; guardarVer(); pintarClases(); };
     const g = L.g;
     $('tabsG').innerHTML = D.grupos.map((x, i) => `<button class="pill ${i === gSel ? 'activa' : ''}" data-g="${i}" title="${x.alumnos.length} alumnos · ${x.asigs.map(s => s.nombre).map(esc).join(', ')}">${esc(x.nombre || '(sin nombre)')}<span class="cnt">${x.alumnos.length}</span></button>`).join('')
         + `<button class="pill ed" id="gEd" title="Cambiar el nombre del grupo «${esc(g.nombre)}» o quitarlo">✎</button><button class="pill mas" id="gMas" title="Añadir un grupo: su lista de alumnos y sus asignaturas">＋ Grupo</button>`;
@@ -421,15 +451,16 @@ function pintarEval() {
         <label class="nota-p" style="text-transform:none;letter-spacing:0" title="Un ejercicio que el alumno no ha entregado (y la clase sí), ¿cuenta 0 o no cuenta en su media?">
           <select id="evModo"><option value="cero" ${ev.modo === 'cero' ? 'selected' : ''}>los no entregados cuentan 0</option><option value="entregados" ${ev.modo === 'entregados' ? 'selected' : ''}>solo cuentan los entregados</option></select></label>
         <span style="margin-left:auto;display:flex;gap:6px;text-transform:none;letter-spacing:0">
-          <button class="btn mini" id="evBloque">➕ Bloque</button><button class="btn mini" id="evItem">➕ Ejercicio a mano</button><button class="btn mini" id="evPleg" title="Plegar todos los bloques: en la tabla, solo la media de cada uno">▸ Plegar</button><button class="btn mini" id="evDesp" title="Desplegar todos los bloques: todos sus ejercicios">▾ Desplegar</button><button class="btn mini" id="evOpc" title="Aprobado, redondeo del boletín y nota mínima de los bloques">⚙ Opciones</button>
+          <button class="btn mini" id="evBloque">➕ Bloque</button><button class="btn mini" id="evItem">➕ Ejercicio a mano</button><button class="btn mini" id="evMini" title="${VER.bloques ? 'Ver los bloques con sus pesos, mínimos y ejercicios' : 'Minimizar los bloques: una sola línea con cada bloque y su %'}">${VER.bloques ? '▾ Ver bloques' : '▴ Minimizar bloques'}</button><button class="btn mini" id="evPleg" title="Plegar todos los bloques: en la tabla, solo la media de cada uno">▸ Plegar</button><button class="btn mini" id="evDesp" title="Desplegar todos los bloques: todos sus ejercicios">▾ Desplegar</button><button class="btn mini" id="evOpc" title="Aprobado, redondeo del boletín y nota mínima de los bloques">⚙ Opciones</button>
           <button class="btn mini peligro" id="evBorrar" title="Quitar esta evaluación">🗑</button></span></h2>
-      <div class="bloques" id="bloques">${ev.bloques.map((b, i) => `
+      ${VER.bloques && ev.bloques.length ? `<div class="bloques-mini">${ev.bloques.map((b, i) => `<span class="bmini" data-bm="${i}" title="${b.items.length} ejercicio(s)${b.min !== null && b.min !== undefined ? ` · mín. ${nf(b.min, 2)}` : ''} · clic: ver los bloques">${esc(b.nombre)} <small>${sp ? nf(b.peso / sp * 100, 0) + ' %' : ''} · ${b.items.length} ej.</small></span>`).join('')}</div>` : ''}
+      <div class="bloques" id="bloques" ${VER.bloques && ev.bloques.length ? 'hidden' : ''}>${ev.bloques.map((b, i) => `
         <div class="bloque" data-b="${i}">
           <input type="text" class="bn" value="${esc(b.nombre)}" data-campo="nombre" title="Nombre del bloque">
           <label title="El peso del bloque en la nota de la evaluación (en %, o en las unidades que quieras: se reparte en proporción)">peso <input type="number" min="0" step="any" value="${b.peso}" data-campo="peso">${sp ? `<small>(${nf(b.peso / sp * 100, 0)} %)</small>` : ''}</label>
           <label title="Nota mínima del bloque para hacer media (vacío: sin mínimo). Si no llega, se avisa y la nota de la evaluación se queda, como mucho, en la de ⚙ Opciones">mín. <input type="number" min="0" max="10" step="any" value="${b.min ?? ''}" data-campo="min" style="width:50px"></label>
           <label title="La nota máxima de los ejercicios del bloque: sobre cuánto se ponen sus notas (10 de serie). Por ejemplo, con ejercicios de 1 punto, 1: un 1 es un 10 y un 0,5, un 5. La media del bloque sale siempre sobre 10.">máx. <input type="number" min="0.01" step="any" value="${maxBloque(b) ?? ''}" placeholder="varias" data-campo="max" style="width:58px"></label>
-          <div class="chips">${b.items.map((it, j) => `<span class="chip ${cuentaIt(it) ? '' : 'fuera'}" data-it="${j}" title="${esc(it.nombre)} · ${esc(it.fuente)} · sobre ${nf(it.max, 2)}${cuentaIt(it) ? '' : ' · no cuenta (sin peso o sin notas)'}">${esc(it.nombre)} <small>×${nf(it.peso, 2)}</small></span>`).join('') || '<span class="nota-p">Sin ejercicios: 📥 Importar notas o ➕ ejercicio</span>'}</div>
+          <div class="chips">${b.items.map((it, j) => `<span class="chip ${cuentaIt(it) ? '' : 'fuera'}" data-it="${j}" title="${esc(it.nombre)} · ${esc(it.fuente)} · sobre ${nf(it.max, 2)}${cuentaIt(it) ? '' : ' · no cuenta (sin peso o sin notas)'}">${esc(it.nombre)} <small>×${nf(it.peso, 2)}</small></span>`).join('') || '<span class="nota-p">Sin ejercicios: escribe las notas en su columna de la tabla (se crea el ejercicio), ➕ ejercicio o 📥 Importar notas</span>'}</div>
           <button class="btn mini" data-acc="mas" title="Añadir un ejercicio a mano a este bloque">➕</button>
           <button class="btn mini" data-acc="sube" title="Subir" ${i ? '' : 'disabled'}>▲</button>
           <button class="btn mini peligro" data-acc="borra" title="Quitar el bloque">🗑</button>
@@ -439,10 +470,13 @@ function pintarEval() {
     $('evNom').onchange = e => { ev.nombre = e.target.value.trim() || ev.nombre; cambio(); };
     $('evPeso').onchange = e => { ev.peso = Math.max(0, num(e.target.value) ?? 0); cambio(); };
     $('evModo').onchange = e => { ev.modo = e.target.value; cambio(); };
-    $('evBloque').onclick = () => { ev.bloques.push(bloqueNuevo(`Bloque ${ev.bloques.length + 1}`, ev.bloques.length ? 0 : 100)); cambio(); };
+    $('evBloque').onclick = () => { ev.bloques.push(bloqueNuevo(`Bloque ${ev.bloques.length + 1}`, ev.bloques.length ? 0 : 100)); VER.bloques = false; guardarVer(); cambio();
+        snack('Bloque añadido: ponle nombre y peso, y escribe las notas en su columna de la tabla'); };
     $('evItem').onclick = () => dlgItem(null, null);
     $('evOpc').onclick = dlgOpciones;
     $('evPleg').onclick = () => { ev.bloques.forEach(b => { b.plegado = true; }); cambio(); };
+    $('evMini').onclick = () => { VER.bloques = !VER.bloques; guardarVer(); pintar(); };
+    h.querySelectorAll('[data-bm]').forEach(x => x.onclick = () => { VER.bloques = false; guardarVer(); pintar(); });
     $('evDesp').onclick = () => { ev.bloques.forEach(b => { b.plegado = false; }); cambio(); };
     $('evBorrar').onclick = () => confirmar(`¿Quitar «${ev.nombre}» con todos sus bloques, notas y comentarios?`, 'Quitar', () => { L.evals.splice(evSel, 1); if (!L.evals.length) L.evals.push(evalNueva('1.ª evaluación')); evSel = 0; cambio(); });
     h.querySelectorAll('.bloque').forEach(d => {
@@ -474,15 +508,17 @@ function tablaEval(ev) {
     const B = ev.bloques.filter(b => b.items.length || true);
     // cabecera: bloque | ejercicios (+ criterios desplegados) | media del bloque
     let f1 = `<th class="al" rowspan="3">Alumno/a</th>`, f2 = '', f3 = '';
+    const nueva = b => !b.items.length;   // bloque sin ejercicios: una columna para escribir sus notas
     B.forEach((b, bi) => {
-        const cols = vis(b).reduce((s, it) => s + 1 + (abiertos.has(it.id) && it.criterios ? it.criterios.length : 0), 0) + 1;
+        const cols = vis(b).reduce((s, it) => s + 1 + (abiertos.has(it.id) && it.criterios ? it.criterios.length : 0), 0) + 1 + (nueva(b) ? 1 : 0);
         f1 += `<th class="bh bpleg" colspan="${cols}" data-pleg="${b.id}" title="${plegado(b) ? 'Desplegar: ver sus ejercicios' : 'Plegar: ver solo la media del bloque'}">${b.items.length ? `<span class="pl">${plegado(b) ? '▸' : '▾'}</span> ` : ''}${esc(b.nombre)}${plegado(b) ? ` <span class="nota-p">(${b.items.length})</span>` : ''} <span class="nota-p">${sumaPesos(ev) ? nf(b.peso / sumaPesos(ev) * 100, 0) + ' %' : ''}</span></th>`;
         vis(b).forEach((it, j) => {
             const ab = abiertos.has(it.id) && it.criterios;
             f2 += `<th class="ih ${j === 0 ? 'bh' : ''}" colspan="${1 + (ab ? it.criterios.length : 0)}" data-bi="${ev.bloques.indexOf(b)}" data-ii="${j}" title="${esc(it.nombre)} — clic: editar el ejercicio">${it.criterios ? `<span data-desp="${it.id}" title="Ver / ocultar sus criterios">${ab ? '▾' : '▸'}</span> ` : ''}${esc(it.nombre)}</th>`;
             f3 += `<th class="${j === 0 ? 'bh' : ''}">×${nf(it.peso, 2)}${it.max !== 10 ? ` /${nf(it.max, 2)}` : ''}</th>` + (ab ? it.criterios.map(c => `<th class="crit" title="${esc(c)}">${esc(c.length > 9 ? c.slice(0, 8) + '…' : c)}</th>`).join('') : '');
         });
-        f2 += `<th rowspan="2" ${vis(b).length ? '' : 'class="bh"'}>Media</th>`;
+        if (nueva(b)) { f2 += `<th class="ih bh nueva" title="Escribe aquí las notas del bloque: se crea el ejercicio «${esc(b.nombre)}» (cámbiale el nombre en el bloque, clic en él)">${esc(b.nombre)}</th>`; f3 += `<th class="bh">×1${(b.max ?? 10) !== 10 ? ` /${nf(b.max, 2)}` : ''}</th>`; }
+        f2 += `<th rowspan="2" ${vis(b).length || nueva(b) ? '' : 'class="bh"'}>Media</th>`;
     });
     f1 += `<th class="nev" rowspan="3" title="La nota de la evaluación: la media de los bloques con su peso">Nota</th><th rowspan="3" title="La nota del boletín (⚙ Opciones: redondeo)">Boletín</th><th rowspan="3">Comentario</th>`;
     const filas = A.map(a => {
@@ -493,8 +529,9 @@ function tablaEval(ev) {
                 tds += `<td class="${j === 0 ? 'bh' : ''} ${x && x.m ? 'mod' : ''}" ${x && x.m && x.o !== undefined && x.o !== null ? `title="Importada: ${nf(x.o, 2)} · cambiada a mano"` : ''}><input class="celda ${clsNota(notaIt(it, a.id))}" data-it="${it.id}" data-a="${a.id}" value="${x ? nf(x.n, 2) : ''}" inputmode="decimal"></td>`;
                 if (ab) it.criterios.forEach((c, k) => { tds += `<td class="crit"><input class="celda" data-it="${it.id}" data-a="${a.id}" data-k="${k}" value="${x && x.c ? nf(x.c[k], 2) : ''}" inputmode="decimal" title="${esc(c)}"></td>`; });
             });
+            if (nueva(b)) tds += `<td class="bh"><input class="celda" data-it="nuevo:${b.id}" data-a="${a.id}" value="" inputmode="decimal"></td>`;
             const m = mediaBloque(ev, b, a.id);
-            tds += `<td class="media ${vis(b).length ? '' : 'bh'} ${clsNota(m)}">${b.min !== null && b.min !== undefined && m !== null && m < b.min ? `<span class="minf" title="No llega al mínimo del bloque (${nf(b.min, 2)})">⚠ </span>` : ''}${nf(m)}</td>`;
+            tds += `<td class="media ${vis(b).length || nueva(b) ? '' : 'bh'} ${clsNota(m)}">${b.min !== null && b.min !== undefined && m !== null && m < b.min ? `<span class="minf" title="No llega al mínimo del bloque (${nf(b.min, 2)})">⚠ </span>` : ''}${nf(m)}</td>`;
         });
         const r = notaEval(ev, a.id), bo = boletin(r.n), com = ev.comentarios[a.id] || '';
         tds += `<td class="nev ${clsNota(r.n)}" ${r.bajo.length ? `title="No llega al mínimo en: ${esc(r.bajo.map(b => b.nombre).join(', '))}${r.sinTope !== r.n ? ` (sin el tope: ${nf(r.sinTope, 2)})` : ''}"` : ''}>${r.bajo.length ? '<span class="minf">⚠</span> ' : ''}${nf(r.n, 2)}</td>
@@ -510,7 +547,8 @@ function tablaEval(ev) {
             const v = A.map(a => notaIt(it, a.id)); pie += `<td class="${j === 0 ? 'bh' : ''}" title="aprueban ${ap(v)}">${nf(medias(v))}</td>`;
             if (abiertos.has(it.id) && it.criterios) it.criterios.forEach((c, k) => { pie += `<td class="crit">${nf(medias(A.map(a => { const x = it.notas[a.id]; return x && x.c ? x.c[k] : null; }).map(y => y === undefined ? null : y)))}</td>`; });
         });
-        const v = A.map(a => mediaBloque(ev, b, a.id)); pie += `<td class="${vis(b).length ? '' : 'bh'}" title="aprueban ${ap(v)}">${nf(medias(v))}</td>`;
+        if (nueva(b)) pie += '<td class="bh"></td>';
+        const v = A.map(a => mediaBloque(ev, b, a.id)); pie += `<td class="${vis(b).length || nueva(b) ? '' : 'bh'}" title="aprueban ${ap(v)}">${nf(medias(v))}</td>`;
     });
     const vN = A.map(a => notaEval(ev, a.id).n), vB = A.map(a => boletin(notaEval(ev, a.id).n));
     pie += `<td class="nev">${nf(medias(vN), 2)}</td><td>${ap(vB)}</td><td></td>`;
@@ -535,6 +573,12 @@ function enlazarTabla(ev) {
             }
         };
         inp.onchange = () => {
+            if (inp.dataset.it.startsWith('nuevo:')) {   // la primera nota de un bloque sin ejercicios: se crea su ejercicio
+                if (!inp.value.trim()) return;
+                const b = ev.bloques.find(x => x.id === inp.dataset.it.slice(6)); if (!b) return;
+                const it = itemNuevo(b.nombre, { max: b.max ?? 10 }); b.items.push(it);
+                $('hoja').querySelectorAll(`input.celda[data-it="${inp.dataset.it}"]`).forEach(x => { x.dataset.it = it.id; });
+            }
             const r = buscarItem(inp.dataset.it); if (!r) return; const it = r.it, a = inp.dataset.a;
             const v = num(inp.value);
             if (inp.value.trim() && v === null) { snack('Escribe un número (con coma o con punto)'); inp.value = ''; return; }

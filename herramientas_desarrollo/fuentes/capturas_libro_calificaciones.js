@@ -27,6 +27,9 @@ const hoja = '﻿Identificador,Nombre completo,Dirección de correo,Estado,Calif
  await p.evaluate(() => { L.evals[0].bloques[1].plegado = false; abiertos.add(L.evals[0].bloques[1].items[0].id); }); await p.evaluate(() => pintar());
  await p.evaluate(() => window.scrollTo(0, 0)); await p.screenshot({ path: OUT + '/tabla.png' });
  await p.evaluate(() => { document.querySelector('.tabla-caja').scrollLeft = 10000; }); await p.screenshot({ path: OUT + '/tabla_dcha.png' });
+ await p.click('#evMini'); await p.click('#clOcultar'); await p.waitForTimeout(100); await p.evaluate(() => window.scrollTo(0, 0)); await p.screenshot({ path: OUT + '/minimizado.png' });
+ await p.click('#evMini'); await p.click('#clMostrar'); await p.waitForTimeout(100);
+ await p.evaluate(() => { document.querySelector('.tabla-caja').scrollLeft = 10000; });
  await p.click('[data-ficha]'); await p.waitForTimeout(200); await p.screenshot({ path: OUT + '/ficha.png' }); await p.click('#fOk');
  await p.click('.chip'); await p.waitForTimeout(100); await p.screenshot({ path: OUT + '/ejercicio.png' }); await p.click('#ovDlg [data-cerrar]');
  await p.click('#evOpc'); await p.waitForTimeout(100); await p.screenshot({ path: OUT + '/opciones.png' }); await p.click('#ovDlg [data-cerrar]');
